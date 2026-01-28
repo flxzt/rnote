@@ -26,8 +26,9 @@ The application should nonetheless be ensured to function properly
 regardless of which DE, compositor, or distribution is used.
 
 In addition the focus for development and testing is on Wayland,
-because X11 has a lot of issues and inconsistencies especially with regards to
+at this point X11 has a lot of issues and inconsistencies especially with regards to
 pen input which is an integral part of the application.
+This is why X11 is now considered unsupported.
 
 For more details on how to build the application on linux either natively or as flatpak see: [BUILDING.md](./BUILDING.md).
 
@@ -159,7 +160,7 @@ in the individual crate's `Cargo.toml` configuration files.
 The generated `Cargo.lock` file pins the dependencies to specific versions and is checked in.
 
 All non-rust dependencies are declared in the root `meson.build` file.
-For example, you'll find declarations for dependencies like `glib`, `gtk4` and `poppler`.
+For example, you'll find declarations for dependencies like `glib` and `gtk4`.
 
 # Architecture
 

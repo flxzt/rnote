@@ -60,7 +60,6 @@ endif
 dependency('glib-2.0', version: '>= 2.76')
 dependency('gio-2.0', version: '>= 2.76')
 dependency('cairo', version: '>= 1.18')
-dependency('poppler', version: '>= 20.09')
 # UI/CLI specific dependencies are declared below
 
 cargo = find_program('cargo', required: true)
@@ -137,7 +136,6 @@ run_target(
 if build_ui == true
     # ui dependencies
     dependency('appstream')
-    dependency('poppler-glib', version: '>= 20.09')
     dependency('gtk4', version: '>= 4.18')
     dependency('libadwaita-1', version: '>= 1.7')
 

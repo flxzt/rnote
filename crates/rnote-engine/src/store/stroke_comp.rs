@@ -238,7 +238,7 @@ impl StrokeStore {
                 }
 
                 #[cfg(feature = "ui")]
-                match crate::render::Image::images_to_rendernodes(&render_comp.images) {
+                match crate::Image::images_to_rendernodes(&render_comp.images) {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
@@ -403,7 +403,7 @@ impl StrokeStore {
                 }
 
                 #[cfg(feature = "ui")]
-                match crate::render::Image::images_to_rendernodes(&render_comp.images) {
+                match crate::Image::images_to_rendernodes(&render_comp.images) {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }
@@ -451,7 +451,7 @@ impl StrokeStore {
                 }
 
                 #[cfg(feature = "ui")]
-                match crate::render::Image::images_to_rendernodes(&render_comp.images) {
+                match crate::Image::images_to_rendernodes(&render_comp.images) {
                     Ok(rendernodes) => {
                         render_comp.rendernodes = rendernodes;
                     }

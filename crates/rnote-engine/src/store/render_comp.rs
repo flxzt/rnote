@@ -584,25 +584,6 @@ impl StrokeStore {
         use rnote_compose::shapes::Shapeable;
 
         let border_widths = 1.0 / engine.camera.total_zoom();
-
-        // draw the rtree root
-        let tree_bounds = self.key_tree.get_bounds();
-        visual_debug::draw_bounds_to_gtk_snapshot(
-            tree_bounds,
-            visual_debug::COLOR_RTREE_BOUNDS,
-            snapshot,
-            border_widths,
-        );
-
-        // draw the trashed rtree root
-        let trashed_tree_bounds = self.trashed_key_tree.get_bounds();
-        visual_debug::draw_bounds_to_gtk_snapshot(
-            trashed_tree_bounds,
-            visual_debug::COLOR_TRASH_RTREE_BOUNDS,
-            snapshot,
-            border_widths,
-        );
-
         for key in self.keys_sorted_chrono() {
             if let Some(stroke) = self.stroke_components.get(key)
                 && let Some(trash_comp) = self.trash_components.get(key)

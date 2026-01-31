@@ -15,6 +15,7 @@ mod imp {
     const REPEAT_RATIO: f32 = 1.8;
     const OFFSET_RATIO: f32 = 0.0;
     const ANIMATION_TIME_MS: u32 = 150;
+    const BORDER_SIZE: f32 = 0.5;
 
     use super::*;
 
@@ -226,6 +227,25 @@ mod imp {
                 BOTTOM_BAR_PROPORTION * (self.display_progress.get() as f32) * (height as f32),
             );
             snapshot.append_color(&foreground_color, &bounds_active);
+
+            // gray borders for visibility
+            let border_bounds = gtk4::gsk::RoundedRect::new(
+                bounds,
+                graphene::Size::zero(),
+                graphene::Size::zero(),
+                graphene::Size::zero(),
+                graphene::Size::zero(),
+            );
+            snapshot.append_border(
+                &border_bounds,
+                &[BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE],
+                &[
+                    gdk::RGBA::BLACK,
+                    gdk::RGBA::BLACK,
+                    gdk::RGBA::BLACK,
+                    gdk::RGBA::BLACK,
+                ],
+            );
 
             self.obj().queue_draw();
         }

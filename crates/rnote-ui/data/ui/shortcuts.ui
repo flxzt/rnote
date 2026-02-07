@@ -219,7 +219,25 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Import File</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;i</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Bold</property>
+                <property name="accelerator">&lt;ctrl&gt;b</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Italic</property>
                 <property name="accelerator">&lt;ctrl&gt;i</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Underline</property>
+                <property name="accelerator">&lt;ctrl&gt;u</property>
               </object>
             </child>
             <child>

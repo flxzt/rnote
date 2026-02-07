@@ -17,8 +17,7 @@ pacman -S --noconfirm \
     unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
     mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
     mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream \
-    mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data \
-    mingw-w64-x86_64-angleproject
+    mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
 ```
 
 ### Configuration
@@ -26,7 +25,7 @@ pacman -S --noconfirm \
 Add the Rust binary directory to the MSYS2 `PATH` by adding the following line to `~/.bashrc`.
 
 ```bash
-export PATH=$PATH:/c/Users/<user>/.cargo/bin
+export PATH="$PATH:/c/Users/<user>/.cargo/bin"
 ```
 
 If you installed Inno Setup, append `:/c/Program Files (x86)/Inno Setup 6` to the path as well.
@@ -45,6 +44,7 @@ Finally, clone the repository somewhere and initialize the submodules.
 
 ```bash
 git clone -c core.symlinks=true https://github.com/flxzt/rnote
+cd rnote/
 git submodule update --init --recursive
 ```
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-14 14:56+0100\n"
-"PO-Revision-Date: 2026-02-14 14:10+0000\n"
+"PO-Revision-Date: 2026-02-14 15:06+0000\n"
 "Last-Translator: Felix Zwettler <f.zwettler@posteo.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/rnote/repo/de/>\n"
 "Language: de\n"
@@ -1912,10 +1912,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Auswahl exportieren gescheitert, nichts ausgewählt"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-#, fuzzy
-#| msgid "Saves are in progress, waiting before closing.."
 msgid "Saves are in progress, waiting before closing..."
-msgstr "Sicherungen sind im Gange, warten bevor schließen.."
+msgstr "Sicherungen sind im Gange, warten bevor schliessen..."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
@@ -2100,10 +2098,8 @@ msgid "- no author -"
 msgstr "- kein Autor -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:437
-#, fuzzy
-#| msgid "Modification date:"
 msgid "- no modification date -"
-msgstr "Änderungsdatum:"
+msgstr "- kein Modifikationsdatum -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"

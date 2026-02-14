@@ -78,7 +78,7 @@ prerequisites-dev: prerequisites
         exit 1
     fi
     if [[ "{{ci}}" != "true" ]]; then
-        ln -sf build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
+        ln -sf ../../build-aux/git-hooks/pre-commit.hook .git/hooks/pre-commit
     fi
     curl -L --proto '=https' --tlsv1.2 -sSf \
         https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash

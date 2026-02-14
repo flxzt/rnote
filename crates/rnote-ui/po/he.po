@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-06 15:24+0200\n"
+"POT-Creation-Date: 2026-02-14 14:56+0100\n"
 "PO-Revision-Date: 2025-09-07 18:01+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
@@ -29,8 +29,8 @@ msgstr "ציור וכתיבת הערות בכתב יד"
 #: crates/rnote-ui/data/app.desktop.in.in:14
 msgid "Gnome;GTK;Office;Graphics;Notes;"
 msgstr ""
-"‫GNOME;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;פתקיות;כתב יד;"
-"הערות;"
+"‫GNOME;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;פתקיות;כתב "
+"יד;הערות;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:19
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -100,7 +100,7 @@ msgstr "ניקוי תוכן המסמך במלואו. נא לאשר."
 #: crates/rnote-ui/data/ui/dialogs/export.ui:183
 #: crates/rnote-ui/data/ui/dialogs/export.ui:423
 #: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:213
+#: crates/rnote-ui/data/ui/dialogs/import.ui:207
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "ביטול"
@@ -451,8 +451,8 @@ msgid "Import Pdf"
 msgstr "ייבוא PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:218
-#: crates/rnote-ui/src/dialogs/import.rs:93
+#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/src/dialogs/import.rs:94
 msgid "Import"
 msgstr "ייבוא"
 
@@ -520,47 +520,39 @@ msgstr "וקטור"
 msgid "Bitmap"
 msgstr "מפת סיביות"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:169
-msgid "Page Borders"
-msgstr "גבולות עמוד"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:170
-msgid "Whether the pages have drawn borders"
-msgstr "האם לצייר גבולות לעמוד"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:198
 msgid "Import Xournal++ File"
 msgstr "ייבוא קובץ ‎Xournal++‎"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:247
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr "העדפות ייבוא קובץ Xournal++‎"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:251
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr "נק׳ לאינץ׳"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:252
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "הגדרת הבחנה (DPI) מועדפת עבור קובצי Xournal++‎"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:267
 msgid "is password protected"
 msgstr "מוגן בסיסמה"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+#: crates/rnote-ui/data/ui/dialogs/import.ui:270
 msgid "Encrypted PDF"
 msgstr "PDF מוצפן"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "_Cancel"
 msgstr "_ביטול"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "_Unlock"
 msgstr "_שחרור"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:291
+#: crates/rnote-ui/data/ui/dialogs/import.ui:285
 msgid "Enter the PDF password"
 msgstr "נא למלא את סיסמת ה־PDF"
 
@@ -784,7 +776,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "היפוך בהירות הצבע של כל המשיכות הנבחרות"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 msgid "Duplicate Selection"
 msgstr "שכפול הבחירה"
 
@@ -990,34 +982,37 @@ msgid "Reset Text Attributes"
 msgstr "איפוס תכונות טקסט"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr "מודגש"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:88
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr "נטוי"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr "קו תחתי"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
 msgstr "קו חוצה"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:128
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
 msgstr "יישור לשמאל"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
 msgstr "מרכוז"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
 msgstr "יישור לימין"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:149
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
 msgstr "מילוי"
 
@@ -1252,7 +1247,7 @@ msgid "Fill Color"
 msgstr "צבע מילוי"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:37
+#: crates/rnote-ui/src/dialogs/import.rs:38
 msgid "Open"
 msgstr "פתיחה"
 
@@ -1839,31 +1834,31 @@ msgid "Print Document"
 msgstr "הדפסת מסמך"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:91
+#: crates/rnote-ui/src/dialogs/import.rs:92
 msgid "Import File"
 msgstr "ייבוא קובץ"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Drawing"
 msgstr "ציור"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Copy to Clipboard"
 msgstr "העתקה ללוח הגזירים"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 msgid "Cut to Clipboard"
 msgstr "גזירה ללוח הגזירים"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 msgid "Paste Clipboard"
 msgstr "הדבקה מלוח הגזירים"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 msgid "Undo"
 msgstr "ביטול"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 msgid "Redo"
 msgstr "ביצוע חוזר"
 
@@ -1899,7 +1894,7 @@ msgstr "יצירת תיקייה חדשה"
 msgid "Open Workspace Folder"
 msgstr "פתיחת תיקיית מרחב עבודה"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:700
+#: crates/rnote-ui/src/appwindow/actions.rs:794
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1908,16 +1903,18 @@ msgstr "פתיחת תיקיית מרחב עבודה"
 msgid "Saving document failed"
 msgstr "שמירת המסמך נכשלה"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:791
+#: crates/rnote-ui/src/appwindow/actions.rs:885
 msgid "Printing document failed"
 msgstr "הדפסת המסמך נכשלה"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:868
+#: crates/rnote-ui/src/appwindow/actions.rs:962
 msgid "Exporting selection failed, nothing selected"
 msgstr "ייצוא הבחירה נכשל, לא נבחר דבר"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-msgid "Saves are in progress, waiting before closing.."
+#, fuzzy
+#| msgid "Saves are in progress, waiting before closing.."
+msgid "Saves are in progress, waiting before closing..."
 msgstr "שמירות מתבצעות, יש להמתין לפני הסגירה.."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
@@ -1985,7 +1982,7 @@ msgid "Inserting text failed"
 msgstr "הוספת הטקסט נכשלה"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:29
+#: crates/rnote-ui/src/dialogs/import.rs:30
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2080,48 +2077,50 @@ msgstr "ייצוא תצורת המנוע נכשל"
 msgid "Exported engine config successfully"
 msgstr "תצורת המנוע יוצאה בהצלחה"
 
-#: crates/rnote-ui/src/dialogs/import.rs:35
+#: crates/rnote-ui/src/dialogs/import.rs:36
 msgid "Open File"
 msgstr "פתיחת קובץ"
 
-#: crates/rnote-ui/src/dialogs/import.rs:85
+#: crates/rnote-ui/src/dialogs/import.rs:86
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
-#: crates/rnote-ui/src/dialogs/import.rs:412
+#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:418
 msgid "- no file name -"
 msgstr "- ללא שם קובץ -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:417
+#: crates/rnote-ui/src/dialogs/import.rs:425
 msgid "- no title -"
 msgstr "- ללא כותרת -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:420
+#: crates/rnote-ui/src/dialogs/import.rs:430
 msgid "- no author -"
 msgstr "- ללא מחבר -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:424
-msgid "- no date -"
-msgstr "- ללא תאריך -"
+#: crates/rnote-ui/src/dialogs/import.rs:437
+#, fuzzy
+#| msgid "Modification date:"
+msgid "- no modification date -"
+msgstr "תאריך שינוי:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"
 msgstr "שם קובץ:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "Title:"
 msgstr "כותרת:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:432
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Author:"
 msgstr "‏מחבר:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:433
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Modification date:"
 msgstr "תאריך שינוי:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:434
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Pages:"
 msgstr "דפים:"
 
@@ -2677,6 +2676,15 @@ msgstr "שחור"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "לבן"
+
+#~ msgid "Page Borders"
+#~ msgstr "גבולות עמוד"
+
+#~ msgid "Whether the pages have drawn borders"
+#~ msgstr "האם לצייר גבולות לעמוד"
+
+#~ msgid "- no date -"
+#~ msgstr "- ללא תאריך -"
 
 #~ msgid "Shaper Styles"
 #~ msgstr "סגנונות המעצב"

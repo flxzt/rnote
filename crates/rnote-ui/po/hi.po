@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-06 15:24+0200\n"
+"POT-Creation-Date: 2026-02-14 14:56+0100\n"
 "PO-Revision-Date: 2025-12-20 14:00+0000\n"
 "Last-Translator: rscoder <ratnasambhavsahu@icloud.com>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
@@ -97,7 +97,7 @@ msgstr "इससे संपूर्ण दस्तावेज साफ �
 #: crates/rnote-ui/data/ui/dialogs/export.ui:183
 #: crates/rnote-ui/data/ui/dialogs/export.ui:423
 #: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:213
+#: crates/rnote-ui/data/ui/dialogs/import.ui:207
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "रद्द करें"
@@ -448,8 +448,8 @@ msgid "Import Pdf"
 msgstr "PDF आयात करें"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:218
-#: crates/rnote-ui/src/dialogs/import.rs:93
+#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/src/dialogs/import.rs:94
 msgid "Import"
 msgstr "आयात"
 
@@ -518,47 +518,39 @@ msgstr "वेक्टर"
 msgid "Bitmap"
 msgstr "बिटमैप"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:169
-msgid "Page Borders"
-msgstr "पृष्ठ सीमाएं"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:170
-msgid "Whether the pages have drawn borders"
-msgstr "क्या पृष्ठ पर सीमाएं बनी हुए है"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:198
 msgid "Import Xournal++ File"
 msgstr "Xournal++ फाइल आयात करें"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:247
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ फाइल आयात की प्राथमिकताएं"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:251
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr "DPI"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:252
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ फाइल के लिए पसंदीदा DPI निर्धारित करें"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:267
 msgid "is password protected"
 msgstr "पासवर्ड से रक्षित है"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+#: crates/rnote-ui/data/ui/dialogs/import.ui:270
 msgid "Encrypted PDF"
 msgstr "एनक्रीपटेड PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "_Cancel"
 msgstr "_रद्द करें"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "_Unlock"
 msgstr "ताला खोलें"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:291
+#: crates/rnote-ui/data/ui/dialogs/import.ui:285
 msgid "Enter the PDF password"
 msgstr "इस PDF का पासवर्ड दर्ज करें"
 
@@ -782,7 +774,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "सभी चयनित स्ट्रोक्स की रंग चमक को उलटा करें"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 msgid "Duplicate Selection"
 msgstr "डुप्लिकेट चयन"
 
@@ -988,34 +980,37 @@ msgid "Reset Text Attributes"
 msgstr "पाठ विशेषताएं रीसेट करें"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr "बोल्ड"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:88
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr "तिरछा"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr "रेखांकित"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
 msgstr "स्ट्राइकथ्रू"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:128
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
 msgstr "बाएं संरेखित करें"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
 msgstr "मध्य में संरेखित करें"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
 msgstr "दाएं संरेखित करें"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:149
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
 msgstr "भरण"
 
@@ -1250,7 +1245,7 @@ msgid "Fill Color"
 msgstr "भरण रंग"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:37
+#: crates/rnote-ui/src/dialogs/import.rs:38
 msgid "Open"
 msgstr "खोलें"
 
@@ -1837,31 +1832,31 @@ msgid "Print Document"
 msgstr "दस्तावेज प्रिंट करें"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:91
+#: crates/rnote-ui/src/dialogs/import.rs:92
 msgid "Import File"
 msgstr "फाइल आयात करें"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Drawing"
 msgstr "रेखांकन"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Copy to Clipboard"
 msgstr "क्लिपबोर्ड पर कॉपी करें"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 msgid "Cut to Clipboard"
 msgstr "क्लिपबोर्ड पर काटें"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 msgid "Paste Clipboard"
 msgstr "क्लिपबोर्ड पेस्ट करें"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 msgid "Undo"
 msgstr "पूर्ववत"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 msgid "Redo"
 msgstr "पुनः करें"
 
@@ -1897,7 +1892,7 @@ msgstr "नया फोल्डर बनाएं"
 msgid "Open Workspace Folder"
 msgstr "कार्यस्थान फ़ोल्डर खोलें"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:700
+#: crates/rnote-ui/src/appwindow/actions.rs:794
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1906,16 +1901,18 @@ msgstr "कार्यस्थान फ़ोल्डर खोलें"
 msgid "Saving document failed"
 msgstr "दस्तावेज सहेजना विफल रहा"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:791
+#: crates/rnote-ui/src/appwindow/actions.rs:885
 msgid "Printing document failed"
 msgstr "दस्तावेज का मुद्रण विफल रहा"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:868
+#: crates/rnote-ui/src/appwindow/actions.rs:962
 msgid "Exporting selection failed, nothing selected"
 msgstr "निर्यात चयन विफल, कुछ भी चयनित नहीं"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-msgid "Saves are in progress, waiting before closing.."
+#, fuzzy
+#| msgid "Saves are in progress, waiting before closing.."
+msgid "Saves are in progress, waiting before closing..."
 msgstr "सहेजना प्रगति पर है, बंद होने से पहले प्रतीक्षा की जा रही है।"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
@@ -1982,7 +1979,7 @@ msgid "Inserting text failed"
 msgstr "पाठ सम्मिलित करना विफल रहा"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:29
+#: crates/rnote-ui/src/dialogs/import.rs:30
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2077,48 +2074,50 @@ msgstr "इंजन विन्यास निर्यात करना �
 msgid "Exported engine config successfully"
 msgstr "इंजन विन्यास सफलतापूर्वक निर्यात किया गया"
 
-#: crates/rnote-ui/src/dialogs/import.rs:35
+#: crates/rnote-ui/src/dialogs/import.rs:36
 msgid "Open File"
 msgstr "फाइल खोलें"
 
-#: crates/rnote-ui/src/dialogs/import.rs:85
+#: crates/rnote-ui/src/dialogs/import.rs:86
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
-#: crates/rnote-ui/src/dialogs/import.rs:412
+#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:418
 msgid "- no file name -"
 msgstr "- कोई फाइल नाम नहीं -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:417
+#: crates/rnote-ui/src/dialogs/import.rs:425
 msgid "- no title -"
 msgstr "- कोई शीर्षक नहीं -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:420
+#: crates/rnote-ui/src/dialogs/import.rs:430
 msgid "- no author -"
 msgstr "- कोई लेखक नहीं -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:424
-msgid "- no date -"
-msgstr "- कोई तिथि नहीं -"
+#: crates/rnote-ui/src/dialogs/import.rs:437
+#, fuzzy
+#| msgid "Modification date:"
+msgid "- no modification date -"
+msgstr "संशोधन तिथि:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"
 msgstr "फाइल का नाम:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "Title:"
 msgstr "शीर्षक:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:432
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Author:"
 msgstr "लेखक:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:433
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Modification date:"
 msgstr "संशोधन तिथि:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:434
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Pages:"
 msgstr "पन्ने:"
 
@@ -2672,6 +2671,15 @@ msgstr "काला"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "सफेद"
+
+#~ msgid "Page Borders"
+#~ msgstr "पृष्ठ सीमाएं"
+
+#~ msgid "Whether the pages have drawn borders"
+#~ msgstr "क्या पृष्ठ पर सीमाएं बनी हुए है"
+
+#~ msgid "- no date -"
+#~ msgstr "- कोई तिथि नहीं -"
 
 #~ msgid "Shaper Styles"
 #~ msgstr "शेपर शैलियां"

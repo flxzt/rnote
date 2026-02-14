@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-06 15:24+0200\n"
+"POT-Creation-Date: 2026-02-14 14:56+0100\n"
 "PO-Revision-Date: 2026-01-18 10:01+0000\n"
 "Last-Translator: Yuqi Huang <ctrlhuangyq@gmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -97,7 +97,7 @@ msgstr "这将清空整个文档。请确认。"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:183
 #: crates/rnote-ui/data/ui/dialogs/export.ui:423
 #: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:213
+#: crates/rnote-ui/data/ui/dialogs/import.ui:207
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "取消"
@@ -448,8 +448,8 @@ msgid "Import Pdf"
 msgstr "导入 PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:218
-#: crates/rnote-ui/src/dialogs/import.rs:93
+#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/src/dialogs/import.rs:94
 msgid "Import"
 msgstr "导入"
 
@@ -517,47 +517,39 @@ msgstr "矢量图"
 msgid "Bitmap"
 msgstr "位图"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:169
-msgid "Page Borders"
-msgstr "页面边框"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:170
-msgid "Whether the pages have drawn borders"
-msgstr "页面是否绘制了边框"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:198
 msgid "Import Xournal++ File"
 msgstr "导入 Xournal++ 文件"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:247
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ 文件导入设定"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:251
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr "像素密度（DPI）"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:252
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "为 Xournal++ 文件设置推荐的 DPI"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:267
 msgid "is password protected"
 msgstr "密码受保护"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+#: crates/rnote-ui/data/ui/dialogs/import.ui:270
 msgid "Encrypted PDF"
 msgstr "加密 PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "_Cancel"
 msgstr "取消 [_C]"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "_Unlock"
 msgstr "解锁 [_U]"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:291
+#: crates/rnote-ui/data/ui/dialogs/import.ui:285
 msgid "Enter the PDF password"
 msgstr "请输入 PDF 密码"
 
@@ -781,7 +773,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "反转所有选中笔画的色彩亮度"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 msgid "Duplicate Selection"
 msgstr "复制所选内容"
 
@@ -987,34 +979,37 @@ msgid "Reset Text Attributes"
 msgstr "重置文本属性"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr "粗体"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:88
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr "斜体"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr "下划线"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
 msgstr "删除线"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:128
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
 msgstr "靠左对齐"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
 msgstr "居中对齐"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
 msgstr "靠右对齐"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:149
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
 msgstr "填充"
 
@@ -1249,7 +1244,7 @@ msgid "Fill Color"
 msgstr "填充颜色"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:37
+#: crates/rnote-ui/src/dialogs/import.rs:38
 msgid "Open"
 msgstr "打开"
 
@@ -1836,31 +1831,31 @@ msgid "Print Document"
 msgstr "打印"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:91
+#: crates/rnote-ui/src/dialogs/import.rs:92
 msgid "Import File"
 msgstr "导入文件"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Drawing"
 msgstr "绘画"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Copy to Clipboard"
 msgstr "复制到剪切板"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 msgid "Cut to Clipboard"
 msgstr "剪切到剪切板"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 msgid "Paste Clipboard"
 msgstr "粘贴剪切板"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 msgid "Undo"
 msgstr "撤销"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 msgid "Redo"
 msgstr "重做"
 
@@ -1896,7 +1891,7 @@ msgstr "创建新文件夹"
 msgid "Open Workspace Folder"
 msgstr "打开工作区目录"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:700
+#: crates/rnote-ui/src/appwindow/actions.rs:794
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1905,16 +1900,18 @@ msgstr "打开工作区目录"
 msgid "Saving document failed"
 msgstr "文档保存失败"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:791
+#: crates/rnote-ui/src/appwindow/actions.rs:885
 msgid "Printing document failed"
 msgstr "打印失败"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:868
+#: crates/rnote-ui/src/appwindow/actions.rs:962
 msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-msgid "Saves are in progress, waiting before closing.."
+#, fuzzy
+#| msgid "Saves are in progress, waiting before closing.."
+msgid "Saves are in progress, waiting before closing..."
 msgstr "保存正在进行中，请稍候再关闭……"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
@@ -1981,7 +1978,7 @@ msgid "Inserting text failed"
 msgstr "插入文本失败"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:29
+#: crates/rnote-ui/src/dialogs/import.rs:30
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2076,48 +2073,50 @@ msgstr "引擎设置导出失败"
 msgid "Exported engine config successfully"
 msgstr "引擎设置导出成功"
 
-#: crates/rnote-ui/src/dialogs/import.rs:35
+#: crates/rnote-ui/src/dialogs/import.rs:36
 msgid "Open File"
 msgstr "打开文件"
 
-#: crates/rnote-ui/src/dialogs/import.rs:85
+#: crates/rnote-ui/src/dialogs/import.rs:86
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, xopp, TXT"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
-#: crates/rnote-ui/src/dialogs/import.rs:412
+#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:418
 msgid "- no file name -"
 msgstr "—— 没有文件名 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:417
+#: crates/rnote-ui/src/dialogs/import.rs:425
 msgid "- no title -"
 msgstr "—— 无标题 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:420
+#: crates/rnote-ui/src/dialogs/import.rs:430
 msgid "- no author -"
 msgstr "—— 无作者 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:424
-msgid "- no date -"
-msgstr "—— 无日期 ——"
+#: crates/rnote-ui/src/dialogs/import.rs:437
+#, fuzzy
+#| msgid "Modification date:"
+msgid "- no modification date -"
+msgstr "修改日期："
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"
 msgstr "文件名："
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "Title:"
 msgstr "标题："
 
-#: crates/rnote-ui/src/dialogs/import.rs:432
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Author:"
 msgstr "作者："
 
-#: crates/rnote-ui/src/dialogs/import.rs:433
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: crates/rnote-ui/src/dialogs/import.rs:434
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Pages:"
 msgstr "页码："
 
@@ -2673,6 +2672,15 @@ msgstr "黑色"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "白色"
+
+#~ msgid "Page Borders"
+#~ msgstr "页面边框"
+
+#~ msgid "Whether the pages have drawn borders"
+#~ msgstr "页面是否绘制了边框"
+
+#~ msgid "- no date -"
+#~ msgstr "—— 无日期 ——"
 
 #~ msgid "Shaper Styles"
 #~ msgstr "形状工具样式"

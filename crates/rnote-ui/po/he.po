@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-14 14:56+0100\n"
-"PO-Revision-Date: 2025-09-07 18:01+0000\n"
+"PO-Revision-Date: 2026-02-15 16:09+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://hosted.weblate.org/projects/rnote/repo/he/>\n"
 "Language: he\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.16-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1912,10 +1912,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "ייצוא הבחירה נכשל, לא נבחר דבר"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-#, fuzzy
-#| msgid "Saves are in progress, waiting before closing.."
 msgid "Saves are in progress, waiting before closing..."
-msgstr "שמירות מתבצעות, יש להמתין לפני הסגירה.."
+msgstr "שמירות מתבצעות, יש להמתין לפני הסגירה…"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
@@ -2099,10 +2097,8 @@ msgid "- no author -"
 msgstr "- ללא מחבר -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:437
-#, fuzzy
-#| msgid "Modification date:"
 msgid "- no modification date -"
-msgstr "תאריך שינוי:"
+msgstr "- אין תאריך שינוי -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"

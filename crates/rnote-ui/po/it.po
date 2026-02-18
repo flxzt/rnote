@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-14 14:56+0100\n"
-"PO-Revision-Date: 2026-02-03 18:01+0000\n"
+"PO-Revision-Date: 2026-02-19 02:09+0000\n"
 "Last-Translator: Samuele <samu4199@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
 "Language: it\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1913,10 +1913,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Esportazione della selezione fallita, nessuna selezione"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-#, fuzzy
-#| msgid "Saves are in progress, waiting before closing.."
 msgid "Saves are in progress, waiting before closing..."
-msgstr "Salvataggio in corso, in attesa prima della chiusura."
+msgstr "Salvataggio in corso, in attesa prima della chiusura..."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
@@ -2103,10 +2101,8 @@ msgid "- no author -"
 msgstr "- nessun autore -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:437
-#, fuzzy
-#| msgid "Modification date:"
 msgid "- no modification date -"
-msgstr "Data di modifica:"
+msgstr "- nessuna data di modifica -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"

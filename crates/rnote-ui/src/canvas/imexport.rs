@@ -245,15 +245,19 @@ impl RnCanvas {
         let file_write_operation = async move {
             let bytes = rnote_bytes_receiver.await??;
             self.set_output_file_expect_write(true);
+
+            let mut temp_path = file_path.to_path_buf();
+            temp_path.set_extension("tmp");
+
             let mut write_file = async_fs::OpenOptions::new()
                 .create(true)
                 .truncate(true)
                 .write(true)
-                .open(&file_path)
+                .open(&temp_path)
                 .await
                 .context(format!(
                     "Failed to create/open/truncate file for path '{}'",
-                    file_path.display()
+                    temp_path.display()
                 ))?;
             if !skip_set_output_file {
                 // this installs the file watcher.
@@ -261,12 +265,19 @@ impl RnCanvas {
             }
             write_file.write_all(&bytes).await.context(format!(
                 "Failed to write bytes to file with path '{}'",
-                file_path.display()
+                temp_path.display()
             ))?;
             write_file.sync_all().await.context(format!(
                 "Failed to sync file after writing with path '{}'",
-                file_path.display()
+                temp_path.display()
             ))?;
+            // If everything goes well, replace the original file
+            async_fs::rename(&temp_path, &file_path)
+                .await
+                .context(format!(
+                    "Failed to rename temporary file to '{}'",
+                    file_path.display()
+                ))?;
             Ok(())
         };
 

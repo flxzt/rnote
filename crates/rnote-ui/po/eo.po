@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-14 14:56+0100\n"
-"PO-Revision-Date: 2025-10-12 23:07+0000\n"
+"PO-Revision-Date: 2026-02-20 04:09+0000\n"
 "Last-Translator: Conner McKay <connermckay927@proton.me>\n"
-"Language-Team: Esperanto <https://hosted.weblate.org/projects/rnote/repo/eo/"
-">\n"
+"Language-Team: Esperanto <https://hosted.weblate.org/projects/rnote/repo/eo/>"
+"\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 5.16.1-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -536,100 +536,102 @@ msgstr "Agordu la preferatan punktan skaladon por la Xournal++ dosiero"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:267
 msgid "is password protected"
-msgstr ""
+msgstr "estas pasvorte protektita"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:270
 msgid "Encrypted PDF"
-msgstr ""
+msgstr "Ĉifrita PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "_Cancel"
-msgstr ""
+msgstr "Rezigni"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "_Unlock"
-msgstr ""
+msgstr "Malŝlosi"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:285
 msgid "Enter the PDF password"
-msgstr ""
+msgstr "Enigu la PDF-pasvorton"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
 msgid "Brush Style"
-msgstr ""
+msgstr "Penika stilo"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
 msgid "Brush Configuration"
-msgstr ""
+msgstr "Penikaj Agordoj"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
 msgid "Brush Styles"
-msgstr ""
+msgstr "Penikaj Stiloj"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
 msgid "Marker"
-msgstr ""
+msgstr "Markilo"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
 msgid "Mark underneath other strokes"
-msgstr ""
+msgstr "Marki sub aliaj strekoj"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Solid"
-msgstr ""
+msgstr "Solida"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
 msgid "Draw solid color strokes"
-msgstr ""
+msgstr "Desegni solidajn strekojn"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
 msgid "Textured"
-msgstr ""
+msgstr "Kruda"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
 msgid "Draw textured strokes"
-msgstr ""
+msgstr "Desegni krudajn strekojn"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
 msgid "Path Modelling"
-msgstr ""
+msgstr "Voja Modelado"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
 msgid "Simple"
-msgstr ""
+msgstr "Simpla"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:188
 msgid "Produces line segments from the raw input.\n"
-msgstr ""
+msgstr "Produktas linio-segmentojn el la kruda enigo.\n"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
 msgid "Curved"
-msgstr ""
+msgstr "Kurba"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
 msgid "Produces smooth, curved segments.\n"
-msgstr ""
+msgstr "Produktas glatajn, kurbajn segmentojn.\n"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
 msgid "Modeled"
-msgstr ""
+msgstr "Modelita"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:202
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
 msgstr ""
+"Produktas modelitan vojon per fizik-bazitaj algoritmoj.\n"
+"Rezultas la plej bela manskribo."
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "Solid Style"
-msgstr ""
+msgstr "Solida Stilo"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
 msgid "Pressure Curve"
-msgstr ""
+msgstr "Premkurbo"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
 msgid "Choose a pressure curve"

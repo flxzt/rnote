@@ -93,9 +93,6 @@ pub struct PdfImportPrefs {
     /// The scalefactor when importing as bitmap image
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
-    /// Whether the imported Pdf pages have drawn borders
-    #[serde(rename = "page_borders")]
-    pub page_borders: bool,
     /// Whether the document layout should be adjusted to the Pdf
     #[serde(rename = "adjust_document")]
     pub adjust_document: bool,
@@ -108,7 +105,6 @@ impl Default for PdfImportPrefs {
             page_width_perc: 50.0,
             page_spacing: PdfImportPageSpacing::default(),
             bitmap_scalefactor: 1.8,
-            page_borders: true,
             adjust_document: false,
         }
     }
@@ -230,7 +226,7 @@ impl Engine {
         &self,
         bytes: Vec<u8>,
         insert_pos: na::Vector2<f64>,
-        page_range: Option<Range<u32>>,
+        page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
         let (oneshot_sender, oneshot_receiver) =

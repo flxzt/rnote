@@ -5,8 +5,8 @@ use gtk4::glib;
 #[enum_type(name = "RnStrokeWidthPreviewType")]
 #[repr(i32)]
 pub(crate) enum StrokeWidthPreviewStyle {
-    #[enum_value(name = "Circle")]
     #[default]
+    #[enum_value(name = "Circle")]
     Circle,
     #[enum_value(name = "RoundedRect")]
     RoundedRect,

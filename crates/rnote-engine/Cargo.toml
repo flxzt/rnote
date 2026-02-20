@@ -22,6 +22,8 @@ futures = { workspace = true }
 geo = { workspace = true }
 gio = { workspace = true }
 glib = { workspace = true }
+hayro = { workspace = true }
+hayro-svg = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }
@@ -34,7 +36,6 @@ once_cell = { workspace = true }
 parry2d-f64 = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
-poppler-rs = { workspace = true }
 rand = { workspace = true }
 rand_distr = { workspace = true }
 rand_pcg = { workspace = true }

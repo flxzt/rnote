@@ -326,8 +326,8 @@ pub enum PressureCurve {
     #[serde(rename = "const")]
     Const = 0,
     /// Linear.
-    #[serde(rename = "linear")]
     #[default]
+    #[serde(rename = "linear")]
     Linear,
     /// Square root.
     #[serde(rename = "sqrt")]

@@ -2,13 +2,16 @@
 use super::content::GeneratedContentImages;
 use super::resize::{ImageSizeOption, calculate_resize_ratio};
 use super::{Content, Stroke};
+use crate::Image;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
-use crate::{Drawable, render};
+use crate::svg::USVG_FONTDB;
+use crate::{Drawable, Svg};
+use anyhow::anyhow;
+use hayro::{hayro_interpret, hayro_syntax};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use rnote_compose::color;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
@@ -17,7 +20,6 @@ use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
-use tracing::error;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -52,7 +54,7 @@ impl Default for VectorImage {
 }
 
 impl Content for VectorImage {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<Svg, anyhow::Error> {
         let svg_root = svg::node::element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
             .set("y", -self.rectangle.cuboid.half_extents[1])
@@ -74,7 +76,7 @@ impl Content for VectorImage {
             )
             .add(svg_root);
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
-        let svg = render::Svg {
+        let svg = Svg {
             bounds: self.rectangle.bounds(),
             svg_data,
         };
@@ -88,13 +90,11 @@ impl Content for VectorImage {
     ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
         // always generate full stroke images for vectorimages, they are too expensive to be repeatedly rendered
-        Ok(GeneratedContentImages::Full(vec![
-            render::Image::gen_with_piet(
-                |piet_cx| self.draw(piet_cx, image_scale),
-                bounds,
-                image_scale,
-            )?,
-        ]))
+        Ok(GeneratedContentImages::Full(vec![Image::gen_with_piet(
+            |piet_cx| self.draw(piet_cx, image_scale),
+            bounds,
+            image_scale,
+        )?]))
     }
 
     fn update_geometry(&mut self) {}
@@ -151,7 +151,7 @@ impl VectorImage {
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
-        const TRANSFORMS_PREC: u8 = 4;
+        const TRANSFORMS_PREC: u8 = 8;
 
         let xml_options = usvg::WriteOptions {
             id_prefix: Some(rnote_compose::utils::svg_random_id_prefix()),
@@ -165,7 +165,7 @@ impl VectorImage {
         let svg_tree = usvg::Tree::from_str(
             svg_data,
             &usvg::Options {
-                fontdb: Arc::clone(&render::USVG_FONTDB),
+                fontdb: Arc::clone(&USVG_FONTDB),
                 ..Default::default()
             },
         )?;
@@ -214,104 +214,53 @@ impl VectorImage {
     }
 
     pub fn from_pdf_bytes(
-        bytes: &[u8],
+        to_be_read: &[u8],
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: na::Vector2<f64>,
-        page_range: Option<Range<u32>>,
+        page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_bytes(&glib::Bytes::from(bytes), password.as_deref())?;
-        let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
-
+        // TODO: how to avoid this allocation without lifetime issues?
+        let data = Arc::new(to_be_read.to_vec());
+        let pdf = if let Some(password) = password {
+            hayro_syntax::Pdf::new_with_password(data, &password)
+                .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+        } else {
+            hayro_syntax::Pdf::new(data)
+                .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
+        };
+        let interpreter_settings = hayro_interpret::InterpreterSettings::default();
+        let render_settings = hayro_svg::SvgRenderSettings {
+            bg_color: [255, 255, 255, 255],
+        };
+        let pages = pdf.pages();
+        let page_range = page_range.unwrap_or(0..pages.len());
         let page_width = if pdf_import_prefs.adjust_document {
             format.width()
         } else {
             format.width() * (pdf_import_prefs.page_width_perc / 100.0)
         };
+
         // calculate the page zoom based on the width of the first page.
-        let page_zoom = if let Some(first_page) = doc.page(0) {
-            page_width / first_page.size().0
+        let page_zoom = if let Some(first_page) = pages.first() {
+            page_width / first_page.render_dimensions().0 as f64
         } else {
             return Ok(vec![]);
         };
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
+        // TODO: investigate if this can be parallelized with rayon's `par_iter()`
         let svgs = page_range
             .filter_map(|page_i| {
-                let page = doc.page(page_i as i32)?;
-                let (intrinsic_width, intrinsic_height) = page.size();
+                let page = pages.get(page_i)?;
+                let (intrinsic_width, intrinsic_height) = {
+                    let dimensions = page.render_dimensions();
+                    (dimensions.0 as f64, dimensions.1 as f64)
+                };
                 let width = intrinsic_width * page_zoom;
                 let height = intrinsic_height * page_zoom;
-
-                let res = move || -> anyhow::Result<String> {
-                    let svg_stream: Vec<u8> = vec![];
-
-                    let mut svg_surface = cairo::SvgSurface::for_stream(
-                        intrinsic_width,
-                        intrinsic_height,
-                        svg_stream,
-                    )
-                    .map_err(|e| {
-                        anyhow::anyhow!(
-                            "Creating SvgSurface with dimensions ({}, {}) failed, Err: {e:?}",
-                            intrinsic_width,
-                            intrinsic_height
-                        )
-                    })?;
-
-                    // Popplers page units are in points ( equals 1/72 inch )
-                    svg_surface.set_document_unit(cairo::SvgUnit::Pt);
-
-                    {
-                        let cx = cairo::Context::new(&svg_surface).map_err(|e| {
-                            anyhow::anyhow!("Creating new cairo context failed, Err: {e:?}")
-                        })?;
-
-                        // Set margin to white
-                        cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
-                        cx.paint()?;
-
-                        // Render the poppler page
-                        page.render_for_printing(&cx);
-
-                        if pdf_import_prefs.page_borders {
-                            // Draw outline around page
-                            let (red, green, blue, _) = color::GNOME_REDS[4].as_rgba();
-                            cx.set_source_rgba(red, green, blue, 1.0);
-
-                            let line_width = 1.0;
-                            cx.set_line_width(line_width);
-                            cx.rectangle(
-                                line_width * 0.5,
-                                line_width * 0.5,
-                                intrinsic_width - line_width,
-                                intrinsic_height - line_width,
-                            );
-                            cx.stroke()?;
-                        }
-                    }
-
-                    let svg_content = String::from_utf8(
-                        *svg_surface
-                            .finish_output_stream()
-                            .map_err(|e| {
-                                anyhow::anyhow!(
-                                    "Failed to finish Pdf page surface output stream, Err: {e:?}"
-                                )
-                            })?
-                            .downcast::<Vec<u8>>()
-                            .map_err(|e| {
-                                anyhow::anyhow!(
-                                    "Failed to downcast Pdf page surface content, Err: {e:?}"
-                                )
-                            })?,
-                    )?;
-
-                    Ok(svg_content)
-                };
-
                 let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
 
                 if pdf_import_prefs.adjust_document {
@@ -324,16 +273,12 @@ impl VectorImage {
                         PdfImportPageSpacing::OnePerDocumentPage => format.height(),
                     };
                 }
+                let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
+                let svg = Svg { svg_data, bounds };
 
-                match res() {
-                    Ok(svg_data) => Some(render::Svg { svg_data, bounds }),
-                    Err(e) => {
-                        error!("Importing page {page_i} from pdf failed, Err: {e:?}");
-                        None
-                    }
-                }
+                Some(svg)
             })
-            .collect::<Vec<render::Svg>>();
+            .collect::<Vec<Svg>>();
 
         svgs.into_par_iter()
             .map(|svg| {

@@ -40,6 +40,7 @@ pub use rectanglebuilder::RectangleBuilder;
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
+/// A choice for a shape builder type
 #[derive(
     Copy,
     Clone,
@@ -51,11 +52,10 @@ use serde::{Deserialize, Serialize};
     num_derive::ToPrimitive,
 )]
 #[serde(rename = "shapebuilder_type")]
-/// A choice for a shape builder type
 pub enum ShapeBuilderType {
     /// A line builder
-    #[serde(rename = "line")]
     #[default]
+    #[serde(rename = "line")]
     Line = 0,
     /// An arrow builder
     #[serde(rename = "arrow")]
@@ -147,6 +147,7 @@ impl TryFrom<u32> for ShapeBuilderType {
     }
 }
 
+/// A choice for a pen path builder type
 #[derive(
     Copy,
     Clone,
@@ -158,16 +159,15 @@ impl TryFrom<u32> for ShapeBuilderType {
     num_derive::ToPrimitive,
 )]
 #[serde(rename = "penpathbuilder_type")]
-/// A choice for a pen path builder type
 pub enum PenPathBuilderType {
-    #[serde(rename = "simple")]
     /// the simple pen path builder
+    #[serde(rename = "simple")]
     Simple = 0,
-    #[serde(rename = "curved")]
     /// the curved pen path builder
+    #[serde(rename = "curved")]
     Curved,
-    #[serde(rename = "modeled")]
     /// the modeled pen path builder
+    #[serde(rename = "modeled")]
     #[default]
     Modeled,
 }

@@ -65,7 +65,7 @@ pub(crate) async fn dialog_clear_doc(appwindow: &RnAppWindow, canvas: &RnCanvas)
     );
     let dialog: adw::AlertDialog = builder.object("dialog_clear_doc").unwrap();
 
-    match dialog.choose_future(appwindow).await.as_str() {
+    match dialog.choose_future(Some(appwindow)).await.as_str() {
         "clear" => {
             let prev_empty = canvas.empty();
 
@@ -104,7 +104,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
         return;
     }
 
-    match dialog.choose_future(appwindow).await.as_str() {
+    match dialog.choose_future(Some(appwindow)).await.as_str() {
         "discard" => {
             new_doc(appwindow, canvas);
         }
@@ -244,7 +244,7 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
 
     // Returns close_finish_confirm, a boolean that indicates if the tab should actually be closed or closing
     // should be aborted.
-    match dialog.choose_future(appwindow).await.as_str() {
+    match dialog.choose_future(Some(appwindow)).await.as_str() {
         "discard" => true,
         "save" => {
             if let Some(save_file) = save_file {
@@ -377,7 +377,7 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
         rows.push((i, check, save_file));
     }
 
-    let close = match dialog.choose_future(appwindow).await.as_str() {
+    let close = match dialog.choose_future(Some(appwindow)).await.as_str() {
         "discard" => {
             // do nothing and close
             true
@@ -596,7 +596,7 @@ pub(crate) async fn dialog_trash_file(appwindow: &RnAppWindow, current_file: &gi
     );
     let dialog: adw::AlertDialog = builder.object("dialog_trash_file").unwrap();
 
-    match dialog.choose_future(appwindow).await.as_str() {
+    match dialog.choose_future(Some(appwindow)).await.as_str() {
         "trash" => {
             glib::spawn_future_local(clone!(
                 #[weak]

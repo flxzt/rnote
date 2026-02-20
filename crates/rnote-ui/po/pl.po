@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-09-13 14:02+0300\n"
+"PO-Revision-Date: 2026-02-20 02:47+0100\n"
 "Last-Translator: dawkagaming\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/rnote/repo/pl/>\n"
 "Language: pl\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.9-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -219,14 +219,12 @@ msgid "Change the directory"
 msgstr "Zmień katalog"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
-#, fuzzy
-#| msgid "Trash Strokes"
 msgid "Trash File"
-msgstr "Śmieciowe pociągnięcia pędzlem"
+msgstr "Usuń Plik"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr "Czy jesteś pewien, że chcesz przesunąć ten plik do kosza?"
+msgstr "Czy jesteś pewien że chcesz przenieść ten plik do kosza?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
@@ -870,16 +868,12 @@ msgid "Round"
 msgstr "Zaokrąglony"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#, fuzzy
-#| msgid "Fill Style"
 msgid "Line Style"
-msgstr "Styl wypełnienia"
+msgstr "Styl linii"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
-#, fuzzy
-#| msgid "Choose a fill style"
 msgid "Choose a line style"
-msgstr "Wybierz styl wypełnienia"
+msgstr "Wybierz styl linii"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Dotted"
@@ -894,8 +888,6 @@ msgid "Dashed (equidistant)"
 msgstr "Przerywane (równoległe)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-#, fuzzy
-#| msgid "Dashed"
 msgid "Dashed (wide)"
 msgstr "Przerywane (szerokie)"
 
@@ -986,10 +978,8 @@ msgstr "Wstaw pionową przestrzeń"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Konfiguracja kształtu"
+msgstr "Konfiguracja narzędzia do przestrzeni pionowej"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -1001,10 +991,8 @@ msgid "Zoom In/Out"
 msgstr "Powiększ/Pomniejsz"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Gumka"
+msgstr "Laser"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
@@ -1335,10 +1323,8 @@ msgid "Save Document"
 msgstr "Zapisz dokument"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Otwórz menu płótna"
+msgstr "Menu płótna"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
@@ -1457,12 +1443,12 @@ msgstr "Format strony"
 #: crates/rnote-ui/data/ui/settingspanel.ui:142
 #: crates/rnote-ui/data/ui/settingspanel.ui:284
 msgid "Save as Preset"
-msgstr "Zapisz jako wzór"
+msgstr "Zapisz jako szablon"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:151
 #: crates/rnote-ui/data/ui/settingspanel.ui:293
 msgid "Restore From Preset"
-msgstr "Przywróć ze wzoru"
+msgstr "Przywróć z szablonu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:161
 msgid "Format"
@@ -1575,16 +1561,12 @@ msgid "Infinite"
 msgstr "Nieskończony"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:318
-#, fuzzy
-#| msgid "Show _Format Borders"
 msgid "Show Format Borders"
 msgstr "Pokaż granice formatu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:319
-#, fuzzy
-#| msgid "Set whether the scrollbars on the canvas are shown"
 msgid "Set whether the format borders are shown"
-msgstr "Ustaw czy paski przewijania na płótnie mają być pokazane"
+msgstr "Ustaw, czy obramowanie formatu ma być pokazane"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:324
 msgid "Format Border Color"
@@ -1652,10 +1634,8 @@ msgid "Set the background pattern height"
 msgstr "Ustawienie wysokości szablonu tła"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
-#, fuzzy
-#| msgid "Show _Origin Indicator"
 msgid "Show Origin Indicator"
-msgstr "Pokaż Znacznik _Źródła"
+msgstr "Pokaż Znacznik Źródła"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:440
 #, fuzzy
@@ -2701,22 +2681,22 @@ msgstr "jasny"
 #: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "transparent"
-msgstr "przezroczysty"
+msgstr "przeźroczysty"
 
 #: crates/rnote-ui/src/utils.rs:223
 msgctxt "part of string representation of a color"
 msgid "translucent"
-msgstr "półprzezroczysty"
+msgstr "półprzeźroczysty"
 
 #: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
-msgstr "półprzezroczysty"
+msgstr "półprzeźroczysty"
 
 #: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
-msgstr "całkowicie przezroczysty"
+msgstr "całkowicie przeźroczysty"
 
 #: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"

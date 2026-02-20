@@ -8,17 +8,17 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-07-18 13:03+0000\n"
+"PO-Revision-Date: 2025-11-09 18:51+0000\n"
 "Last-Translator: Andrea Andre <andrea.tsg19@slmail.me>\n"
-"Language-Team: Romanian <https://hosted.weblate.org/projects/rnote/repo/ro/"
-">\n"
+"Language-Team: Romanian <https://hosted.weblate.org/projects/rnote/repo/ro/>"
+"\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
-"20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.13-dev\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : "
+"(n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+"X-Generator: Weblate 5.15-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -70,7 +70,7 @@ msgstr "Ascunde benzile cu instrumente în Modul Simplu"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:55
 msgid "Quickly access files through workspace"
-msgstr ""
+msgstr "Accesează rapid fișierele prin intermediul spațiului de lucru"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
@@ -78,16 +78,16 @@ msgstr "Modifică parametrii documentului"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
-msgstr ""
+msgstr "Stabilește scurtăturile pentru acțiuni"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
 msgid "Clear Document"
-msgstr ""
+msgstr "Șterge documentul"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "Acest lucru va șterge întregul document. Trebuie confirmat."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -106,7 +106,7 @@ msgstr "Renunță"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "Șterge"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
@@ -136,13 +136,15 @@ msgstr "Salvează"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:29
 msgid "Close Tab"
-msgstr ""
+msgstr "Închide fila"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:30
 msgid ""
 "This tab contains unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"Această filă conține modificări nesalvate.\n"
+"Modificările care nu sunt salvate vor fi pierdute definitiv."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:47
 msgid "Close Window"
@@ -153,6 +155,8 @@ msgid ""
 "Some opened files contain unsaved changes.\n"
 "Changes which are not saved will be permanently lost."
 msgstr ""
+"Unele fișiere deschise conțin modificări nesalvate.\n"
+"Modificările care nu sunt salvate vor fi pierdute definitiv."
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:54
 msgid "Unsaved Documents"
@@ -187,19 +191,19 @@ msgstr "Schimbă simbolul spațiului de lucru"
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
 #: crates/rnote-ui/data/ui/settingspanel.ui:345
 msgid "Color"
-msgstr ""
+msgstr "Culoare"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:146
 msgid "Change the workspace color"
-msgstr ""
+msgstr "Schimbă culoarea spațiului de lucru"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:160
 msgid "Directory"
-msgstr ""
+msgstr "Dosar"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:161
 msgid "Change the workspace directory"
-msgstr ""
+msgstr "Schimbă dosarul spațiului de lucru"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:170
 #: crates/rnote-ui/data/ui/dialogs/export.ui:290
@@ -208,28 +212,28 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:527
 #: crates/rnote-ui/src/dialogs/mod.rs:542
 msgid "- no directory selected -"
-msgstr ""
+msgstr "- niciun dosar ales -"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:185
 msgid "Change the directory"
-msgstr ""
+msgstr "Schimbă dosarul"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
 msgid "Trash File"
-msgstr ""
+msgstr "Șterge fișierul"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Se dorește mutarea acestui fișier în coșul de gunoi?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Mută în coș"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:346
 msgid "Export Document"
-msgstr ""
+msgstr "Exportă documentul"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
@@ -237,17 +241,17 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:1252
 #: crates/rnote-ui/src/dialogs/export.rs:1313
 msgid "Export"
-msgstr ""
+msgstr "Exportă"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:74
 #: crates/rnote-ui/data/ui/dialogs/export.ui:483
 msgid "Export File"
-msgstr ""
+msgstr "Exportă fișierul"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:75
 #: crates/rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Select the export file"
-msgstr ""
+msgstr "Alege fișierul de exportat"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:84
@@ -261,37 +265,37 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:924
 #: crates/rnote-ui/src/dialogs/export.rs:1012
 msgid "- no file selected -"
-msgstr ""
+msgstr "- niciun fișier ales -"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:108
 #: crates/rnote-ui/data/ui/dialogs/export.ui:319
 #: crates/rnote-ui/data/ui/dialogs/export.ui:517
 msgid "Export Preferences"
-msgstr ""
+msgstr "Preferințe de Exportare"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:112
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
 #: crates/rnote-ui/data/ui/dialogs/export.ui:521
 msgid "With Background"
-msgstr ""
+msgstr "Cu fundal"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:113
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:522
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "Stabilește dacă fundalul trebuie exportat"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:118
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
 #: crates/rnote-ui/data/ui/dialogs/export.ui:527
 msgid "With Pattern"
-msgstr ""
+msgstr "Cu model"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:119
 #: crates/rnote-ui/data/ui/dialogs/export.ui:330
 #: crates/rnote-ui/data/ui/dialogs/export.ui:528
 msgid "Set whether the background pattern should be exported"
-msgstr ""
+msgstr "Stabilește dacă modelul de fundal trebuie exportat"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:124
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
@@ -309,12 +313,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
 #: crates/rnote-ui/data/ui/dialogs/export.ui:539
 msgid "Export Format"
-msgstr ""
+msgstr "Format de exportare"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:131
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 msgid "The export format"
-msgstr ""
+msgstr "Formatul de exportare"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/data/ui/dialogs/export.ui:346
@@ -323,17 +327,17 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:789
 #: crates/rnote-ui/src/dialogs/export.rs:1181
 msgid "Svg"
-msgstr ""
+msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:376
 msgid "Pdf"
-msgstr ""
+msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:387
 msgid "Xopp"
-msgstr ""
+msgstr "XOPP"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
@@ -703,7 +707,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:21
 msgid "Trash Strokes"
-msgstr ""
+msgstr "Șterge liniile"
 
 #: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
 msgid "Split Strokes"
@@ -1247,7 +1251,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:73
 msgid "Move to Trash"
-msgstr ""
+msgstr "Mută în coșul de gunoi"
 
 #: crates/rnote-ui/data/ui/filerow.ui:77
 msgid "Duplicate"
@@ -1533,7 +1537,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:346
 msgid "Set the background color"
-msgstr ""
+msgstr "Alege culoarea fundalului"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:366
 msgid "Pattern"
@@ -1541,7 +1545,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:367
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "Alege un model de fundal"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:371
 msgid "None"
@@ -1570,7 +1574,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:385
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "Alege culoarea modelului de fundal"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:405
 msgid "Pattern Width"
@@ -1578,7 +1582,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:406
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "Alege lățimea modelului de fundal"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:422
 msgid "Pattern Height"
@@ -1586,7 +1590,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:423
 msgid "Set the background pattern height"
-msgstr ""
+msgstr "Alege înălțimea modelului de fundal"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:439
 msgid "Show Origin Indicator"
@@ -1602,7 +1606,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:446
 msgid "Invert the brightness of the background and pattern colors"
-msgstr ""
+msgstr "Inversează luminozitatea culorilor fundalului și modelului"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:450
 msgid "Invert"
@@ -1853,10 +1857,8 @@ msgid "Create new Folder"
 msgstr "Creează un dosar nou"
 
 #: crates/rnote-ui/data/ui/workspacebrowser.ui:167
-#, fuzzy
-#| msgid "Workspace Name"
 msgid "Open Workspace Folder"
-msgstr "Numele spațiului de lucru"
+msgstr "Deschide dosarul spațiului de lucru"
 
 #: crates/rnote-ui/src/appwindow/actions.rs:700
 #: crates/rnote-ui/src/appwindow/imp.rs:425
@@ -1955,7 +1957,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/export.rs:293
 msgid "Exporting document failed, no file selected"
-msgstr ""
+msgstr "Nu s-a exportat documentul; nu a fost ales niciun fișier"
 
 #: crates/rnote-ui/src/dialogs/export.rs:308
 msgid "Exporting document failed"
@@ -2001,7 +2003,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/export.rs:1085
 msgid "Exporting selection failed, no file selected"
-msgstr ""
+msgstr "Nu s-a exportat selecția; nu a fost ales niciun fișier"
 
 #: crates/rnote-ui/src/dialogs/export.rs:1096
 msgid "Exporting selection failed"
@@ -2111,7 +2113,7 @@ msgstr ""
 
 #: crates/rnote-ui/src/dialogs/mod.rs:618
 msgid "Trashing file failed"
-msgstr ""
+msgstr "Nu s-a reușit ștergerea fișierului"
 
 #: crates/rnote-ui/src/dialogs/mod.rs:692
 msgid "Band-Aid"

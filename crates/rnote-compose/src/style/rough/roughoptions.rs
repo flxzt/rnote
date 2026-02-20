@@ -61,6 +61,7 @@ impl RoughOptions {
     Eq,
     PartialOrd,
     Ord,
+    Default,
     Serialize,
     Deserialize,
     num_derive::FromPrimitive,
@@ -74,6 +75,7 @@ pub enum FillStyle {
     #[serde(rename = "solid", alias = "Hachure")]
     Solid,
     /// Hachure.
+    #[default]
     #[serde(rename = "hachure")]
     Hachure,
     /// Zig zag.
@@ -91,12 +93,6 @@ pub enum FillStyle {
     /// Dashed.
     #[serde(rename = "dashed")]
     Dashed,
-}
-
-impl Default for FillStyle {
-    fn default() -> Self {
-        Self::Hachure
-    }
 }
 
 impl From<roughr::core::FillStyle> for FillStyle {

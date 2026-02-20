@@ -248,14 +248,14 @@ impl DrawableOnDoc for VerticalSpaceTool {
 
         let total_zoom = engine_view.camera.total_zoom();
         let viewport = engine_view.camera.viewport();
-        let x = if self.limit_x.is_some() {
-            viewport.mins[0].max(self.limit_x.unwrap().0)
+        let x = if let Some(limit_x) = self.limit_x {
+            viewport.mins[0].max(limit_x.0)
         } else {
             viewport.mins[0]
         };
         let y = self.start_pos_y;
-        let width = if self.limit_x.is_some() {
-            self.limit_x.unwrap().1 - viewport.mins[0].max(self.limit_x.unwrap().0)
+        let width = if let Some(limit_x) = self.limit_x {
+            self.limit_x.unwrap().1 - viewport.mins[0].max(limit_x.0)
         } else {
             viewport.extents()[0]
         };

@@ -9,15 +9,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-09-06 15:24+0200\n"
-"PO-Revision-Date: 2025-04-13 11:02+0000\n"
-"Last-Translator: Léo Peyronnet <leo.peyronnet@outlook.fr>\n"
+"PO-Revision-Date: 2025-10-04 09:02+0000\n"
+"Last-Translator: Jonatan Pfister <jonatanr.pfister@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.11-dev\n"
+"X-Generator: Weblate 5.14-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -415,15 +415,11 @@ msgstr "Échelle des images matricielles"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:373
 #: crates/rnote-ui/data/ui/dialogs/export.ui:555
 #: crates/rnote-ui/data/ui/dialogs/import.ui:161
-#, fuzzy
-#| msgid ""
-#| "Set the bitmap scale factor in relation\n"
-#| "to the actual size on the document"
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
-"Définir la taille de l’image matricielle\n"
+"Définir la taille de l’image bitmap\n"
 "par rapport à sa taille réelle dans le document"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
@@ -563,10 +559,8 @@ msgid "Encrypted PDF"
 msgstr "PDF chiffré"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:279
-#, fuzzy
-#| msgid "Cancel"
 msgid "_Cancel"
-msgstr "Annuler"
+msgstr "_Annuler"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:280
 msgid "_Unlock"
@@ -830,11 +824,11 @@ msgstr "Grossier"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Highlighting"
-msgstr ""
+msgstr "Surligneur"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
 msgid "Highlight-Mode"
-msgstr ""
+msgstr "Mode-surligneur"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Fade active color"
@@ -842,11 +836,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlight-Opacity"
-msgstr ""
+msgstr "Opacité-Surligneur"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
 msgid "Modify the highlight opacity (%)"
-msgstr ""
+msgstr "Modifier l'opacité du surligneur (%)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
 #, fuzzy
@@ -867,45 +861,36 @@ msgid "Choose a line cap"
 msgstr "Choisissez un format"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
-#, fuzzy
-#| msgctxt "part of string representation of a color"
-#| msgid "bright"
 msgid "Straight"
-msgstr "clair"
+msgstr "Droit"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 msgid "Round"
-msgstr ""
+msgstr "Rond"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
-#, fuzzy
-#| msgid "Fill Style"
 msgid "Line Style"
-msgstr "Style de remplissage"
+msgstr "Style de ligne"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
-#, fuzzy
-#| msgid "Choose a fill style"
 msgid "Choose a line style"
-msgstr "Choisir un style de remplissage"
+msgstr "Choisir un style de ligne"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Dotted"
-msgstr ""
+msgstr "Pointillé"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
 msgid "Dashed (narrow)"
-msgstr ""
+msgstr "Tireté (fin)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
 msgid "Dashed (equidistant)"
-msgstr ""
+msgstr "Tireté (distance égale)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
-#, fuzzy
-#| msgid "Dashed"
 msgid "Dashed (wide)"
-msgstr "Tirets"
+msgstr "Tireté (large)"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
 #, fuzzy
@@ -994,10 +979,8 @@ msgstr "Insérer un espace vertical"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
-#, fuzzy
-#| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
-msgstr "Configuration de la forme"
+msgstr "Configuration de l'outil d'espacement vertical"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
@@ -1009,10 +992,8 @@ msgid "Zoom In/Out"
 msgstr "Zoom avant/arrière"
 
 #: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
-#, fuzzy
-#| msgid "Eraser"
 msgid "Laser"
-msgstr "Effaceur"
+msgstr "Laser"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:14
 msgid "Font Chooser"
@@ -1343,14 +1324,12 @@ msgid "Save Document"
 msgstr "Enregistrer le document"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:89
-#, fuzzy
-#| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
-msgstr "Ouvrir le menu du canevas"
+msgstr "Menu du canevas"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr ""
+msgstr "Menu de l'application"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"

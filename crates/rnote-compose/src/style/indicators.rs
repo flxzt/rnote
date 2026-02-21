@@ -156,12 +156,15 @@ pub fn draw_rectangular_node(
     node_state: PenState,
     bounds: Aabb,
     zoom: f64,
+    background_color: piet::Color,
 ) {
     const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
     const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_BLUES[0].with_a8(77);
     const FILL_STATE_DOWN: piet::Color = color::GNOME_BLUES[2].with_a8(128);
 
     let rectangular_node = rectangular_node_shape(node_state, bounds, zoom);
+
+    cx.fill(rectangular_node, &background_color); // and maybe force it to alpha 1 ?
 
     match node_state {
         PenState::Up => {}
@@ -205,6 +208,7 @@ pub fn draw_circular_node(
     node_state: PenState,
     bounding_sphere: BoundingSphere,
     zoom: f64,
+    background_color: piet::Color,
 ) {
     const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
     const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_BLUES[0].with_a8(77);
@@ -217,6 +221,8 @@ pub fn draw_circular_node(
         &OUTLINE_COLOR,
         CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
     );
+
+    cx.fill(circular_node, &background_color);
 
     match node_state {
         PenState::Up => {}
@@ -266,6 +272,7 @@ pub fn draw_triangular_node(
     center: na::Vector2<f64>,
     size: na::Vector2<f64>,
     zoom: f64,
+    background_color: piet::Color,
 ) {
     const OUTLINE_COLOR: piet::Color = color::GNOME_ORANGES[4];
     const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_ORANGES[0].with_a8(77);
@@ -278,6 +285,8 @@ pub fn draw_triangular_node(
         &OUTLINE_COLOR,
         CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
     );
+
+    cx.fill(triangular_down_node.clone(), &background_color);
 
     match node_state {
         PenState::Up => {}

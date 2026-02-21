@@ -20,7 +20,7 @@ use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
-use slotmap::{HopSlotMap, SecondaryMap};
+use slotmap::{SecondaryMap, SlotMap};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use std::time::Instant;
@@ -34,7 +34,7 @@ slotmap::new_key_type! {
 #[serde(default, rename = "history_entry")]
 pub struct HistoryEntry {
     #[serde(rename = "stroke_components")]
-    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    pub stroke_components: Arc<SlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
     pub trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
     #[serde(rename = "chrono_components")]
@@ -46,7 +46,7 @@ pub struct HistoryEntry {
 impl Default for HistoryEntry {
     fn default() -> Self {
         Self {
-            stroke_components: Arc::new(HopSlotMap::with_key()),
+            stroke_components: Arc::new(SlotMap::with_key()),
             trash_components: Arc::new(SecondaryMap::new()),
             chrono_components: Arc::new(SecondaryMap::new()),
 
@@ -72,7 +72,7 @@ impl Default for HistoryEntry {
 pub struct StrokeStore {
     // Components
     #[serde(rename = "stroke_components")]
-    stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    stroke_components: Arc<SlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
     trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
     #[serde(rename = "selection_components")]
@@ -101,7 +101,7 @@ pub struct StrokeStore {
 impl Default for StrokeStore {
     fn default() -> Self {
         Self {
-            stroke_components: Arc::new(HopSlotMap::with_key()),
+            stroke_components: Arc::new(SlotMap::with_key()),
             trash_components: Arc::new(SecondaryMap::new()),
             selection_components: Arc::new(SecondaryMap::new()),
             chrono_components: Arc::new(SecondaryMap::new()),

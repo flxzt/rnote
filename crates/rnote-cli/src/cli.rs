@@ -1,5 +1,5 @@
 // Imports
-use crate::{export, import, test, thumbnail};
+use crate::{create, export, import, test, thumbnail};
 use anyhow::Context;
 use clap::Parser;
 use rnote_compose::SplitOrder;
@@ -78,6 +78,14 @@ pub(crate) enum Command {
         size: u32,
         /// Output path of the thumbnail
         output: PathBuf,
+    },
+    /// Make a rnote file from the cli
+    Create {
+        /// file save path
+        new_rnote_file: PathBuf,
+        /// Optional template file to base the new file on
+        #[arg(short, long)]
+        template_file: Option<PathBuf>,
     },
 }
 
@@ -259,6 +267,13 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         } => {
             println!("Thumbnail...");
             thumbnail::run_thumbnail(rnote_file, size, output).await?;
+        }
+        Command::Create {
+            new_rnote_file,
+            template_file,
+        } => {
+            create::run_create(&new_rnote_file, template_file.as_deref()).await?;
+            println!("Created file successfully");
         }
     }
 

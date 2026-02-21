@@ -8,7 +8,7 @@ use crate::{Camera, Document, Engine};
 use anyhow::Context;
 use futures::channel::oneshot;
 use serde::{Deserialize, Serialize};
-use slotmap::{HopSlotMap, SecondaryMap};
+use slotmap::{SecondaryMap, SlotMap};
 use std::sync::Arc;
 use tracing::error;
 
@@ -26,7 +26,7 @@ pub struct EngineSnapshot {
     #[serde(rename = "camera")]
     pub camera: Camera,
     #[serde(rename = "stroke_components")]
-    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    pub stroke_components: Arc<SlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "chrono_components")]
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
     #[serde(rename = "chrono_counter")]
@@ -38,7 +38,7 @@ impl Default for EngineSnapshot {
         Self {
             document: Document::default(),
             camera: Camera::default(),
-            stroke_components: Arc::new(HopSlotMap::with_key()),
+            stroke_components: Arc::new(SlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
         }

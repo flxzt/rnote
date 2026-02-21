@@ -32,11 +32,11 @@ mod imp {
         pub(crate) shapebuildertype_picker: TemplateChild<RnGroupedIconPicker>,
 
         #[template_child]
-        pub(crate) shapeconfig_menubutton: TemplateChild<MenuButton>,
+        pub(crate) shapestyling_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shapeconfig_popover: TemplateChild<Popover>,
+        pub(crate) shapestyling_popover: TemplateChild<Popover>,
         #[template_child]
-        pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
+        pub(crate) shapestyling_popover_close_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
@@ -44,21 +44,28 @@ mod imp {
         #[template_child]
         pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
         #[template_child]
+        pub(crate) smoothoptions_group: TemplateChild<adw::PreferencesGroup>,
+        #[template_child]
+        pub(crate) smoothoptions_line_cap_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub(crate) smoothoptions_line_style_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub(crate) roughoptions_group: TemplateChild<adw::PreferencesGroup>,
+        #[template_child]
+        pub(crate) roughoptions_fillstyle_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub(crate) roughoptions_hachure_angle_row: TemplateChild<adw::SpinRow>,
+
+        #[template_child]
+        pub(crate) shaperconfig_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub(crate) shaperconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) shaperconfig_popover_close_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) highlight_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) highlight_opacity_row: TemplateChild<adw::SpinRow>,
-        #[template_child]
-        pub(crate) smoothstyle_group: TemplateChild<adw::PreferencesGroup>,
-        #[template_child]
-        pub(crate) smoothstyle_line_cap_row: TemplateChild<adw::ComboRow>,
-        #[template_child]
-        pub(crate) smoothstyle_line_style_row: TemplateChild<adw::ComboRow>,
-        #[template_child]
-        pub(crate) roughstyle_group: TemplateChild<adw::PreferencesGroup>,
-        #[template_child]
-        pub(crate) roughstyle_fillstyle_row: TemplateChild<adw::ComboRow>,
-        #[template_child]
-        pub(crate) roughstyle_hachure_angle_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) constraint_enabled_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -120,8 +127,12 @@ impl RnShaperPage {
         glib::Object::new()
     }
 
-    pub(crate) fn shapeconfig_menubutton(&self) -> MenuButton {
-        self.imp().shapeconfig_menubutton.get()
+    pub(crate) fn shapestyling_menubutton(&self) -> MenuButton {
+        self.imp().shapestyling_menubutton.get()
+    }
+
+    pub(crate) fn shaperconfig_menubutton(&self) -> MenuButton {
+        self.imp().shaperconfig_menubutton.get()
     }
 
     pub(crate) fn shapebuildertype_menubutton(&self) -> MenuButton {
@@ -156,23 +167,23 @@ impl RnShaperPage {
             .set_picked(Some(builder_type.to_icon_name()));
     }
 
-    pub(crate) fn smoothstyle_line_cap(&self) -> LineCap {
-        LineCap::try_from(self.imp().smoothstyle_line_cap_row.get().selected()).unwrap()
+    pub(crate) fn smoothoptions_line_cap(&self) -> LineCap {
+        LineCap::try_from(self.imp().smoothoptions_line_cap_row.get().selected()).unwrap()
     }
 
-    pub(crate) fn smoothstyle_line_style(&self) -> LineStyle {
-        LineStyle::try_from(self.imp().smoothstyle_line_style_row.get().selected()).unwrap()
+    pub(crate) fn smoothoptions_line_style(&self) -> LineStyle {
+        LineStyle::try_from(self.imp().smoothoptions_line_style_row.get().selected()).unwrap()
     }
 
-    pub(crate) fn roughstyle_fillstyle(&self) -> FillStyle {
-        FillStyle::try_from(self.imp().roughstyle_fillstyle_row.get().selected()).unwrap()
+    pub(crate) fn roughoptions_fillstyle(&self) -> FillStyle {
+        FillStyle::try_from(self.imp().roughoptions_fillstyle_row.get().selected()).unwrap()
     }
 
-    pub(crate) fn set_roughstyle_fillstyle(&self, fill_style: FillStyle) {
+    pub(crate) fn set_roughoptions_fillstyle(&self, fill_style: FillStyle) {
         let position = fill_style.to_u32().unwrap();
 
         self.imp()
-            .roughstyle_fillstyle_row
+            .roughoptions_fillstyle_row
             .get()
             .set_selected(position);
     }
@@ -183,17 +194,28 @@ impl RnShaperPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let shapeconfig_popover = imp.shapeconfig_popover.get();
+        let shapestyling_popover = imp.shapestyling_popover.get();
+        let shaperconfig_popover = imp.shaperconfig_popover.get();
         let shapebuildertype_popover = imp.shapebuildertype_popover.get();
 
         // Popovers
-        imp.shapeconfig_popover_close_button.connect_clicked(clone!(
-            #[weak]
-            shapeconfig_popover,
-            move |_| {
-                shapeconfig_popover.popdown();
-            }
-        ));
+        imp.shapestyling_popover_close_button
+            .connect_clicked(clone!(
+                #[weak]
+                shapestyling_popover,
+                move |_| {
+                    shapestyling_popover.popdown();
+                }
+            ));
+
+        imp.shaperconfig_popover_close_button
+            .connect_clicked(clone!(
+                #[weak]
+                shaperconfig_popover,
+                move |_| {
+                    shaperconfig_popover.popdown();
+                }
+            ));
 
         imp.shapebuildertype_popover_close_button
             .connect_clicked(clone!(
@@ -279,8 +301,10 @@ impl RnShaperPage {
                                 .smooth_options
                                 .stroke_width;
                             let page = shaperpage.imp();
-                            page.roughstyle_group.set_visible(false);
-                            page.smoothstyle_group.set_visible(true);
+                            page.shapestyling_menubutton
+                                .set_icon_name("pen-shaper-style-smooth-symbolic");
+                            page.roughoptions_group.set_visible(false);
+                            page.smoothoptions_group.set_visible(true);
                             page.stroke_width_picker.set_stroke_width(stroke_width);
                         }
                         ShaperStyle::Rough => {
@@ -292,8 +316,10 @@ impl RnShaperPage {
                                 .rough_options
                                 .stroke_width;
                             let page = shaperpage.imp();
-                            page.smoothstyle_group.set_visible(false);
-                            page.roughstyle_group.set_visible(true);
+                            page.shapestyling_menubutton
+                                .set_icon_name("pen-shaper-style-rough-symbolic");
+                            page.smoothoptions_group.set_visible(false);
+                            page.roughoptions_group.set_visible(true);
                             page.stroke_width_picker.set_stroke_width(stroke_width);
                         }
                     }
@@ -301,6 +327,107 @@ impl RnShaperPage {
             }
         ));
 
+        // Smooth style
+        // Line cap
+        imp.smoothoptions_line_cap_row
+            .get()
+            .connect_selected_notify(clone!(
+                #[weak(rename_to=shaperpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let line_cap = shaperpage.smoothoptions_line_cap();
+
+                    // If the user has selected a straight line cap while the line style was dotted, then we update the line style to be straight
+                    if line_cap == LineCap::Straight
+                        && shaperpage.smoothoptions_line_style().is_dotted()
+                    {
+                        shaperpage
+                            .imp()
+                            .smoothoptions_line_style_row
+                            .set_selected(LineStyle::Solid.to_u32().unwrap())
+                    }
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .shaper_config
+                        .smooth_options
+                        .update_line_cap(line_cap);
+                }
+            ));
+
+        // Line style
+        imp.smoothoptions_line_style_row
+            .get()
+            .connect_selected_notify(clone!(
+                #[weak(rename_to=shaperpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let line_style = shaperpage.smoothoptions_line_style();
+
+                    // If the user has selected a dotted line style, then we update the line cap to be rounded
+                    if line_style.is_dotted() {
+                        shaperpage
+                            .imp()
+                            .smoothoptions_line_cap_row
+                            .set_selected(LineCap::Rounded.to_u32().unwrap());
+                    }
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .shaper_config
+                        .smooth_options
+                        .update_line_style(line_style);
+                }
+            ));
+
+        // Rough style
+        // Fill style
+        imp.roughoptions_fillstyle_row
+            .get()
+            .connect_selected_notify(clone!(
+                #[weak(rename_to=shaperpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .shaper_config
+                        .rough_options
+                        .fill_style = shaperpage.roughoptions_fillstyle();
+                }
+            ));
+
+        // Hachure angle
+        imp.roughoptions_hachure_angle_row
+            .get()
+            .connect_changed(clone!(
+                #[weak]
+                appwindow,
+                move |row| {
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .shaper_config
+                        .rough_options
+                        .hachure_angle = row
+                        .value()
+                        .round()
+                        .to_radians()
+                        .clamp(-std::f64::consts::PI, std::f64::consts::PI);
+                }
+            ));
+
+        // Shaper extra
         // Highlighter options
         imp.highlight_mode_row.connect_active_notify(clone!(
             #[weak]
@@ -327,138 +454,6 @@ impl RnShaperPage {
                     .highlight_opacity = row.value().round() / 100.0;
             }
         ));
-
-        // Smooth style
-        // Line cap
-        imp.smoothstyle_line_cap_row
-            .get()
-            .connect_selected_notify(clone!(
-                #[weak(rename_to=shaperpage)]
-                self,
-                #[weak]
-                appwindow,
-                move |_| {
-                    let line_cap = shaperpage.smoothstyle_line_cap();
-
-                    // If the user has selected a straight line cap while the line style was dotted, then we update the line style to be straight
-                    if line_cap == LineCap::Straight
-                        && shaperpage.smoothstyle_line_style().is_dotted()
-                    {
-                        shaperpage
-                            .imp()
-                            .smoothstyle_line_style_row
-                            .set_selected(LineStyle::Solid.to_u32().unwrap())
-                    }
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .shaper_config
-                        .smooth_options
-                        .update_line_cap(line_cap);
-                }
-            ));
-
-        // Line style
-        imp.smoothstyle_line_style_row
-            .get()
-            .connect_selected_notify(clone!(
-                #[weak(rename_to=shaperpage)]
-                self,
-                #[weak]
-                appwindow,
-                move |_| {
-                    let line_style = shaperpage.smoothstyle_line_style();
-
-                    // If the user has selected a dotted line style, then we update the line cap to be rounded
-                    if line_style.is_dotted() {
-                        shaperpage
-                            .imp()
-                            .smoothstyle_line_cap_row
-                            .set_selected(LineCap::Rounded.to_u32().unwrap());
-                    }
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .shaper_config
-                        .smooth_options
-                        .update_line_style(line_style);
-                }
-            ));
-
-        // Rough style
-        // Fill style
-        imp.roughstyle_fillstyle_row
-            .get()
-            .connect_selected_notify(clone!(
-                #[weak(rename_to=shaperpage)]
-                self,
-                #[weak]
-                appwindow,
-                move |_| {
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .shaper_config
-                        .rough_options
-                        .fill_style = shaperpage.roughstyle_fillstyle();
-                }
-            ));
-
-        // Hachure angle
-        imp.roughstyle_hachure_angle_row
-            .get()
-            .connect_changed(clone!(
-                #[weak]
-                appwindow,
-                move |row| {
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .shaper_config
-                        .rough_options
-                        .hachure_angle = row
-                        .value()
-                        .round()
-                        .to_radians()
-                        .clamp(-std::f64::consts::PI, std::f64::consts::PI);
-                }
-            ));
-
-        // shape builder type
-        imp.shapebuildertype_picker.set_groups(
-            shape_builder_type_icons_get_groups(),
-            shape_builder_type_icons_to_display_name,
-        );
-
-        imp.shapebuildertype_picker.connect_notify_local(
-            Some("picked"),
-            clone!(
-                #[weak(rename_to=shaperpage)]
-                self,
-                #[weak]
-                appwindow,
-                move |picker, _| {
-                    if let Some(buildertype) = shaperpage.shapebuildertype()
-                        && let Some(icon_name) = picker.picked()
-                    {
-                        appwindow
-                            .engine_config()
-                            .write()
-                            .pens_config
-                            .shaper_config
-                            .builder_type = buildertype;
-                        shaperpage
-                            .imp()
-                            .shapebuildertype_menubutton
-                            .set_icon_name(&icon_name);
-                    }
-                }
-            ),
-        );
 
         // Constraints
         imp.constraint_enabled_row
@@ -560,6 +555,38 @@ impl RnShaperPage {
                     }
                 }
             ));
+
+        // shape builder type
+        imp.shapebuildertype_picker.set_groups(
+            shape_builder_type_icons_get_groups(),
+            shape_builder_type_icons_to_display_name,
+        );
+
+        imp.shapebuildertype_picker.connect_notify_local(
+            Some("picked"),
+            clone!(
+                #[weak(rename_to=shaperpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |picker, _| {
+                    if let Some(buildertype) = shaperpage.shapebuildertype()
+                        && let Some(icon_name) = picker.picked()
+                    {
+                        appwindow
+                            .engine_config()
+                            .write()
+                            .pens_config
+                            .shaper_config
+                            .builder_type = buildertype;
+                        shaperpage
+                            .imp()
+                            .shapebuildertype_menubutton
+                            .set_icon_name(&icon_name);
+                    }
+                }
+            ),
+        );
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
@@ -589,14 +616,14 @@ impl RnShaperPage {
         self.set_shapebuildertype(shaper_config.builder_type);
 
         // Smooth style
-        imp.smoothstyle_line_cap_row
+        imp.smoothoptions_line_cap_row
             .set_selected(shaper_config.smooth_options.line_cap.to_u32().unwrap());
-        imp.smoothstyle_line_style_row
+        imp.smoothoptions_line_style_row
             .set_selected(shaper_config.smooth_options.line_style.to_u32().unwrap());
 
         // Rough style
-        self.set_roughstyle_fillstyle(shaper_config.rough_options.fill_style);
-        imp.roughstyle_hachure_angle_row
+        self.set_roughoptions_fillstyle(shaper_config.rough_options.fill_style);
+        imp.roughoptions_hachure_angle_row
             .set_value(shaper_config.rough_options.hachure_angle.to_degrees());
 
         // Highlighter opacity

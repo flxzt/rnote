@@ -124,4 +124,10 @@ impl RnSidebar {
             }
         ));
     }
+
+    pub(crate) fn activate_doc_settings_buttons(&self) {
+        let imp = self.imp();
+
+        imp.settings_panel.get().activate_doc_settings_buttons();
+    }
 }

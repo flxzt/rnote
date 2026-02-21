@@ -61,6 +61,13 @@
                     <property name="tooltip-text" translatable="yes">Focus Mode</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkToggleButton">
+                    <property name="icon-name">touch-disabled-symbolic</property>
+                    <property name="action-name">win.block-touch</property>
+                    <property name="tooltip-text" translatable="yes">Block Touch</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

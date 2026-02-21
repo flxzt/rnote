@@ -896,6 +896,20 @@ impl Engine {
             .handle_animation_frame(&mut engine_view_mut!(self));
     }
 
+    pub fn text_insert(&mut self, text: String, pos: Option<na::Vector2<f64>>) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            widget_flags |= typewriter.insert_text(text, pos, &mut engine_view_mut!(self));
+        }
+        widget_flags
+    }
+
+    pub fn is_typewriter_in_progress(&self) -> bool {
+        self.penholder.current_pen_style(&engine_view!(self)) == crate::pens::PenStyle::Typewriter
+            && self.penholder.current_pen_progress()
+                == rnote_compose::penevent::PenProgress::InProgress
+    }
+
     pub fn current_pen_style_w_override(&self) -> PenStyle {
         self.penholder
             .current_pen_style_w_override(&engine_view!(self))

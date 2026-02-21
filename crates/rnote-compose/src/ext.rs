@@ -172,6 +172,9 @@ where
         split_size: na::Vector2<f64>,
         split_order: SplitOrder,
     ) -> Vec<Self>;
+    /// Gives an aabb of size split_size, snapped to a multiple of split_size
+    /// This returns the first element of a call to `split_extended_origin_aligned`
+    fn split_first_origin_aligned(self, split_size: na::Vector2<f64>) -> Self;
     /// Converts a Aabb to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
     /// Converts a kurbo Rectangle to Aabb
@@ -392,6 +395,13 @@ impl AabbExt for Aabb {
         }
 
         split_aabbs
+    }
+
+    fn split_first_origin_aligned(self, split_size: na::Vector2<f64>) -> Self {
+        let offset_outer = (self.mins[1] / split_size[1]).floor() * split_size[1];
+        let offset_inner = (self.mins[0] / split_size[0]).floor() * split_size[0];
+        let mins = na::point![offset_inner, offset_outer];
+        Aabb::new(mins, mins + split_size)
     }
 
     fn split_extended_origin_aligned(

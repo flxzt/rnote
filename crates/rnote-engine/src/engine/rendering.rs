@@ -17,11 +17,9 @@ impl Engine {
         {
             use crate::ext::GrapheneRectExt;
             use gtk4::{graphene, gsk, prelude::*};
-            use rnote_compose::SplitOrder;
             use rnote_compose::ext::AabbExt;
 
             let viewport = self.camera.viewport();
-            let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
             if let Some(image) = &self.background_tile_image {
                 // Only create the texture once, it is expensive
@@ -35,21 +33,17 @@ impl Engine {
                     }
                 };
 
-                for split_bounds in viewport.split_extended_origin_aligned(
-                    self.document.config.background.tile_size(),
-                    SplitOrder::default(),
-                ) {
-                    rendernodes.push(
-                        gsk::TextureNode::new(
-                            &new_texture,
-                            &graphene::Rect::from_p2d_aabb(split_bounds),
-                        )
-                        .upcast(),
-                    );
-                }
-            }
+                let origin_aabb = viewport
+                    .split_first_origin_aligned(self.document.config.background.tile_size());
 
-            self.background_rendernodes = rendernodes;
+                self.background_rendernode = Some(
+                    gsk::TextureNode::new(
+                        &new_texture,
+                        &graphene::Rect::from_p2d_aabb(origin_aabb),
+                    )
+                    .upcast(),
+                );
+            }
         }
 
         #[cfg(feature = "ui")]
@@ -117,7 +111,7 @@ impl Engine {
         self.origin_indicator_image.take();
         #[cfg(feature = "ui")]
         {
-            self.background_rendernodes.clear();
+            self.background_rendernode = None;
             self.origin_indicator_rendernode.take();
         }
         widget_flags.redraw = true;
@@ -251,17 +245,17 @@ impl Engine {
         snapshot.append_node(
             gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.document.config.background.color),
-                //&gdk::RGBA::RED,
                 &graphene::Rect::from_p2d_aabb(doc_bounds),
             )
             .upcast(),
         );
-
-        for r in self.background_rendernodes.iter() {
-            snapshot.append_node(r);
-        }
-
         snapshot.pop();
+
+        if let Some(render_node) = &self.background_rendernode {
+            snapshot.push_repeat(&graphene::Rect::from_p2d_aabb(doc_bounds), None);
+            snapshot.append_node(render_node);
+            snapshot.pop();
+        }
         Ok(())
     }
 

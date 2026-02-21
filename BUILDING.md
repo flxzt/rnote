@@ -138,15 +138,14 @@ Install all needed dependencies and build tools, e.g. for Fedora:
 
 ```bash
 sudo dnf install gcc gcc-c++ clang clang-devel python3 make cmake meson git appstream gettext desktop-file-utils \
-    shared-mime-info kernel-devel gtk4-devel libadwaita-devel alsa-lib-devel \
-    appstream-devel
+    shared-mime-info kernel-devel gtk4-devel libadwaita-devel alsa-lib-devel enchant2-devel appstream-devel
 ```
 
 For Debian based distros:
 
 ```bash
 sudo apt install build-essential clang libclang-dev python3 make cmake meson git appstream gettext desktop-file-utils \
-    shared-mime-info libgtk-4-dev libadwaita-1-dev libasound2-dev libappstream-dev
+    shared-mime-info libgtk-4-dev libadwaita-1-dev libasound2-dev libenchant-2-dev libappstream-dev
 ```
 
 Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ).

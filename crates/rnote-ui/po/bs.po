@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-06 15:24+0200\n"
+"POT-Creation-Date: 2026-02-14 14:56+0100\n"
 "PO-Revision-Date: 2022-11-28 19:41+0000\n"
 "Last-Translator: Mirza <mirza.arnaut45@gmail.com>\n"
 "Language-Team: Bosnian <https://hosted.weblate.org/projects/rnote/repo/bs/>\n"
@@ -100,7 +100,7 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:183
 #: crates/rnote-ui/data/ui/dialogs/export.ui:423
 #: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:213
+#: crates/rnote-ui/data/ui/dialogs/import.ui:207
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr ""
@@ -466,8 +466,8 @@ msgid "Import Pdf"
 msgstr "Uvezi datoteku"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:218
-#: crates/rnote-ui/src/dialogs/import.rs:93
+#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/src/dialogs/import.rs:94
 msgid "Import"
 msgstr ""
 
@@ -539,51 +539,41 @@ msgstr ""
 msgid "Bitmap"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:169
-#, fuzzy
-#| msgid "Shaper"
-msgid "Page Borders"
-msgstr "Oblikovač"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:170
-msgid "Whether the pages have drawn borders"
-msgstr ""
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:198
 #, fuzzy
 #| msgid "_Import file"
 msgid "Import Xournal++ File"
 msgstr "Uvezi datoteku"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:247
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:251
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:252
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:267
 msgid "is password protected"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+#: crates/rnote-ui/data/ui/dialogs/import.ui:270
 msgid "Encrypted PDF"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "_Cancel"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "_Unlock"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:291
+#: crates/rnote-ui/data/ui/dialogs/import.ui:285
 msgid "Enter the PDF password"
 msgstr ""
 
@@ -809,7 +799,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 #, fuzzy
 #| msgid "A selection"
 msgid "Duplicate Selection"
@@ -1031,34 +1021,37 @@ msgid "Reset Text Attributes"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:88
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:128
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:149
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
 msgstr ""
 
@@ -1333,7 +1326,7 @@ msgid "Fill Color"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:37
+#: crates/rnote-ui/src/dialogs/import.rs:38
 msgid "Open"
 msgstr ""
 
@@ -1921,39 +1914,39 @@ msgid "Print Document"
 msgstr "Izvoz dokumenta"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:91
+#: crates/rnote-ui/src/dialogs/import.rs:92
 #, fuzzy
 #| msgid "_Import file"
 msgid "Import File"
 msgstr "Uvezi datoteku"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Drawing"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 #, fuzzy
 #| msgid "_Paste clipboard"
 msgid "Copy to Clipboard"
 msgstr "Zalijepi međuspremnik"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 #, fuzzy
 #| msgid "_Paste clipboard"
 msgid "Cut to Clipboard"
 msgstr "Zalijepi međuspremnik"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 #, fuzzy
 #| msgid "_Paste clipboard"
 msgid "Paste Clipboard"
 msgstr "Zalijepi međuspremnik"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 msgid "Undo"
 msgstr "Vrati nazad"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 msgid "Redo"
 msgstr "Vrati naprijed"
 
@@ -1993,7 +1986,7 @@ msgstr ""
 msgid "Open Workspace Folder"
 msgstr "Radni prostor"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:700
+#: crates/rnote-ui/src/appwindow/actions.rs:794
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -2004,18 +1997,18 @@ msgstr "Radni prostor"
 msgid "Saving document failed"
 msgstr "Izvoz stranica dokumenta"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:791
+#: crates/rnote-ui/src/appwindow/actions.rs:885
 msgid "Printing document failed"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/actions.rs:868
+#: crates/rnote-ui/src/appwindow/actions.rs:962
 #, fuzzy
 #| msgid "Export _selection"
 msgid "Exporting selection failed, nothing selected"
 msgstr "Izvoz izbora"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-msgid "Saves are in progress, waiting before closing.."
+msgid "Saves are in progress, waiting before closing..."
 msgstr ""
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
@@ -2092,7 +2085,7 @@ msgid "Inserting text failed"
 msgstr "Izvoz stranica dokumenta"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:29
+#: crates/rnote-ui/src/dialogs/import.rs:30
 msgid ".rnote"
 msgstr ""
 
@@ -2219,48 +2212,48 @@ msgstr "Izvod konfiguracije pogona"
 msgid "Exported engine config successfully"
 msgstr "Izvod konfiguracije pogona"
 
-#: crates/rnote-ui/src/dialogs/import.rs:35
+#: crates/rnote-ui/src/dialogs/import.rs:36
 msgid "Open File"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:85
+#: crates/rnote-ui/src/dialogs/import.rs:86
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
-#: crates/rnote-ui/src/dialogs/import.rs:412
+#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:418
 msgid "- no file name -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:417
+#: crates/rnote-ui/src/dialogs/import.rs:425
 msgid "- no title -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:420
+#: crates/rnote-ui/src/dialogs/import.rs:430
 msgid "- no author -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:424
-msgid "- no date -"
+#: crates/rnote-ui/src/dialogs/import.rs:437
+msgid "- no modification date -"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "Title:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:432
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Author:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:433
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Modification date:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:434
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Pages:"
 msgstr ""
 
@@ -2826,6 +2819,11 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Shaper"
+#~ msgid "Page Borders"
+#~ msgstr "Oblikovač"
 
 #, fuzzy
 #~| msgid "Shaper"

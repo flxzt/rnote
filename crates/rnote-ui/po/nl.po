@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-06 15:24+0200\n"
+"POT-Creation-Date: 2026-02-14 14:56+0100\n"
 "PO-Revision-Date: 2025-06-12 10:05+0000\n"
 "Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Dutch <https://hosted.weblate.org/projects/rnote/repo/nl/>\n"
@@ -97,7 +97,7 @@ msgstr "Dit zal het gehele werkblad leegmaken. Bevestig deze actie."
 #: crates/rnote-ui/data/ui/dialogs/export.ui:183
 #: crates/rnote-ui/data/ui/dialogs/export.ui:423
 #: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:213
+#: crates/rnote-ui/data/ui/dialogs/import.ui:207
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "Annuleren"
@@ -448,8 +448,8 @@ msgid "Import Pdf"
 msgstr "PDF-bestand importeren"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:218
-#: crates/rnote-ui/src/dialogs/import.rs:93
+#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/src/dialogs/import.rs:94
 msgid "Import"
 msgstr "Importeren"
 
@@ -521,47 +521,39 @@ msgstr "Vector"
 msgid "Bitmap"
 msgstr "Bitmap"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:169
-msgid "Page Borders"
-msgstr "Pagina­randen"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:170
-msgid "Whether the pages have drawn borders"
-msgstr "Of de pagina's getekende randen hebben"
-
-#: crates/rnote-ui/data/ui/dialogs/import.ui:204
+#: crates/rnote-ui/data/ui/dialogs/import.ui:198
 msgid "Import Xournal++ File"
 msgstr "Xournal++-bestand importeren"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:247
+#: crates/rnote-ui/data/ui/dialogs/import.ui:241
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++-importvoorkeuren"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:251
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "DPI"
 msgstr "Dpi"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:252
+#: crates/rnote-ui/data/ui/dialogs/import.ui:246
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Stel de gewenste dpi-waarde van het Xournal++-bestand in"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:267
 msgid "is password protected"
 msgstr "is wachtwoordbeveiligd"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:276
+#: crates/rnote-ui/data/ui/dialogs/import.ui:270
 msgid "Encrypted PDF"
 msgstr "Gecodeerd PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:279
+#: crates/rnote-ui/data/ui/dialogs/import.ui:273
 msgid "_Cancel"
 msgstr "_Annuleren"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:280
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "_Unlock"
 msgstr "_Klok"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:291
+#: crates/rnote-ui/data/ui/dialogs/import.ui:285
 msgid "Enter the PDF password"
 msgstr "Voer het wachtwoord van PDF in"
 
@@ -785,7 +777,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "Inverteer de kleurhelderheid van alle geselecteerde streken"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 msgid "Duplicate Selection"
 msgstr "Selectie dupliceren"
 
@@ -1014,34 +1006,37 @@ msgid "Reset Text Attributes"
 msgstr "Tekstattributen herstellen"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr "Vetgedrukt"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:88
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr "Cursief"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr "Onderstrepen"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
 msgid "Strikethrough"
 msgstr "Doorhalen"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:128
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
 msgid "Align Left"
 msgstr "Links uitlĳnen"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
 msgid "Align Center"
 msgstr "Centreren"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
 msgid "Align Right"
 msgstr "Rechts uitlĳnen"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:149
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
 msgid "Fill"
 msgstr "Vullen"
 
@@ -1276,7 +1271,7 @@ msgid "Fill Color"
 msgstr "Opvulkleur"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:37
+#: crates/rnote-ui/src/dialogs/import.rs:38
 msgid "Open"
 msgstr "Openen"
 
@@ -1865,31 +1860,31 @@ msgid "Print Document"
 msgstr "Document afdrukken"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:91
+#: crates/rnote-ui/src/dialogs/import.rs:92
 msgid "Import File"
 msgstr "Bestand importeren"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Drawing"
 msgstr "Tekening"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:224
+#: crates/rnote-ui/data/ui/shortcuts.ui:242
 msgid "Copy to Clipboard"
 msgstr "Kopiëren naar klembord"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:230
+#: crates/rnote-ui/data/ui/shortcuts.ui:248
 msgid "Cut to Clipboard"
 msgstr "Knippen naar klembord"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:236
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 msgid "Paste Clipboard"
 msgstr "Klembord plakken"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 msgid "Undo"
 msgstr "Ongedaan maken"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 msgid "Redo"
 msgstr "Opnieuw uitvoeren"
 
@@ -1925,7 +1920,7 @@ msgstr "Map aanmaken"
 msgid "Open Workspace Folder"
 msgstr "Werkmap openen"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:700
+#: crates/rnote-ui/src/appwindow/actions.rs:794
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1934,16 +1929,18 @@ msgstr "Werkmap openen"
 msgid "Saving document failed"
 msgstr "Document opslaan mislukt"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:791
+#: crates/rnote-ui/src/appwindow/actions.rs:885
 msgid "Printing document failed"
 msgstr "Het afdrukken is mislukt"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:868
+#: crates/rnote-ui/src/appwindow/actions.rs:962
 msgid "Exporting selection failed, nothing selected"
 msgstr "Het exporteren is mislukt omdat er geen keuze gemaakt is"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-msgid "Saves are in progress, waiting before closing.."
+#, fuzzy
+#| msgid "Saves are in progress, waiting before closing.."
+msgid "Saves are in progress, waiting before closing..."
 msgstr "Bezig met opslaan, wacht voordat u sluit.."
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
@@ -2012,7 +2009,7 @@ msgid "Inserting text failed"
 msgstr "Het tekstinvoegen is mislukt"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:29
+#: crates/rnote-ui/src/dialogs/import.rs:30
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2107,48 +2104,50 @@ msgstr "Aandrijvingsconfiguratie exporteren mislukt"
 msgid "Exported engine config successfully"
 msgstr "Aandrijvingsconfiguratie succesvol geëxporteerd"
 
-#: crates/rnote-ui/src/dialogs/import.rs:35
+#: crates/rnote-ui/src/dialogs/import.rs:36
 msgid "Open File"
 msgstr "Bestand openen"
 
-#: crates/rnote-ui/src/dialogs/import.rs:85
+#: crates/rnote-ui/src/dialogs/import.rs:86
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, XOPP, TXT"
 
-#: crates/rnote-ui/src/dialogs/import.rs:181
-#: crates/rnote-ui/src/dialogs/import.rs:412
+#: crates/rnote-ui/src/dialogs/import.rs:186
+#: crates/rnote-ui/src/dialogs/import.rs:418
 msgid "- no file name -"
 msgstr "- geen bestandsnaam -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:417
+#: crates/rnote-ui/src/dialogs/import.rs:425
 msgid "- no title -"
 msgstr "- naamloos -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:420
+#: crates/rnote-ui/src/dialogs/import.rs:430
 msgid "- no author -"
 msgstr "- geen auteur -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:424
-msgid "- no date -"
-msgstr "- geen datum -"
+#: crates/rnote-ui/src/dialogs/import.rs:437
+#, fuzzy
+#| msgid "Modification date:"
+msgid "- no modification date -"
+msgstr "Bewerkt op:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"
 msgstr "Bestandsnaam:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "Title:"
 msgstr "Titel:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:432
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Author:"
 msgstr "Auteur:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:433
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Modification date:"
 msgstr "Bewerkt op:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:434
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Pages:"
 msgstr "Aantal pagina's:"
 
@@ -2705,6 +2704,15 @@ msgstr "zwart"
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "wit"
+
+#~ msgid "Page Borders"
+#~ msgstr "Pagina­randen"
+
+#~ msgid "Whether the pages have drawn borders"
+#~ msgstr "Of de pagina's getekende randen hebben"
+
+#~ msgid "- no date -"
+#~ msgstr "- geen datum -"
 
 #~ msgid "Shaper Styles"
 #~ msgstr "Vormbepalingen"

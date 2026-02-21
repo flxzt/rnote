@@ -34,10 +34,11 @@ use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::penevent::{PenEvent, ShortcutKey};
+use rnote_compose::penevent::{KeyboardKey, PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 use snapshot::Snapshotable;
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
@@ -780,13 +781,39 @@ impl Engine {
             | self.update_rendering_current_viewport()
     }
 
-    pub fn trash_selection(&mut self) -> WidgetFlags {
+    pub fn cancel_selection_temporary_pen(&self) -> bool {
         let selection_keys = self.store.selection_keys_as_rendered();
-        self.store.set_trashed_keys(&selection_keys, true);
-        self.current_pen_update_state()
-            | self.doc_resize_autoexpand()
-            | self.record(Instant::now())
-            | self.update_rendering_current_viewport()
+        !selection_keys.is_empty()
+            && self
+                .penholder
+                .pen_mode_state()
+                .take_style_override()
+                .is_some()
+    }
+
+    pub fn trash_selection(&mut self) -> WidgetFlags {
+        // check if we have a selector as a temporary tool and need to change the pen
+        let cancel_selection = self.cancel_selection_temporary_pen();
+        if cancel_selection {
+            // we trigger a delete press event as this reset the pen back to its
+            // original mode and deletes the content
+            let (_, widget_flags) = self.handle_pen_event(
+                rnote_compose::PenEvent::KeyPressed {
+                    keyboard_key: KeyboardKey::Delete,
+                    modifier_keys: HashSet::new(),
+                },
+                None,
+                Instant::now(),
+            );
+            widget_flags
+        } else {
+            let selection_keys = self.store.selection_keys_as_rendered();
+            self.store.set_trashed_keys(&selection_keys, true);
+            self.current_pen_update_state()
+                | self.doc_resize_autoexpand()
+                | self.record(Instant::now())
+                | self.update_rendering_current_viewport()
+        }
     }
 
     pub fn nothing_selected(&self) -> bool {

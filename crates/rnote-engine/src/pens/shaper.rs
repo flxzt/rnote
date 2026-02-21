@@ -62,26 +62,31 @@ impl PenBehaviour for Shaper {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let event_result = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { mut element, .. }) => {
-                engine_view
-                    .config
-                    .pens_config
-                    .shaper_config
-                    .new_style_seeds();
-                element.pos = engine_view
-                    .document
-                    .snap_position(element.pos, engine_view.config);
+                if !engine_view.store.get_cancelled_state() {
+                    // here we need an additional up/down event after a selection
+                    // cancellation
+                    engine_view
+                        .config
+                        .pens_config
+                        .shaper_config
+                        .new_style_seeds();
+                    element.pos = engine_view
+                        .document
+                        .snap_position(element.pos, engine_view.config);
 
-                self.state = ShaperState::BuildShape {
-                    builder: new_builder(
-                        engine_view.config.pens_config.shaper_config.builder_type,
-                        element,
-                        now,
-                    ),
+                    self.state = ShaperState::BuildShape {
+                        builder: new_builder(
+                            engine_view.config.pens_config.shaper_config.builder_type,
+                            element,
+                            now,
+                        ),
+                    };
                 };
 
                 EventResult {
@@ -177,17 +182,19 @@ impl PenBehaviour for Shaper {
                             .gen_style_for_current_options();
 
                         let shapes_emitted = !shapes.is_empty();
-                        for shape in shapes {
-                            let key = engine_view.store.insert_stroke(
-                                Stroke::ShapeStroke(ShapeStroke::new(shape, style.clone())),
-                                None,
-                            );
-                            style.advance_seed();
-                            engine_view.store.regenerate_rendering_for_stroke(
-                                key,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
+                        if shapes_emitted {
+                            for shape in shapes {
+                                let key = engine_view.store.insert_stroke(
+                                    Stroke::ShapeStroke(ShapeStroke::new(shape, style.clone())),
+                                    None,
+                                );
+                                style.advance_seed();
+                                engine_view.store.regenerate_rendering_for_stroke(
+                                    key,
+                                    engine_view.camera.viewport(),
+                                    engine_view.camera.image_scale(),
+                                );
+                            }
                         }
 
                         self.state = ShaperState::Idle;

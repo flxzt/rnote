@@ -9,13 +9,14 @@ use gtk4::{
 };
 use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::SplitOrder;
-use rnote_compose::penevent::ShortcutKey;
+use rnote_compose::penevent::{KeyboardKey, ShortcutKey};
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::strokes::resize::{ImageSizeOption, Resize};
 use rnote_engine::strokes::textstroke::TextAttribute;
 use rnote_engine::{Camera, Engine};
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
@@ -452,7 +453,23 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                let widget_flags = canvas.engine_mut().trash_selection();
+                // check if we have a selector as a temporary tool and need to change the pen
+                let cancel_selection = canvas.engine_ref().cancel_selection_temporary_pen();
+                let widget_flags = if cancel_selection {
+                    // trigger an event for a KeyboardPress::Delete : this both deletes the selection
+                    // and resets the pen back to its previous mode
+                    let (_, widget_flags) = canvas.engine_mut().handle_pen_event(
+                        rnote_compose::PenEvent::KeyPressed {
+                            keyboard_key: KeyboardKey::Delete,
+                            modifier_keys: HashSet::new(),
+                        },
+                        None,
+                        Instant::now(),
+                    );
+                    widget_flags
+                } else {
+                    canvas.engine_mut().trash_selection()
+                };
                 appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));

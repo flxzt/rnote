@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+    width="16"
+    height="16"
+    fill="#bebebe"
+    version="1.1"
+    xml:space="preserve"
+    id="svg1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg"><defs 
+        id="defs1" />
+    <g
+        id="SVGRepo_iconCarrier"
+        transform="matrix(0.61311498,0,0,0.61311498,0.39737425,0.64262024)">
+        <path
+            d="M 10,4 H 6 V 1 H 5 V 4 H 1 V 5 H 5 V 9 H 1 v 1 h 4 v 4 H 1 v 1 h 4 v 4 H 1 v 1 h 4 v 3 h 1 v -3 h 4 v 3 h 1 V 1 H 10 Z M 6,5 h 4 V 9 H 6 Z m 0,5 h 4 v 4 H 6 Z m 0,9 v -4 h 4 v 4 z M 17.8,6 H 12 v 4 h 5.8 a 2,2 0 0 1 0,4 H 12 v 4 h 5.8 a 6,6 0 0 0 0,-12 z M 13,7 h 2 v 2 h -2 z m 0,8 h 2 v 2 h -2 z m 4.8,2 H 16 v -2 h 1.8 a 3,3 0 0 0 0,-6 H 16 V 7 h 1.8 a 5,5 0 0 1 0,10 z"
+            style="color:#000000;fill:#353535;fill-opacity:1;stroke-width:0.0024"
+            id="path1" />
+        </g>
+</svg>

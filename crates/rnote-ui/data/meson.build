@@ -264,6 +264,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/shapebuilder-quadrantcoordsystem2d-symbolic.svg',
     'icons/scalable/actions/shapebuilder-rectangle-symbolic.svg',
     'icons/scalable/actions/sidebar-reveal-symbolic.svg',
+    'icons/scalable/actions/snap-to-grid-symbolic.svg',
     'icons/scalable/actions/stroke-color-symbolic.svg',
     'icons/scalable/actions/stylus-button-eraser-symbolic.svg',
     'icons/scalable/actions/stylus-button-primary-symbolic.svg',

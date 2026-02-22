@@ -38,6 +38,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) save_in_progress: Cell<bool>,
     pub(crate) save_in_progress_toast: RefCell<Option<adw::Toast>>,
     pub(crate) close_in_progress: Cell<bool>,
+    pub(crate) typst_editor_open: Cell<bool>,
 
     #[template_child]
     pub(crate) overview: TemplateChild<adw::TabOverview>,
@@ -77,6 +78,7 @@ impl Default for RnAppWindow {
             save_in_progress: Cell::new(false),
             save_in_progress_toast: RefCell::new(None),
             close_in_progress: Cell::new(false),
+            typst_editor_open: Cell::new(false),
 
             overview: TemplateChild::<adw::TabOverview>::default(),
             main_header: TemplateChild::<RnMainHeader>::default(),

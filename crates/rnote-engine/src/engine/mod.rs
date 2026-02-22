@@ -24,6 +24,7 @@ use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
 use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
+use crate::strokes::Stroke;
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{AudioPlayer, SelectionCollision, WidgetFlags};
@@ -81,7 +82,6 @@ pub struct EngineViewMut<'a> {
     pub camera: &'a mut Camera,
     pub audioplayer: &'a mut Option<AudioPlayer>,
     pub animation: &'a mut Animation,
-    pub clicked_typst_stroke: &'a mut Option<(StrokeKey, String)>,
 }
 
 /// Constructs an `EngineViewMut` from an identifier containing an `Engine` instance.
@@ -90,7 +90,6 @@ macro_rules! engine_view_mut {
     ($engine:ident) => {
         $crate::engine::EngineViewMut {
             tasks_tx: $engine.tasks_tx.clone(),
-            clicked_typst_stroke: &mut $engine.clicked_typst_stroke,
             config: &mut $engine.config.write(),
             document: &mut $engine.document,
             store: &mut $engine.store,
@@ -209,9 +208,6 @@ pub struct Engine {
     #[cfg(feature = "ui")]
     #[serde(skip)]
     origin_indicator_rendernode: Option<gtk4::gsk::RenderNode>,
-    // Clicked Typst stroke for editing
-    #[serde(skip)]
-    clicked_typst_stroke: Option<(StrokeKey, String)>,
 }
 
 impl Default for Engine {
@@ -235,7 +231,6 @@ impl Default for Engine {
             origin_indicator_image: None,
             #[cfg(feature = "ui")]
             origin_indicator_rendernode: None,
-            clicked_typst_stroke: None,
         }
     }
 }
@@ -272,9 +267,13 @@ impl Engine {
         self.tasks_rx.take()
     }
 
-    /// Takes the clicked Typst stroke if any, clearing it from the engine.
-    pub fn take_clicked_typst_stroke(&mut self) -> Option<(StrokeKey, String)> {
-        self.clicked_typst_stroke.take()
+    /// Returns the Typst source code for a stroke, if it is a VectorImage with Typst source.
+    pub fn typst_source_for_stroke(&self, key: StrokeKey) -> Option<String> {
+        if let Some(Stroke::VectorImage(vi)) = self.store.get_stroke_ref(key) {
+            vi.typst_source.clone()
+        } else {
+            None
+        }
     }
 
     /// Whether pen sounds are enabled.

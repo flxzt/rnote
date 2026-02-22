@@ -3,7 +3,12 @@ use crate::RnAppWindow;
 use crate::canvas::RnCanvas;
 use adw::prelude::*;
 use glib::timeout_add_local_once;
-use gtk4::{Builder, Button, Picture, TextView, gio, glib, glib::clone};
+use gtk4::{Builder, Button, Picture, TextView, glib, glib::clone};
+use p2d::bounding_volume::Aabb;
+use rnote_engine::strokes::Content;
+use rnote_engine::strokes::VectorImage;
+use rnote_engine::strokes::content::GeneratedContentImages;
+use rnote_engine::strokes::resize::ImageSizeOption;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
@@ -214,58 +219,22 @@ pub(crate) async fn dialog_typst_editor(
     dialog.present(Some(appwindow));
 }
 
-fn svg_to_texture(svg: &str) -> anyhow::Result<gdk4::Texture> {
-    // Parse the SVG using librsvg
-    let bytes = glib::Bytes::from(svg.as_bytes());
-    let stream = gio::MemoryInputStream::from_bytes(&bytes);
-
-    let handle = rsvg::Loader::new()
-        .read_stream(&stream, None::<&gio::File>, None::<&gio::Cancellable>)
-        .map_err(|e| anyhow::anyhow!("Failed to load SVG: {e}"))?;
-
-    let renderer = rsvg::CairoRenderer::new(&handle);
-
-    // Get the intrinsic dimensions to calculate aspect ratio
-    let (intrinsic_width, intrinsic_height) = renderer
-        .intrinsic_size_in_pixels()
-        .unwrap_or((800.0, 600.0));
-
-    let (width, height) = (intrinsic_width * 2.0, intrinsic_height * 2.0);
-    let width = width.ceil() as i32;
-    let height = height.ceil() as i32;
-
-    // Create a surface and render the SVG at the higher resolution
-    let mut surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
-        .map_err(|e| anyhow::anyhow!("Failed to create surface: {e}"))?;
-
-    {
-        let cr = cairo::Context::new(&surface)
-            .map_err(|e| anyhow::anyhow!("Failed to create context: {e}"))?;
-
-        renderer
-            .render_document(
-                &cr,
-                &cairo::Rectangle::new(0.0, 0.0, width as f64, height as f64),
-            )
-            .map_err(|e| anyhow::anyhow!("Failed to render SVG: {e}"))?;
-    } // Drop cr context here to release the borrow on surface
-
-    // Convert cairo surface to GdkTexture using MemoryTexture
-    let stride = surface.stride();
-
-    let data = surface
-        .data()
-        .map_err(|e| anyhow::anyhow!("Failed to get surface data: {e}"))?;
-
-    let bytes = glib::Bytes::from(&data[..]);
-
-    let texture = gdk4::MemoryTexture::new(
-        width,
-        height,
-        gdk4::MemoryFormat::B8g8r8a8,
-        &bytes,
-        stride as usize,
-    );
-
-    Ok(texture.upcast())
+fn svg_to_texture(svg: &str) -> anyhow::Result<gtk4::gdk::Texture> {
+    let image_scale = 2.0;
+    let vectorimage = VectorImage::from_svg_str(
+        svg,
+        na::Vector2::zeros(),
+        ImageSizeOption::RespectOriginalSize,
+    )?;
+    let viewport = Aabb::new(na::point![-1e10, -1e10], na::point![1e10, 1e10]);
+    let images = vectorimage.gen_images(viewport, image_scale)?;
+    let image = match images {
+        GeneratedContentImages::Full(imgs)
+        | GeneratedContentImages::Partial { images: imgs, .. } => imgs
+            .into_iter()
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("No images generated from SVG"))?,
+    };
+    let memtexture = image.to_memtexture()?;
+    Ok(memtexture.upcast())
 }

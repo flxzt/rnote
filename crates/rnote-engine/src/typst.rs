@@ -1,4 +1,5 @@
 // Imports
+use chrono::Datelike;
 use std::sync::OnceLock;
 use typst::Library;
 use typst::LibraryExt;
@@ -132,7 +133,18 @@ impl World for TypstWorld {
         self.fonts.get(index).cloned()
     }
 
-    fn today(&self, _offset: Option<i64>) -> Option<Datetime> {
-        Datetime::from_ymd(2024, 1, 1)
+    fn today(&self, offset: Option<i64>) -> Option<Datetime> {
+        let now = chrono::Local::now();
+        let now = if let Some(offset) = offset {
+            now.with_timezone(&chrono::FixedOffset::east_opt(offset as i32 * 3600)?)
+                .naive_local()
+        } else {
+            now.naive_local()
+        };
+        Datetime::from_ymd(
+            now.year(),
+            now.month().try_into().ok()?,
+            now.day().try_into().ok()?,
+        )
     }
 }

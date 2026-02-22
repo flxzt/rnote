@@ -366,12 +366,6 @@ impl Engine {
         pos: na::Vector2<f64>,
         typst_source: Option<String>,
     ) -> WidgetFlags {
-        let mut widget_flags = WidgetFlags::default();
-
-        // Deselect all strokes
-        let all_strokes = self.store.stroke_keys_as_rendered();
-        self.store.set_selected_keys(&all_strokes, false);
-
         // Create VectorImage from SVG
         match VectorImage::from_svg_str(&svg_data, pos, ImageSizeOption::RespectOriginalSize) {
             Ok(mut vectorimage) => {
@@ -379,25 +373,13 @@ impl Engine {
                 vectorimage.typst_source = typst_source;
 
                 let stroke = Stroke::VectorImage(vectorimage);
-                let stroke_key = self.store.insert_stroke(stroke, None);
-
-                self.store.regenerate_rendering_for_stroke(
-                    stroke_key,
-                    self.camera.viewport(),
-                    self.camera.image_scale(),
-                );
-
-                widget_flags |= self.store.record(Instant::now());
-                widget_flags.resize = true;
-                widget_flags.redraw = true;
-                widget_flags.store_modified = true;
+                self.import_generated_content(vec![(stroke, None)], false)
             }
             Err(e) => {
                 error!("Failed to import SVG image: {e:?}");
+                WidgetFlags::default()
             }
         }
-
-        widget_flags
     }
 
     /// Update an existing Typst stroke with new SVG data and source code.
@@ -410,53 +392,8 @@ impl Engine {
         let mut widget_flags = WidgetFlags::default();
 
         if let Some(Stroke::VectorImage(vectorimage)) = self.store.get_stroke_mut(stroke_key) {
-            // Store the old intrinsic size, cuboid size, and transform
-            let old_cuboid_size = vectorimage.rectangle.cuboid.half_extents * 2.0;
-            let old_transform = vectorimage.rectangle.transform;
-
-            // Create new VectorImage to get the new intrinsic size
-            match VectorImage::from_svg_str(
-                &svg_data,
-                na::Vector2::zeros(),
-                ImageSizeOption::RespectOriginalSize,
-            ) {
-                Ok(mut new_vectorimage) => {
-                    let new_intrinsic_size = new_vectorimage.intrinsic_size;
-
-                    // Calculate width scale factor based on old cuboid width vs new intrinsic width
-                    let width_scale_factor = if new_intrinsic_size[0] > 0.0 {
-                        old_cuboid_size[0] / new_intrinsic_size[0]
-                    } else {
-                        1.0
-                    };
-
-                    // Apply the scale factor to both dimensions to maintain aspect ratio
-                    let new_cuboid_size = na::vector![
-                        new_intrinsic_size[0] * width_scale_factor,
-                        new_intrinsic_size[1] * width_scale_factor
-                    ];
-
-                    // Calculate height difference to adjust position
-                    let height_diff = new_cuboid_size[1] - old_cuboid_size[1];
-
-                    // Set the new cuboid size
-                    new_vectorimage.rectangle.cuboid =
-                        p2d::shape::Cuboid::new(new_cuboid_size * 0.5);
-
-                    // Restore the original transform and adjust for height change
-                    new_vectorimage.rectangle.transform = old_transform;
-                    // Adjust y position to make it look like text was written further
-                    new_vectorimage
-                        .rectangle
-                        .transform
-                        .append_translation_mut(na::vector![0.0, height_diff * 0.5]);
-
-                    // Store the Typst source
-                    new_vectorimage.typst_source = Some(typst_source);
-
-                    // Update the stroke
-                    *vectorimage = new_vectorimage;
-
+            match vectorimage.update_from_svg(&svg_data, Some(typst_source)) {
+                Ok(()) => {
                     self.store.regenerate_rendering_for_stroke(
                         stroke_key,
                         self.camera.viewport(),

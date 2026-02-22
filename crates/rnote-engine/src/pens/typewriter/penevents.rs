@@ -47,10 +47,9 @@ impl Typewriter {
                     if let Some(Stroke::VectorImage(vectorimage)) =
                         engine_view.store.get_stroke_ref(stroke_key)
                     {
-                        if let Some(ref typst_source) = vectorimage.typst_source {
-                            // Signal to UI that a Typst element was clicked for editing
-                            *engine_view.clicked_typst_stroke =
-                                Some((stroke_key, typst_source.clone()));
+                        if vectorimage.typst_source.is_some() {
+                            // Note the typst stroke on pen-down; we'll signal the editor on pen-up
+                            self.pending_typst_stroke = Some(stroke_key);
                             // Don't change state, just let UI handle opening the dialog
                         }
                     }
@@ -392,6 +391,11 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         self.pos = Some(element.pos);
+
+        // If a typst stroke was noted on pen-down, signal the UI to open the editor
+        if let Some(stroke_key) = self.pending_typst_stroke.take() {
+            widget_flags.open_typst_editor = Some(stroke_key);
+        }
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {

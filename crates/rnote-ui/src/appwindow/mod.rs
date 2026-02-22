@@ -11,7 +11,7 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
-use gtk4::{Application, IconTheme, Widget, gdk, gio, glib, glib::clone};
+use gtk4::{Application, IconTheme, Widget, gdk, gio, glib};
 use rnote_compose::Color;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
@@ -336,30 +336,23 @@ impl RnAppWindow {
             canvas.set_text_preprocessing(enable_text_preprocessing);
         }
         if let Some(stroke_key) = widget_flags.open_typst_editor {
-            // Prevent opening multiple editors at the same time
-            if !self.imp().typst_editor_open.get() {
-                // Look up the typst source from the stroke
-                let typst_source = canvas.engine_ref().typst_source_for_stroke(stroke_key);
+            let was_open = self.imp().typst_editor_open.get();
+            self.imp().typst_editor_open.set(true);
+            if was_open {
+                return;
+            }
+            
+            let typst_source = canvas.engine_ref().typst_source_for_stroke(stroke_key);
 
-                if typst_source.is_some() {
-                    self.imp().typst_editor_open.set(true);
-                    glib::spawn_future_local(clone!(
-                        #[weak(rename_to = appwindow)]
-                        self,
-                        #[weak]
-                        canvas,
-                        async move {
-                            crate::dialogs::typsteditor::dialog_typst_editor(
-                                &appwindow,
-                                &canvas,
-                                typst_source,
-                                Some(stroke_key),
-                            )
-                            .await;
-                            appwindow.imp().typst_editor_open.set(false);
-                        }
-                    ));
-                }
+            if typst_source.is_some() {
+                crate::dialogs::typsteditor::dialog_typst_editor(
+                    self,
+                    &canvas,
+                    typst_source,
+                    Some(stroke_key),
+                );
+            } else {
+                self.imp().typst_editor_open.set(false);
             }
         }
     }

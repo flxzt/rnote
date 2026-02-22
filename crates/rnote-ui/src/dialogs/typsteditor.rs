@@ -1,14 +1,15 @@
 // Imports
-use crate::RnAppWindow;
 use crate::canvas::RnCanvas;
+use crate::RnAppWindow;
 use adw::prelude::*;
+use adw::subclass::prelude::ObjectSubclassIsExt;
 use glib::timeout_add_local_once;
-use gtk4::{Builder, Button, Picture, TextView, glib, glib::clone};
+use gtk4::{glib, glib::clone, Builder, Button, Picture, TextView};
 use p2d::bounding_volume::Aabb;
-use rnote_engine::strokes::Content;
-use rnote_engine::strokes::VectorImage;
 use rnote_engine::strokes::content::GeneratedContentImages;
 use rnote_engine::strokes::resize::ImageSizeOption;
+use rnote_engine::strokes::Content;
+use rnote_engine::strokes::VectorImage;
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::time::Duration;
@@ -22,7 +23,7 @@ This is a *bold* text and _italic_ text.
 
 $ sum_(i=1)^n i = (n(n+1))/2 $"#;
 
-pub(crate) async fn dialog_typst_editor(
+pub(crate) fn dialog_typst_editor(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     initial_source: Option<String>,
@@ -210,6 +211,15 @@ pub(crate) async fn dialog_typst_editor(
 
                 dialog.force_close();
             }
+        }
+    ));
+
+    // Reset the typst_editor_open flag when the dialog actually closes
+    dialog.connect_closed(clone!(
+        #[weak]
+        appwindow,
+        move |_| {
+            appwindow.imp().typst_editor_open.set(false);
         }
     ));
 

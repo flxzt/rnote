@@ -1,8 +1,8 @@
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    Button, CompositeTemplate, EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
-    Widget, glib, glib::clone, pango, prelude::*, subclass::prelude::*,
+    glib, glib::clone, pango, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
+    EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton, Widget,
 };
 use rnote_engine::strokes::textstroke::{TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
@@ -184,26 +184,20 @@ impl RnTypewriterPage {
             }
         ));
 
-        // Typst editor button
         imp.typst_editor_button.connect_clicked(clone!(
             #[weak]
             appwindow,
             move |_| {
+                let was_open = appwindow.imp().typst_editor_open.get();
+                appwindow.imp().typst_editor_open.set(true);
+                if was_open {
+                    return;
+                }
                 let Some(canvas) = appwindow.active_tab_canvas() else {
+                    appwindow.imp().typst_editor_open.set(false);
                     return;
                 };
-                glib::spawn_future_local(clone!(
-                    #[weak]
-                    appwindow,
-                    #[weak]
-                    canvas,
-                    async move {
-                        crate::dialogs::typsteditor::dialog_typst_editor(
-                            &appwindow, &canvas, None, None,
-                        )
-                        .await;
-                    }
-                ));
+                crate::dialogs::typsteditor::dialog_typst_editor(&appwindow, &canvas, None, None);
             }
         ));
 

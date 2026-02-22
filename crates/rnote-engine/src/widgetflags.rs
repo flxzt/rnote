@@ -1,3 +1,5 @@
+use crate::store::StrokeKey;
+
 /// Flags returned to the UI widget that holds the engine.
 #[must_use]
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -26,6 +28,8 @@ pub struct WidgetFlags {
     /// Meaning, when enabled instead of key events, text events are then emitted
     /// for regular unicode text. Used when writing text with the typewriter.
     pub enable_text_preprocessing: Option<bool>,
+    /// When Some, signals that a Typst editor should be opened for the given stroke key.
+    pub open_typst_editor: Option<StrokeKey>,
 }
 
 impl Default for WidgetFlags {
@@ -42,6 +46,7 @@ impl Default for WidgetFlags {
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
+            open_typst_editor: None,
         }
     }
 }
@@ -73,6 +78,9 @@ impl std::ops::BitOrAssign for WidgetFlags {
         }
         if rhs.enable_text_preprocessing.is_some() {
             self.enable_text_preprocessing = rhs.enable_text_preprocessing;
+        }
+        if rhs.open_typst_editor.is_some() {
+            self.open_typst_editor = rhs.open_typst_editor;
         }
     }
 }

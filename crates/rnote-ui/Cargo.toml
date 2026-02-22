@@ -14,6 +14,8 @@ rnote-compose = { workspace = true }
 rnote-engine = { workspace = true, features = ["ui"] }
 
 adw = { workspace = true }
+gdk4 = { workspace = true }
+gdk-pixbuf = { workspace = true }
 anyhow = { workspace = true }
 approx = { workspace = true }
 async-fs = { workspace = true }
@@ -29,6 +31,7 @@ ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }
 kurbo = { workspace = true }
+librsvg = { workspace = true }
 nalgebra = { workspace = true }
 notify-debouncer-full = { workspace = true }
 num-derive = { workspace = true }
@@ -54,6 +57,8 @@ svg = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+typst = { workspace = true }
+typst-svg = { workspace = true }
 unicode-segmentation = { workspace = true }
 url = { workspace = true }
 

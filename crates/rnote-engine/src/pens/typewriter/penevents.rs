@@ -43,8 +43,18 @@ impl Typewriter {
                     .stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
                     .last()
                 {
+                    // Check if clicked on a Typst VectorImage
+                    if let Some(Stroke::VectorImage(vectorimage)) =
+                        engine_view.store.get_stroke_ref(stroke_key)
+                    {
+                        if vectorimage.typst_source.is_some() {
+                            // Note the typst stroke on pen-down; we'll signal the editor on pen-up
+                            self.pending_typst_stroke = Some(stroke_key);
+                            // Don't change state, just let UI handle opening the dialog
+                        }
+                    }
                     // When clicked on a textstroke, we start modifying it
-                    if let Some(Stroke::TextStroke(textstroke)) =
+                    else if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(stroke_key)
                     {
                         let cursor = if let Ok(new_cursor) =
@@ -381,6 +391,11 @@ impl Typewriter {
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
         self.pos = Some(element.pos);
+
+        // If a typst stroke was noted on pen-down, signal the UI to open the editor
+        if let Some(stroke_key) = self.pending_typst_stroke.take() {
+            widget_flags.open_typst_editor = Some(stroke_key);
+        }
 
         let event_result = match &mut self.state {
             TypewriterState::Idle => EventResult {

@@ -24,6 +24,7 @@ use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
 use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
+use crate::strokes::Stroke;
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{AudioPlayer, SelectionCollision, WidgetFlags};
@@ -264,6 +265,15 @@ impl Engine {
 
     pub fn take_engine_tasks_rx(&mut self) -> Option<EngineTaskReceiver> {
         self.tasks_rx.take()
+    }
+
+    /// Returns the Typst source code for a stroke, if it is a VectorImage with Typst source.
+    pub fn typst_source_for_stroke(&self, key: StrokeKey) -> Option<String> {
+        if let Some(Stroke::VectorImage(vi)) = self.store.get_stroke_ref(key) {
+            vi.typst_source.clone()
+        } else {
+            None
+        }
     }
 
     /// Whether pen sounds are enabled.

@@ -1,8 +1,8 @@
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    Button, CompositeTemplate, EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton,
-    Widget, glib, glib::clone, pango, prelude::*, subclass::prelude::*,
+    glib, glib::clone, pango, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
+    EmojiChooser, FontDialog, MenuButton, SpinButton, ToggleButton, Widget,
 };
 use rnote_engine::strokes::textstroke::{TextAlignment, TextAttribute, TextStyle};
 use std::cell::RefCell;
@@ -24,6 +24,8 @@ mod imp {
         pub(crate) emojichooser_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub(crate) emojichooser: TemplateChild<EmojiChooser>,
+        #[template_child]
+        pub(crate) typst_editor_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) text_reset_button: TemplateChild<Button>,
         #[template_child]
@@ -179,6 +181,23 @@ impl RnTypewriterPage {
                 };
                 let widget_flags = canvas.engine_mut().insert_text(emoji_str.to_string(), None);
                 appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        imp.typst_editor_button.connect_clicked(clone!(
+            #[weak]
+            appwindow,
+            move |_| {
+                let was_open = appwindow.imp().typst_editor_open.get();
+                appwindow.imp().typst_editor_open.set(true);
+                if was_open {
+                    return;
+                }
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    appwindow.imp().typst_editor_open.set(false);
+                    return;
+                };
+                crate::dialogs::typsteditor::dialog_typst_editor(&appwindow, &canvas, None, None);
             }
         ));
 

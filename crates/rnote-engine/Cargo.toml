@@ -58,6 +58,9 @@ usvg = { workspace = true }
 xmlwriter = { workspace = true }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true, optional = true }
+typst = { workspace = true, optional = true }
+typst-kit = { workspace = true, optional = true }
+typst-svg = { workspace = true, optional = true }
 
 [dev-dependencies]
 approx = { workspace = true }
@@ -65,4 +68,4 @@ approx = { workspace = true }
 [features]
 cli = ["dep:clap"]
 default = []
-ui = ["dep:gtk4"]
+ui = ["dep:gtk4", "dep:typst", "dep:typst-kit", "dep:typst-svg"]

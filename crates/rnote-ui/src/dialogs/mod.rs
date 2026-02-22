@@ -1,6 +1,7 @@
 // Modules
 pub(crate) mod export;
 pub(crate) mod import;
+pub(crate) mod typsteditor;
 
 // Imports
 use crate::appwindow::RnAppWindow;

@@ -21,7 +21,7 @@ use rnote_compose::Color;
 use rnote_compose::penevent::ShortcutKey;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "pens_config")]
 pub struct PensConfig {
     #[serde(default, rename = "brush_config")]
@@ -43,6 +43,22 @@ pub struct PensConfig {
     pub pen_mode_pen_style: PenStyle,
     #[serde(rename = "pen_mode_eraser_style")]
     pub pen_mode_eraser_style: PenStyle,
+}
+
+impl Default for PensConfig {
+    fn default() -> Self {
+        Self {
+            brush_config: BrushConfig::default(),
+            shaper_config: ShaperConfig::default(),
+            typewriter_config: TypewriterConfig::default(),
+            eraser_config: EraserConfig::default(),
+            selector_config: SelectorConfig::default(),
+            tools_config: ToolsConfig::default(),
+            shortcuts: Shortcuts::default(),
+            pen_mode_pen_style: PenStyle::default(),
+            pen_mode_eraser_style: PenStyle::Eraser,
+        }
+    }
 }
 
 impl PensConfig {

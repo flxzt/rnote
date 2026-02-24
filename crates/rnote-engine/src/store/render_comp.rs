@@ -1,9 +1,10 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
+use crate::Image;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::Content;
 use crate::strokes::content::GeneratedContentImages;
-use crate::{Drawable, render};
+use crate::{Drawable, image};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shapeable;
@@ -29,7 +30,7 @@ impl Default for RenderCompState {
 #[derive(Debug, Clone)]
 pub struct RenderComponent {
     pub(super) state: RenderCompState,
-    pub(super) images: Vec<render::Image>,
+    pub(super) images: Vec<Image>,
     #[cfg(feature = "ui")]
     pub(super) rendernodes: Vec<gtk4::gsk::RenderNode>,
 }
@@ -110,12 +111,12 @@ impl StrokeStore {
             }
 
             let viewport_extended =
-                viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             match stroke.gen_images(viewport_extended, image_scale) {
                 Ok(GeneratedContentImages::Partial { images, viewport }) => {
                     #[cfg(feature = "ui")]
-                    match render::Image::images_to_rendernodes(&images) {
+                    match Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
                             render_comp.images = images;
@@ -136,7 +137,7 @@ impl StrokeStore {
                 }
                 Ok(GeneratedContentImages::Full(images)) => {
                     #[cfg(feature = "ui")]
-                    match render::Image::images_to_rendernodes(&images) {
+                    match Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
                             render_comp.images = images;
@@ -190,7 +191,7 @@ impl StrokeStore {
 
             let stroke = stroke.clone();
             let viewport_extended =
-                viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             // indicates that a task is now started rendering the stroke
             render_comp.state = RenderCompState::BusyRenderingInTask;
@@ -249,7 +250,7 @@ impl StrokeStore {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
                 let viewport_extended =
-                    viewport.extend_by(viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                    viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
                 // skip and clear image buffer if stroke is not in viewport
                 if !viewport_extended.intersects(&stroke_bounds) {
@@ -277,7 +278,7 @@ impl StrokeStore {
                             if old_viewport.contains(
                                 &(viewport.extend_by(
                                     viewport.extents()
-                                        * render::VIEWPORT_EXTENTS_MARGIN_FACTOR
+                                        * image::VIEWPORT_EXTENTS_MARGIN_FACTOR
                                         * VIEWPORT_EXTENTS_MARGIN_RERENDER_THRESHOLD,
                                 )),
                             ) {
@@ -344,7 +345,7 @@ impl StrokeStore {
                     match brushstroke.gen_image_for_last_segments(n_last_segments, image_scale) {
                         Ok(Some(image)) => {
                             #[cfg(feature = "ui")]
-                            match render::Image::images_to_rendernodes([&image]) {
+                            match Image::images_to_rendernodes([&image]) {
                                 Ok(mut rendernodes) => {
                                     render_comp.rendernodes.append(&mut rendernodes);
                                     render_comp.images.push(image);
@@ -399,7 +400,7 @@ impl StrokeStore {
             match images {
                 GeneratedContentImages::Partial { images, viewport } => {
                     #[cfg(feature = "ui")]
-                    match render::Image::images_to_rendernodes(&images) {
+                    match Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
                             render_comp.images = images;
@@ -420,7 +421,7 @@ impl StrokeStore {
                 }
                 GeneratedContentImages::Full(images) => {
                     #[cfg(feature = "ui")]
-                    match render::Image::images_to_rendernodes(&images) {
+                    match Image::images_to_rendernodes(&images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
                             render_comp.images = images;
@@ -459,7 +460,7 @@ impl StrokeStore {
                 }
                 | GeneratedContentImages::Full(mut images) => {
                     #[cfg(feature = "ui")]
-                    match render::Image::images_to_rendernodes(&images) {
+                    match Image::images_to_rendernodes(&images) {
                         Ok(mut rendernodes) => {
                             render_comp.rendernodes.append(&mut rendernodes);
                             render_comp.images.append(&mut images);

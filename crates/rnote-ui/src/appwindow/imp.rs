@@ -374,7 +374,7 @@ impl WindowImpl for RnAppWindow {
             self.main_header.headerbar().set_sensitive(false);
             self.sidebar.headerbar().set_sensitive(false);
             obj.overlays().dispatch_toast_text_singleton(
-                &gettext("Saves are in progress, waiting before closing.."),
+                &gettext("Saves are in progress, waiting before closing..."),
                 None,
                 &mut self.save_in_progress_toast.borrow_mut(),
             );

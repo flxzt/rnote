@@ -592,13 +592,13 @@ fn create_human_numeric_sorter() -> CustomSorter {
         let first_file = first_fileinfo.attribute_object("standard::file").unwrap();
         let first_file = first_file.downcast::<gio::File>().unwrap();
         let first_display_name = first_file.basename().unwrap();
-        let first_display_name = first_display_name.to_str().unwrap();
+        let first_display_name = first_display_name.to_str().unwrap_or_default();
 
         let second_fileinfo = obj2.clone().downcast::<gio::FileInfo>().unwrap();
         let second_file = second_fileinfo.attribute_object("standard::file").unwrap();
         let second_file = second_file.downcast::<gio::File>().unwrap();
         let second_display_name = second_file.basename().unwrap();
-        let second_display_name = second_display_name.to_str().unwrap();
+        let second_display_name = second_display_name.to_str().unwrap_or_default();
 
         numeric_sort::cmp(first_display_name, second_display_name).into()
     })

@@ -20,7 +20,7 @@ use crate::engine::EngineSnapshot;
 use crate::strokes::Stroke;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
-use slotmap::{SlotMap, SecondaryMap};
+use slotmap::{SecondaryMap, SlotMap};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use std::time::Instant;

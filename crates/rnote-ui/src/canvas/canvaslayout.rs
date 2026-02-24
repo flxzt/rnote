@@ -5,7 +5,7 @@ use gtk4::{
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use rnote_engine::{Camera, render};
+use rnote_engine::{Camera, image};
 use std::cell::Cell;
 
 mod imp {
@@ -87,7 +87,7 @@ mod imp {
             // still have to `integrate` the resulted textures, which can also take up quite some time on the main UI
             // thread.
             let old_viewport_extended = old_viewport
-                .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
+                .extend_by(old_viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
 
             // always update the background rendering
             let _ = canvas

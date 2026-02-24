@@ -10,7 +10,6 @@
 - Gio (`gio-2.0`)
 - GTK4
 - Libadwaita (`libadwaita-1`)
-- Poppler (`poppler-glib`)
 
 ### Installing Rust
 
@@ -40,7 +39,7 @@ Then, you can install the rest of the required dependencies using the
 `brew install` command.
 
 ```sh
-brew install git ninja meson glib appstream gtk4 poppler desktop-file-utils libadwaita
+brew install git ninja meson glib appstream gtk4 desktop-file-utils libadwaita
 ```
 
 ## Cloning the Repository

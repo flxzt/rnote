@@ -1,5 +1,6 @@
 // Imports
-use crate::render;
+use crate::Image;
+use crate::Svg;
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
@@ -414,7 +415,7 @@ impl Background {
         bounds: Aabb,
         with_pattern: bool,
         optimize_printing: bool,
-    ) -> Result<render::Svg, anyhow::Error> {
+    ) -> Result<Svg, anyhow::Error> {
         let (color, pattern_color) = if optimize_printing {
             if self.color.luma() > 0.5 {
                 // original background color is bright, don't invert pattern color
@@ -491,10 +492,10 @@ impl Background {
         let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
             .context("Converting Svg group node to String failed.")?;
 
-        Ok(render::Svg { svg_data, bounds })
+        Ok(Svg { svg_data, bounds })
     }
 
-    pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
+    pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
         let tile_bounds = Aabb::new(na::point![0.0, 0.0], self.tile_size().into());
         self.gen_svg(tile_bounds, true, false)?
             .gen_image(image_scale)

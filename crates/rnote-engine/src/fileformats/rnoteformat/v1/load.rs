@@ -72,8 +72,8 @@ impl RnoteFileInterfaceV1 {
         // to minimize re-allocations, especially for very large slotmaps.
         capacity += capacity.div_ceil(6).clamp(400, 2000);
 
-        let mut stroke_components: HopSlotMap<StrokeKey, Arc<Stroke>> =
-            HopSlotMap::with_capacity_and_key(capacity);
+        let mut stroke_components: SlotMap<StrokeKey, Arc<Stroke>> =
+            SlotMap::with_capacity_and_key(capacity);
         let mut chrono_components: SecondaryMap<StrokeKey, Arc<ChronoComponent>> =
             SecondaryMap::with_capacity(capacity);
 
@@ -164,7 +164,7 @@ impl TryFrom<LegacyRnoteFile> for CompatV1 {
         engine_snapshot.insert(
             "stroke_components",
             // Type definition of `stroke_components` in [`EngineSnapshot`]
-            ijson::to_value::<Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>>(Default::default()).unwrap(),
+            ijson::to_value::<Arc<SlotMap<StrokeKey, Arc<Stroke>>>>(Default::default()).unwrap(),
         );
 
         let mut raw_chronos: ijson::IArray = engine_snapshot

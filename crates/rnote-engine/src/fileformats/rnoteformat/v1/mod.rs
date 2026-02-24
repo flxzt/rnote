@@ -65,7 +65,7 @@ use anyhow::Ok;
 use itertools::Itertools;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
-use slotmap::{HopSlotMap, SecondaryMap};
+use slotmap::{SlotMap, SecondaryMap};
 use std::{cell::RefCell, sync::Arc};
 use thread_local::ThreadLocal;
 

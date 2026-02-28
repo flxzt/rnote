@@ -9,13 +9,13 @@ use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::{AudioPlayer, Camera, DrawableOnDoc, WidgetFlags};
+use crate::{Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
-use rnote_compose::penevent::{KeyboardKey, PenEvent, PenProgress, PenState};
+use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
 use rnote_compose::{Transform, color};
@@ -967,7 +967,11 @@ impl Typewriter {
     }
 }
 
-fn play_sound(keyboard_key: Option<KeyboardKey>, audioplayer: &mut Option<AudioPlayer>) {
+#[cfg(feature = "ui")]
+fn play_sound(
+    keyboard_key: Option<rnote_compose::penevent::KeyboardKey>,
+    audioplayer: &mut Option<crate::AudioPlayer>,
+) {
     if let Some(audioplayer) = audioplayer {
         audioplayer.play_typewriter_key_sound(keyboard_key);
     }

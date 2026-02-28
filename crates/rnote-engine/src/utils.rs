@@ -1,10 +1,14 @@
 // Imports
 use crate::fileformats::xoppformat;
+use anyhow::Context;
 use geo::line_string;
 use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use std::ops::Range;
+use std::{
+    io::{Read, Seek, Write},
+    ops::Range,
+};
 
 pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -117,4 +121,57 @@ pub mod glib_bytes_base64 {
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<glib::Bytes, D::Error> {
         rnote_compose::serialize::sliceu8_base64::deserialize(d).map(glib::Bytes::from_owned)
     }
+}
+
+/// Attempts to atomically save data to a file.
+/// This function is not asynchronous, don't forget to wrap
+/// it inside a `gio::spawn_blocking` or equivalent if need be.
+pub fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
+where
+    Q: AsRef<std::path::Path>,
+{
+    let mut temp_file = tempfile::NamedTempFile::new_in(
+        filepath
+            .as_ref()
+            .parent()
+            .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?,
+    )?;
+
+    let file_write_operation: anyhow::Result<()> = {
+        temp_file
+            .write_all(bytes)
+            .with_context(|| "Failed to write bytes to the temporary file")?;
+        temp_file
+            .as_file()
+            .sync_all()
+            .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
+        Ok(())
+    };
+    file_write_operation?;
+
+    temp_file.rewind()?; // resets the file cursor to the beginning
+
+    let file_check_operation: anyhow::Result<()> = {
+        let internal_checksum = crc32fast::hash(bytes);
+
+        let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
+        temp_file
+            .read_to_end(&mut data)
+            .with_context(|| "Failed to read bytes from the temporary file")?;
+        let external_checksum = crc32fast::hash(&data);
+
+        if internal_checksum != external_checksum {
+            anyhow::bail!(
+                "Mismatch between the internal and external checksums, the temporary file is most likely corrupted"
+            );
+        }
+        Ok(())
+    };
+    file_check_operation?;
+
+    let _ = temp_file
+        .persist(filepath)
+        .with_context(|| "Failed to move/swap temporary file into desired filepath")?;
+
+    Ok(())
 }

@@ -26,8 +26,8 @@ use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
-use crate::{AudioPlayer, SelectionCollision, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
+use crate::{SelectionCollision, WidgetFlags};
 use futures::StreamExt;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::channel::{mpsc, oneshot};
@@ -51,7 +51,8 @@ pub struct EngineView<'a> {
     pub document: &'a Document,
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
-    pub audioplayer: &'a Option<AudioPlayer>,
+    #[cfg(feature = "ui")]
+    pub audioplayer: &'a Option<crate::AudioPlayer>,
     pub animation: &'a Animation,
 }
 
@@ -65,6 +66,7 @@ macro_rules! engine_view {
             document: &$engine.document,
             store: &$engine.store,
             camera: &$engine.camera,
+            #[cfg(feature = "ui")]
             audioplayer: &$engine.audioplayer,
             animation: &$engine.animation,
         }
@@ -79,7 +81,8 @@ pub struct EngineViewMut<'a> {
     pub document: &'a mut Document,
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
-    pub audioplayer: &'a mut Option<AudioPlayer>,
+    #[cfg(feature = "ui")]
+    pub audioplayer: &'a mut Option<crate::AudioPlayer>,
     pub animation: &'a mut Animation,
 }
 
@@ -93,6 +96,7 @@ macro_rules! engine_view_mut {
             document: &mut $engine.document,
             store: &mut $engine.store,
             camera: &mut $engine.camera,
+            #[cfg(feature = "ui")]
             audioplayer: &mut $engine.audioplayer,
             animation: &mut $engine.animation,
         }
@@ -108,6 +112,7 @@ impl EngineViewMut<'_> {
             document: self.document,
             store: self.store,
             camera: self.camera,
+            #[cfg(feature = "ui")]
             audioplayer: self.audioplayer,
             animation: self.animation,
         }
@@ -186,8 +191,9 @@ pub struct Engine {
     #[serde(rename = "penholder")]
     pub penholder: PenHolder,
 
+    #[cfg(feature = "ui")]
     #[serde(skip)]
-    audioplayer: Option<AudioPlayer>,
+    audioplayer: Option<crate::AudioPlayer>,
     #[serde(skip)]
     pub animation: Animation,
     // the task sender. Must not be modified, only cloned.
@@ -220,6 +226,7 @@ impl Default for Engine {
             camera: Camera::default(),
             penholder: PenHolder::default(),
 
+            #[cfg(feature = "ui")]
             audioplayer: None,
             animation: Animation::default(),
             tasks_tx: EngineTaskSender(tasks_tx),
@@ -277,23 +284,30 @@ impl Engine {
     pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
         self.config.write().pen_sounds = pen_sounds;
 
-        if pen_sounds {
-            if let Some(pkg_data_dir) = pkg_data_dir {
-                // Only create and init a new audioplayer if it does not already exist
-                if self.audioplayer.is_none() {
-                    self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
-                        Ok(audioplayer) => Some(audioplayer),
-                        Err(e) => {
-                            error!(
-                                "Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}"
-                            );
-                            None
+        #[cfg(feature = "ui")]
+        {
+            if pen_sounds {
+                if let Some(pkg_data_dir) = pkg_data_dir {
+                    // Only create and init a new audioplayer if it does not already exist
+                    if self.audioplayer.is_none() {
+                        self.audioplayer = match crate::AudioPlayer::new_init(pkg_data_dir) {
+                            Ok(audioplayer) => Some(audioplayer),
+                            Err(e) => {
+                                error!(
+                                    "Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}"
+                                );
+                                None
+                            }
                         }
                     }
                 }
+            } else {
+                self.audioplayer.take();
             }
-        } else {
-            self.audioplayer.take();
+        }
+        #[cfg(not(feature = "ui"))]
+        {
+            let _ = pkg_data_dir;
         }
     }
 

@@ -74,10 +74,13 @@ impl PenBehaviour for Brush {
                         .bounds()
                         .loosened(Self::INPUT_OVERSHOOT),
                 ) {
-                    if engine_view.config.pens_config.brush_config.style == BrushStyle::Marker {
-                        play_marker_sound(engine_view);
-                    } else {
-                        trigger_brush_sound(engine_view);
+                    #[cfg(feature = "ui")]
+                    {
+                        if engine_view.config.pens_config.brush_config.style == BrushStyle::Marker {
+                            play_marker_sound(engine_view);
+                        } else {
+                            trigger_brush_sound(engine_view);
+                        }
                     }
 
                     engine_view
@@ -183,15 +186,25 @@ impl PenBehaviour for Brush {
 
                 let progress = match builder_result.progress {
                     BuilderProgress::InProgress => {
-                        if engine_view.config.pens_config.brush_config.style != BrushStyle::Marker {
-                            trigger_brush_sound(engine_view);
+                        #[cfg(feature = "ui")]
+                        {
+                            if engine_view.config.pens_config.brush_config.style
+                                != BrushStyle::Marker
+                            {
+                                trigger_brush_sound(engine_view);
+                            }
                         }
 
                         PenProgress::InProgress
                     }
                     BuilderProgress::EmitContinue(segments) => {
-                        if engine_view.config.pens_config.brush_config.style != BrushStyle::Marker {
-                            trigger_brush_sound(engine_view);
+                        #[cfg(feature = "ui")]
+                        {
+                            if engine_view.config.pens_config.brush_config.style
+                                != BrushStyle::Marker
+                            {
+                                trigger_brush_sound(engine_view);
+                            }
                         }
 
                         let n_segments = segments.len();
@@ -321,12 +334,14 @@ impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
 }
 
+#[cfg(feature = "ui")]
 fn play_marker_sound(engine_view: &mut EngineViewMut) {
     if let Some(audioplayer) = engine_view.audioplayer {
         audioplayer.play_random_marker_sound();
     }
 }
 
+#[cfg(feature = "ui")]
 fn trigger_brush_sound(engine_view: &mut EngineViewMut) {
     if let Some(audioplayer) = engine_view.audioplayer.as_mut() {
         audioplayer.trigger_random_brush_sound();

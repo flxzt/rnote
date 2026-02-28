@@ -41,7 +41,7 @@ rand_distr = { workspace = true }
 rand_pcg = { workspace = true }
 rayon = { workspace = true }
 regex = { workspace = true }
-rodio = { workspace = true }
+rodio = { workspace = true, optional = true }
 rough_piet = { workspace = true }
 roughr = { workspace = true }
 roxmltree = { workspace = true }
@@ -65,4 +65,4 @@ approx = { workspace = true }
 [features]
 cli = ["dep:clap"]
 default = []
-ui = ["dep:gtk4"]
+ui = ["dep:gtk4", "dep:rodio"]

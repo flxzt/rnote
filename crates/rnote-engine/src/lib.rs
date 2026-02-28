@@ -9,6 +9,7 @@
 //! The main entry point is the [Engine] struct.
 
 // Modules
+#[cfg(feature = "ui")]
 pub mod audioplayer;
 pub mod camera;
 pub mod document;
@@ -28,6 +29,7 @@ pub mod utils;
 pub mod widgetflags;
 
 // Re-exports
+#[cfg(feature = "ui")]
 pub use audioplayer::AudioPlayer;
 pub use camera::Camera;
 pub use document::Document;

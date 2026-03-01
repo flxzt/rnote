@@ -46,7 +46,7 @@ jobs:
           release: false
           update: true
           install: |
-            mingw-w64-x86_64-binutils
+            mingw-w64-ucrt-x86_64-binutils
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9

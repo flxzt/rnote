@@ -47,13 +47,13 @@ os.mkdir(dlls_dir)
 
 # Don't use os.path.join here, because that uses the wrong separators which breaks wildcard expansion.
 run_command(
-    f"ldd {build_root}/{ui_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+    f"ldd {build_root}/{ui_output} | grep '\\/ucrt64.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
     "Collecting app DLLs failed"
 )
 
 for loader in glob.glob(f"{build_environment_path}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll"):
     run_command(
-        f"ldd {loader} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"ldd {loader} | grep '\\/ucrt64.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
     )
 
@@ -66,7 +66,7 @@ for angle_dll in itertools.chain(
         f"Collecting angle ({angle_dll}) DLLs failed",
     )
     run_command(
-        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"ldd {angle_dll} | grep '\\/ucrt64.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting angle dependency ({angle_dll}) DLLs failed",
     )
 

@@ -130,48 +130,50 @@ pub fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
 where
     Q: AsRef<std::path::Path>,
 {
+    // We first create the named temporary file, specifically in the parent
+    // directory of the target filepath, as `.persist()` will not work
+    // if the temporary file is in a different filesystem than the target.
     let mut temp_file = tempfile::NamedTempFile::new_in(
         filepath
             .as_ref()
             .parent()
             .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?,
-    )?;
+    )
+    .with_context(|| "Failed to create a temporary file")?;
 
-    let file_write_operation: anyhow::Result<()> = {
-        temp_file
-            .write_all(bytes)
-            .with_context(|| "Failed to write bytes to the temporary file")?;
-        temp_file
-            .as_file()
-            .sync_all()
-            .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
-        Ok(())
-    };
-    file_write_operation?;
+    // We then write all of the bytes to the temporary file before syncing
+    // the contents and metadata of the temporary file.
+    temp_file
+        .write_all(bytes)
+        .with_context(|| "Failed to write to the temporary file")?;
+    temp_file
+        .as_file()
+        .sync_all()
+        .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
 
+    // We then rewind the file cursor to the start, as we are going to read
+    // all of its contents to verify the integrity of the data (using a checksum)
     temp_file.rewind()?; // resets the file cursor to the beginning
 
-    let file_check_operation: anyhow::Result<()> = {
-        let internal_checksum = crc32fast::hash(bytes);
+    let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
+    temp_file
+        .read_to_end(&mut data)
+        .with_context(|| "Failed to read from the temporary file")?;
 
-        let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
-        temp_file
-            .read_to_end(&mut data)
-            .with_context(|| "Failed to read bytes from the temporary file")?;
-        let external_checksum = crc32fast::hash(&data);
+    let external_checksum = crc32fast::hash(&data);
+    let internal_checksum = crc32fast::hash(bytes);
 
-        if internal_checksum != external_checksum {
-            anyhow::bail!(
-                "Mismatch between the internal and external checksums, the temporary file is most likely corrupted"
-            );
-        }
-        Ok(())
-    };
-    file_check_operation?;
+    if internal_checksum != external_checksum {
+        anyhow::bail!(
+            "The checksum of the temporary file does not match the expected one. No file will be created or modified."
+        );
+    }
 
+    // Finally, we persist the temporary file to the target filepath, if a file
+    // pre-exists at this location, it will be atomically replaced by our new file.
     let _ = temp_file
         .persist(filepath)
-        .with_context(|| "Failed to move/swap temporary file into desired filepath")?;
+        .with_context(|| "Failed to persist the temporary file to the target filepath")?;
 
     Ok(())
 }

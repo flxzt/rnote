@@ -4,6 +4,7 @@ use super::{StrokeKey, StrokeStore};
 use crate::strokes::Stroke;
 use crate::strokes::content::GeneratedContentImages;
 use p2d::bounding_volume::Aabb;
+use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -130,5 +131,30 @@ impl StrokeStore {
         self.translate_strokes_images(&new_selected, Stroke::IMPORT_OFFSET_DEFAULT);
 
         new_selected
+    }
+
+    /// Return the thumbnail keys in the order that they should be rendered.
+    pub(crate) fn thumbnail_keys_as_rendered(&self, size: na::Vector2<f64>) -> Vec<StrokeKey> {
+        const MIN_SIZE: f64 = 2.0;
+
+        let keys: Vec<StrokeKey> = self
+            .keys_sorted_chrono()
+            .into_iter()
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
+            .collect();
+        let Some(bounds) = self.bounds_for_strokes(&keys) else {
+            return Vec::new();
+        };
+        let scale = size.component_div(&bounds.extents());
+        keys.into_iter()
+            .filter_map(|key| {
+                let stroke = self.stroke_components.get(key)?;
+                let extents = stroke.bounds().extents();
+                if extents[0] * scale[0] > MIN_SIZE || extents[1] * scale[1] > MIN_SIZE {
+                    return Some(key);
+                }
+                None
+            })
+            .collect::<Vec<StrokeKey>>()
     }
 }

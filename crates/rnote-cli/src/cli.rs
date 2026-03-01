@@ -13,6 +13,7 @@ use smol::fs::File;
 use smol::io::{AsyncReadExt, AsyncWriteExt};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
+use tracing::debug;
 
 ///    rnote-cli{n}{n}
 ///    This program is free software; you can redistribute it{n}
@@ -226,6 +227,9 @@ impl std::fmt::Display for OnConflict {
 }
 
 pub(crate) async fn run() -> anyhow::Result<()> {
+    if let Err(err) = initialize_tracing() {
+        eprintln!("Failure initializing tracing: {err:?}");
+    };
     let cli = Cli::parse();
 
     match cli.command {
@@ -289,6 +293,19 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         }
     }
 
+    Ok(())
+}
+
+fn initialize_tracing() -> anyhow::Result<()> {
+    let timer = tracing_subscriber::fmt::time::Uptime::default();
+
+    tracing_subscriber::fmt()
+        .compact()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_timer(timer)
+        .try_init()
+        .map_err(|err| anyhow::anyhow!(err))?;
+    debug!(".. tracing subscriber initialized.");
     Ok(())
 }
 

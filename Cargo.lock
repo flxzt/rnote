@@ -3901,6 +3901,7 @@ dependencies = [
  "anyhow",
  "clap",
  "dialoguer",
+ "futures",
  "image",
  "indicatif",
  "nalgebra 0.34.1",

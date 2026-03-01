@@ -22,4 +22,5 @@ open = { workspace = true }
 parry2d-f64 = { workspace = true }
 smol = { workspace = true }
 tracing = { workspace = true }
+futures = { workspace = true }
 tracing-subscriber = { workspace = true }

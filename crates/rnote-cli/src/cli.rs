@@ -25,6 +25,10 @@ pub(crate) struct Cli {
     pub(crate) command: Command,
 }
 
+impl Cli {
+    pub(crate) const THUMBNAIL_TIMEOUT_DEFAULT: u64 = 5;
+}
+
 #[derive(clap::Subcommand, Debug, Clone)]
 pub(crate) enum Command {
     /// Tests if the specified files can be opened and are valid rnote files.
@@ -76,6 +80,10 @@ pub(crate) enum Command {
         /// Size of the thumbnail in pixel.
         #[arg(short, long, default_value_t = 256)]
         size: u32,
+        /// The time how long thumbnail generation is allowed to take in [sec].
+        /// Set to 0 for unlimited timeout. If not set, defaults to : 5 secs
+        #[arg(short, long)]
+        timeout: Option<u64>,
         /// Output path for the thumbnail.
         output: PathBuf,
     },
@@ -260,10 +268,17 @@ pub(crate) async fn run() -> anyhow::Result<()> {
         Command::Thumbnail {
             rnote_file,
             size,
+            timeout,
             output,
         } => {
             println!("Thumbnail...");
-            thumbnail::run_thumbnail(rnote_file, size, output).await?;
+            let timeout = timeout.unwrap_or(Cli::THUMBNAIL_TIMEOUT_DEFAULT);
+            let timeout = if timeout == 0 {
+                None
+            } else {
+                Some(Duration::from_secs(timeout))
+            };
+            thumbnail::run_thumbnail(rnote_file, size, output, timeout).await?;
         }
         Command::Create {
             rnote_file: new_rnote_file,

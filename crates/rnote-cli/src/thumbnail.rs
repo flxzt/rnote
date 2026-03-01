@@ -1,12 +1,15 @@
 // Inspired by: https://github.com/ayykamp/rnote-thumbnailer/blob/main/src/main.rs
 // Author: ayykamp <kamp@ayyy.dev>
 
-use anyhow::Context;
+use anyhow::{Context, anyhow};
+use core::time::Duration;
+use futures::{FutureExt, select};
 use image::DynamicImage;
 use image::imageops::FilterType;
 use rnote_engine::Engine;
 use rnote_engine::engine::EngineSnapshot;
 use rnote_engine::engine::export::{SelectionExportFormat, SelectionExportPrefs};
+use smol::Timer;
 use std::fs::File;
 use std::io::Read;
 use std::path::PathBuf;
@@ -15,6 +18,7 @@ pub(crate) async fn run_thumbnail(
     rnote_file: PathBuf,
     output_size: u32,
     output: PathBuf,
+    timeout: Option<Duration>,
 ) -> anyhow::Result<()> {
     let mut engine = Engine::default();
     let mut rnote_file_bytes = vec![];
@@ -31,11 +35,17 @@ pub(crate) async fn run_thumbnail(
         export_format: SelectionExportFormat::Png,
         ..Default::default()
     };
-    let export_bytes = engine
-        .export_selection(Some(prefs))
-        .await??
-        .context("Exporting selection failed, no strokes selected.")?;
 
+    let mut timeout = if let Some(timeout) = timeout {
+        Timer::after(timeout).fuse()
+    } else {
+        Timer::never().fuse()
+    };
+    let mut export_op = engine.export_selection(Some(prefs)).fuse();
+    let export_bytes = select! {
+        res = export_op => res??.context("Exporting selection failed, no strokes selected.")?,
+        _ = timeout => return Err(anyhow!("Timeout reached"))
+    };
     let mut image = image::load_from_memory(&export_bytes)?;
     let (width, height) = (image.width(), image.height());
 

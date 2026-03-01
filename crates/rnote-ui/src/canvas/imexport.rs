@@ -238,16 +238,7 @@ impl RnCanvas {
         let file_write_operation = async {
             let bytes = rnote_bytes_receiver.await??;
             self.set_output_file_expect_write(true);
-            let filepath_clone = filepath.clone();
-            let thread_result = gio::spawn_blocking(move || {
-                rnote_engine::utils::atomic_save_to_file(filepath_clone, &bytes)
-            })
-            .await;
-
-            match thread_result {
-                Ok(atomic_result) => atomic_result,
-                Err(_panic) => Err(anyhow::anyhow!("Atomic saving thread panicked")),
-            }
+            rnote_engine::utils::atomic_save_to_file(&filepath, &bytes).await
         };
 
         if let Err(e) = file_write_operation.await {

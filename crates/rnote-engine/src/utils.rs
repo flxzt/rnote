@@ -1,14 +1,12 @@
 // Imports
 use crate::fileformats::xoppformat;
 use anyhow::Context;
+use futures::{AsyncReadExt, AsyncSeekExt, AsyncWriteExt};
 use geo::line_string;
 use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use std::{
-    io::{Read, Seek, Write},
-    ops::Range,
-};
+use std::ops::Range;
 
 pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -124,40 +122,43 @@ pub mod glib_bytes_base64 {
 }
 
 /// Attempts to atomically save data to a file.
-/// This function is not asynchronous, don't forget to wrap
-/// it inside a `gio::spawn_blocking` or equivalent if need be.
-pub fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
+pub async fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
 where
     Q: AsRef<std::path::Path>,
 {
     // We first create the named temporary file, specifically in the parent
     // directory of the target filepath, as `.persist()` will not work
     // if the temporary file is in a different filesystem than the target.
-    let mut temp_file = tempfile::NamedTempFile::new_in(
+    let (temp_file, temp_path) = tempfile::NamedTempFile::new_in(
         filepath
             .as_ref()
             .parent()
             .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?,
     )
-    .with_context(|| "Failed to create a temporary file")?;
+    .with_context(|| "Failed to create a temporary file")?
+    .into_parts();
 
-    // We then write all of the bytes to the temporary file before syncing
+    let mut temp_file = async_fs::File::from(temp_file);
+
+    // We then write all the bytes to the temporary file before syncing
     // the contents and metadata of the temporary file.
     temp_file
         .write_all(bytes)
+        .await
         .with_context(|| "Failed to write to the temporary file")?;
     temp_file
-        .as_file()
         .sync_all()
+        .await
         .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
 
     // We then rewind the file cursor to the start, as we are going to read
     // all of its contents to verify the integrity of the data (using a checksum)
-    temp_file.rewind()?; // resets the file cursor to the beginning
+    temp_file.seek(std::io::SeekFrom::Start(0)).await?; // resets the file cursor to the beginning
 
     let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
     temp_file
         .read_to_end(&mut data)
+        .await
         .with_context(|| "Failed to read from the temporary file")?;
 
     let external_checksum = crc32fast::hash(&data);
@@ -171,9 +172,7 @@ where
 
     // Finally, we persist the temporary file to the target filepath, if a file
     // pre-exists at this location, it will be atomically replaced by our new file.
-    let _ = temp_file
+    temp_path
         .persist(filepath)
-        .with_context(|| "Failed to persist the temporary file to the target filepath")?;
-
-    Ok(())
+        .with_context(|| "Failed to persist the temporary file to the target filepath")
 }

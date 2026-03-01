@@ -41,10 +41,10 @@ see: [rnote-macos-build.md](./misc/building/rnote-macos-build.md).
 
 ## Windows
 
-For windows `mingw64` is used as the development and build environment.
-For the installer `innosetup` is used.
+For windows `msys/ucrt64` is used as the development and build environment.
+For the installer "Inno Setup" is used.
 
-It should always be ensured that the app will build in `mingw64`,
+It should always be ensured that the app will build in `ucrt64`,
 however tight integration with the Windows OS is not a priority.
 
 For more details on how to build the application and the installer on Windows

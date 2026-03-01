@@ -48,27 +48,19 @@ cd rnote/
 git submodule update --init --recursive
 ```
 
-Or (from the mingw64 terminal)
+Or (from the ucrt terminal)
 ```bash
 MSYS=winsymlinks:native git clone https://github.com/flxzt/rnote.git
 git submodule update --init --recursive
 ```
 Verify that you see in `/crates/rnote-ui/po` the four files zh_CN.po, zh_HK.po, zh_SG.po and zh_TW.po as symlinks (and not as a text file with a single line inside).   
 
-For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to
-link with both, resulting in "multiple definitions of pthread\_..." linker errors.
-To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
-
-```bash
-mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
-```
-
 ## Building the Application
 
 In the directory that you cloned Rnote into, run the following command to setup meson.
 
 ```bash
-meson setup --prefix=C:/msys64/mingw64 _mesonbuild
+meson setup --prefix=C:/msys64/ucrt64 _mesonbuild
 ```
 
 Then, the project can be compiled...
@@ -83,7 +75,7 @@ meson compile -C _mesonbuild
 meson install -C _mesonbuild
 ```
 
-The installed binary can now be executed. It is located at `C:\msys64\mingw64\bin\rnote.exe` and depends on the
+The installed binary can now be executed. It is located at `C:\msys64\ucrt64\bin\rnote.exe` and depends on the
 environment provided by MSYS2, so it is not portable.
 
 ## Building the Installer

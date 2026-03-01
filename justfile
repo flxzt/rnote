@@ -6,7 +6,8 @@ log_level := "debug"
 build_folder := "_mesonbuild"
 flatpak_app_folder := "_flatpak_app"
 flatpak_repo_folder := "_flatpak_repo"
-mingw64_prefix_path := "C:/msys64/mingw64"
+msys_env_prefix_path := "C:/msys64/ucrt64"
+msys_pkgs_folder := "msys-pkgs"
 
 [private]
 linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
@@ -86,51 +87,28 @@ prerequisites-dev: prerequisites
 
 # in MSYS2 shell
 prerequisites-win:
-    pacman -S --noconfirm \
-        unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
-        mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
-        mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
-        mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
-    mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
-    # We need to pin version : cairo before dwrite, gtk before dcomp
-    # cairo : before 
-    # https://github.com/msys2/MINGW-packages/commit/305ebda98c3041d9986d6fae498b45d2b2b9f4e8
-    # Because the Dwrite win32 backend can't be used for text in multithreaded
-    # context (see issue #1536 and upstream issues 
-    # on mingw : https://github.com/msys2/MINGW-packages/issues/26222#issuecomment-3506563048
-    # and on cairo's gitlab : https://gitlab.freedesktop.org/cairo/cairo/-/issues/886 
-    # 
-    # And because this also means that cairo will depend on the DLLmain
-    # symbol being exported from gettext (removed in 
-    # https://github.com/msys2/MINGW-packages/commit/3756eb5ceba81861751d26161a2ae6d980f715d3
-    # with follow-up in 
-    # https://github.com/msys2/MINGW-packages/commit/83eed715521d7d7c292d34fb80c29a720b534769#diff-a1d3a07941f44098abaaeef3440e303f11280e2165ff7e805fd50c7c38e8af13)
-    # 
-    # So
-    # - we download the gettext runtime WITH the DLLmain symbol
-    # - we install cairo/gtk4 with the pinned version. It will depend on DLLmain being 
-    #   present pulling from the (now installed) version that includes i
-    # - the rest (hopefully) will still work (if not, need to pin all dependencies in 
-    # https://github.com/msys2/MINGW-packages/commit/83eed715521d7d7c292d34fb80c29a720b534769#diff-a1d3a07941f44098abaaeef3440e303f11280e2165ff7e805fd50c7c38e8af13
-    # that we also use : which is a pretty long list !)
-    # 
-    # 1 : Get gettext before DLLmain removal
-    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gettext-libtextstyle-0.26-1-any.pkg.tar.zst
-    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gettext-runtime-0.26-1-any.pkg.tar.zst
-    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gettext-tools-0.26-1-any.pkg.tar.zst
-    pacman -U --noconfirm mingw-w64-x86_64-gettext-libtextstyle-0.26-1-any.pkg.tar.zst \
-        mingw-w64-x86_64-gettext-runtime-0.26-1-any.pkg.tar.zst \
-        mingw-w64-x86_64-gettext-tools-0.26-1-any.pkg.tar.zst
-    # 2 : Get cairo and gtk4 pinned version
-    # Also use a libadwaita version matching the gtk4 one
-    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
-    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst
-    wget -q https://repo.msys2.org/mingw/mingw64/mingw-w64-x86_64-libadwaita-1.7.7-1-any.pkg.tar.zst
-    pacman -U --noconfirm mingw-w64-x86_64-cairo-1.18.4-1-any.pkg.tar.zst \
-        mingw-w64-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst \
-        mingw-w64-x86_64-libadwaita-1.7.7-1-any.pkg.tar.zst
+    pacman -S --needed --noconfirm \
+        unzip git mingw-w64-ucrt-x86_64-binutils mingw-w64-ucrt-x86_64-xz mingw-w64-ucrt-x86_64-pkgconf \
+        mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-toolchain \
+        mingw-w64-ucrt-x86_64-autotools mingw-w64-ucrt-x86_64-make mingw-w64-ucrt-x86_64-cmake \
+        mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-diffutils mingw-w64-ucrt-x86_64-desktop-file-utils \
+        mingw-w64-ucrt-x86_64-appstream mingw-w64-ucrt-x86_64-gtk4 mingw-w64-ucrt-x86_64-libadwaita \
+        mingw-w64-ucrt-x86_64-angleproject
+
+    # Get cairo and therefore gtk4, libawaita in versions before issue:
+    # https://github.com/msys2/MINGW-packages/issues/26222
+    #wget -P {{ msys_pkgs_folder }} -nc https://repo.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-cairo-1.18.4-1-any.pkg.tar.zst
+    #wget -P {{ msys_pkgs_folder }} -nc https://repo.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst
+    #wget -P {{ msys_pkgs_folder }} -nc https://repo.msys2.org/mingw/ucrt64/mingw-w64-ucrt-x86_64-libadwaita-1.7.7-1-any.pkg.tar.zst
+    #pacman -U --needed --noconfirm {{ msys_pkgs_folder }}/mingw-w64-ucrt-x86_64-cairo-1.18.4-1-any.pkg.tar.zst \
+    #    {{ msys_pkgs_folder }}/mingw-w64-ucrt-x86_64-gtk4-4.18.6-3-any.pkg.tar.zst \
+    #    {{ msys_pkgs_folder }}/mingw-w64-ucrt-x86_64-libadwaita-1.7.7-1-any.pkg.tar.zst
+
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-    export PATH="$HOME/.cargo/bin:$PATH"
+    export PATH="/c/Users/$(whoami)/.cargo/bin:$PATH"
+    echo 'export PATH="/c/Users/$(whoami)/.cargo/bin:/c/Program Files (x86)/Inno Setup 6:$PATH"' >> ~/.bashrc
+    rustup toolchain install stable-gnu
+    rustup default stable-gnu
 
 setup-dev *MESON_ARGS:
     meson setup \
@@ -147,13 +125,14 @@ setup-release *MESON_ARGS:
         {{ MESON_ARGS }} \
         {{ build_folder }}
 
-# in MINGW64 shell
+# in ucrt64 shell
 setup-win-installer installer_name="rnote-win-installer":
     meson setup \
-        --prefix={{ mingw64_prefix_path }} \
+        --prefix="{{ msys_env_prefix_path }}" \
         -Dprofile=default \
         -Dcli=true \
         -Dwin-installer-name={{ installer_name }} \
+        -Dwin-build-environment-path="{{ msys_env_prefix_path }}" \
         -Dci={{ ci }} \
         {{ build_folder }}
 

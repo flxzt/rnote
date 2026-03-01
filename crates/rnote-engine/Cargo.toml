@@ -18,7 +18,6 @@ base64 = { workspace = true }
 cairo-rs = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true, optional = true }
-crc32fast = { workspace = true }
 deranged = { workspace = true, features = ["serde"] }
 flate2 = { workspace = true }
 futures = { workspace = true }

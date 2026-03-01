@@ -3962,7 +3962,6 @@ dependencies = [
  "cairo-rs",
  "chrono",
  "clap",
- "crc32fast",
  "deranged",
  "flate2",
  "futures",

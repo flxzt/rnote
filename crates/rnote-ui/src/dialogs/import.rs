@@ -484,6 +484,9 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     }));
 
+    // set focus on enter button for quick confirmation
+    dialog.set_focus(Some(&import_pdf_button_confirm));
+
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
 

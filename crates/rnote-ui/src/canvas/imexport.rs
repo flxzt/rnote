@@ -209,8 +209,10 @@ impl RnCanvas {
 
     /// Saves the document to the given file.
     ///
-    /// Returns Ok(true) if saved successfully, Ok(false) when a save is already in progress and no file operatiosn were
-    /// executed, Err(e) when saving failed in any way.
+    /// Returns:
+    /// - `Ok(true)` if saving was sucessful
+    /// - `Ok(false)` if a save was already in progress (and thus this function didn't do anything)
+    /// - `Err(e)` when saving failed in any way
     #[tracing::instrument(skip_all, fields(path = format!("{:?}", file.path())))]
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
         // skip saving when it is already in progress
@@ -238,16 +240,7 @@ impl RnCanvas {
         let file_write_operation = async {
             let bytes = rnote_bytes_receiver.await??;
             self.set_output_file_expect_write(true);
-            let filepath_clone = filepath.clone();
-            let thread_result = gio::spawn_blocking(move || {
-                rnote_engine::utils::atomic_save_to_file(filepath_clone, &bytes)
-            })
-            .await;
-
-            match thread_result {
-                Ok(atomic_result) => atomic_result,
-                Err(_panic) => Err(anyhow::anyhow!("Atomic saving thread panicked")),
-            }
+            crate::utils::atomic_save_to_file_future(&filepath, bytes).await
         };
 
         if let Err(e) = file_write_operation.await {

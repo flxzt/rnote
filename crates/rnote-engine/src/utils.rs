@@ -126,10 +126,13 @@ pub mod glib_bytes_base64 {
 /// Attempts to atomically save data to a file.
 /// This function is not asynchronous, don't forget to wrap
 /// it inside a `gio::spawn_blocking` or equivalent if need be.
-pub fn atomic_save_to_file<Q>(filepath: Q, bytes: &[u8]) -> anyhow::Result<()>
+pub fn atomic_save_to_file<Q, B>(filepath: Q, bytes: B) -> anyhow::Result<()>
 where
     Q: AsRef<std::path::Path>,
+    B: AsRef<[u8]>,
 {
+    let bytes = bytes.as_ref();
+
     // We first create the named temporary file, specifically in the parent
     // directory of the target filepath, as `.persist()` will not work
     // if the temporary file is in a different filesystem than the target.

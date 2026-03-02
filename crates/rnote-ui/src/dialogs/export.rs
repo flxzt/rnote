@@ -334,6 +334,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         }));
     }));
 
+    // set file dialog as initial focus
+    dialog.set_focus(Some(&export_file_button));
+
     dialog.present(appwindow.root().as_ref());
 }
 
@@ -757,6 +760,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }));
     }));
 
+    dialog.set_focus(Some(&export_dir_button));
     dialog.present(appwindow.root().as_ref());
 }
 
@@ -1123,6 +1127,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }));
     }));
 
+    dialog.set_focus(Some(&export_file_button));
     dialog.present(appwindow.root().as_ref());
 }
 

@@ -3948,7 +3948,6 @@ version = "0.13.1"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
- "async-fs",
  "base64",
  "cairo-rs",
  "chrono",

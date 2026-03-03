@@ -134,6 +134,7 @@ impl StrokeStore {
     }
 
     /// Return the thumbnail keys in the order that they should be rendered.
+    /// Keys that would be too small to be visible in the thumbnail are skipped to speed-up thumbnail generation
     pub(crate) fn thumbnail_keys_as_rendered(&self, size: na::Vector2<f64>) -> Vec<StrokeKey> {
         const MIN_SIZE: f64 = 2.0;
 

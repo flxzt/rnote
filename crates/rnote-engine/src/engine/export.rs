@@ -388,14 +388,10 @@ impl Engine {
     /// Therefore it is ensured generating a SVG from it will never return `Ok(None)`.
     pub fn extract_thumbnail_content(&self, size: na::Vector2<f64>) -> StrokeContent {
         let scale_factor = self.camera.scale_factor();
-        let selection_keys = self.store.thumbnail_keys_as_rendered(size * scale_factor);
-        let bounds = if let Some(bounds) = self.store.bounds_for_strokes(&selection_keys) {
-            bounds
-        } else {
-            self.document.bounds()
-        };
+        let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
+        let bounds = bounds.unwrap_or_else(|| self.document.bounds());
         StrokeContent::default()
-            .with_strokes(self.store.get_strokes_arc(&selection_keys))
+            .with_strokes(self.store.get_strokes_arc(&keys))
             .with_bounds(bounds)
             .with_background(self.document.config.background)
     }

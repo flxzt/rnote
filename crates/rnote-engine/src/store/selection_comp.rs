@@ -3,7 +3,7 @@ use super::render_comp::RenderCompState;
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::Stroke;
 use crate::strokes::content::GeneratedContentImages;
-use p2d::bounding_volume::Aabb;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -135,20 +135,27 @@ impl StrokeStore {
 
     /// Return the thumbnail keys in the order that they should be rendered.
     /// Keys that would be too small to be visible in the thumbnail are skipped to speed-up thumbnail generation
-    pub(crate) fn thumbnail_keys_as_rendered(&self, size: na::Vector2<f64>) -> Vec<StrokeKey> {
+    pub(crate) fn thumbnail_keys_as_rendered(
+        &self,
+        size: na::Vector2<f64>,
+    ) -> (Vec<StrokeKey>, Option<Aabb>) {
         const MIN_SIZE: f64 = 2.0;
 
-        let keys: Vec<StrokeKey> = self
-            .keys_sorted_chrono()
-            .into_iter()
-            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
+        let keys: Vec<(StrokeKey, Aabb)> = self
+            .key_tree
+            .iter()
+            .filter(|(key, _)| !(self.trashed(*key).unwrap_or(false)))
             .collect();
-        let Some(bounds) = self.bounds_for_strokes(&keys) else {
-            return Vec::new();
-        };
+        if keys.is_empty() {
+            return (Vec::new(), None);
+        }
+        let bounds = keys
+            .iter()
+            .fold(Aabb::new_invalid(), |acc, e| acc.merged(&e.1));
         let scale = size.component_div(&bounds.extents());
-        keys.into_iter()
-            .filter_map(|key| {
+        let mut keys = keys
+            .into_iter()
+            .filter_map(|(key, _)| {
                 let stroke = self.stroke_components.get(key)?;
                 let extents = stroke.bounds().extents();
                 if extents[0] * scale[0] > MIN_SIZE || extents[1] * scale[1] > MIN_SIZE {
@@ -156,6 +163,8 @@ impl StrokeStore {
                 }
                 None
             })
-            .collect::<Vec<StrokeKey>>()
+            .collect::<Vec<StrokeKey>>();
+        self.sort_keys_chrono(&mut keys);
+        (keys, Some(bounds))
     }
 }

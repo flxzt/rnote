@@ -79,7 +79,7 @@ pub(crate) enum Command {
         /// Output path of the thumbnail
         output: PathBuf,
     },
-    /// Make a rnote file from the cli
+    /// Create a new rnote file
     Create {
         /// file save path
         new_rnote_file: PathBuf,

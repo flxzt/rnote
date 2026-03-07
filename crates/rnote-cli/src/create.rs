@@ -1,7 +1,6 @@
 // Creates
 use crate::cli;
 use rnote_engine::Engine;
-use rnote_engine::engine::EngineConfigShared;
 use std::path::Path;
 
 pub(crate) async fn create_new_file(engine: &mut Engine, rnote_file: &Path) -> anyhow::Result<()> {
@@ -20,16 +19,11 @@ pub(crate) async fn create_new_file(engine: &mut Engine, rnote_file: &Path) -> a
 }
 
 pub(crate) async fn run_create(input_file: &Path) -> anyhow::Result<()> {
-    let config = EngineConfigShared::default();
     let mut engine = Engine::default();
-    let _ = engine.install_config(&config, None);
 
     // Pass the Option through to the inner function
     if let Err(e) = create_new_file(&mut engine, input_file).await {
-        println!("Cannot Create a file: {:?}", e);
         return Err(e);
-    } else {
-        println!("File Created Successfully");
     }
 
     Ok(())

@@ -124,28 +124,26 @@ pub mod glib_bytes_base64 {
 }
 
 /// Attempts to atomically save data to a file.
-/// This function is not asynchronous, don't forget to wrap
-/// it inside a `gio::spawn_blocking` or equivalent if need be.
+/// Not asynchronous, wrap with `blocking::unblock()` or equivalent to avoid blocking.
 pub fn atomic_save_to_file<Q, B>(filepath: Q, bytes: B) -> anyhow::Result<()>
 where
     Q: AsRef<std::path::Path>,
     B: AsRef<[u8]>,
 {
+    let filepath = filepath.as_ref();
     let bytes = bytes.as_ref();
+
+    let parent_directory = filepath
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?;
 
     // We first create the named temporary file, specifically in the parent
     // directory of the target filepath, as `.persist()` will not work
     // if the temporary file is in a different filesystem than the target.
-    let mut temp_file = tempfile::NamedTempFile::new_in(
-        filepath
-            .as_ref()
-            .parent()
-            .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?,
-    )
-    .with_context(|| "Failed to create a temporary file")?;
+    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory)
+        .with_context(|| "Failed to create a temporary file")?;
 
-    // We then write all of the bytes to the temporary file before syncing
-    // the contents and metadata of the temporary file.
+    // We then write all of our bytes to the temporary file before syncing its contents.
     temp_file
         .write_all(bytes)
         .with_context(|| "Failed to write to the temporary file")?;
@@ -154,29 +152,21 @@ where
         .sync_all()
         .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
 
-    // We then rewind the file cursor to the start, as we are going to read
-    // all of its contents to verify the integrity of the data (using a checksum)
-    temp_file.rewind()?; // resets the file cursor to the beginning
-
-    let mut data: Vec<u8> = Vec::with_capacity(bytes.len());
-    temp_file
-        .read_to_end(&mut data)
-        .with_context(|| "Failed to read from the temporary file")?;
-
-    let external_checksum = crc32fast::hash(&data);
-    let internal_checksum = crc32fast::hash(bytes);
-
-    if internal_checksum != external_checksum {
-        anyhow::bail!(
-            "The checksum of the temporary file does not match the expected one. No file will be created or modified."
-        );
-    }
-
     // Finally, we persist the temporary file to the target filepath, if a file
     // pre-exists at this location, it will be atomically replaced by our new file.
     let _ = temp_file
         .persist(filepath)
         .with_context(|| "Failed to persist the temporary file to the target filepath")?;
+
+    #[cfg(unix)]
+    {
+        // On UNIX, we also sync the parent directory (apparently not necessary on windows).
+        // File management on UNIX seems to be a bit of a nightmare.
+        std::fs::File::open(parent_directory)
+            .with_context(|| "Failed to open the parent directory")?
+            .sync_all()
+            .with_context(|| "Failed to sync the contents and metadata of the parent directory")?;
+    }
 
     Ok(())
 }

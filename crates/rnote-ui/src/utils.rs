@@ -22,14 +22,7 @@ where
 {
     let filepath = filepath.as_ref().to_path_buf();
 
-    match gio::spawn_blocking(move || rnote_engine::utils::atomic_save_to_file(filepath, bytes))
-        .await
-    {
-        Ok(atomic_save_result) => atomic_save_result,
-        Err(_panic) => Err(anyhow::anyhow!(
-            "The thread handling atomic file saving panicked"
-        )),
-    }
+    blocking::unblock(move || rnote_engine::utils::atomic_save_to_file(filepath, bytes)).await
 }
 
 /// Create a new file or replace if it already exists, asynchronously.

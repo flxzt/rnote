@@ -25,10 +25,10 @@ anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
 base64 = "0.22.1"
+blocking = "1.6"
 cairo-rs = { version = "0.21.1", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.41"
 clap = { version = "4.5", features = ["derive"] }
-crc32fast = "1.5"
 dialoguer = "0.12.0"
 flate2 = "1.1"
 fs_extra = "1.3"

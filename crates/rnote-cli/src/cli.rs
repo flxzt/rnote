@@ -83,9 +83,6 @@ pub(crate) enum Command {
     Create {
         /// file save path
         new_rnote_file: PathBuf,
-        /// Optional template file to base the new file on
-        #[arg(short, long)]
-        template_file: Option<PathBuf>,
     },
 }
 
@@ -268,11 +265,8 @@ pub(crate) async fn run() -> anyhow::Result<()> {
             println!("Thumbnail...");
             thumbnail::run_thumbnail(rnote_file, size, output).await?;
         }
-        Command::Create {
-            new_rnote_file,
-            template_file,
-        } => {
-            create::run_create(&new_rnote_file, template_file.as_deref()).await?;
+        Command::Create { new_rnote_file } => {
+            create::run_create(&new_rnote_file).await?;
             println!("Created file successfully");
         }
     }

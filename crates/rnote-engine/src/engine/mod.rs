@@ -5,6 +5,7 @@ pub mod export;
 pub mod import;
 pub mod rendering;
 pub mod snapshot;
+pub mod spellcheck;
 pub mod strokecontent;
 pub mod visual_debug;
 
@@ -15,6 +16,7 @@ pub use config::EngineConfigShared;
 pub use export::ExportPrefs;
 pub use import::ImportPrefs;
 pub use snapshot::EngineSnapshot;
+pub use spellcheck::Spellcheck;
 pub use strokecontent::StrokeContent;
 
 // Imports
@@ -38,6 +40,7 @@ use rnote_compose::penevent::{PenEvent, ShortcutKey};
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 use snapshot::Snapshotable;
+use std::fmt::Debug;
 use std::path::PathBuf;
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
@@ -54,6 +57,7 @@ pub struct EngineView<'a> {
     #[cfg(feature = "ui")]
     pub audioplayer: &'a Option<crate::AudioPlayer>,
     pub animation: &'a Animation,
+    pub spellcheck: &'a Spellcheck,
 }
 
 /// Constructs an `EngineView` from an identifier containing an `Engine` instance.
@@ -69,6 +73,7 @@ macro_rules! engine_view {
             #[cfg(feature = "ui")]
             audioplayer: &$engine.audioplayer,
             animation: &$engine.animation,
+            spellcheck: &$engine.spellcheck,
         }
     };
 }
@@ -84,6 +89,7 @@ pub struct EngineViewMut<'a> {
     #[cfg(feature = "ui")]
     pub audioplayer: &'a mut Option<crate::AudioPlayer>,
     pub animation: &'a mut Animation,
+    pub spellcheck: &'a mut Spellcheck,
 }
 
 /// Constructs an `EngineViewMut` from an identifier containing an `Engine` instance.
@@ -99,6 +105,7 @@ macro_rules! engine_view_mut {
             #[cfg(feature = "ui")]
             audioplayer: &mut $engine.audioplayer,
             animation: &mut $engine.animation,
+            spellcheck: &mut $engine.spellcheck,
         }
     };
 }
@@ -115,6 +122,7 @@ impl EngineViewMut<'_> {
             #[cfg(feature = "ui")]
             audioplayer: self.audioplayer,
             animation: self.animation,
+            spellcheck: self.spellcheck,
         }
     }
 }
@@ -196,6 +204,8 @@ pub struct Engine {
     audioplayer: Option<crate::AudioPlayer>,
     #[serde(skip)]
     pub animation: Animation,
+    #[serde(skip)]
+    spellcheck: Spellcheck,
     // the task sender. Must not be modified, only cloned.
     #[serde(skip)]
     tasks_tx: EngineTaskSender,
@@ -229,6 +239,7 @@ impl Default for Engine {
             #[cfg(feature = "ui")]
             audioplayer: None,
             animation: Animation::default(),
+            spellcheck: Spellcheck::default(),
             tasks_tx: EngineTaskSender(tasks_tx),
             tasks_rx: Some(EngineTaskReceiver(tasks_rx)),
             background_tile_image: None,
@@ -260,6 +271,7 @@ impl Engine {
             .penholder
             .reinstall_pen_current_style(&mut engine_view_mut!(self));
         widget_flags |= self.doc_resize_to_fit_content();
+        widget_flags |= self.refresh_spellcheck_language();
         widget_flags.redraw = true;
         widget_flags.refresh_ui = true;
         widget_flags
@@ -309,6 +321,40 @@ impl Engine {
         {
             let _ = pkg_data_dir;
         }
+    }
+
+    pub fn refresh_spellcheck_language(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        self.spellcheck.dict = spellcheck::BROKER
+            .with_borrow_mut(|broker| self.document.config.spellcheck.get_dictionary(broker));
+
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
+            typewriter.refresh_spellcheck_cache_in_modifying_stroke(&mut engine_view_mut!(self));
+
+            widget_flags.redraw = true;
+        }
+
+        widget_flags
+    }
+
+    pub fn get_spellcheck_corrections(&self) -> Option<Vec<String>> {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
+            return typewriter.get_spellcheck_correction_in_modifying_stroke(&engine_view!(self));
+        }
+
+        None
+    }
+
+    pub fn apply_spellcheck_correction(&mut self, correction: &str) -> WidgetFlags {
+        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
+            return typewriter.apply_spellcheck_correction_in_modifying_stroke(
+                correction,
+                &mut engine_view_mut!(self),
+            );
+        }
+
+        WidgetFlags::default()
     }
 
     pub fn optimize_epd(&self) -> bool {
@@ -369,6 +415,7 @@ impl Engine {
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
             | self.update_rendering_current_viewport()
+            | self.refresh_spellcheck_language()
     }
 
     /// Redo the latest changes.
@@ -377,6 +424,7 @@ impl Engine {
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
             | self.update_rendering_current_viewport()
+            | self.refresh_spellcheck_language()
     }
 
     pub fn can_undo(&self) -> bool {

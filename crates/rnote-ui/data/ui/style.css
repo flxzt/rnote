@@ -54,9 +54,6 @@
     padding: 0px;
     margin: 0px;
     background-blend-mode: screen;
-    background-image:
-        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55),
-        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55);
     background-color: @colorpad_color;
     color: @colorpad_fg_color;
     background-size: 18px 18px;
@@ -88,26 +85,14 @@
     padding: 0px;
     margin: 0px;
     background-blend-mode: screen;
-    background-image:
-        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55),
-        linear-gradient(45deg, #0f0f0f55 25%, transparent 25%, transparent 75%, #0f0f0f55 75%, #0f0f0f55);
-    background-color: @colorsetter_color;
     color: @colorsetter_fg_color;
     background-size: 18px 18px;
     background-position: 0px 0px, 9px 9px;
     border: 1px solid @borders;
-    filter: brightness(100%);
-    border-radius: 2px;
+    border-radius: 2px; 
     transition: all 0.15s ease-out;
 }
 
-.colorsetter:hover {
-    filter: brightness(93%);
-}
-
-.colorsetter:active {
-    filter: brightness(86%);
-}
 
 .colorsetter:checked {
     filter: brightness(100%);

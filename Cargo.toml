@@ -25,6 +25,7 @@ anyhow = "1.0"
 approx = "0.5.1"
 async-fs = "2.1"
 base64 = "0.22.1"
+blocking = "1.6"
 cairo-rs = { version = "0.21.1", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.41"
 clap = { version = "4.5", features = ["derive"] }
@@ -87,6 +88,7 @@ serde_json = "1.0"
 slotmap = { version = "1.0", features = ["serde"] }
 smol = "2.0"
 svg = "0.18.0"
+tempfile = "3.26"
 thiserror = "2.0.12"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }

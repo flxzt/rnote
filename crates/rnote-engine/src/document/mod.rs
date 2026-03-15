@@ -3,12 +3,14 @@ pub mod background;
 pub mod config;
 pub mod format;
 pub mod layout;
+pub mod spellcheck_config;
 
 // Re-exports
 pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
+pub use spellcheck_config::{SpellcheckConfig, SpellcheckConfigLanguage};
 
 // Imports
 use crate::engine::EngineConfig;

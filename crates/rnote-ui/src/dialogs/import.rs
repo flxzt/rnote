@@ -351,7 +351,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_bitmap_scalefactor_row.connect_changed(clone!(
+    pdf_import_bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -378,7 +378,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_width_row.connect_changed(clone!(
+    pdf_import_width_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {

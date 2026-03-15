@@ -636,6 +636,8 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
         }
     }));
 
+    dialog.set_focus(Some(&import_xopp_button_confirm));
+
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
 

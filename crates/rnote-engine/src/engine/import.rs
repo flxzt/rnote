@@ -358,6 +358,64 @@ impl Engine {
         widget_flags
     }
 
+    /// Insert an SVG image as a VectorImage stroke.
+    /// If `typst_source` is provided, it will be stored with the image for later editing.
+    pub fn insert_svg_image(
+        &mut self,
+        svg_data: String,
+        pos: na::Vector2<f64>,
+        typst_source: Option<String>,
+    ) -> WidgetFlags {
+        // Create VectorImage from SVG
+        match VectorImage::from_svg_str(&svg_data, pos, ImageSizeOption::RespectOriginalSize) {
+            Ok(mut vectorimage) => {
+                // Store the Typst source if provided
+                vectorimage.typst_source = typst_source;
+
+                let stroke = Stroke::VectorImage(vectorimage);
+                self.import_generated_content(vec![(stroke, None)], false)
+            }
+            Err(e) => {
+                error!("Failed to import SVG image: {e:?}");
+                WidgetFlags::default()
+            }
+        }
+    }
+
+    /// Update an existing Typst stroke with new SVG data and source code.
+    pub fn update_typst_stroke(
+        &mut self,
+        stroke_key: StrokeKey,
+        svg_data: String,
+        typst_source: String,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let Some(Stroke::VectorImage(vectorimage)) = self.store.get_stroke_mut(stroke_key) {
+            match vectorimage.update_from_svg(&svg_data, Some(typst_source)) {
+                Ok(()) => {
+                    self.store.regenerate_rendering_for_stroke(
+                        stroke_key,
+                        self.camera.viewport(),
+                        self.camera.image_scale(),
+                    );
+
+                    widget_flags |= self.store.record(Instant::now());
+                    widget_flags.resize = true;
+                    widget_flags.redraw = true;
+                    widget_flags.store_modified = true;
+                }
+                Err(e) => {
+                    error!("Failed to update Typst stroke: {e:?}");
+                }
+            }
+        } else {
+            error!("Failed to update Typst stroke: stroke not found or not a VectorImage");
+        }
+
+        widget_flags
+    }
+
     /// Insert the stroke content.
     ///
     /// The data usually comes from the clipboard, drag-and-drop, ..

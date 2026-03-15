@@ -221,6 +221,9 @@ run-cli *ARGS:
 run-flatpak:
     flatpak-builder --run {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml rnote
 
+run-flatpak-no-backtrace:
+    flatpak-builder --env=RUST_BACKTRACE=0 --run {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml rnote
+
 test:
     meson test -C {{ build_folder }}
     meson compile cargo-test -C {{ build_folder }}

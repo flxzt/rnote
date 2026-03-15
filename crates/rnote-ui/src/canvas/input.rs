@@ -227,6 +227,7 @@ pub(crate) fn handle_pointer_controller_event(
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
+
     (propagation, pen_state)
 }
 

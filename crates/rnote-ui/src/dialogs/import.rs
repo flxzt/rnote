@@ -351,7 +351,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_bitmap_scalefactor_row.connect_changed(clone!(
+    pdf_import_bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -378,7 +378,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     ));
 
-    pdf_import_width_row.connect_changed(clone!(
+    pdf_import_width_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -484,6 +484,9 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         }
     }));
 
+    // set focus on enter button for quick confirmation
+    dialog.set_focus(Some(&import_pdf_button_confirm));
+
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());
 
@@ -588,7 +591,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     dpi_row.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
-    dpi_row.connect_changed(clone!(
+    dpi_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {
@@ -632,6 +635,8 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
             );
         }
     }));
+
+    dialog.set_focus(Some(&import_xopp_button_confirm));
 
     // Present than wait for a response from the dialog
     dialog.present(appwindow.root().as_ref());

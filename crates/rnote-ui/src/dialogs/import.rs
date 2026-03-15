@@ -591,7 +591,7 @@ pub(crate) async fn dialog_import_xopp_w_prefs(
     dpi_row.set_value(xopp_import_prefs.dpi);
 
     // Update preferences
-    dpi_row.connect_changed(clone!(
+    dpi_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |row| {

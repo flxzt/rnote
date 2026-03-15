@@ -4671,8 +4671,10 @@ name = "rnote-cli"
 version = "0.13.1"
 dependencies = [
  "anyhow",
+ "async-fs",
  "clap",
  "dialoguer",
+ "futures",
  "image",
  "indicatif",
  "nalgebra 0.34.1",

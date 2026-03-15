@@ -556,6 +556,7 @@ impl Typewriter {
                 progress: PenProgress::Idle,
             },
             TypewriterState::Start(pos) => {
+                #[cfg(feature = "ui")]
                 super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                 match keyboard_key {
@@ -609,6 +610,7 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Idle => {
+                        #[cfg(feature = "ui")]
                         super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
@@ -891,6 +893,7 @@ impl Typewriter {
                         finished,
                         ..
                     } => {
+                        #[cfg(feature = "ui")]
                         super::play_sound(Some(keyboard_key), engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
@@ -1146,6 +1149,7 @@ impl Typewriter {
                 progress: PenProgress::Idle,
             },
             TypewriterState::Start(pos) => {
+                #[cfg(feature = "ui")]
                 super::play_sound(None, engine_view.audioplayer);
 
                 text_style.ranged_text_attributes.clear();
@@ -1188,6 +1192,7 @@ impl Typewriter {
             } => {
                 match modify_state {
                     ModifyState::Idle => {
+                        #[cfg(feature = "ui")]
                         super::play_sound(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =
@@ -1230,6 +1235,7 @@ impl Typewriter {
                         finished,
                         ..
                     } => {
+                        #[cfg(feature = "ui")]
                         super::play_sound(None, engine_view.audioplayer);
 
                         if let Some(Stroke::TextStroke(textstroke)) =

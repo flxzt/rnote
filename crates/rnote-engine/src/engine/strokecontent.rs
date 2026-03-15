@@ -27,8 +27,8 @@ impl StrokeContent {
     pub const MIME_TYPE: &'static str = "application/rnote-stroke-content";
     pub const CLIPBOARD_EXPORT_MARGIN: f64 = 6.0;
 
-    pub fn with_bounds(mut self, bounds: Option<Aabb>) -> Self {
-        self.bounds = bounds;
+    pub fn with_bounds(mut self, bounds: Aabb) -> Self {
+        self.bounds = Some(bounds);
         self
     }
 
@@ -37,8 +37,8 @@ impl StrokeContent {
         self
     }
 
-    pub fn with_background(mut self, background: Option<Background>) -> Self {
-        self.background = background;
+    pub fn with_background(mut self, background: Background) -> Self {
+        self.background = Some(background);
         self
     }
 

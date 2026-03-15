@@ -4,11 +4,10 @@ id: com.github.flxzt.rnote.Devel
 tags:
     - development
 runtime: org.gnome.Platform
-runtime-version: "48"
+runtime-version: "49"
 sdk: org.gnome.Sdk
 sdk-extensions:
     - org.freedesktop.Sdk.Extension.rust-stable
-    - org.freedesktop.Sdk.Extension.llvm19
 command: rnote
 finish-args:
     - "--socket=wayland"
@@ -26,25 +25,19 @@ finish-args:
     # - "--env=G_MESSAGES_DEBUG=all"
     - "--env=GTK_PATH=/app/lib/gtk-4.0"
 build-options:
-    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm19/bin"
-    env:
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
-        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
+    append-path: "/usr/lib/sdk/rust-stable/bin"
     build-args:
         - "--share=network"
     test-args:
         - "--socket=x11"
         - "--share=network"
-    prepend-ld-library-path: /usr/lib/sdk/llvm19/lib
 modules:
     - name: rnote
       buildsystem: meson
       run-tests: true
       config-opts:
           - "-Dprofile=devel"
-          - "-Dcli=false"
+          - "-Dcli=true"
       sources:
           - type: dir
             path: ../

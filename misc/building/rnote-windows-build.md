@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
--   Install [MSYS2](https://www.msys2.org/).
--   Install [Rust](https://www.rust-lang.org/).
--   OPTIONAL: Install [Inno Setup](https://jrsoftware.org/isinfo.php) for building the installer.
+- Install [MSYS2](https://www.msys2.org/).
+- Install [Rust](https://www.rust-lang.org/).
+- Optional for building the installer: Install [Inno Setup](https://jrsoftware.org/isinfo.php).
 
 > The following instructions assume that the default installation directories were used.
 
@@ -16,8 +16,8 @@ In order to install the necessary dependencies, run the following command in a M
 pacman -S --noconfirm \
     unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
     mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
-    mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream \
-    mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
+    mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
+    mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
 ```
 
 ### Configuration
@@ -38,9 +38,10 @@ rustup default stable-gnu
 ```
 
 To be able to create symlinks present in the project when its sources are cloned, make sure that the `Developer Mode`
-in Windows is enabled. It doesn't say it, but it enables permissions for users to create symlinks.
+in Windows is enabled.
+It doesn't say it, but it enables permissions for users to create symlinks.
 
-Finally, clone the repository somewhere and initialize the submodules.
+Then clone the repository and initialize the submodules.
 
 ```bash
 git clone -c core.symlinks=true https://github.com/flxzt/rnote
@@ -48,15 +49,18 @@ cd rnote/
 git submodule update --init --recursive
 ```
 
-Or (from the mingw64 terminal)
+Or (from the mingw64 terminal):
+
 ```bash
 MSYS=winsymlinks:native git clone https://github.com/flxzt/rnote.git
 git submodule update --init --recursive
 ```
-Verify that you see in `/crates/rnote-ui/po` the four files zh_CN.po, zh_HK.po, zh_SG.po and zh_TW.po as symlinks (and not as a text file with a single line inside).   
 
-For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to
-link with both, resulting in "multiple definitions of pthread\_..." linker errors.
+Verify that you see in `/crates/rnote-ui/po` the four files zh_CN.po, zh_HK.po, zh_SG.po and zh_TW.po as symlinks
+(and not as a text file with a single line inside).
+
+For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/`´
+and rustc apparently wants to link with both, resulting in "multiple definitions of pthread\_..." linker errors.
 To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
 
 ```bash
@@ -83,8 +87,9 @@ meson compile -C _mesonbuild
 meson install -C _mesonbuild
 ```
 
-The installed binary can now be executed. It is located at `C:\msys64\mingw64\bin\rnote.exe` and depends on the
-environment provided by MSYS2, so it is not portable.
+The installed binary can now be executed.
+It is located at `C:\msys64\mingw64\bin\rnote.exe` and depends on the environment provided by MSYS2.
+It is not portable.
 
 ## Building the Installer
 
@@ -96,9 +101,8 @@ meson compile build-installer -C _mesonbuild
 ```
 
 If successful, the generated installer will be located at `_mesonbuild/rnote-win-installer.exe`.
-
-If you did not install MSYS2 into the default directory (`C:\msys64`), then you will have to adjust the meson option
-called `msys-path` prior to building.
+If you did not install MSYS2 into the default directory (`C:\msys64`),
+then you will have to adjust the meson option called `msys-path` prior to building.
 
 ```bash
 meson configure -Dmsys-path='C:\path\to\msys64' _mesonbuild

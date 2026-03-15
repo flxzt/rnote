@@ -13,8 +13,10 @@ rnote-compose = { workspace = true, features = ["clap-derive"] }
 rnote-engine = { workspace = true, features = ["cli"] }
 
 anyhow = { workspace = true }
+async-fs = { workspace = true }
 clap = { workspace = true }
 dialoguer = { workspace = true }
+futures = { workspace = true }
 image = { workspace = true }
 indicatif = { workspace = true }
 nalgebra = { workspace = true }

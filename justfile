@@ -212,11 +212,11 @@ install:
 install-flatpak:
     flatpak-builder --user --install {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml
 
-run-ui:
-    {{ build_folder }}/target/debug/rnote
+run-ui *ARGS:
+    {{ build_folder }}/target/debug/rnote {{ARGS}}
 
-run-cli:
-    {{ build_folder }}/target/debug/rnote-cli
+run-cli *ARGS:
+    {{ build_folder }}/target/debug/rnote-cli {{ARGS}}
 
 run-flatpak:
     flatpak-builder --run {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml rnote

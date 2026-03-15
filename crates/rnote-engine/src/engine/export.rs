@@ -8,6 +8,7 @@ use rayon::prelude::*;
 use rnote_compose::SplitOrder;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
+use std::io::Cursor;
 use std::sync::Arc;
 use tracing::error;
 
@@ -344,11 +345,11 @@ impl Engine {
                 self.store
                     .get_strokes_arc(&self.store.stroke_keys_as_rendered()),
             )
-            .with_bounds(Some(
+            .with_bounds(
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
-            ))
-            .with_background(Some(self.document.config.background))
+            )
+            .with_background(self.document.config.background)
     }
 
     pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
@@ -363,8 +364,8 @@ impl Engine {
                                 .stroke_keys_as_rendered_intersecting_bounds(bounds),
                         ),
                     )
-                    .with_bounds(Some(bounds))
-                    .with_background(Some(self.document.config.background))
+                    .with_bounds(bounds)
+                    .with_background(self.document.config.background)
             })
             .collect()
     }
@@ -377,8 +378,22 @@ impl Engine {
         Some(
             StrokeContent::default()
                 .with_strokes(self.store.get_strokes_arc(&selection_keys))
-                .with_background(Some(self.document.config.background)),
+                .with_background(self.document.config.background),
         )
+    }
+
+    /// Extract thumbnail content.
+    ///
+    /// It is ensureed this [StrokeContent] has bounds and a background.
+    /// Therefore it is ensured generating a SVG from it will never return `Ok(None)`.
+    pub fn extract_thumbnail_content(&self, size: na::Vector2<f64>) -> StrokeContent {
+        let scale_factor = self.camera.scale_factor();
+        let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
+        let bounds = bounds.unwrap_or_else(|| self.document.bounds());
+        StrokeContent::default()
+            .with_strokes(self.store.get_strokes_arc(&keys))
+            .with_bounds(bounds)
+            .with_background(self.document.config.background)
     }
 
     /// Export the entire engine state as Json string.
@@ -894,6 +909,76 @@ impl Engine {
             if oneshot_sender.send(result()).is_err() {
                 error!(
                     "Sending result to receiver failed while exporting selection as bitmap image bytes. Receiver already dropped"
+                );
+            }
+        });
+
+        oneshot_receiver
+    }
+
+    /// Generate a thumbnail PNG.
+    ///
+    /// # Arguments
+    /// * `size`: the size (width/height) of the thumbnail in px.
+    pub fn generate_thumbnail(
+        &self,
+        size: u32,
+        export_format: SelectionExportFormat,
+    ) -> oneshot::Receiver<Result<Option<Vec<u8>>, anyhow::Error>> {
+        let (oneshot_sender, oneshot_receiver) =
+            oneshot::channel::<anyhow::Result<Option<Vec<u8>>>>();
+        let selection_export_prefs = SelectionExportPrefs {
+            export_format,
+            ..Default::default()
+        };
+
+        let content = self.extract_thumbnail_content(na::vector![size as f64, size as f64]);
+        rayon::spawn(move || {
+            let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
+                let svg = content
+                    .gen_svg(
+                        selection_export_prefs.with_background,
+                        selection_export_prefs.with_pattern,
+                        selection_export_prefs.optimize_printing,
+                        selection_export_prefs.margin,
+                    )?
+                    .context("Unable to generate SVG from thumbnail content")?;
+                let image_format = match export_format {
+                    SelectionExportFormat::Svg => {
+                        return Err(anyhow::anyhow!("image format not set to a bitmap format."));
+                    }
+                    SelectionExportFormat::Png => image::ImageFormat::Png,
+                    SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg,
+                };
+
+                let image = svg.gen_image(1.0)?;
+                let (resize_width, resize_height) = {
+                    let width = image.pixel_width;
+                    let height = image.pixel_height;
+                    let ratio = if width >= height {
+                        // Landscape
+                        width as f64 / size as f64
+                    } else {
+                        // Portrait
+                        height as f64 / size as f64
+                    };
+                    let nwidth = width as f64 / ratio;
+                    let nheight = height as f64 / ratio;
+                    (nwidth, nheight)
+                };
+                let image = image::imageops::resize(
+                    &image.into_imgbuf()?,
+                    resize_width.ceil() as u32,
+                    resize_height.ceil() as u32,
+                    image::imageops::FilterType::Nearest,
+                );
+                let mut bytes: Cursor<Vec<u8>> = Cursor::new(Vec::new());
+                image.write_to(&mut bytes, image_format)?;
+                Ok(Some(bytes.into_inner()))
+            };
+            if oneshot_sender.send(result()).is_err() {
+                error!(
+                    "Sending thumbnail rendering result to receiver failed: Receiver already dropped"
                 );
             }
         });

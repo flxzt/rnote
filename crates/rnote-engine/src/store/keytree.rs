@@ -55,6 +55,22 @@ impl KeyTree {
             .collect()
     }
 
+    /// Get containing bounds for the supplied keys.
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (StrokeKey, Aabb)> {
+        self.0.iter().map(|geom| {
+            let bounds = geom.geom();
+            let lower = bounds.lower();
+            let upper = bounds.upper();
+            (
+                geom.data,
+                Aabb::new(
+                    na::point![lower[0], lower[1]],
+                    na::point![upper[0], upper[1]],
+                ),
+            )
+        })
+    }
+
     /// Rebuild the entire rtree from the given Vec of (key, bounds).
     pub(crate) fn rebuild_from_vec(&mut self, strokes: Vec<(StrokeKey, Aabb)>) {
         let objects = strokes

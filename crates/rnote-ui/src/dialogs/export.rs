@@ -334,6 +334,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
         }));
     }));
 
+    // set file dialog as initial focus
+    dialog.set_focus(Some(&export_file_button));
+
     dialog.present(appwindow.root().as_ref());
 }
 
@@ -654,7 +657,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    bitmap_scalefactor_row.connect_changed(clone!(
+    bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |bitmap_scalefactor_row| {
@@ -667,7 +670,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    jpeg_quality_row.connect_changed(clone!(
+    jpeg_quality_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |jpeg_quality_row| {
@@ -757,6 +760,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }));
     }));
 
+    dialog.set_focus(Some(&export_dir_button));
     dialog.present(appwindow.root().as_ref());
 }
 
@@ -1023,7 +1027,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    bitmap_scalefactor_row.connect_changed(clone!(
+    bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |bitmap_scalefactor_row| {
@@ -1036,7 +1040,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    jpeg_quality_row.connect_changed(clone!(
+    jpeg_quality_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |jpeg_quality_row| {
@@ -1049,7 +1053,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    margin_row.connect_changed(clone!(
+    margin_row.connect_value_notify(clone!(
         #[weak]
         preview,
         #[weak]
@@ -1123,6 +1127,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }));
     }));
 
+    dialog.set_focus(Some(&export_file_button));
     dialog.present(appwindow.root().as_ref());
 }
 

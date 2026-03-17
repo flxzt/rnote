@@ -8,19 +8,7 @@
 
 > The following instructions assume that the default installation directories were used.
 
-### Dependencies
-
-In order to install the necessary dependencies, run the following command in a MSYS2 terminal.
-
-```bash
-pacman -S --noconfirm \
-    unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
-    mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
-    mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream \
-    mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
-```
-
-### Configuration
+### Path configuration 
 
 Add the Rust binary directory to the MSYS2 `PATH` by adding the following line to `~/.bashrc`.
 
@@ -29,6 +17,17 @@ export PATH="$PATH:/c/Users/<user>/.cargo/bin"
 ```
 
 If you installed Inno Setup, append `:/c/Program Files (x86)/Inno Setup 6` to the path as well.
+
+### Dependencies
+
+To install dependencies, install `just` and run the `prerequisites-win` command inside the MSYS2 terminal
+```bash
+cargo install --locked just
+just prerequisites-win
+```
+Or run the corresponding `prerequisites-win` section in [the justfile](../../justfile) in a MSYS2 terminal manually.
+
+### Configuration
 
 Next, Rust's toolchain needs to be changed.
 

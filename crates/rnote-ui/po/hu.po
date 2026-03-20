@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-14 14:56+0100\n"
-"PO-Revision-Date: 2025-11-24 00:51+0000\n"
+"PO-Revision-Date: 2026-03-21 10:39+0000\n"
 "Last-Translator: ovari <ovari123@zoho.com>\n"
-"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/"
-">\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/rnote/repo/hu/>"
+"\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15-dev\n"
+"X-Generator: Weblate 5.17-dev\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1902,10 +1902,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "Nem sikerült a kijelölés exportálása, nincs kijelölve semmi"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-#, fuzzy
-#| msgid "Saves are in progress, waiting before closing.."
 msgid "Saves are in progress, waiting before closing..."
-msgstr "A mentés folyamatban van, vár a bezárás előtt…"
+msgstr "Mentés folyamatban van, várakozás a bezárás előtt…"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
@@ -2090,10 +2088,8 @@ msgid "- no author -"
 msgstr "- nincs szerző -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:437
-#, fuzzy
-#| msgid "Modification date:"
 msgid "- no modification date -"
-msgstr "Módosítás dátuma:"
+msgstr "- nincs módosítási dátum -"
 
 #: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"

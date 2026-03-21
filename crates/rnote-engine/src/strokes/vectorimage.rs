@@ -33,6 +33,13 @@ pub struct VectorImage {
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,
+    /// Optional Typst source code, if this image was generated from Typst
+    #[serde(
+        rename = "typst_source",
+        skip_serializing_if = "Option::is_none",
+        default
+    )]
+    pub typst_source: Option<String>,
 }
 
 impl Default for VectorImage {
@@ -41,6 +48,7 @@ impl Default for VectorImage {
             svg_data: String::default(),
             intrinsic_size: na::Vector2::zeros(),
             rectangle: Rectangle::default(),
+            typst_source: None,
         }
     }
 }
@@ -137,6 +145,53 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
+    /// Update this VectorImage with new SVG data, preserving the width scale and transform.
+    /// The height adjusts proportionally to maintain aspect ratio based on the new intrinsic size.
+    pub fn update_from_svg(
+        &mut self,
+        svg_data: &str,
+        typst_source: Option<String>,
+    ) -> Result<(), anyhow::Error> {
+        let new = Self::from_svg_str(
+            svg_data,
+            na::Vector2::zeros(),
+            ImageSizeOption::RespectOriginalSize,
+        )?;
+
+        let old_cuboid_size = self.rectangle.cuboid.half_extents * 2.0;
+        let old_transform = self.rectangle.transform;
+
+        let new_intrinsic_size = new.intrinsic_size;
+
+        // Calculate width scale factor based on old cuboid width vs new intrinsic width
+        let width_scale_factor = if new_intrinsic_size[0] > 0.0 {
+            old_cuboid_size[0] / new_intrinsic_size[0]
+        } else {
+            1.0
+        };
+
+        // Apply the scale factor to both dimensions to maintain aspect ratio
+        let new_cuboid_size = na::vector![
+            new_intrinsic_size[0] * width_scale_factor,
+            new_intrinsic_size[1] * width_scale_factor
+        ];
+
+        // Calculate height difference to adjust position
+        let height_diff = new_cuboid_size[1] - old_cuboid_size[1];
+
+        self.svg_data = new.svg_data;
+        self.intrinsic_size = new_intrinsic_size;
+        self.rectangle.cuboid = p2d::shape::Cuboid::new(new_cuboid_size * 0.5);
+        self.rectangle.transform = old_transform;
+        // Adjust y position so it looks like text was appended downward
+        self.rectangle
+            .transform
+            .append_translation_mut(na::vector![0.0, height_diff * 0.5]);
+        self.typst_source = typst_source;
+
+        Ok(())
+    }
+
     pub fn from_svg_str(
         svg_data: &str,
         pos: na::Vector2<f64>,
@@ -201,6 +256,7 @@ impl VectorImage {
             svg_data,
             intrinsic_size,
             rectangle,
+            typst_source: None,
         })
     }
 

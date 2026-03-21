@@ -78,6 +78,9 @@ pub struct Typewriter {
     pos: Option<na::Vector2<f64>>,
     blink_task_handle: Option<crate::tasks::PeriodicTaskHandle>,
     cursor_visible: bool,
+    /// Stores the stroke key of a typst stroke that was clicked on pen-down,
+    /// so that on pen-up we can signal to open the editor.
+    pending_typst_stroke: Option<StrokeKey>,
 }
 
 impl Default for Typewriter {
@@ -87,6 +90,7 @@ impl Default for Typewriter {
             pos: None,
             blink_task_handle: None,
             cursor_visible: true,
+            pending_typst_stroke: None,
         }
     }
 }

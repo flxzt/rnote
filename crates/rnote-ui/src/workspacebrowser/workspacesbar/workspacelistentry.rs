@@ -27,8 +27,15 @@ mod imp {
 
     impl Default for RnWorkspaceListEntryInner {
         fn default() -> Self {
+            let dir = std::env::home_dir().unwrap_or_else(|| {
+                if cfg!(target_os = "windows") {
+                    PathBuf::from("C:\\")
+                } else {
+                    PathBuf::from("./")
+                }
+            });
             Self {
-                dir: PathBuf::from("./"),
+                dir,
                 icon: String::from("workspacelistentryicon-folder-symbolic"),
                 color: super::RnWorkspaceListEntry::COLOR_DEFAULT.as_rgba_u32(),
                 name: String::from("default"),

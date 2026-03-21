@@ -5,10 +5,7 @@ use geo::line_string;
 use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use std::{
-    io::{Read, Seek, Write},
-    ops::Range,
-};
+use std::{io::Write, ops::Range};
 
 pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -160,8 +157,9 @@ where
 
     #[cfg(unix)]
     {
-        // On UNIX, we also sync the parent directory (apparently not necessary on windows).
-        // File management on UNIX seems to be a bit of a nightmare.
+        // On UNIX systems, we also sync the parent directory after the persist operation.
+        // Not required for Windows systems, not possible either (you can't open directories as files in the first place).
+        // Note that this might not even be enough, file management on UNIX seems to be a bit of a nightmare.
         std::fs::File::open(parent_directory)
             .with_context(|| "Failed to open the parent directory")?
             .sync_all()

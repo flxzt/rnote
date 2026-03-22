@@ -150,7 +150,7 @@ where
         .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
 
     // Finally, we persist the temporary file to the target filepath, if a file
-    // pre-exists at this location, it will be atomically replaced by our new file.
+    // preexists at this location, it will be atomically replaced by our new file.
     let _ = temp_file
         .persist(filepath)
         .with_context(|| "Failed to persist the temporary file to the target filepath")?;

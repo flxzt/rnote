@@ -210,7 +210,7 @@ impl RnCanvas {
     /// Saves the document to the given file.
     ///
     /// Returns:
-    /// - `Ok(true)` if saving was sucessful
+    /// - `Ok(true)` if saving was successful
     /// - `Ok(false)` if a save was already in progress (and thus this function didn't do anything)
     /// - `Err(e)` when saving failed in any way
     #[tracing::instrument(skip_all, fields(path = format!("{:?}", file.path())))]
@@ -262,8 +262,11 @@ impl RnCanvas {
         debug!("Saving file has finished successfully");
 
         if !skip_set_output_file {
-            // We only create/replace the file watcher once we are sure the file was sucessfully saved.
+            // We only create/replace the file watcher once we are sure the file was successfully saved.
             self.set_output_file(Some(file.to_owned()));
+            // Required, otherwise `output_file_expect_write` will be stuck on true after saving for the
+            // first time or saving as another filename, until the subsequent save at least.
+            self.set_output_file_expect_write(false);
         }
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);

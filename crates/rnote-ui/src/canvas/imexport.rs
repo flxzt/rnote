@@ -235,10 +235,18 @@ impl RnCanvas {
             .engine_ref()
             .save_as_rnote_bytes(basename.to_string_lossy().to_string());
 
+        let mut skip_set_output_file = false;
+        if let Some(output_filepath) = self.output_file().and_then(|f| f.path())
+            && crate::utils::paths_abs_eq(output_filepath, &filepath).unwrap_or(false)
+        {
+            skip_set_output_file = true;
+        }
+
         self.dismiss_output_file_modified_toast();
 
         let file_write_operation = async {
             let bytes = rnote_bytes_receiver.await??;
+            // The `output_file_expect_write` should theoretically be reset to `false` by the file watcher later.
             self.set_output_file_expect_write(true);
             crate::utils::atomic_save_to_file_future(&filepath, bytes).await
         };
@@ -251,9 +259,12 @@ impl RnCanvas {
             return Err(e);
         }
 
-        // Required, as atomic file saving moves a new file into the old one
-        self.set_output_file(Some(gio::File::for_path(&filepath)));
         debug!("Saving file has finished successfully");
+
+        if !skip_set_output_file {
+            // We only create/replace the file watcher once we are sure the file was sucessfully saved.
+            self.set_output_file(Some(file.to_owned()));
+        }
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 

@@ -1086,6 +1086,11 @@ impl RnCanvas {
                         parent_path.display()
                     );
                 }
+                debug!(
+                    "Started watching directory '{}', targetting the file '{:?}'",
+                    parent_path.display(),
+                    file_path.file_name().map(|f| f.display())
+                );
                 while let Some(res) = rx.next().await {
                     match res {
                         Ok(events) => {

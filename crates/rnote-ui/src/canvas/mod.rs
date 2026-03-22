@@ -691,6 +691,9 @@ impl RnCanvas {
     }
 
     #[allow(unused)]
+    /// Sets the internal output file of the canvas, note that this will
+    /// cause the file watcher task to either be stopped if `output_file` is
+    /// set to `None` or be replaced if set to `Some(...)`.
     pub(crate) fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
     }
@@ -1008,6 +1011,13 @@ impl RnCanvas {
                     if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
                         return;
                     }
+                    if canvas.output_file_expect_write() {
+                        // On macOS, atomic file saving sometimes leads to receiving two `Modify(Name(Any))` events instead
+                        // of one `Modify(Name(From))` event followed by a `Modify(Name(To))` event. Thus, the debouncer
+                        // cannot correctly interpret these as part of an atomic save and will cause issues (too long to
+                        // explain here in detail unfortunately). See https://github.com/flxzt/rnote/pull/1678 for more info.
+                        return;
+                    }
                     canvas.set_unsaved_changes(true);
                     canvas.set_output_file(None);
                     appwindow.overlays().dispatch_toast_text(
@@ -1086,6 +1096,11 @@ impl RnCanvas {
                         parent_path.display()
                     );
                 }
+                debug!(
+                    "Started watching directory '{}', targetting the file '{:?}'",
+                    parent_path.display(),
+                    file_path.file_name().map(|f| f.display())
+                );
                 while let Some(res) = rx.next().await {
                     match res {
                         Ok(events) => {

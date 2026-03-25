@@ -88,6 +88,28 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.14.0" date="2026-03-25">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: apply workspace entry dialog by pressing Enter (@ternison)</li>
+          <li>feat: add text formatting keyboard shortcuts (@ Keschler)</li>
+          <li>feat: Xournal++ text import (@Doublonmousse)</li>
+          <li>fix: PDF rendering issues by replace underlying library (from poppler to hayro) (@flxzt)</li>
+          <li>feat: CLI create command (@DarshPareek)</li>
+          <li>feat: CLI thumbnail generation timeout (@flxzt)</li>
+          <li>feat: bundle CLI in flatpak (@flxzt)</li>
+          <li>feat: atomic file saving (@anesthetice)</li>
+          <li>improv: pen eraser default (@DorianRudolph)</li>
+          <li>improv: improve initial focus for import/export dialogs (@Doublonmousse)</li>
+          <li>fix: file picker stealing focus from all opened windows (@Doublonmousse)</li>
+          <li>fix: pen sounds on Windows (@Doublonmousse)</li>
+          <li>fix: prevent crash when sorting files with non UTF-8 names (@Doublonmousse)</li>
+          <li>fix: rnote thumbnailer execution (@flxzt)</li>
+          <li>fix: workspace directory default (@flxzt)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.13.1" date="2025-09-09">
       <description>
         <p>this release changes:</p>

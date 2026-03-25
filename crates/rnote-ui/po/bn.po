@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-14 14:56+0100\n"
+"POT-Creation-Date: 2026-03-25 19:35+0100\n"
 "PO-Revision-Date: 2025-05-22 08:01+0000\n"
 "Last-Translator: Ritam Saha <ritamsaha00@gmail.com>\n"
 "Language-Team: Bengali <https://hosted.weblate.org/projects/rnote/repo/bn/>\n"
@@ -33,6 +33,10 @@ msgstr "নোম;জিটিকে;অফিস;চিত্রলেখ;ন�
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
 msgstr "নতুন উইন্ডো"
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
+msgid "@APP_NAME_CAPITALIZED@"
+msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -205,9 +209,9 @@ msgstr "কর্মক্ষেত্রের ডিরেক্টরিট�
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:170
 #: crates/rnote-ui/data/ui/dialogs/export.ui:290
-#: crates/rnote-ui/src/dialogs/export.rs:482
-#: crates/rnote-ui/src/dialogs/export.rs:519
-#: crates/rnote-ui/src/dialogs/export.rs:527
+#: crates/rnote-ui/src/dialogs/export.rs:485
+#: crates/rnote-ui/src/dialogs/export.rs:522
+#: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/mod.rs:542
 msgid "- no directory selected -"
 msgstr "- কোনও ডিরেক্টরি নির্বাচিত হয়নি -"
@@ -229,15 +233,15 @@ msgid "Trash"
 msgstr "আবর্জনা বাক্স"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
-#: crates/rnote-ui/src/dialogs/export.rs:346
+#: crates/rnote-ui/src/dialogs/export.rs:349
 msgid "Export Document"
 msgstr "নথি রপ্তানি করুন"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
 #: crates/rnote-ui/data/ui/dialogs/export.ui:428
-#: crates/rnote-ui/src/dialogs/export.rs:1252
-#: crates/rnote-ui/src/dialogs/export.rs:1313
+#: crates/rnote-ui/src/dialogs/export.rs:1257
+#: crates/rnote-ui/src/dialogs/export.rs:1318
 msgid "Export"
 msgstr "রপ্তানি"
 
@@ -258,10 +262,10 @@ msgstr "রপ্তানি ফাইল নির্বাচন করুন
 #: crates/rnote-ui/src/dialogs/export.rs:158
 #: crates/rnote-ui/src/dialogs/export.rs:165
 #: crates/rnote-ui/src/dialogs/export.rs:251
-#: crates/rnote-ui/src/dialogs/export.rs:894
-#: crates/rnote-ui/src/dialogs/export.rs:917
-#: crates/rnote-ui/src/dialogs/export.rs:924
-#: crates/rnote-ui/src/dialogs/export.rs:1012
+#: crates/rnote-ui/src/dialogs/export.rs:898
+#: crates/rnote-ui/src/dialogs/export.rs:921
+#: crates/rnote-ui/src/dialogs/export.rs:928
+#: crates/rnote-ui/src/dialogs/export.rs:1016
 msgid "- no file selected -"
 msgstr "- কোনও ফাইল নির্বাচিত হয়নি -"
 
@@ -321,19 +325,19 @@ msgstr "রপ্তানি বিন্যাস"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/data/ui/dialogs/export.ui:346
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
-#: crates/rnote-ui/src/dialogs/export.rs:365
-#: crates/rnote-ui/src/dialogs/export.rs:789
-#: crates/rnote-ui/src/dialogs/export.rs:1181
+#: crates/rnote-ui/src/dialogs/export.rs:368
+#: crates/rnote-ui/src/dialogs/export.rs:793
+#: crates/rnote-ui/src/dialogs/export.rs:1186
 msgid "Svg"
 msgstr "এসভিজি"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
-#: crates/rnote-ui/src/dialogs/export.rs:376
+#: crates/rnote-ui/src/dialogs/export.rs:379
 msgid "Pdf"
 msgstr "পিডিএফ"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
-#: crates/rnote-ui/src/dialogs/export.rs:387
+#: crates/rnote-ui/src/dialogs/export.rs:390
 msgid "Xopp"
 msgstr "Xopp"
 
@@ -364,7 +368,7 @@ msgid "Vertical First"
 msgstr "উল্লম্ব প্রথম"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
-#: crates/rnote-ui/src/dialogs/export.rs:769
+#: crates/rnote-ui/src/dialogs/export.rs:773
 msgid "Export Document Pages"
 msgstr "নথির পৃষ্ঠা রপ্তানী করুন"
 
@@ -388,15 +392,15 @@ msgstr "ফাইল স্টেমের নাম রপ্তানি ক�
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:347
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
-#: crates/rnote-ui/src/dialogs/export.rs:800
-#: crates/rnote-ui/src/dialogs/export.rs:1192
+#: crates/rnote-ui/src/dialogs/export.rs:804
+#: crates/rnote-ui/src/dialogs/export.rs:1197
 msgid "Png"
 msgstr "পিএনজি"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
 #: crates/rnote-ui/data/ui/dialogs/export.ui:546
-#: crates/rnote-ui/src/dialogs/export.rs:813
-#: crates/rnote-ui/src/dialogs/export.rs:1205
+#: crates/rnote-ui/src/dialogs/export.rs:817
+#: crates/rnote-ui/src/dialogs/export.rs:1210
 msgid "Jpeg"
 msgstr "জেপিজি/জেপেগ"
 
@@ -427,7 +431,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "জেপেগ চিত্রের গুণমান সেট করুন (১ - ১০০)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
-#: crates/rnote-ui/src/dialogs/export.rs:1160
+#: crates/rnote-ui/src/dialogs/export.rs:1165
 msgid "Export Selection"
 msgstr "নির্বাচন রপ্তানি করুন"
 
@@ -1987,40 +1991,40 @@ msgstr ""
 msgid "Opening file failed"
 msgstr "ফাইল খুলতে ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:892 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid file name -"
 msgstr "- অবৈধ ফাইলের নাম -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:905
+#: crates/rnote-ui/src/canvas/mod.rs:908
 msgid "- invalid folder path -"
 msgstr "- অবৈধ ফোল্ডার পাথ -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:929
+#: crates/rnote-ui/src/canvas/mod.rs:932
 msgid "Opened file was modified on disk"
 msgstr "খোলা ফাইল ডিস্কে পরিবর্তন করা হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:930
+#: crates/rnote-ui/src/canvas/mod.rs:933
 msgid "Reload"
 msgstr "পুনরায় লোড করুন"
 
-#: crates/rnote-ui/src/canvas/mod.rs:946
+#: crates/rnote-ui/src/canvas/mod.rs:949
 msgid "Reloading .rnote file from disk failed"
 msgstr "ডিস্ক থেকে .rnote ফাইল পুনরায় খোলা করা ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1014
+#: crates/rnote-ui/src/canvas/mod.rs:1024
 msgid "Opened file was renamed or moved."
 msgstr "খোলা ফাইলটি ডিস্কে পুনঃনামকরণ কিংবা সরান হয়েছে।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1028
+#: crates/rnote-ui/src/canvas/mod.rs:1038
 msgid "Opened file was removed."
 msgstr "খোলা ফাইলটি সরিয়ে ফেলা হয়েছে।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1249
+#: crates/rnote-ui/src/canvas/mod.rs:1264
 msgid "Inserting file failed"
 msgstr "ফাইল সন্নিবেশ ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1261
+#: crates/rnote-ui/src/canvas/mod.rs:1276
 msgid "Inserting text failed"
 msgstr "পাঠ্য সন্নিবেশ ব্যর্থ হয়েছে"
 
@@ -2046,79 +2050,79 @@ msgid "Exported document successfully"
 msgstr "সফলভাবে নথি রপ্তানি করা হয়েছে"
 
 #: crates/rnote-ui/src/dialogs/export.rs:315
-#: crates/rnote-ui/src/dialogs/export.rs:742
-#: crates/rnote-ui/src/dialogs/export.rs:1103
+#: crates/rnote-ui/src/dialogs/export.rs:745
+#: crates/rnote-ui/src/dialogs/export.rs:1107
 msgid "View in file manager"
 msgstr "ফাইল ম্যানেজারে দেখুন"
 
 #: crates/rnote-ui/src/dialogs/export.rs:323
 #: crates/rnote-ui/src/dialogs/export.rs:329
-#: crates/rnote-ui/src/dialogs/export.rs:746
-#: crates/rnote-ui/src/dialogs/export.rs:752
-#: crates/rnote-ui/src/dialogs/export.rs:1111
-#: crates/rnote-ui/src/dialogs/export.rs:1117
+#: crates/rnote-ui/src/dialogs/export.rs:749
+#: crates/rnote-ui/src/dialogs/export.rs:755
+#: crates/rnote-ui/src/dialogs/export.rs:1115
+#: crates/rnote-ui/src/dialogs/export.rs:1121
 #, fuzzy
 #| msgid "Failed to open the file in the file manager"
 msgid "Failed to view the file in the file manager"
 msgstr "ফাইল ম্যানেজারে ফাইল খুলতে ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:348
-#: crates/rnote-ui/src/dialogs/export.rs:771
-#: crates/rnote-ui/src/dialogs/export.rs:1162
+#: crates/rnote-ui/src/dialogs/export.rs:351
+#: crates/rnote-ui/src/dialogs/export.rs:775
+#: crates/rnote-ui/src/dialogs/export.rs:1167
 #: crates/rnote-ui/src/dialogs/mod.rs:524
 msgid "Select"
 msgstr "নির্বাচন করুন"
 
-#: crates/rnote-ui/src/dialogs/export.rs:723
+#: crates/rnote-ui/src/dialogs/export.rs:726
 msgid "Exporting document pages failed, no directory selected"
 msgstr "নথিপত্র রপ্তানি ব্যর্থ হয়েছে, কোন ডিরেক্টরি নির্বাচিত নেই"
 
-#: crates/rnote-ui/src/dialogs/export.rs:735
+#: crates/rnote-ui/src/dialogs/export.rs:738
 msgid "Exporting document pages failed"
 msgstr "নথিপত্র রপ্তানি ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:741
+#: crates/rnote-ui/src/dialogs/export.rs:744
 msgid "Exported document pages successfully"
 msgstr "সফলভাবে নথিপত্র রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1085
+#: crates/rnote-ui/src/dialogs/export.rs:1089
 msgid "Exporting selection failed, no file selected"
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে, কোন ফাইল নির্বাচিত নেই"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1096
+#: crates/rnote-ui/src/dialogs/export.rs:1100
 msgid "Exporting selection failed"
 msgstr "নির্বাচন রপ্তানি ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1102
+#: crates/rnote-ui/src/dialogs/export.rs:1106
 msgid "Exported selection successfully"
 msgstr "নির্বাচন সফলভাবে রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1238
-#: crates/rnote-ui/src/dialogs/export.rs:1299
+#: crates/rnote-ui/src/dialogs/export.rs:1243
+#: crates/rnote-ui/src/dialogs/export.rs:1304
 msgid "Json"
 msgstr "Json"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1250
+#: crates/rnote-ui/src/dialogs/export.rs:1255
 msgid "Export Engine State"
 msgstr "ইঞ্জিনের অবস্থা রপ্তানী করুন"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1269
+#: crates/rnote-ui/src/dialogs/export.rs:1274
 msgid "Exporting engine state failed"
 msgstr "ইঞ্জিনের অবস্থা রপ্তানি ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1273
+#: crates/rnote-ui/src/dialogs/export.rs:1278
 msgid "Exported engine state successfully"
 msgstr "ইঞ্জিনের অবস্থা সফলভাবে রপ্তানি করা হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1311
+#: crates/rnote-ui/src/dialogs/export.rs:1316
 msgid "Export Engine Config"
 msgstr "ইঞ্জিন কনফিগ রপ্তানী করুন"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1330
+#: crates/rnote-ui/src/dialogs/export.rs:1335
 msgid "Exporting engine config failed"
 msgstr "ইঞ্জিন কনফিগ রপ্তানী ব্যর্থ হয়েছে"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1334
+#: crates/rnote-ui/src/dialogs/export.rs:1339
 msgid "Exported engine config successfully"
 msgstr "ইঞ্জিন কনফিগ সফলভাবে রপ্তানি করা হয়েছে"
 
@@ -2590,132 +2594,132 @@ msgstr "ফোল্ডারের নাম"
 msgid "New Folder"
 msgstr "নতুন ফোল্ডার"
 
-#: crates/rnote-ui/src/utils.rs:159
+#: crates/rnote-ui/src/utils.rs:169
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
 msgstr "ধূসর"
 
-#: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
+#: crates/rnote-ui/src/utils.rs:171 crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "rose"
 msgstr "গোলাপি"
 
-#: crates/rnote-ui/src/utils.rs:163
+#: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "red"
 msgstr "লাল"
 
-#: crates/rnote-ui/src/utils.rs:166
+#: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "orange"
 msgstr "কমলা"
 
-#: crates/rnote-ui/src/utils.rs:169
+#: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "yellow"
 msgstr "হলুদ"
 
-#: crates/rnote-ui/src/utils.rs:173
+#: crates/rnote-ui/src/utils.rs:183
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
 msgstr "chartreuse-সবুজ"
 
-#: crates/rnote-ui/src/utils.rs:176
+#: crates/rnote-ui/src/utils.rs:186
 msgctxt "part of string representation of a color"
 msgid "green"
 msgstr "সবুজ"
 
-#: crates/rnote-ui/src/utils.rs:179
+#: crates/rnote-ui/src/utils.rs:189
 msgctxt "part of string representation of a color"
 msgid "spring-green"
 msgstr "বসন্ত-সবুজ"
 
-#: crates/rnote-ui/src/utils.rs:182
+#: crates/rnote-ui/src/utils.rs:192
 msgctxt "part of string representation of a color"
 msgid "cyan"
 msgstr "cyan-নীল"
 
-#: crates/rnote-ui/src/utils.rs:185
+#: crates/rnote-ui/src/utils.rs:195
 msgctxt "part of string representation of a color"
 msgid "azure"
 msgstr "azure-নীল"
 
-#: crates/rnote-ui/src/utils.rs:188
+#: crates/rnote-ui/src/utils.rs:198
 msgctxt "part of string representation of a color"
 msgid "blue"
 msgstr "নীল"
 
-#: crates/rnote-ui/src/utils.rs:191
+#: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "violet"
 msgstr "বেগুনি"
 
-#: crates/rnote-ui/src/utils.rs:194
+#: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "magenta"
 msgstr "magenta-বেগুনী"
 
-#: crates/rnote-ui/src/utils.rs:201
+#: crates/rnote-ui/src/utils.rs:211
 msgctxt "part of string representation of a color"
 msgid "greyish"
 msgstr "ধুসরীয়"
 
-#: crates/rnote-ui/src/utils.rs:204
+#: crates/rnote-ui/src/utils.rs:214
 msgctxt "part of string representation of a color"
 msgid "strong"
 msgstr "গাঢ়"
 
-#: crates/rnote-ui/src/utils.rs:206
+#: crates/rnote-ui/src/utils.rs:216
 msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "প্রাণবন্ত"
 
-#: crates/rnote-ui/src/utils.rs:210
+#: crates/rnote-ui/src/utils.rs:220
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "খুব-গাঢ়"
 
-#: crates/rnote-ui/src/utils.rs:212
+#: crates/rnote-ui/src/utils.rs:222
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "গাঢ়"
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "মধ্য"
 
-#: crates/rnote-ui/src/utils.rs:217
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "উজ্জল"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:231
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "স্বচ্ছ"
 
-#: crates/rnote-ui/src/utils.rs:223
+#: crates/rnote-ui/src/utils.rs:233
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "ষদচ্ছ"
 
-#: crates/rnote-ui/src/utils.rs:227
+#: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "হালকা ষদচ্ছ"
 
-#: crates/rnote-ui/src/utils.rs:236
+#: crates/rnote-ui/src/utils.rs:246
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "সম্পূর্ণ ষদচ্ছ"
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:249
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "কালো"
 
-#: crates/rnote-ui/src/utils.rs:241
+#: crates/rnote-ui/src/utils.rs:251
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "সাদা"

@@ -57,11 +57,11 @@ impl RoughOptions {
     Debug,
     Clone,
     Copy,
+    Default,
     PartialEq,
     Eq,
     PartialOrd,
     Ord,
-    Default,
     Serialize,
     Deserialize,
     num_derive::FromPrimitive,
@@ -71,7 +71,6 @@ impl RoughOptions {
 pub enum FillStyle {
     /// Solid.
     // pre v0.5.9 the fill style was always set to `Hachure` (capitalized), even though the app rendered a solid fill.
-    // For compatibility reasons we need set this alias.
     #[serde(rename = "solid", alias = "Hachure")]
     Solid,
     /// Hachure.

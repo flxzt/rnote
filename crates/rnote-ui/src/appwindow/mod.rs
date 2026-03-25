@@ -335,6 +335,26 @@ impl RnAppWindow {
         if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
             canvas.set_text_preprocessing(enable_text_preprocessing);
         }
+        if let Some(stroke_key) = widget_flags.open_typst_editor {
+            let was_open = self.imp().typst_editor_open.get();
+            self.imp().typst_editor_open.set(true);
+            if was_open {
+                return;
+            }
+            
+            let typst_source = canvas.engine_ref().typst_source_for_stroke(stroke_key);
+
+            if typst_source.is_some() {
+                crate::dialogs::typsteditor::dialog_typst_editor(
+                    self,
+                    &canvas,
+                    typst_source,
+                    Some(stroke_key),
+                );
+            } else {
+                self.imp().typst_editor_open.set(false);
+            }
+        }
     }
 
     /// Get the active (selected) tab page.

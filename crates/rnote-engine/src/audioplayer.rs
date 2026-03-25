@@ -1,6 +1,6 @@
 // Imports
 use anyhow::Context;
-use rand::Rng;
+use rand::RngExt;
 use rnote_compose::penevent::KeyboardKey;
 use rodio::source::Buffered;
 use rodio::{Decoder, Source};
@@ -12,9 +12,9 @@ use tracing::error;
 
 /// The audio player for pen sounds.
 pub struct AudioPlayer {
-    marker_outputstream: rodio::OutputStream,
-    brush_outputstream: rodio::OutputStream,
-    typewriter_outputstream: rodio::OutputStream,
+    marker_sink: rodio::MixerDeviceSink,
+    brush_sink: rodio::MixerDeviceSink,
+    typewriter_sink: rodio::MixerDeviceSink,
 
     sounds: HashMap<String, Buffered<Decoder<File>>>,
     brush_sound_task_handle: Option<crate::tasks::OneOffTaskHandle>,
@@ -45,9 +45,9 @@ impl AudioPlayer {
 
         let mut sounds = HashMap::new();
 
-        let brush_outputstream = rodio::OutputStreamBuilder::open_default_stream()?;
-        let marker_outputstream = rodio::OutputStreamBuilder::open_default_stream()?;
-        let typewriter_outputstream = rodio::OutputStreamBuilder::open_default_stream()?;
+        let brush_outputstream = rodio::DeviceSinkBuilder::open_default_sink()?;
+        let marker_outputstream = rodio::DeviceSinkBuilder::open_default_sink()?;
+        let typewriter_outputstream = rodio::DeviceSinkBuilder::open_default_sink()?;
 
         // Init marker sounds
         for i in 0..Self::N_SOUND_FILES_MARKER {
@@ -98,9 +98,9 @@ impl AudioPlayer {
         }
 
         Ok(Self {
-            marker_outputstream,
-            brush_outputstream,
-            typewriter_outputstream,
+            marker_sink: marker_outputstream,
+            brush_sink: brush_outputstream,
+            typewriter_sink: typewriter_outputstream,
 
             sounds,
             brush_sound_task_handle: None,
@@ -111,7 +111,7 @@ impl AudioPlayer {
         let mut rng = rand::rng();
         let marker_sound_index = rng.random_range(0..Self::N_SOUND_FILES_MARKER);
 
-        let sink = rodio::Sink::connect_new(self.marker_outputstream.mixer());
+        let sink = rodio::Player::connect_new(self.marker_sink.mixer());
         sink.append(self.sounds[&format!("marker_{marker_sound_index:02}")].clone());
         sink.detach();
     }
@@ -137,7 +137,7 @@ impl AudioPlayer {
         }
 
         if reinstall_task {
-            let sink = rodio::Sink::connect_new(self.brush_outputstream.mixer());
+            let sink = rodio::Player::connect_new(self.brush_sink.mixer());
 
             sink.append(
                 self.sounds["brush"]
@@ -160,7 +160,7 @@ impl AudioPlayer {
 
     /// Play a typewriter sound that fits the given key type, or a generic sound when None.
     pub fn play_typewriter_key_sound(&self, keyboard_key: Option<KeyboardKey>) {
-        let sink = rodio::Sink::connect_new(self.typewriter_outputstream.mixer());
+        let sink = rodio::Player::connect_new(self.typewriter_sink.mixer());
 
         match keyboard_key {
             Some(KeyboardKey::CarriageReturn) | Some(KeyboardKey::Linefeed) => {

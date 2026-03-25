@@ -51,6 +51,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 slotmap = { workspace = true }
 svg = { workspace = true }
+tempfile = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 unicode-segmentation = { workspace = true }

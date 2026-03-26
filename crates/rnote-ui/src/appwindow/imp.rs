@@ -294,8 +294,6 @@ impl ObjectImpl for RnAppWindow {
                 let focus_mode: bool = value.get().expect("The value needs to be of type `bool`");
                 self.focus_mode.replace(focus_mode);
 
-                self.overlays.penpicker().set_visible(!focus_mode);
-                self.overlays.colorpicker().set_visible(!focus_mode);
                 self.overlays.sidebar_box().set_visible(!focus_mode);
             }
             "devel-mode" => {

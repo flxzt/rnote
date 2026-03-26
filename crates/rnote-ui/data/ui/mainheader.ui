@@ -11,18 +11,18 @@
         <property name="vexpand">false</property>
         <property name="title-widget">
           <object class="GtkBox">
+            <property name="spacing">6</property>
             <child>
-              <object class="GtkLabel" id="main_title_unsaved_indicator">
-                <property name="label">•</property>
-                <property name="visible">false</property>
+              <object class="RnColorPicker" id="colorpicker">
+                <style>
+                  <class name="flat"/>
+                </style>
               </object>
             </child>
             <child>
-              <object class="AdwWindowTitle" id="main_title">
-                <property name="title" translatable="yes">New Document</property>
-                <property name="subtitle" translatable="yes">Draft</property>
+              <object class="RnPenPicker" id="penpicker">
                 <style>
-                  <class name="main_title" />
+                  <class name="flat"/>
                 </style>
               </object>
             </child>

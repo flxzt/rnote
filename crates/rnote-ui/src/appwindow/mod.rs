@@ -318,16 +318,16 @@ impl RnAppWindow {
             canvas.queue_resize();
         }
         if widget_flags.deselect_color_setters {
-            self.overlays().colorpicker().deselect_setters();
+            self.main_header().colorpicker().deselect_setters();
         }
         if let Some(hide_undo) = widget_flags.hide_undo {
-            self.overlays()
+            self.main_header()
                 .penpicker()
                 .undo_button()
                 .set_sensitive(!hide_undo);
         }
         if let Some(hide_redo) = widget_flags.hide_redo {
-            self.overlays()
+            self.main_header()
                 .penpicker()
                 .redo_button()
                 .set_sensitive(!hide_redo);
@@ -530,22 +530,6 @@ impl RnAppWindow {
         self.set_title(Some(
             &(title.clone() + " - " + config::APP_NAME_CAPITALIZED),
         ));
-
-        self.main_header()
-            .main_title_unsaved_indicator()
-            .set_visible(canvas.unsaved_changes());
-        if canvas.unsaved_changes() {
-            self.main_header()
-                .main_title()
-                .add_css_class("unsaved_changes");
-        } else {
-            self.main_header()
-                .main_title()
-                .remove_css_class("unsaved_changes");
-        }
-
-        self.main_header().main_title().set_title(&title);
-        self.main_header().main_title().set_subtitle(&subtitle);
     }
 
     /// Open the file, with import dialogs when appropriate.
@@ -726,11 +710,11 @@ impl RnAppWindow {
             let can_redo = canvas.engine_ref().can_redo();
             let visual_debug = self.engine_config().read().visual_debug;
 
-            self.overlays()
+            self.main_header()
                 .penpicker()
                 .undo_button()
                 .set_sensitive(can_undo);
-            self.overlays()
+            self.main_header()
                 .penpicker()
                 .redo_button()
                 .set_sensitive(can_redo);
@@ -745,7 +729,7 @@ impl RnAppWindow {
             // Current pen
             match pen_style {
                 PenStyle::Brush => {
-                    self.overlays().penpicker().brush_toggle().set_active(true);
+                    self.main_header().penpicker().brush_toggle().set_active(true);
                     self.overlays()
                         .penssidebar()
                         .sidebar_stack()
@@ -770,10 +754,10 @@ impl RnAppWindow {
                                 .marker_options
                                 .fill_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
@@ -794,10 +778,10 @@ impl RnAppWindow {
                                 .solid_options
                                 .fill_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
@@ -810,14 +794,14 @@ impl RnAppWindow {
                                 .textured_options
                                 .stroke_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
                         }
                     }
                 }
                 PenStyle::Shaper => {
-                    self.overlays().penpicker().shaper_toggle().set_active(true);
+                    self.main_header().penpicker().shaper_toggle().set_active(true);
                     self.overlays()
                         .penssidebar()
                         .sidebar_stack()
@@ -842,10 +826,10 @@ impl RnAppWindow {
                                 .smooth_options
                                 .fill_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
@@ -866,17 +850,17 @@ impl RnAppWindow {
                                 .rough_options
                                 .fill_color
                                 .unwrap_or(Color::TRANSPARENT);
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
-                            self.overlays()
+                            self.main_header()
                                 .colorpicker()
                                 .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
                         }
                     }
                 }
                 PenStyle::Typewriter => {
-                    self.overlays()
+                    self.main_header()
                         .penpicker()
                         .typewriter_toggle()
                         .set_active(true);
@@ -892,19 +876,19 @@ impl RnAppWindow {
                         .typewriter_config
                         .text_style
                         .color;
-                    self.overlays()
+                    self.main_header()
                         .colorpicker()
                         .set_stroke_color(gdk::RGBA::from_compose_color(text_color));
                 }
                 PenStyle::Eraser => {
-                    self.overlays().penpicker().eraser_toggle().set_active(true);
+                    self.main_header().penpicker().eraser_toggle().set_active(true);
                     self.overlays()
                         .penssidebar()
                         .sidebar_stack()
                         .set_visible_child_name("eraser_page");
                 }
                 PenStyle::Selector => {
-                    self.overlays()
+                    self.main_header()
                         .penpicker()
                         .selector_toggle()
                         .set_active(true);
@@ -914,7 +898,7 @@ impl RnAppWindow {
                         .set_visible_child_name("selector_page");
                 }
                 PenStyle::Tools => {
-                    self.overlays().penpicker().tools_toggle().set_active(true);
+                    self.main_header().penpicker().tools_toggle().set_active(true);
                     self.overlays()
                         .penssidebar()
                         .sidebar_stack()

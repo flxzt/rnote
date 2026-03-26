@@ -36,6 +36,7 @@ pub(super) enum ResizeCorner {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ModifyState {
     Idle,
+    Delete,
     Translate {
         start_pos: na::Vector2<f64>,
         current_pos: na::Vector2<f64>,
@@ -539,6 +540,15 @@ impl Selector {
         BoundingSphere::new(pos, Self::ROTATE_NODE_DIAMETER * 0.5 / total_zoom)
     }
 
+    fn delete_node_sphere(selection_bounds: Aabb, camera: &Camera) -> BoundingSphere {
+        let total_zoom = camera.total_zoom();
+        let pos = na::point![
+            (selection_bounds.maxs[0] + selection_bounds.mins[0]) * 0.5,
+            selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[1] / (2.0 * total_zoom)
+        ];
+        BoundingSphere::new(pos, Self::ROTATE_NODE_DIAMETER * 0.5 / total_zoom)
+    }
+
     fn draw_selection_overlay(
         piet_cx: &mut impl RenderContext,
         selection_bounds: Aabb,
@@ -554,6 +564,19 @@ impl Selector {
             PenState::Down
         } else if let Some(pos) = pos {
             if rotate_node_sphere.contains_local_point(&pos.into()) {
+                PenState::Proximity
+            } else {
+                PenState::Up
+            }
+        } else {
+            PenState::Up
+        };
+
+        let delete_node_sphere = Self::delete_node_sphere(selection_bounds, camera);
+        let delete_node_state = if matches!(modify_state, ModifyState::Delete) {
+            PenState::Down
+        } else if let Some(pos) = pos {
+            if delete_node_sphere.contains_local_point(&pos.into()) {
                 PenState::Proximity
             } else {
                 PenState::Up
@@ -710,6 +733,14 @@ impl Selector {
 
         // Rotate Node
         indicators::draw_circular_node(piet_cx, rotate_node_state, rotate_node_sphere, total_zoom);
+
+        // Delete Node
+        indicators::draw_circular_delete_node(
+            piet_cx,
+            delete_node_state,
+            delete_node_sphere,
+            total_zoom,
+        );
 
         // Resize Nodes
         indicators::draw_rectangular_node(

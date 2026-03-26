@@ -1,14 +1,12 @@
 // Imports
 use crate::RnPensSideBar;
 use crate::canvaswrapper::RnCanvasWrapper;
-use crate::{RnAppWindow, RnColorPicker, RnPenPicker, dialogs};
+use crate::{RnAppWindow, dialogs};
 use core::time::Duration;
 use gtk4::{
     CompositeTemplate, Overlay, ProgressBar, ScrolledWindow, Widget, gio, glib, glib::clone,
     prelude::*, subclass::prelude::*,
 };
-use rnote_engine::ext::GdkRGBAExt;
-use rnote_engine::pens::PenStyle;
 use std::cell::{Cell, RefCell};
 use tracing::error;
 
@@ -27,10 +25,6 @@ mod imp {
         pub(crate) toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
         pub(crate) progressbar: TemplateChild<ProgressBar>,
-        #[template_child]
-        pub(crate) penpicker: TemplateChild<RnPenPicker>,
-        #[template_child]
-        pub(crate) colorpicker: TemplateChild<RnColorPicker>,
         #[template_child]
         pub(crate) tabview: TemplateChild<adw::TabView>,
         #[template_child]
@@ -75,10 +69,6 @@ mod imp {
     impl RnOverlays {
         fn setup_toolbar_overlay(&self) {
             self.toolbar_overlay
-                .set_measure_overlay(&*self.colorpicker, true);
-            self.toolbar_overlay
-                .set_measure_overlay(&*self.penpicker, true);
-            self.toolbar_overlay
                 .set_measure_overlay(&*self.sidebar_box, true);
         }
     }
@@ -102,14 +92,6 @@ impl Default for RnOverlays {
 impl RnOverlays {
     pub(crate) fn new() -> Self {
         glib::Object::new()
-    }
-
-    pub(crate) fn penpicker(&self) -> RnPenPicker {
-        self.imp().penpicker.get()
-    }
-
-    pub(crate) fn colorpicker(&self) -> RnColorPicker {
-        self.imp().colorpicker.get()
     }
 
     pub(crate) fn toast_overlay(&self) -> adw::ToastOverlay {
@@ -138,9 +120,7 @@ impl RnOverlays {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        imp.colorpicker.get().init(appwindow);
         imp.penssidebar.get().init(appwindow);
-        imp.penpicker.get().init(appwindow);
         imp.penssidebar.get().brush_page().init(appwindow);
         imp.penssidebar.get().shaper_page().init(appwindow);
         imp.penssidebar.get().typewriter_page().init(appwindow);
@@ -148,84 +128,7 @@ impl RnOverlays {
         imp.penssidebar.get().selector_page().init(appwindow);
         imp.penssidebar.get().tools_page().init(appwindow);
 
-        self.setup_colorpicker(appwindow);
         self.setup_tabview(appwindow);
-    }
-
-    fn setup_colorpicker(&self, appwindow: &RnAppWindow) {
-        let imp = self.imp();
-
-        imp.colorpicker.connect_notify_local(
-            Some("stroke-color"),
-            clone!(
-                #[weak]
-                appwindow,
-                move |colorpicker, _paramspec| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    let stroke_color = colorpicker.stroke_color().into_compose_color();
-                    let current_pen_style = canvas.engine_ref().current_pen_style_w_override();
-
-                    match current_pen_style {
-                        PenStyle::Typewriter => {
-                            let widget_flags = canvas.engine_mut().text_change_color(stroke_color);
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                        PenStyle::Selector => {
-                            let widget_flags = canvas
-                                .engine_mut()
-                                .change_selection_stroke_colors(stroke_color);
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {
-                        }
-                    }
-
-                    // We have a global colorpicker, so we apply it to all styles
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .set_all_stroke_colors(stroke_color);
-                }
-            ),
-        );
-
-        imp.colorpicker.connect_notify_local(
-            Some("fill-color"),
-            clone!(
-                #[weak]
-                appwindow,
-                move |colorpicker, _paramspec| {
-                    let Some(canvas) = appwindow.active_tab_canvas() else {
-                        return;
-                    };
-                    let fill_color = colorpicker.fill_color().into_compose_color();
-                    let stroke_style = canvas.engine_ref().current_pen_style_w_override();
-
-                    match stroke_style {
-                        PenStyle::Selector => {
-                            let widget_flags =
-                                canvas.engine_mut().change_selection_fill_colors(fill_color);
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                        PenStyle::Typewriter
-                        | PenStyle::Brush
-                        | PenStyle::Shaper
-                        | PenStyle::Eraser
-                        | PenStyle::Tools => {}
-                    }
-
-                    // We have a global colorpicker, so we apply it to all styles
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .set_all_fill_colors(fill_color);
-                }
-            ),
-        );
     }
 
     fn setup_tabview(&self, appwindow: &RnAppWindow) {

@@ -156,7 +156,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "active-stroke-color",
-                &self.overlays().colorpicker(),
+                &self.main_header().colorpicker(),
                 "stroke-color",
             )
             .mapping(gdk_color_mapping)
@@ -166,7 +166,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "active-fill-color",
-                &self.overlays().colorpicker(),
+                &self.main_header().colorpicker(),
                 "fill-color",
             )
             .mapping(gdk_color_mapping)
@@ -176,7 +176,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-1",
-                &self.overlays().colorpicker().setter_1(),
+                &self.main_header().colorpicker().setter_1(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -186,7 +186,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-2",
-                &self.overlays().colorpicker().setter_2(),
+                &self.main_header().colorpicker().setter_2(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -196,7 +196,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-3",
-                &self.overlays().colorpicker().setter_3(),
+                &self.main_header().colorpicker().setter_3(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -206,7 +206,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-4",
-                &self.overlays().colorpicker().setter_4(),
+                &self.main_header().colorpicker().setter_4(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -216,7 +216,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-5",
-                &self.overlays().colorpicker().setter_5(),
+                &self.main_header().colorpicker().setter_5(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -226,7 +226,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-6",
-                &self.overlays().colorpicker().setter_6(),
+                &self.main_header().colorpicker().setter_6(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -236,7 +236,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-7",
-                &self.overlays().colorpicker().setter_7(),
+                &self.main_header().colorpicker().setter_7(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -246,7 +246,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-8",
-                &self.overlays().colorpicker().setter_8(),
+                &self.main_header().colorpicker().setter_8(),
                 "color",
             )
             .mapping(gdk_color_mapping)
@@ -256,7 +256,7 @@ impl RnAppWindow {
         app_settings
             .bind(
                 "colorpicker-color-9",
-                &self.overlays().colorpicker().setter_9(),
+                &self.main_header().colorpicker().setter_9(),
                 "color",
             )
             .mapping(gdk_color_mapping)

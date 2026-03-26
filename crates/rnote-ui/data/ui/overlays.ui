@@ -22,36 +22,6 @@
           </object>
         </child>
         <child type="overlay">
-          <object class="RnPenPicker" id="penpicker">
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-            <property name="halign">center</property>
-            <property name="valign">end</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">18</property>
-            <property name="margin-start">6</property>
-            <property name="margin-end">6</property>
-            <style>
-              <class name="overlay_toolbar" />
-            </style>
-          </object>
-        </child>
-        <child type="overlay">
-          <object class="RnColorPicker" id="colorpicker">
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-            <property name="halign">center</property>
-            <property name="valign">start</property>
-            <property name="margin-top">18</property>
-            <property name="margin-bottom">6</property>
-            <property name="margin-start">18</property>
-            <property name="margin-end">18</property>
-            <style>
-              <class name="overlay_toolbar" />
-            </style>
-          </object>
-        </child>
-        <child type="overlay">
           <object class="GtkBox" id="sidebar_box">
             <property name="hexpand">false</property>
             <property name="vexpand">false</property>

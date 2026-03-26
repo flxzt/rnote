@@ -103,6 +103,10 @@ impl Selector {
                             {
                                 *selection_bounds = new_bounds;
                             }
+                        } else if Self::delete_node_sphere(*selection_bounds, engine_view.camera)
+                            .contains_local_point(&element.pos.into())
+                        {
+                            *modify_state = ModifyState::Delete;
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&element.pos.into())
                         {
@@ -203,6 +207,9 @@ impl Selector {
 
                             progress = PenProgress::Finished;
                         }
+                    }
+                    ModifyState::Delete => {
+                        // nothing on repeated down/move while pressed; wait for Up to execute delete
                     }
                     ModifyState::Translate {
                         start_pos: _,
@@ -526,6 +533,20 @@ impl Selector {
 
                         widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
+                    }
+                    ModifyState::Delete => {
+                        engine_view.store.set_trashed_keys(selection, true);
+                        widget_flags |= super::cancel_selection(selection, engine_view);
+                        self.state = SelectorState::Idle;
+
+                        return (
+                            EventResult {
+                                handled: true,
+                                propagate: EventPropagation::Stop,
+                                progress: PenProgress::Finished,
+                            },
+                            widget_flags,
+                        );
                     }
                     _ => {}
                 }

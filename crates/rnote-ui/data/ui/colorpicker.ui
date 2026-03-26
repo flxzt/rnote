@@ -34,60 +34,55 @@
           </object>
         </child>
         <child>
-          <object class="GtkSeparator"></object>
-        </child>
-        <child>
-          <object class="GtkBox" id="setter_box">
-            <property name="orientation">horizontal</property>
-            <property name="homogeneous">true</property>
-            <property name="spacing">6</property>
+          <object class="GtkMenuButton" id="color_dropdown_button">
+            <property name="icon-name">pan-down-symbolic</property>
+            <property name="tooltip-text" translatable="yes">More Colors</property>
             <style>
-              <class name="linked" />
+              <class name="flat"/>
             </style>
-            <child>
-              <object class="RnColorSetter" id="setter_1">
+            <property name="popover">
+              <object class="GtkPopover" id="color_popover">
+                <child>
+                  <object class="GtkBox">
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">6</property>
+                    <property name="margin-top">6</property>
+                    <property name="margin-bottom">6</property>
+                    <property name="margin-start">6</property>
+                    <property name="margin-end">6</property>
+
+                    <child>
+                      <object class="GtkBox" id="setter_box">
+                        <property name="orientation">horizontal</property>
+                        <property name="homogeneous">true</property>
+                        <property name="spacing">6</property>
+                        <style>
+                          <class name="linked"/>
+                        </style>
+                        <child><object class="RnColorSetter" id="setter_1"/></child>
+                        <child><object class="RnColorSetter" id="setter_2"/></child>
+                        <child><object class="RnColorSetter" id="setter_3"/></child>
+                        <child><object class="RnColorSetter" id="setter_4"/></child>
+                        <child><object class="RnColorSetter" id="setter_5"/></child>
+                        <child><object class="RnColorSetter" id="setter_6"/></child>
+                        <child><object class="RnColorSetter" id="setter_7"/></child>
+                        <child><object class="RnColorSetter" id="setter_8"/></child>
+                        <child><object class="RnColorSetter" id="setter_9"/></child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GtkButton" id="colordialog_button">
+                        <property name="icon-name">preferences-color-symbolic</property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_2">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_3">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_4">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_5">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_6">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_7">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_8">
-              </object>
-            </child>
-            <child>
-              <object class="RnColorSetter" id="setter_9">
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="colordialog_button">
-            <property name="icon-name">preferences-color-symbolic</property>
-            <style>
-              <class name="flat" />
-            </style>
+            </property>
           </object>
         </child>
       </object>

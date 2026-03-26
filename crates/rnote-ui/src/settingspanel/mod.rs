@@ -569,8 +569,6 @@ impl RnSettingsPanel {
 
         let set_overlays_margins = |appwindow: &RnAppWindow, row_active: bool| {
             let (m1, m2) = if row_active { (18, 72) } else { (9, 63) };
-            appwindow.overlays().colorpicker().set_margin_top(m1);
-            appwindow.overlays().penpicker().set_margin_bottom(m1);
             appwindow.overlays().sidebar_box().set_margin_start(m1);
             appwindow.overlays().sidebar_box().set_margin_end(m1);
             appwindow.overlays().sidebar_box().set_margin_top(m2);
@@ -591,7 +589,7 @@ impl RnSettingsPanel {
         imp.general_optimize_epd_row
             .bind_property(
                 "active",
-                &appwindow.overlays().colorpicker().active_color_label(),
+                &appwindow.main_header().colorpicker().active_color_label(),
                 "visible",
             )
             .sync_create()

@@ -229,6 +229,49 @@ pub fn draw_circular_node(
     }
 }
 
+/// Draw a circular delete node.
+pub fn draw_circular_delete_node(
+    cx: &mut impl RenderContext,
+    node_state: PenState,
+    bounding_sphere: BoundingSphere,
+    zoom: f64,
+) {
+    const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[4];
+    const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_REDS[0].with_a8(77);
+    const FILL_STATE_DOWN: piet::Color = color::GNOME_REDS[2].with_a8(128);
+
+    let circular_node = circular_node_shape(node_state, bounding_sphere, zoom);
+
+    match node_state {
+        PenState::Up => {}
+        PenState::Proximity => {
+            cx.fill(circular_node.clone(), &FILL_STATE_PROXIMITY);
+        }
+        PenState::Down => {
+            cx.fill(circular_node.clone(), &FILL_STATE_DOWN);
+        }
+    }
+
+    cx.stroke(
+        circular_node,
+        &OUTLINE_COLOR,
+        CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
+    );
+
+    // Draw "X" icon
+    let center = bounding_sphere.center().coords;
+    let half = bounding_sphere.radius() * 0.45; // size of X relative to node radius
+    let x_stroke_width = (CIRCULAR_NODE_OUTLINE_WIDTH * 0.9) / zoom;
+
+    let mut x_path = kurbo::BezPath::new();
+    x_path.move_to((center + na::vector![-half, -half]).to_kurbo_point());
+    x_path.line_to((center + na::vector![ half,  half]).to_kurbo_point());
+    x_path.move_to((center + na::vector![-half,  half]).to_kurbo_point());
+    x_path.line_to((center + na::vector![ half, -half]).to_kurbo_point());
+
+    cx.stroke(x_path, &OUTLINE_COLOR, x_stroke_width);
+}
+
 // Triangular down node
 
 /// Triangular node outline width.

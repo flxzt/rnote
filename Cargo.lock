@@ -4070,6 +4070,7 @@ version = "0.14.0"
 dependencies = [
  "anyhow",
  "async-fs",
+ "blocking",
  "clap",
  "dialoguer",
  "futures",

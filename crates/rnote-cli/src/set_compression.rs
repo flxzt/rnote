@@ -10,9 +10,9 @@ pub(crate) async fn run_set_compression(
     compression_method: String,
     compression_level: Option<i32>,
 ) -> anyhow::Result<()> {
-    let mut compression_method = match compression_method.as_str() {
-        "zstd" | "Zstd" => CompressionMethod::Zstd(DEFAULT_ZSTD_COMPRESSION_INTEGER),
-        "none" | "None" => CompressionMethod::None,
+    let mut compression_method = match compression_method.to_ascii_lowercase().as_str() {
+        "zstd" => CompressionMethod::Zstd(DEFAULT_ZSTD_COMPRESSION_INTEGER),
+        "none" => CompressionMethod::None,
         _ => unreachable!(),
     };
 
@@ -31,10 +31,10 @@ pub(crate) async fn run_set_compression(
     spinner.set_length(rnote_files.len() as u64);
     spinner.enable_steady_tick(std::time::Duration::from_millis(250));
 
-    for filepath in rnote_files.iter().progress_with(spinner.clone()) {
+    for filepath in rnote_files.into_iter().progress_with(spinner.clone()) {
         spinner.set_message(format!("{}", filepath.display()));
         let file_read_operation = async {
-            let mut read_file = OpenOptions::new().read(true).open(filepath).await?;
+            let mut read_file = OpenOptions::new().read(true).open(&filepath).await?;
             let mut bytes: Vec<u8> = {
                 match read_file.metadata().await {
                     Ok(metadata) => {
@@ -50,11 +50,10 @@ pub(crate) async fn run_set_compression(
             Ok::<Vec<u8>, anyhow::Error>(bytes)
         };
 
-        let mut _bytes = file_read_operation.await?;
-        let engine_snapshot = rnoteformat::load_engine_snapshot_from_bytes(&_bytes)?;
-        _bytes = rnoteformat::save_engine_snapshot_to_bytes(engine_snapshot, compression_method)?;
-        //rnote_engine::utils::atomic_save_to_file(filepath, &bytes).await?
-        todo!("atomic file saving PR needs to be merged first")
+        let mut bytes = file_read_operation.await?;
+        let engine_snapshot = rnoteformat::load_engine_snapshot_from_bytes(&bytes)?;
+        bytes = rnoteformat::save_engine_snapshot_to_bytes(engine_snapshot, compression_method)?;
+        blocking::unblock(move || rnote_engine::utils::atomic_save_to_file(filepath, bytes)).await?
     }
 
     Ok(())

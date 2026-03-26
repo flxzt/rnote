@@ -31,8 +31,7 @@ prerequisites:
     if [[ ('{{linux_distr}}' =~ 'fedora') ]]; then
         {{sudo_cmd}} dnf install -y \
             gcc gcc-c++ clang clang-devel python3 make cmake meson just git appstream gettext desktop-file-utils \
-            shared-mime-info kernel-devel gtk4-devel libadwaita-devel alsa-lib-devel \
-            appstream-devel
+            shared-mime-info kernel-devel gtk4-devel libadwaita-devel alsa-lib-devel appstream-devel
     elif [[ '{{linux_distr}}' =~ 'debian' || '{{linux_distr}}' =~ 'ubuntu' ]]; then
         {{sudo_cmd}} apt-get update
         {{sudo_cmd}} apt-get install -y \
@@ -59,9 +58,8 @@ prerequisites-flatpak: prerequisites
         echo "Unable to install system dependencies, unsupported distro."
         exit 1
     fi
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    flatpak install -y org.gnome.Platform//48 org.gnome.Sdk//48 org.freedesktop.Sdk.Extension.rust-stable//24.08 \
-        org.freedesktop.Sdk.Extension.llvm19//24.08
+    flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    flatpak install --user -y org.gnome.Platform//50 org.gnome.Sdk//50 org.freedesktop.Sdk.Extension.rust-stable//25.08
 
 prerequisites-dev: prerequisites
     #!/usr/bin/env bash
@@ -212,11 +210,11 @@ install:
 install-flatpak:
     flatpak-builder --user --install {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml
 
-run-ui:
-    {{ build_folder }}/target/debug/rnote
+run-ui *ARGS:
+    {{ build_folder }}/target/debug/rnote {{ARGS}}
 
-run-cli:
-    {{ build_folder }}/target/debug/rnote-cli
+run-cli *ARGS:
+    {{ build_folder }}/target/debug/rnote-cli {{ARGS}}
 
 run-flatpak:
     flatpak-builder --run {{ flatpak_app_folder }} build-aux/com.github.flxzt.rnote.Devel.yaml rnote

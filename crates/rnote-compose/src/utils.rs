@@ -1,6 +1,6 @@
 // Imports
 use p2d::bounding_volume::Aabb;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 
 /// Matches when a Xml header is present
 const XML_HEADER_REGEX: &str = r"<\?xml[^\?>]*\?>";
@@ -100,7 +100,7 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     if let Some(seed) = seed {
         rand_pcg::Pcg64::seed_from_u64(seed)
     } else {
-        rand_pcg::Pcg64::from_os_rng()
+        rand_pcg::Pcg64::from_rng(&mut rand::rng())
     }
 }
 

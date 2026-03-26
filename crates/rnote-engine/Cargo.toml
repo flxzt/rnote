@@ -43,7 +43,7 @@ rand_distr = { workspace = true }
 rand_pcg = { workspace = true }
 rayon = { workspace = true }
 regex = { workspace = true }
-rodio = { workspace = true }
+rodio = { workspace = true, optional = true }
 rough_piet = { workspace = true }
 roughr = { workspace = true }
 roxmltree = { workspace = true }
@@ -53,6 +53,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 slotmap = { workspace = true }
 svg = { workspace = true }
+tempfile = { workspace = true }
 thiserror = { workspace = true }
 thread_local = { workspace = true }
 tracing = { workspace = true }
@@ -70,4 +71,4 @@ approx = { workspace = true }
 [features]
 cli = ["dep:clap"]
 default = []
-ui = ["dep:gtk4"]
+ui = ["dep:gtk4", "dep:rodio"]

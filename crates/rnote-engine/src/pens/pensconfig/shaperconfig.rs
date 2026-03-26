@@ -1,5 +1,5 @@
 // Imports
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rnote_compose::Constraints;
 use rnote_compose::Style;
 use rnote_compose::builders::ShapeBuilderType;
@@ -82,7 +82,7 @@ impl ShaperConfig {
 
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {
-        let seed = Some(rand_pcg::Pcg64::from_os_rng().random());
+        let seed = Some(rand_pcg::Pcg64::from_rng(&mut rand::rng()).random());
         self.rough_options.seed = seed;
     }
 

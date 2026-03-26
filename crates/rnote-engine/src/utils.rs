@@ -1,10 +1,11 @@
 // Imports
 use crate::fileformats::xoppformat;
+use anyhow::Context;
 use geo::line_string;
 use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::Color;
-use std::ops::Range;
+use std::{io::Write, ops::Range};
 
 pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -117,4 +118,53 @@ pub mod glib_bytes_base64 {
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<glib::Bytes, D::Error> {
         rnote_compose::serialize::sliceu8_base64::deserialize(d).map(glib::Bytes::from_owned)
     }
+}
+
+/// Attempts to atomically save data to a file.
+/// Not asynchronous, wrap with `blocking::unblock()` or equivalent to avoid blocking.
+pub fn atomic_save_to_file<Q, B>(filepath: Q, bytes: B) -> anyhow::Result<()>
+where
+    Q: AsRef<std::path::Path>,
+    B: AsRef<[u8]>,
+{
+    let filepath = filepath.as_ref();
+    let bytes = bytes.as_ref();
+
+    let parent_directory = filepath
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?;
+
+    // We first create the named temporary file, specifically in the parent
+    // directory of the target filepath, as `.persist()` will not work
+    // if the temporary file is in a different filesystem than the target.
+    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory)
+        .with_context(|| "Failed to create a temporary file")?;
+
+    // We then write all of our bytes to the temporary file before syncing its contents.
+    temp_file
+        .write_all(bytes)
+        .with_context(|| "Failed to write to the temporary file")?;
+    temp_file
+        .as_file()
+        .sync_all()
+        .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
+
+    // Finally, we persist the temporary file to the target filepath, if a file
+    // preexists at this location, it will be atomically replaced by our new file.
+    let _ = temp_file
+        .persist(filepath)
+        .with_context(|| "Failed to persist the temporary file to the target filepath")?;
+
+    #[cfg(unix)]
+    {
+        // On UNIX systems, we also sync the parent directory after the persist operation.
+        // Not required for Windows systems, not possible either (you can't open directories as files in the first place).
+        // Note that this might not even be enough, file management on UNIX seems to be a bit of a nightmare.
+        std::fs::File::open(parent_directory)
+            .with_context(|| "Failed to open the parent directory")?
+            .sync_all()
+            .with_context(|| "Failed to sync the contents and metadata of the parent directory")?;
+    }
+
+    Ok(())
 }

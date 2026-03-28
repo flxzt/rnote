@@ -40,6 +40,7 @@ Written in Rust and GTK4.
 - Save and load the documents in the native `.rnote` file format
 - Tabs to work on multiple documents at the same time
 - Autosave, printing
+- CLI for automation
 
 **Disclaimer**
 
@@ -80,6 +81,16 @@ Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/mani
 
 ```
 winget install flxzt.rnote
+```
+
+# CLI
+
+In addition to the UI, a CLI tool is available, providing basic handling of .rnote files for automation.
+It is included in the flatpak.
+To execute it, run:
+
+```bash
+flatpak run --command=rnote-cli com.github.flxzt.rnote help
 ```
 
 ### Downgrading

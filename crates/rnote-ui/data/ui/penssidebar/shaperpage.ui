@@ -18,7 +18,16 @@
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Shape Builders</property>
             <property name="popover">shapebuildertype_popover</property>
-            <property name="icon-name">shapebuilder-line-symbolic</property>
+            <child>
+              <object class="GtkToggleButton">
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">shapebuilder-line-symbolic</property>
+                    <property name="icon-size">large</property>
+                  </object>
+                </child>
+              </object>
+            </child>
             <style>
               <class name="flat" />
               <class name="sidebar_action_button" />

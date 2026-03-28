@@ -66,10 +66,7 @@ pub trait DrawableOnDoc {
             // Restrict to viewport as maximum bounds, else cairo is very unperformant
             // and will even crash for very large bounds
             let bounds = bounds.clamp(None, Some(viewport));
-            let mut bounds_on_surface = bounds
-                .scale(engine_view.camera.total_zoom())
-                .translate(-engine_view.camera.offset())
-                .ceil();
+            let mut bounds_on_surface = engine_view.camera.transform_bounds(bounds).ceil();
             bounds_on_surface.ensure_positive();
             bounds_on_surface.assert_valid()?;
 

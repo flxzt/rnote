@@ -83,16 +83,6 @@ Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/mani
 winget install flxzt.rnote
 ```
 
-## CLI
-
-In addition to the UI, a CLI tool is available, providing basic handling of .rnote files for automation.
-It is included in the flatpak.
-To execute it, run:
-
-```bash
-flatpak run --command=rnote-cli com.github.flxzt.rnote help
-```
-
 ### Downgrading
 
 Because the file format still is unstable, downgrading to a specific version might be necessary.
@@ -117,6 +107,16 @@ $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
 To update to the latest version again, unpin and run `flatpak update`.
+
+## CLI
+
+In addition to the UI, a CLI tool is available, providing basic handling of .rnote files for automation.
+It is included in the flatpak.
+To execute it, run:
+
+```bash
+flatpak run --command=rnote-cli com.github.flxzt.rnote help
+```
 
 ## Screenshots
 

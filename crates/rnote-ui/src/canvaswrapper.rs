@@ -333,6 +333,7 @@ mod imp {
             }
 
             // zoom scrolling with <ctrl> + scroll
+            // zoom rotation with <alt> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(
                     #[weak(rename_to=canvaswrapper)]
@@ -340,43 +341,100 @@ mod imp {
                     #[upgrade_or]
                     glib::Propagation::Proceed,
                     move |controller, _, dy| {
-                        if controller.current_event_state() != gdk::ModifierType::CONTROL_MASK {
-                            return glib::Propagation::Proceed;
+                        match controller.current_event_state() {
+                            gdk::ModifierType::CONTROL_MASK => {
+                                let canvas = canvaswrapper.canvas();
+                                let old_zoom = canvas.engine_ref().camera.total_zoom();
+                                let new_zoom = if dy < 0.0 {
+                                    old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP)
+                                } else {
+                                    old_zoom * (1.0 / (1.0 + dy * RnCanvas::ZOOM_SCROLL_STEP))
+                                };
+
+                                if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                                    let camera_offset = canvas.engine_ref().camera.offset();
+                                    let camera_size = canvas.engine_ref().camera.size();
+                                    let screen_offset = canvaswrapper
+                                        .imp()
+                                        .pointer_pos
+                                        .get()
+                                        .map(|p| {
+                                            let p = canvaswrapper
+                                                .compute_point(
+                                                    &canvas,
+                                                    &graphene::Point::from_na_vec(p),
+                                                )
+                                                .unwrap();
+                                            p.to_na_vec()
+                                        })
+                                        .unwrap_or_else(|| camera_size * 0.5);
+                                    let new_camera_offset =
+                                        (((camera_offset + screen_offset) / old_zoom) * new_zoom)
+                                            - screen_offset;
+
+                                    let mut widget_flags =
+                                        canvas.engine_mut().zoom_w_timeout(new_zoom);
+                                    widget_flags |= canvas
+                                        .engine_mut()
+                                        .camera_set_offset_expand(new_camera_offset);
+                                    canvas.emit_handle_widget_flags(widget_flags);
+                                }
+
+                                glib::Propagation::Stop
+                            }
+                            gdk::ModifierType::ALT_MASK => {
+                                let canvas = canvaswrapper.canvas();
+
+                                let old_rotation = canvas.engine_ref().camera.rotation();
+                                let camera_size = canvas.engine_ref().camera.size();
+
+                                let new_rotation =
+                                    old_rotation - dy * RnCanvas::ROTATION_SCROLL_STEP;
+
+                                // pivot point in surface coordinates (pointer with fallback to center).
+                                let screen_pivot = canvaswrapper
+                                    .imp()
+                                    .pointer_pos
+                                    .get()
+                                    .map(|p| {
+                                        let p = canvaswrapper
+                                            .compute_point(
+                                                &canvas,
+                                                &graphene::Point::from_na_vec(p),
+                                            )
+                                            .unwrap();
+                                        p.to_na_vec()
+                                    })
+                                    .unwrap_or_else(|| camera_size * 0.5);
+
+                                // calculate pivot point in document coordinates
+                                let transform_inv =
+                                    canvas.engine_ref().camera.transform().inverse();
+                                let document_pivot = transform_inv
+                                    .transform_point(&na::Point2::from(screen_pivot))
+                                    .coords;
+
+                                // apply rotation
+                                let mut widget_flags =
+                                    canvas.engine_mut().camera_set_rotation(new_rotation);
+
+                                // transform pivot point back into screen coordinates with new rotation *without* applying offset
+                                // and calculate the offset needed for fixating the pivot point
+                                let transform = canvas.engine_ref().camera.transform();
+                                let new_camera_offset =
+                                    transform.transform_vector(&document_pivot) - screen_pivot;
+
+                                // apply offset
+                                widget_flags |= canvas
+                                    .engine_mut()
+                                    .camera_set_offset_expand(new_camera_offset);
+
+                                canvas.emit_handle_widget_flags(widget_flags);
+
+                                glib::Propagation::Stop
+                            }
+                            _ => glib::Propagation::Proceed,
                         }
-                        let canvas = canvaswrapper.canvas();
-                        let old_zoom = canvas.engine_ref().camera.total_zoom();
-                        let new_zoom = if dy < 0.0 {
-                            old_zoom * (1.0 - dy * RnCanvas::ZOOM_SCROLL_STEP)
-                        } else {
-                            old_zoom * (1.0 / (1.0 + dy * RnCanvas::ZOOM_SCROLL_STEP))
-                        };
-
-                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            let camera_offset = canvas.engine_ref().camera.offset();
-                            let camera_size = canvas.engine_ref().camera.size();
-                            let screen_offset = canvaswrapper
-                                .imp()
-                                .pointer_pos
-                                .get()
-                                .map(|p| {
-                                    let p = canvaswrapper
-                                        .compute_point(&canvas, &graphene::Point::from_na_vec(p))
-                                        .unwrap();
-                                    p.to_na_vec()
-                                })
-                                .unwrap_or_else(|| camera_size * 0.5);
-                            let new_camera_offset = (((camera_offset + screen_offset) / old_zoom)
-                                * new_zoom)
-                                - screen_offset;
-
-                            let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
-                            widget_flags |= canvas
-                                .engine_mut()
-                                .camera_set_offset_expand(new_camera_offset);
-                            canvas.emit_handle_widget_flags(widget_flags);
-                        }
-
-                        glib::Propagation::Stop
                     }
                 ));
             }

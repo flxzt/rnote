@@ -709,6 +709,13 @@ impl Engine {
         self.camera.surface_mins_maxs(&self.document)
     }
 
+    /// Update the viewport rotation of the camera.
+    ///
+    /// Background and content rendering then need to be updated.
+    pub fn camera_set_rotation(&mut self, rotation: f64) -> WidgetFlags {
+        self.camera.set_rotation(rotation)
+    }
+
     /// Update the current pen with the current engine state.
     ///
     /// Needs to be called when the engine state was changed outside of pen events.

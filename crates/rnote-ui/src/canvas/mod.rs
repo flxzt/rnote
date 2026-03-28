@@ -733,6 +733,8 @@ pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
 impl RnCanvas {
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub(crate) const ZOOM_SCROLL_STEP: f64 = 0.1;
+    // Sets the canvas rotation scroll step in radians for one unit of the event controller delta
+    pub(crate) const ROTATION_SCROLL_STEP: f64 = 5_f64.to_radians();
 
     pub(crate) fn new() -> Self {
         glib::Object::new()

@@ -83,7 +83,7 @@ Install using [Winget](https://github.com/microsoft/winget-pkgs/tree/master/mani
 winget install flxzt.rnote
 ```
 
-# CLI
+## CLI
 
 In addition to the UI, a CLI tool is available, providing basic handling of .rnote files for automation.
 It is included in the flatpak.

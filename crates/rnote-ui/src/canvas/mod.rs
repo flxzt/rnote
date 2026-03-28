@@ -1032,6 +1032,11 @@ impl RnCanvas {
                     if !crate::utils::paths_abs_eq(file_path, event_path).unwrap_or(false) {
                         return;
                     }
+                    if canvas.output_file_expect_write() {
+                        // Atomic save operations replace the file by temporarily removing or overwriting
+                        // the original file's data/metadata, generating a Remove event. We should ignore these.
+                        return;
+                    }
                     canvas.set_unsaved_changes(true);
                     canvas.set_output_file(None);
                     appwindow.overlays().dispatch_toast_text(

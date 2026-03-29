@@ -3,8 +3,8 @@ use crate::{RnAppWindow, RnCanvas, RnContextMenu, canvas::reject_pointer_input};
 use gtk4::{
     CompositeTemplate, CornerType, EventControllerMotion, EventControllerScroll,
     EventControllerScrollFlags, EventSequenceState, GestureClick, GestureDrag, GestureLongPress,
-    GestureZoom, PropagationPhase, ScrolledWindow, Widget, gdk, glib, glib::clone, graphene,
-    prelude::*, subclass::prelude::*,
+    GestureRotate, GestureZoom, PropagationPhase, ScrolledWindow, Widget, gdk, glib, glib::clone,
+    graphene, prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
@@ -39,6 +39,7 @@ mod imp {
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
+        pub(crate) canvas_rotate_gesture: GestureRotate,
         pub(crate) canvas_multi_press_gesture: GestureClick,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
@@ -73,6 +74,11 @@ mod imp {
 
             let canvas_zoom_gesture = GestureZoom::builder()
                 .name("canvas_zoom_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
+            let canvas_rotate_gesture = GestureRotate::builder()
+                .name("canvas_rotate_gesture")
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
@@ -138,6 +144,7 @@ mod imp {
                 pointer_motion_controller,
                 canvas_drag_gesture,
                 canvas_zoom_gesture,
+                canvas_rotate_gesture,
                 canvas_multi_press_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
@@ -181,6 +188,8 @@ mod imp {
             self.scroller
                 .add_controller(self.canvas_zoom_gesture.clone());
             self.scroller
+                .add_controller(self.canvas_rotate_gesture.clone());
+            self.scroller
                 .add_controller(self.canvas_multi_press_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_scroll_controller.clone());
@@ -198,6 +207,8 @@ mod imp {
             // group
             self.touch_two_finger_long_press_gesture
                 .group_with(&self.canvas_zoom_gesture);
+            self.canvas_rotate_gesture
+                .group_with(&self.canvas_zoom_gesture);
 
             self.setup_input();
 
@@ -207,9 +218,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_canvas, _pspec| {
-                        // Disable the zoom gesture and kinetic scrolling when touch drawing is enabled.
+                        // Disable touch gestures and kinetic scrolling when touch drawing is enabled.
                         canvaswrapper.imp().canvas_kinetic_scrolling_update();
-                        canvaswrapper.imp().canvas_zoom_gesture_update();
+                        canvaswrapper.imp().canvas_touch_gestures_update();
                     }
                 ),
             );
@@ -277,7 +288,7 @@ mod imp {
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`");
                     self.block_pinch_zoom.replace(block_pinch_zoom);
-                    self.canvas_zoom_gesture_update();
+                    self.canvas_touch_gestures_update();
                 }
                 "inertial-scrolling" => {
                     let inertial_scrolling = value
@@ -295,12 +306,16 @@ mod imp {
     impl WidgetImpl for RnCanvasWrapper {}
 
     impl RnCanvasWrapper {
-        fn canvas_zoom_gesture_update(&self) {
+        fn canvas_touch_gestures_update(&self) {
             if !self.block_pinch_zoom.get() && !self.canvas.touch_drawing() {
                 self.canvas_zoom_gesture
                     .set_propagation_phase(PropagationPhase::Capture);
+                self.canvas_rotate_gesture
+                    .set_propagation_phase(PropagationPhase::Capture);
             } else {
                 self.canvas_zoom_gesture
+                    .set_propagation_phase(PropagationPhase::None);
+                self.canvas_rotate_gesture
                     .set_propagation_phase(PropagationPhase::None);
             }
         }
@@ -405,7 +420,7 @@ mod imp {
                                 let new_rotation =
                                     old_rotation - dy * RnCanvas::ROTATION_SCROLL_STEP;
 
-                                // pivot point in surface coordinates (pointer with fallback to center).
+                                // pivot point in surface coordinates (pointer with fallback to center)
                                 let screen_pivot = canvaswrapper
                                     .imp()
                                     .pointer_pos
@@ -546,39 +561,28 @@ mod imp {
 
             // Canvas gesture zooming with dragging
             {
-                let prev_scale = Rc::new(Cell::new(1_f64));
                 let zoom_begin = Rc::new(Cell::new(1_f64));
-                let new_zoom = Rc::new(Cell::new(1.0));
-                let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
-                let offset_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let bbcenter_previous: Rc<Cell<Option<na::Vector2<f64>>>> =
+                    Rc::new(Cell::new(None));
 
                 self.canvas_zoom_gesture.connect_begin(clone!(
                     #[strong]
                     zoom_begin,
                     #[strong]
-                    new_zoom,
-                    #[strong]
-                    prev_scale,
-                    #[strong]
-                    bbcenter_begin,
-                    #[strong]
-                    offset_begin,
+                    bbcenter_previous,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
+
                         let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
-
                         zoom_begin.set(current_zoom);
-                        new_zoom.set(current_zoom);
-                        prev_scale.set(1.0);
 
-                        bbcenter_begin.set(
+                        bbcenter_previous.set(
                             gesture
                                 .bounding_box_center()
                                 .map(|(x, y)| na::vector![x, y]),
                         );
-                        offset_begin.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
                 ));
 
@@ -586,45 +590,43 @@ mod imp {
                     #[strong]
                     zoom_begin,
                     #[strong]
-                    new_zoom,
-                    #[strong]
-                    prev_scale,
-                    #[strong]
-                    bbcenter_begin,
-                    #[strong]
-                    offset_begin,
+                    bbcenter_previous,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |gesture, scale| {
                         let canvas = canvaswrapper.canvas();
+                        let old_zoom = canvas.engine_ref().camera.total_zoom();
+                        let new_zoom = zoom_begin.get() * scale;
 
-                        if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX)
-                            .contains(&(zoom_begin.get() * scale))
-                        {
-                            new_zoom.set(zoom_begin.get() * scale);
-                            prev_scale.set(scale);
+                        if !(Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
+                            return;
                         }
 
-                        let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom.get());
+                        let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
 
-                        if let Some(bbcenter_current) = gesture
+                        let bbcenter_current = gesture
                             .bounding_box_center()
-                            .map(|(x, y)| na::vector![x, y])
-                        {
-                            let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get()
-                            {
-                                bbcenter_begin
-                            } else {
-                                // Set the center if not set by gesture begin handler
-                                bbcenter_begin.set(Some(bbcenter_current));
-                                bbcenter_current
-                            };
-                            let bbcenter_delta =
-                                bbcenter_current - bbcenter_begin * prev_scale.get();
-                            let new_offset = offset_begin.get() * prev_scale.get() - bbcenter_delta;
-                            widget_flags |=
-                                canvas.engine_mut().camera_set_offset_expand(new_offset);
+                            .map(|(x, y)| na::vector![x, y]);
+
+                        let screen_offset = bbcenter_current
+                            .unwrap_or_else(|| canvas.engine_ref().camera.size() * 0.5);
+
+                        let camera_offset = canvas.engine_ref().camera.offset();
+                        let mut new_camera_offset = (((camera_offset + screen_offset) / old_zoom)
+                            * new_zoom)
+                            - screen_offset;
+
+                        if let Some(bbcenter_current) = bbcenter_current {
+                            let bbcenter_previous = bbcenter_previous
+                                .replace(Some(bbcenter_current))
+                                .unwrap_or(bbcenter_current);
+
+                            new_camera_offset -= bbcenter_current - bbcenter_previous;
                         }
+
+                        widget_flags |= canvas
+                            .engine_mut()
+                            .camera_set_offset_expand(new_camera_offset);
 
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
@@ -645,6 +647,108 @@ mod imp {
                 ));
 
                 self.canvas_zoom_gesture.connect_cancel(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _event_sequence| {
+                        gesture.set_state(EventSequenceState::Denied);
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
+            }
+
+            // Canvas gesture rotating
+            {
+                let rotation_begin = Rc::new(Cell::new(0_f64));
+                let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
+
+                self.canvas_rotate_gesture.connect_begin(clone!(
+                    #[strong]
+                    rotation_begin,
+                    #[strong]
+                    bbcenter_begin,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _| {
+                        gesture.set_state(EventSequenceState::Claimed);
+
+                        let current_rotation =
+                            canvaswrapper.canvas().engine_ref().camera.rotation();
+                        rotation_begin.set(current_rotation);
+
+                        bbcenter_begin.set(
+                            gesture
+                                .bounding_box_center()
+                                .map(|(x, y)| na::vector![x, y]),
+                        );
+                    }
+                ));
+
+                self.canvas_rotate_gesture.connect_angle_changed(clone!(
+                    #[strong]
+                    rotation_begin,
+                    #[strong]
+                    bbcenter_begin,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |gesture, _angle, angle_delta| {
+                        let canvas = canvaswrapper.canvas();
+                        let camera_size = canvas.engine_ref().camera.size();
+
+                        let new_rotation = rotation_begin.get() + angle_delta;
+
+                        // pivot point in surface coordinates (pointer with fallback to center)
+                        let screen_pivot = gesture
+                            .bounding_box_center()
+                            .map(|(x, y)| na::vector![x, y])
+                            .or_else(|| bbcenter_begin.get())
+                            .unwrap_or_else(|| camera_size * 0.5);
+
+                        // calculate pivot point in document coordinates
+                        let transform_inv = canvas.engine_ref().camera.transform().inverse();
+                        let document_pivot = transform_inv
+                            .transform_point(&na::Point2::from(screen_pivot))
+                            .coords;
+
+                        // apply rotation
+                        let mut widget_flags =
+                            canvas.engine_mut().camera_set_rotation(new_rotation);
+
+                        // transform pivot point back into screen coordinates with new rotation *without* applying offset
+                        // and calculate the offset needed for fixating the pivot point
+                        let transform = canvas.engine_ref().camera.transform();
+                        let new_camera_offset =
+                            transform.transform_vector(&document_pivot) - screen_pivot;
+
+                        // apply offset
+                        widget_flags |= canvas
+                            .engine_mut()
+                            .camera_set_offset_expand(new_camera_offset);
+
+                        canvas.emit_handle_widget_flags(widget_flags);
+                    }
+                ));
+
+                self.canvas_rotate_gesture.connect_end(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_gesture, _event_sequence| {
+                        let widget_flags = canvaswrapper
+                            .canvas()
+                            .engine_mut()
+                            .update_rendering_current_viewport();
+                        canvaswrapper
+                            .canvas()
+                            .emit_handle_widget_flags(widget_flags);
+                    }
+                ));
+
+                self.canvas_rotate_gesture.connect_cancel(clone!(
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |gesture, _event_sequence| {

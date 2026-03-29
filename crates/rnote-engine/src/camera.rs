@@ -131,29 +131,33 @@ impl Camera {
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn surface_mins_maxs(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
-        let total_zoom = self.total_zoom();
+        let transform = self.transform();
+
+        let corners = [
+            na::point![doc.x, doc.y],
+            na::point![doc.x + doc.width, doc.y],
+            na::point![doc.x + doc.width, doc.y + doc.height],
+            na::point![doc.x, doc.y + doc.height],
+        ]
+        .map(|p| na::Point2::from(transform.transform_vector(&p.coords)));
+
+        let bounds = Aabb::from_points(corners);
 
         let (h_lower, h_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
-                doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
-                (doc.x + doc.width) * total_zoom + Self::OVERSHOOT_HORIZONTAL,
+                bounds.mins.x - Self::OVERSHOOT_HORIZONTAL,
+                bounds.maxs.x + Self::OVERSHOOT_HORIZONTAL,
             ),
-            Layout::SemiInfinite => (
-                doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
-                (doc.x + doc.width) * total_zoom,
-            ),
-            Layout::Infinite => (doc.x * total_zoom, (doc.x + doc.width) * total_zoom),
+            Layout::SemiInfinite => (bounds.mins.x - Self::OVERSHOOT_HORIZONTAL, bounds.maxs.x),
+            Layout::Infinite => (bounds.mins.x, bounds.maxs.x),
         };
         let (v_lower, v_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
-                doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
-                (doc.y + doc.height) * total_zoom + Self::OVERSHOOT_VERTICAL,
+                bounds.mins.y - Self::OVERSHOOT_VERTICAL,
+                bounds.maxs.y + Self::OVERSHOOT_VERTICAL,
             ),
-            Layout::SemiInfinite => (
-                doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
-                (doc.y + doc.height) * total_zoom,
-            ),
-            Layout::Infinite => (doc.y * total_zoom, (doc.y + doc.height) * total_zoom),
+            Layout::SemiInfinite => (bounds.mins.y - Self::OVERSHOOT_VERTICAL, bounds.maxs.y),
+            Layout::Infinite => (bounds.mins.y, bounds.maxs.y),
         };
 
         (na::vector![h_lower, v_lower], na::vector![h_upper, v_upper])
@@ -192,7 +196,7 @@ impl Camera {
     }
 
     fn snap_angle(angle: f64, step: f64) -> f64 {
-        const SNAP_EPS: f64 = 0.5_f64.to_radians();
+        const SNAP_EPS: f64 = 1_f64.to_radians();
 
         let k = (angle / step).round();
         let snapped_angle = k * step;

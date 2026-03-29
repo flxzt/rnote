@@ -62,7 +62,7 @@ impl Document {
         a: 0.35,
     };
 
-    pub(crate) fn bounds(&self) -> Aabb {
+    pub fn bounds(&self) -> Aabb {
         Aabb::new(
             na::point![self.x, self.y],
             na::point![self.x + self.width, self.y + self.height],

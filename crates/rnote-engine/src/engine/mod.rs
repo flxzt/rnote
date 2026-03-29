@@ -632,7 +632,7 @@ impl Engine {
                 -Document::SHADOW_WIDTH * zoom
             ]
         };
-        self.camera_set_offset_expand(new_offset)
+        self.camera_set_rotation(0.0) | self.camera_set_offset_expand(new_offset)
     }
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.

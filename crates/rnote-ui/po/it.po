@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-14 14:56+0100\n"
+"POT-Creation-Date: 2026-03-25 19:35+0100\n"
 "PO-Revision-Date: 2026-02-19 02:09+0000\n"
 "Last-Translator: Samuele <samu4199@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -33,6 +33,10 @@ msgstr "Gnome;GTK;Ufficio;Grafica;Note;"
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
 msgstr "Nuova Finestra"
+
+#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
+msgid "@APP_NAME_CAPITALIZED@"
+msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -206,9 +210,9 @@ msgstr "Cambia la cartella dell'area di lavoro"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:170
 #: crates/rnote-ui/data/ui/dialogs/export.ui:290
-#: crates/rnote-ui/src/dialogs/export.rs:482
-#: crates/rnote-ui/src/dialogs/export.rs:519
-#: crates/rnote-ui/src/dialogs/export.rs:527
+#: crates/rnote-ui/src/dialogs/export.rs:485
+#: crates/rnote-ui/src/dialogs/export.rs:522
+#: crates/rnote-ui/src/dialogs/export.rs:530
 #: crates/rnote-ui/src/dialogs/mod.rs:542
 msgid "- no directory selected -"
 msgstr "- nessuna cartella selezionata -"
@@ -230,15 +234,15 @@ msgid "Trash"
 msgstr "Cestino"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
-#: crates/rnote-ui/src/dialogs/export.rs:346
+#: crates/rnote-ui/src/dialogs/export.rs:349
 msgid "Export Document"
 msgstr "Esporta Documento"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:19
 #: crates/rnote-ui/data/ui/dialogs/export.ui:188
 #: crates/rnote-ui/data/ui/dialogs/export.ui:428
-#: crates/rnote-ui/src/dialogs/export.rs:1252
-#: crates/rnote-ui/src/dialogs/export.rs:1313
+#: crates/rnote-ui/src/dialogs/export.rs:1257
+#: crates/rnote-ui/src/dialogs/export.rs:1318
 msgid "Export"
 msgstr "Esporta"
 
@@ -259,10 +263,10 @@ msgstr "Selezionare il file da esportare"
 #: crates/rnote-ui/src/dialogs/export.rs:158
 #: crates/rnote-ui/src/dialogs/export.rs:165
 #: crates/rnote-ui/src/dialogs/export.rs:251
-#: crates/rnote-ui/src/dialogs/export.rs:894
-#: crates/rnote-ui/src/dialogs/export.rs:917
-#: crates/rnote-ui/src/dialogs/export.rs:924
-#: crates/rnote-ui/src/dialogs/export.rs:1012
+#: crates/rnote-ui/src/dialogs/export.rs:898
+#: crates/rnote-ui/src/dialogs/export.rs:921
+#: crates/rnote-ui/src/dialogs/export.rs:928
+#: crates/rnote-ui/src/dialogs/export.rs:1016
 msgid "- no file selected -"
 msgstr "- nessun file selezionato -"
 
@@ -322,19 +326,19 @@ msgstr "Il formato da esportare"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/data/ui/dialogs/export.ui:346
 #: crates/rnote-ui/data/ui/dialogs/export.ui:544
-#: crates/rnote-ui/src/dialogs/export.rs:365
-#: crates/rnote-ui/src/dialogs/export.rs:789
-#: crates/rnote-ui/src/dialogs/export.rs:1181
+#: crates/rnote-ui/src/dialogs/export.rs:368
+#: crates/rnote-ui/src/dialogs/export.rs:793
+#: crates/rnote-ui/src/dialogs/export.rs:1186
 msgid "Svg"
 msgstr "SVG"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
-#: crates/rnote-ui/src/dialogs/export.rs:376
+#: crates/rnote-ui/src/dialogs/export.rs:379
 msgid "Pdf"
 msgstr "PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
-#: crates/rnote-ui/src/dialogs/export.rs:387
+#: crates/rnote-ui/src/dialogs/export.rs:390
 msgid "Xopp"
 msgstr "XOPP"
 
@@ -365,7 +369,7 @@ msgid "Vertical First"
 msgstr "Verticale prima"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
-#: crates/rnote-ui/src/dialogs/export.rs:769
+#: crates/rnote-ui/src/dialogs/export.rs:773
 msgid "Export Document Pages"
 msgstr "Esporta pagine del documento"
 
@@ -389,15 +393,15 @@ msgstr "Base nome file esportati"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:347
 #: crates/rnote-ui/data/ui/dialogs/export.ui:545
-#: crates/rnote-ui/src/dialogs/export.rs:800
-#: crates/rnote-ui/src/dialogs/export.rs:1192
+#: crates/rnote-ui/src/dialogs/export.rs:804
+#: crates/rnote-ui/src/dialogs/export.rs:1197
 msgid "Png"
 msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
 #: crates/rnote-ui/data/ui/dialogs/export.ui:546
-#: crates/rnote-ui/src/dialogs/export.rs:813
-#: crates/rnote-ui/src/dialogs/export.rs:1205
+#: crates/rnote-ui/src/dialogs/export.rs:817
+#: crates/rnote-ui/src/dialogs/export.rs:1210
 msgid "Jpeg"
 msgstr "Jpeg"
 
@@ -428,7 +432,7 @@ msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "Impostare la qualità dell'immagine Jpeg (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
-#: crates/rnote-ui/src/dialogs/export.rs:1160
+#: crates/rnote-ui/src/dialogs/export.rs:1165
 msgid "Export Selection"
 msgstr "Esporta selezione"
 
@@ -1944,40 +1948,40 @@ msgstr ""
 msgid "Opening file failed"
 msgstr "Apertura file fallita"
 
-#: crates/rnote-ui/src/canvas/mod.rs:892 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid file name -"
 msgstr "- nome del file invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:905
+#: crates/rnote-ui/src/canvas/mod.rs:908
 msgid "- invalid folder path -"
 msgstr "- percorso della cartella invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:929
+#: crates/rnote-ui/src/canvas/mod.rs:932
 msgid "Opened file was modified on disk"
 msgstr "Il file aperto è stato modificato sul disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:930
+#: crates/rnote-ui/src/canvas/mod.rs:933
 msgid "Reload"
 msgstr "Ricarica"
 
-#: crates/rnote-ui/src/canvas/mod.rs:946
+#: crates/rnote-ui/src/canvas/mod.rs:949
 msgid "Reloading .rnote file from disk failed"
 msgstr "Ricaricamento del file .rnote fallito"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1014
+#: crates/rnote-ui/src/canvas/mod.rs:1024
 msgid "Opened file was renamed or moved."
 msgstr "Il file aperto è stato rinominato o spostato."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1028
+#: crates/rnote-ui/src/canvas/mod.rs:1038
 msgid "Opened file was removed."
 msgstr "Il file aperto è stato rimosso."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1249
+#: crates/rnote-ui/src/canvas/mod.rs:1264
 msgid "Inserting file failed"
 msgstr "Inserimento file non riuscito"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1261
+#: crates/rnote-ui/src/canvas/mod.rs:1276
 msgid "Inserting text failed"
 msgstr "Inserimento del testo non riuscito"
 
@@ -2003,79 +2007,79 @@ msgid "Exported document successfully"
 msgstr "Esportazione del documento avvenuta correttamente"
 
 #: crates/rnote-ui/src/dialogs/export.rs:315
-#: crates/rnote-ui/src/dialogs/export.rs:742
-#: crates/rnote-ui/src/dialogs/export.rs:1103
+#: crates/rnote-ui/src/dialogs/export.rs:745
+#: crates/rnote-ui/src/dialogs/export.rs:1107
 msgid "View in file manager"
 msgstr "Visualizza nel file manager"
 
 #: crates/rnote-ui/src/dialogs/export.rs:323
 #: crates/rnote-ui/src/dialogs/export.rs:329
-#: crates/rnote-ui/src/dialogs/export.rs:746
-#: crates/rnote-ui/src/dialogs/export.rs:752
-#: crates/rnote-ui/src/dialogs/export.rs:1111
-#: crates/rnote-ui/src/dialogs/export.rs:1117
+#: crates/rnote-ui/src/dialogs/export.rs:749
+#: crates/rnote-ui/src/dialogs/export.rs:755
+#: crates/rnote-ui/src/dialogs/export.rs:1115
+#: crates/rnote-ui/src/dialogs/export.rs:1121
 msgid "Failed to view the file in the file manager"
 msgstr "Impossibile visualizzare il file nel gestore file"
 
-#: crates/rnote-ui/src/dialogs/export.rs:348
-#: crates/rnote-ui/src/dialogs/export.rs:771
-#: crates/rnote-ui/src/dialogs/export.rs:1162
+#: crates/rnote-ui/src/dialogs/export.rs:351
+#: crates/rnote-ui/src/dialogs/export.rs:775
+#: crates/rnote-ui/src/dialogs/export.rs:1167
 #: crates/rnote-ui/src/dialogs/mod.rs:524
 msgid "Select"
 msgstr "Seleziona"
 
-#: crates/rnote-ui/src/dialogs/export.rs:723
+#: crates/rnote-ui/src/dialogs/export.rs:726
 msgid "Exporting document pages failed, no directory selected"
 msgstr ""
 "Esportazione delle pagine del documento fallita, nessuna cartella è stata "
 "selezionata"
 
-#: crates/rnote-ui/src/dialogs/export.rs:735
+#: crates/rnote-ui/src/dialogs/export.rs:738
 msgid "Exporting document pages failed"
 msgstr "Esportazione delle pagine del documento fallita"
 
-#: crates/rnote-ui/src/dialogs/export.rs:741
+#: crates/rnote-ui/src/dialogs/export.rs:744
 msgid "Exported document pages successfully"
 msgstr "Il documento è stato esportato correttamente"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1085
+#: crates/rnote-ui/src/dialogs/export.rs:1089
 msgid "Exporting selection failed, no file selected"
 msgstr "Esportazione della selezione fallita, nessun file è stato selezionato"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1096
+#: crates/rnote-ui/src/dialogs/export.rs:1100
 msgid "Exporting selection failed"
 msgstr "Esportazione della selezione fallita"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1102
+#: crates/rnote-ui/src/dialogs/export.rs:1106
 msgid "Exported selection successfully"
 msgstr "Selezione esportata correttamente"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1238
-#: crates/rnote-ui/src/dialogs/export.rs:1299
+#: crates/rnote-ui/src/dialogs/export.rs:1243
+#: crates/rnote-ui/src/dialogs/export.rs:1304
 msgid "Json"
 msgstr "Json"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1250
+#: crates/rnote-ui/src/dialogs/export.rs:1255
 msgid "Export Engine State"
 msgstr "Esporta 'Engine State'"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1269
+#: crates/rnote-ui/src/dialogs/export.rs:1274
 msgid "Exporting engine state failed"
 msgstr "Esportazione 'engine state' fallita"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1273
+#: crates/rnote-ui/src/dialogs/export.rs:1278
 msgid "Exported engine state successfully"
 msgstr "Esportazione 'engine state' avvenuta con successo"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1311
+#: crates/rnote-ui/src/dialogs/export.rs:1316
 msgid "Export Engine Config"
 msgstr "Esporta 'Engine Config'"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1330
+#: crates/rnote-ui/src/dialogs/export.rs:1335
 msgid "Exporting engine config failed"
 msgstr "Esportazione 'engine config' fallita"
 
-#: crates/rnote-ui/src/dialogs/export.rs:1334
+#: crates/rnote-ui/src/dialogs/export.rs:1339
 msgid "Exported engine config successfully"
 msgstr "Esportazione 'engine config' avvenuta con successo"
 
@@ -2547,132 +2551,132 @@ msgstr "Nome Cartella"
 msgid "New Folder"
 msgstr "Nuova Cartella"
 
-#: crates/rnote-ui/src/utils.rs:159
+#: crates/rnote-ui/src/utils.rs:169
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
 msgstr "grigio"
 
-#: crates/rnote-ui/src/utils.rs:161 crates/rnote-ui/src/utils.rs:196
+#: crates/rnote-ui/src/utils.rs:171 crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "rose"
 msgstr "rosa"
 
-#: crates/rnote-ui/src/utils.rs:163
+#: crates/rnote-ui/src/utils.rs:173
 msgctxt "part of string representation of a color"
 msgid "red"
 msgstr "rosso"
 
-#: crates/rnote-ui/src/utils.rs:166
+#: crates/rnote-ui/src/utils.rs:176
 msgctxt "part of string representation of a color"
 msgid "orange"
 msgstr "arancio"
 
-#: crates/rnote-ui/src/utils.rs:169
+#: crates/rnote-ui/src/utils.rs:179
 msgctxt "part of string representation of a color"
 msgid "yellow"
 msgstr "giallo"
 
-#: crates/rnote-ui/src/utils.rs:173
+#: crates/rnote-ui/src/utils.rs:183
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
 msgstr "verde-certosa"
 
-#: crates/rnote-ui/src/utils.rs:176
+#: crates/rnote-ui/src/utils.rs:186
 msgctxt "part of string representation of a color"
 msgid "green"
 msgstr "verde"
 
-#: crates/rnote-ui/src/utils.rs:179
+#: crates/rnote-ui/src/utils.rs:189
 msgctxt "part of string representation of a color"
 msgid "spring-green"
 msgstr "verde-primavera"
 
-#: crates/rnote-ui/src/utils.rs:182
+#: crates/rnote-ui/src/utils.rs:192
 msgctxt "part of string representation of a color"
 msgid "cyan"
 msgstr "ciano"
 
-#: crates/rnote-ui/src/utils.rs:185
+#: crates/rnote-ui/src/utils.rs:195
 msgctxt "part of string representation of a color"
 msgid "azure"
 msgstr "azzurro"
 
-#: crates/rnote-ui/src/utils.rs:188
+#: crates/rnote-ui/src/utils.rs:198
 msgctxt "part of string representation of a color"
 msgid "blue"
 msgstr "blu"
 
-#: crates/rnote-ui/src/utils.rs:191
+#: crates/rnote-ui/src/utils.rs:201
 msgctxt "part of string representation of a color"
 msgid "violet"
 msgstr "viola"
 
-#: crates/rnote-ui/src/utils.rs:194
+#: crates/rnote-ui/src/utils.rs:204
 msgctxt "part of string representation of a color"
 msgid "magenta"
 msgstr "magenta"
 
-#: crates/rnote-ui/src/utils.rs:201
+#: crates/rnote-ui/src/utils.rs:211
 msgctxt "part of string representation of a color"
 msgid "greyish"
 msgstr "grigiastro"
 
-#: crates/rnote-ui/src/utils.rs:204
+#: crates/rnote-ui/src/utils.rs:214
 msgctxt "part of string representation of a color"
 msgid "strong"
 msgstr "Intenso"
 
-#: crates/rnote-ui/src/utils.rs:206
+#: crates/rnote-ui/src/utils.rs:216
 msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "vivido"
 
-#: crates/rnote-ui/src/utils.rs:210
+#: crates/rnote-ui/src/utils.rs:220
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "molto scuro"
 
-#: crates/rnote-ui/src/utils.rs:212
+#: crates/rnote-ui/src/utils.rs:222
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "scuro"
 
-#: crates/rnote-ui/src/utils.rs:215
+#: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "blu cobalto"
 
-#: crates/rnote-ui/src/utils.rs:217
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "acceso"
 
-#: crates/rnote-ui/src/utils.rs:221
+#: crates/rnote-ui/src/utils.rs:231
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "trasparente"
 
-#: crates/rnote-ui/src/utils.rs:223
+#: crates/rnote-ui/src/utils.rs:233
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "traslucido"
 
-#: crates/rnote-ui/src/utils.rs:227
+#: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "leggermente traslucido"
 
-#: crates/rnote-ui/src/utils.rs:236
+#: crates/rnote-ui/src/utils.rs:246
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "completamente trasparente"
 
-#: crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:249
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "nero"
 
-#: crates/rnote-ui/src/utils.rs:241
+#: crates/rnote-ui/src/utils.rs:251
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "bianco"

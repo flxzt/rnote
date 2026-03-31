@@ -186,7 +186,10 @@ impl Camera {
     pub fn zoom_to(&mut self, zoom: f64) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
-        widget_flags.zoomed = true;
+        widget_flags.view_modified = true;
+        widget_flags.resize = true;
+        widget_flags.refresh_canvasmenu = true;
+        widget_flags.update_old_viewport = true;
         widget_flags
     }
 
@@ -208,16 +211,22 @@ impl Camera {
         }
     }
 
+    /// Normalizes angle to (-pi, pi].
+    fn normalize_angle(angle: f64) -> f64 {
+        std::f64::consts::PI - (std::f64::consts::PI - angle).rem_euclid(std::f64::consts::TAU)
+    }
+
     pub fn set_rotation(&mut self, rotation: f64) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        // snap angle to nearest 90 degrees and normalize it to [0, 2pi)
+        // snap angle to nearest 45 degrees and normalize it
         // angle must not be close to zero, because it causes major rendering issues in GTK
-        self.rotation = Self::snap_angle(rotation, std::f64::consts::FRAC_PI_2)
-            .rem_euclid(std::f64::consts::TAU);
+        self.rotation =
+            Self::normalize_angle(Self::snap_angle(rotation, std::f64::consts::FRAC_PI_4));
 
         widget_flags.view_modified = true;
         widget_flags.resize = true;
+        widget_flags.refresh_canvasmenu = true;
         widget_flags
     }
 
@@ -231,7 +240,9 @@ impl Camera {
         let mut widget_flags = WidgetFlags::default();
         self.temporary_zoom =
             temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom);
-        widget_flags.zoomed_temporarily = true;
+        widget_flags.view_modified = true;
+        widget_flags.resize = true;
+        widget_flags.refresh_canvasmenu = true;
         widget_flags
     }
 

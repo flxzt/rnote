@@ -13,9 +13,9 @@ pub struct WidgetFlags {
     /// Update the current view offsets and size.
     pub view_modified: bool,
     /// Indicates that the camera has changed it's temporary zoom.
-    pub zoomed_temporarily: bool,
+    pub refresh_canvasmenu: bool,
     /// Indicates that the camera has changed it's permanent zoom.
-    pub zoomed: bool,
+    pub update_old_viewport: bool,
     /// Deselect the elements of the global color picker.
     pub deselect_color_setters: bool,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed.
@@ -36,8 +36,8 @@ impl Default for WidgetFlags {
             refresh_ui: false,
             store_modified: false,
             view_modified: false,
-            zoomed_temporarily: false,
-            zoomed: false,
+            refresh_canvasmenu: false,
+            update_old_viewport: false,
             deselect_color_setters: false,
             hide_undo: None,
             hide_redo: None,
@@ -62,8 +62,8 @@ impl std::ops::BitOrAssign for WidgetFlags {
         self.refresh_ui |= rhs.refresh_ui;
         self.store_modified |= rhs.store_modified;
         self.view_modified |= rhs.view_modified;
-        self.zoomed_temporarily |= rhs.zoomed_temporarily;
-        self.zoomed |= rhs.zoomed;
+        self.refresh_canvasmenu |= rhs.refresh_canvasmenu;
+        self.update_old_viewport |= rhs.update_old_viewport;
         self.deselect_color_setters |= rhs.deselect_color_setters;
         if rhs.hide_undo.is_some() {
             self.hide_undo = rhs.hide_undo

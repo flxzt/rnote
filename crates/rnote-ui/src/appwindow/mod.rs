@@ -294,23 +294,21 @@ impl RnAppWindow {
         if widget_flags.view_modified {
             canvas.queue_allocate();
         }
-        if widget_flags.zoomed_temporarily {
+        if widget_flags.refresh_canvasmenu {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
+            let rotation = canvas.engine_ref().camera.rotation();
 
             self.main_header()
                 .canvasmenu()
                 .refresh_zoom_reset_label(total_zoom);
-            canvas.queue_resize();
+
+            self.main_header()
+                .canvasmenu()
+                .refresh_rotation_reset_label(rotation);
         }
-        if widget_flags.zoomed {
-            let total_zoom = canvas.engine_ref().camera.total_zoom();
+        if widget_flags.update_old_viewport {
             let viewport = canvas.engine_ref().camera.viewport();
-
             canvas.canvas_layout_manager().update_old_viewport(viewport);
-            self.main_header()
-                .canvasmenu()
-                .refresh_zoom_reset_label(total_zoom);
-            canvas.queue_resize();
         }
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();
@@ -717,6 +715,7 @@ impl RnAppWindow {
             let pen_sounds = canvas.engine_ref().pen_sounds();
             let snap_positions = self.engine_config().read().snap_positions;
             let total_zoom = canvas.engine_ref().camera.total_zoom();
+            let rotation = canvas.engine_ref().camera.rotation();
             let can_undo = canvas.engine_ref().can_undo();
             let can_redo = canvas.engine_ref().can_redo();
             let visual_debug = self.engine_config().read().visual_debug;
@@ -732,6 +731,9 @@ impl RnAppWindow {
             self.main_header()
                 .canvasmenu()
                 .refresh_zoom_reset_label(total_zoom);
+            self.main_header()
+                .canvasmenu()
+                .refresh_rotation_reset_label(rotation);
             self.set_pen_style(pen_style);
             self.set_pen_sounds(pen_sounds);
             self.set_snap_positions(snap_positions);

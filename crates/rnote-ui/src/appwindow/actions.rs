@@ -72,6 +72,12 @@ impl RnAppWindow {
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
         self.add_action(&action_zoomout);
+        let action_rotation_reset = gio::SimpleAction::new("rotation-reset", None);
+        self.add_action(&action_rotation_reset);
+        let action_rotate_ccw = gio::SimpleAction::new("rotate-ccw", None);
+        self.add_action(&action_rotate_ccw);
+        let action_rotate_cw = gio::SimpleAction::new("rotate-cw", None);
+        self.add_action(&action_rotate_cw);
         let action_add_page_to_doc = gio::SimpleAction::new("add-page-to-doc", None);
         self.add_action(&action_add_page_to_doc);
         let action_remove_page_from_doc = gio::SimpleAction::new("remove-page-from-doc", None);
@@ -675,6 +681,64 @@ impl RnAppWindow {
                 let new_zoom = canvas.engine_ref().camera.total_zoom()
                     * (1.0 / (1.0 + RnCanvas::ZOOM_SCROLL_STEP));
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
+
+        // Rotation reset
+        action_rotation_reset.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let mut widget_flags = canvas.engine_mut().camera_set_rotation(0.0);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
+
+        // Rotate counterclockwise
+        action_rotate_ccw.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let new_rotation =
+                    canvas.engine_ref().camera.rotation() - RnCanvas::ROTATION_SCROLL_STEP;
+                let mut widget_flags = canvas.engine_mut().camera_set_rotation(new_rotation);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
+
+        // Rotate clockwise
+        action_rotate_cw.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let new_rotation =
+                    canvas.engine_ref().camera.rotation() + RnCanvas::ROTATION_SCROLL_STEP;
+                let mut widget_flags = canvas.engine_mut().camera_set_rotation(new_rotation);
                 widget_flags |= canvas
                     .engine_mut()
                     .camera

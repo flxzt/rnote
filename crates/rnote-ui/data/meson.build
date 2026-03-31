@@ -242,6 +242,8 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/resize-to-fit-content-symbolic.svg',
     'icons/scalable/actions/restore-symbolic.svg',
     'icons/scalable/actions/return-origin-page-symbolic.svg',
+    'icons/scalable/actions/rotate-left-symbolic.svg',
+    'icons/scalable/actions/rotate-right-symbolic.svg',
     'icons/scalable/actions/save-symbolic.svg',
     'icons/scalable/actions/selection-deselect-all-symbolic.svg',
     'icons/scalable/actions/selection-duplicate-symbolic.svg',

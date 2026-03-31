@@ -7,6 +7,7 @@ use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
+use rnote_compose::ext::DAffine2Ext;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tracing::error;
@@ -133,17 +134,9 @@ impl Camera {
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn surface_mins_maxs(&self, doc: &Document) -> (Vector2, Vector2) {
-        let transform = self.transform();
-
-        let corners = [
-            Vector2::new(doc.x, doc.y),
-            Vector2::new(doc.x + doc.width, doc.y),
-            Vector2::new(doc.x + doc.width, doc.y + doc.height),
-            Vector2::new(doc.x, doc.y + doc.height),
-        ]
-        .map(|p| transform.transform_vector2(p));
-
-        let bounds = Aabb::from_points(corners);
+        let bounds = self
+            .document_to_view_transform()
+            .transform_aabb(doc.bounds());
 
         let (h_lower, h_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
@@ -317,17 +310,8 @@ impl Camera {
     ///
     /// Returns the Aabb enclosing the (potentially rotated) viewport.
     pub fn viewport(&self) -> Aabb {
-        let transform_inv = self.transform().inverse();
-
-        let corners = [
-            Vector2::new(0.0, 0.0),
-            Vector2::new(self.size[0], 0.0),
-            Vector2::new(self.size[0], self.size[1]),
-            Vector2::new(0.0, self.size[1]),
-        ]
-        .map(|p| transform_inv.transform_point2(p));
-
-        Aabb::from_points(corners)
+        let viewport_surface = Aabb::new(Vector2::ZERO, self.size);
+        self.transform().inverse().transform_aabb(viewport_surface)
     }
 
     /// The current viewport center in document coordinate space.
@@ -340,53 +324,33 @@ impl Camera {
     /// `center` must be in document coordinate space.
     pub fn set_viewport_center(&mut self, center: Vector2) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        self.offset = self.transform().transform_vector2(center) - self.size * 0.5;
+        self.offset = self.document_to_view_transform().transform_point2(center) - self.size * 0.5;
         widget_flags.view_modified = true;
         widget_flags
     }
 
-    /// Transform Aabb from document coords to surface coords.
+    /// The transform from document coords to view coords (rotation + scale only).
     ///
-    /// Returns the Aabb enclosing the (potentially rotated) transformed bounds.
-    pub fn transform_bounds(&self, bounds: Aabb) -> Aabb {
-        let transform = self.transform();
-
-        let corners = [
-            Vector2::new(bounds.mins[0], bounds.mins[1]),
-            Vector2::new(bounds.maxs[0], bounds.mins[1]),
-            Vector2::new(bounds.maxs[0], bounds.maxs[1]),
-            Vector2::new(bounds.mins[0], bounds.maxs[1]),
-        ]
-        .map(|p| transform.transform_point2(p));
-
-        Aabb::from_points(corners)
+    /// To get the inverse, call `.inverse()`.
+    pub fn document_to_view_transform(&self) -> DAffine2 {
+        // LHS is applied onto RHS: rotate -> scale
+        DAffine2::from_scale(Vector2::splat(self.total_zoom()))
+            * DAffine2::from_angle(self.rotation)
     }
 
-    /// Transform Aabb from surface coords to document coords.
+    /// The transform from view coords to surface coords (translation only).
     ///
-    /// Returns the Aabb enclosing the (potentially rotated) transformed bounds.
-    pub fn transform_inv_bounds(&self, bounds: Aabb) -> Aabb {
-        let transform_inv = self.transform().inverse();
-
-        let corners = [
-            Vector2::new(bounds.mins[0], bounds.mins[1]),
-            Vector2::new(bounds.maxs[0], bounds.mins[1]),
-            Vector2::new(bounds.maxs[0], bounds.maxs[1]),
-            Vector2::new(bounds.mins[0], bounds.maxs[1]),
-        ]
-        .map(|p| transform_inv.transform_point2(p));
-
-        Aabb::from_points(corners)
+    /// To get the inverse, call `.inverse()`.
+    pub fn view_to_surface_transform(&self) -> DAffine2 {
+        DAffine2::from_translation(-self.offset)
     }
 
-    /// The transform from document coords to surface coords.
+    /// The transform from document coords to surface coords (full).
     ///
     /// To get the inverse, call `.inverse()`.
     pub fn transform(&self) -> DAffine2 {
-        // LHS is applied onto RHS: rotate -> scale -> translate
-        DAffine2::from_translation(-self.offset)
-            * DAffine2::from_scale(Vector2::splat(self.total_zoom()))
-            * DAffine2::from_angle(self.rotation)
+        // LHS is applied onto RHS: document -> view -> surface
+        self.view_to_surface_transform() * self.document_to_view_transform()
     }
 
     /// The gsk transform for the GTK snapshot function.

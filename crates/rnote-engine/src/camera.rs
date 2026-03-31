@@ -5,6 +5,7 @@ use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
 use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use rnote_compose::ext::Affine2Ext;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tracing::error;
@@ -131,17 +132,9 @@ impl Camera {
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn surface_mins_maxs(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
-        let transform = self.transform();
-
-        let corners = [
-            na::point![doc.x, doc.y],
-            na::point![doc.x + doc.width, doc.y],
-            na::point![doc.x + doc.width, doc.y + doc.height],
-            na::point![doc.x, doc.y + doc.height],
-        ]
-        .map(|p| na::Point2::from(transform.transform_vector(&p.coords)));
-
-        let bounds = Aabb::from_points(corners);
+        let bounds = self
+            .document_to_view_transform()
+            .transform_aabb(doc.bounds());
 
         let (h_lower, h_upper) = match doc.config.layout {
             Layout::FixedSize | Layout::ContinuousVertical => (
@@ -312,17 +305,8 @@ impl Camera {
     ///
     /// Returns the Aabb enclosing the (potentially rotated) viewport.
     pub fn viewport(&self) -> Aabb {
-        let transform_inv = self.transform().inverse();
-
-        let corners = [
-            na::point![0.0, 0.0],
-            na::point![self.size[0], 0.0],
-            na::point![self.size[0], self.size[1]],
-            na::point![0.0, self.size[1]],
-        ]
-        .map(|p| transform_inv.transform_point(&p));
-
-        Aabb::from_points(corners)
+        let viewport_surface = Aabb::new(na::point![0.0, 0.0], na::Point2::from(self.size));
+        self.transform().inverse().transform_aabb(viewport_surface)
     }
 
     /// The current viewport center in document coordinate space.
@@ -338,56 +322,46 @@ impl Camera {
     /// `center` must be in document coordinate space.
     pub fn set_viewport_center(&mut self, center: na::Vector2<f64>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        self.offset = self.transform().transform_vector(&center) - self.size * 0.5;
+
+        self.offset = self
+            .document_to_view_transform()
+            .transform_point(&na::Point2::from(center))
+            .coords
+            - self.size * 0.5;
+
         widget_flags.view_modified = true;
         widget_flags
     }
 
-    /// Transform Aabb from document coords to surface coords.
-    ///
-    /// Returns the Aabb enclosing the (potentially rotated) transformed bounds.
-    pub fn transform_bounds(&self, bounds: Aabb) -> Aabb {
-        let transform = self.transform();
-
-        let corners = [
-            na::point![bounds.mins[0], bounds.mins[1]],
-            na::point![bounds.maxs[0], bounds.mins[1]],
-            na::point![bounds.maxs[0], bounds.maxs[1]],
-            na::point![bounds.mins[0], bounds.maxs[1]],
-        ]
-        .map(|p| transform.transform_point(&p));
-
-        Aabb::from_points(corners)
-    }
-
-    /// Transform Aabb from surface coords to document coords.
-    ///
-    /// Returns the Aabb enclosing the (potentially rotated) transformed bounds.
-    pub fn transform_inv_bounds(&self, bounds: Aabb) -> Aabb {
-        let transform_inv = self.transform().inverse();
-
-        let corners = [
-            na::point![bounds.mins[0], bounds.mins[1]],
-            na::point![bounds.maxs[0], bounds.mins[1]],
-            na::point![bounds.maxs[0], bounds.maxs[1]],
-            na::point![bounds.mins[0], bounds.maxs[1]],
-        ]
-        .map(|p| transform_inv.transform_point(&p));
-
-        Aabb::from_points(corners)
-    }
-
-    /// The transform from document coords to surface coords.
+    /// The transform from document coords to view coords (rotation + scale only).
     ///
     /// To get the inverse, call `.inverse()`.
-    pub fn transform(&self) -> na::Affine2<f64> {
+    pub fn document_to_view_transform(&self) -> na::Affine2<f64> {
         let total_zoom = self.total_zoom();
 
         na::try_convert(
-            // LHS is applied onto RHS: rotate -> scale -> translate
-            na::Translation2::from(-self.offset).to_homogeneous()
-                * na::Scale2::from(na::Vector2::from_element(total_zoom)).to_homogeneous()
+            // LHS is applied onto RHS: rotate -> scale
+            na::Scale2::from(na::Vector2::from_element(total_zoom)).to_homogeneous()
                 * na::Rotation2::new(self.rotation).to_homogeneous(),
+        )
+        .unwrap()
+    }
+
+    /// The transform from view coords to surface coords (translation only).
+    ///
+    /// To get the inverse, call `.inverse()`.
+    pub fn view_to_surface_transform(&self) -> na::Affine2<f64> {
+        na::try_convert(na::Translation2::from(-self.offset).to_homogeneous()).unwrap()
+    }
+
+    /// The transform from document coords to surface coords (full).
+    ///
+    /// To get the inverse, call `.inverse()`.
+    pub fn transform(&self) -> na::Affine2<f64> {
+        na::try_convert(
+            // LHS is applied onto RHS: document -> view -> surface
+            self.view_to_surface_transform().to_homogeneous()
+                * self.document_to_view_transform().to_homogeneous(),
         )
         .unwrap()
     }

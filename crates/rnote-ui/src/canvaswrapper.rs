@@ -425,19 +425,20 @@ mod imp {
                                 // calculate pivot point in document coordinates
                                 let transform_inv =
                                     canvas.engine_ref().camera.transform().inverse();
-                                let document_pivot = transform_inv
-                                    .transform_point(&na::Point2::from(screen_pivot))
-                                    .coords;
+                                let document_pivot =
+                                    transform_inv.transform_point(&na::Point2::from(screen_pivot));
 
                                 // apply rotation
                                 let mut widget_flags =
                                     canvas.engine_mut().camera_set_rotation(new_rotation);
 
-                                // transform pivot point back into screen coordinates with new rotation *without* applying offset
+                                // transform pivot point back into view coordinates with new rotation (without offset)
                                 // and calculate the offset needed for fixating the pivot point
-                                let transform = canvas.engine_ref().camera.transform();
+                                let transform =
+                                    canvas.engine_ref().camera.document_to_view_transform();
                                 let new_camera_offset =
-                                    transform.transform_vector(&document_pivot) - screen_pivot;
+                                    transform.transform_point(&document_pivot).coords
+                                        - screen_pivot;
 
                                 // apply offset
                                 widget_flags |= canvas
@@ -694,19 +695,18 @@ mod imp {
 
                         // calculate pivot point in document coordinates
                         let transform_inv = canvas.engine_ref().camera.transform().inverse();
-                        let document_pivot = transform_inv
-                            .transform_point(&na::Point2::from(screen_pivot))
-                            .coords;
+                        let document_pivot =
+                            transform_inv.transform_point(&na::Point2::from(screen_pivot));
 
                         // apply rotation
                         let mut widget_flags =
                             canvas.engine_mut().camera_set_rotation(new_rotation);
 
-                        // transform pivot point back into screen coordinates with new rotation *without* applying offset
+                        // transform pivot point back into view coordinates with new rotation (without offset)
                         // and calculate the offset needed for fixating the pivot point
-                        let transform = canvas.engine_ref().camera.transform();
+                        let transform = canvas.engine_ref().camera.document_to_view_transform();
                         let new_camera_offset =
-                            transform.transform_vector(&document_pivot) - screen_pivot;
+                            transform.transform_point(&document_pivot).coords - screen_pivot;
 
                         // apply offset
                         widget_flags |= canvas

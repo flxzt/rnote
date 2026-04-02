@@ -292,11 +292,15 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.view_modified {
-            let widget_size = canvas.widget_size();
-            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
             let offset = canvas.engine_ref().camera.offset();
+            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
+            
+            let widget_size = canvas.widget_size();
+            let adjustment_maxs = RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
+            let adjustment_value = RnCanvas::offset_to_adjustment(offset, offset_mins);
+
             // Keep the adjustments configuration in sync
-            canvas.configure_adjustments(widget_size, offset_mins_maxs, offset);
+            canvas.configure_adjustments(widget_size, adjustment_maxs, adjustment_value);
             canvas.queue_resize();
         }
         if widget_flags.zoomed_temporarily {

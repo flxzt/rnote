@@ -549,23 +549,12 @@ mod imp {
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
             let obj = self.obj();
-
-            let hadj_value = self
-                .hadjustment
-                .borrow()
-                .as_ref()
-                .map(|adj| adj.value())
-                .unwrap_or(0.0);
-            let vadj_value = self
-                .vadjustment
-                .borrow()
-                .as_ref()
-                .map(|adj| adj.value())
-                .unwrap_or(0.0);
             let widget_size = obj.widget_size();
+            let offset = obj.engine_ref().camera.offset();
 
             let (offset_mins, offset_maxs) = obj.engine_ref().camera_offset_mins_maxs();
             let adjustment_maxs = super::RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
+            let adjustment_value = super::RnCanvas::offset_to_adjustment(offset, offset_mins);
 
             if let Some(signal_id) = self.connections.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
@@ -576,7 +565,21 @@ mod imp {
                 let signal_id = hadj.connect_value_changed(clone!(
                     #[weak(rename_to=canvas)]
                     obj,
-                    move |_| {
+                    move |hadj_signal| {
+                        // Apply scroll input from adjustment to camera
+                        let (offset_mins, _) = canvas.engine_ref().camera_offset_mins_maxs();
+                        let offset = canvas.engine_ref().camera.offset();
+
+                        let new_offset = na::vector![
+                            super::RnCanvas::adjustment_to_offset(
+                                hadj_signal.value(),
+                                offset_mins.x
+                            ),
+                            offset.y
+                        ];
+
+                        let _ = canvas.engine_mut().camera_set_offset_expand(new_offset);
+
                         // this triggers a canvaslayout allocate() call,
                         // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
@@ -587,32 +590,17 @@ mod imp {
             }
             self.hadjustment.replace(hadj);
 
-            obj.configure_adjustments(
-                widget_size,
-                adjustment_maxs,
-                na::vector![hadj_value, vadj_value],
-            );
+            obj.configure_adjustments(widget_size, adjustment_maxs, adjustment_value);
         }
 
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
             let obj = self.obj();
-
-            let hadj_value = self
-                .hadjustment
-                .borrow()
-                .as_ref()
-                .map(|adj| adj.value())
-                .unwrap_or(0.0);
-            let vadj_value = self
-                .vadjustment
-                .borrow()
-                .as_ref()
-                .map(|adj| adj.value())
-                .unwrap_or(0.0);
             let widget_size = obj.widget_size();
+            let offset = obj.engine_ref().camera.offset();
 
             let (offset_mins, offset_maxs) = obj.engine_ref().camera_offset_mins_maxs();
             let adjustment_maxs = super::RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
+            let adjustment_value = super::RnCanvas::offset_to_adjustment(offset, offset_mins);
 
             if let Some(signal_id) = self.connections.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
@@ -623,7 +611,21 @@ mod imp {
                 let signal_id = vadj.connect_value_changed(clone!(
                     #[weak(rename_to=canvas)]
                     obj,
-                    move |_| {
+                    move |vadj_signal| {
+                        // Apply scroll input from adjustment to camera
+                        let (offset_mins, _) = canvas.engine_ref().camera_offset_mins_maxs();
+                        let offset = canvas.engine_ref().camera.offset();
+
+                        let new_offset = na::vector![
+                            offset.x,
+                            super::RnCanvas::adjustment_to_offset(
+                                offset_mins.y,
+                                vadj_signal.value()
+                            )
+                        ];
+
+                        let _ = canvas.engine_mut().camera_set_offset_expand(new_offset);
+
                         // this triggers a canvaslayout allocate() call,
                         // where the camera and content rendering is updated based on some conditions
                         canvas.queue_resize();
@@ -634,11 +636,7 @@ mod imp {
             }
             self.vadjustment.replace(vadj);
 
-            obj.configure_adjustments(
-                widget_size,
-                adjustment_maxs,
-                na::vector![hadj_value, vadj_value],
-            );
+            obj.configure_adjustments(widget_size, adjustment_maxs, adjustment_value);
         }
     }
 }
@@ -798,18 +796,18 @@ impl RnCanvas {
     }
 
     #[inline]
-    pub(crate) fn offset_to_adjustment(
-        offset: na::Vector2<f64>,
-        offset_mins: na::Vector2<f64>,
-    ) -> na::Vector2<f64> {
+    pub(crate) fn offset_to_adjustment<T>(offset: T, offset_mins: T) -> T
+    where
+        T: std::ops::Sub<Output = T>,
+    {
         offset - offset_mins
     }
 
     #[inline]
-    pub(crate) fn adjustment_to_offset(
-        offset: na::Vector2<f64>,
-        offset_mins: na::Vector2<f64>,
-    ) -> na::Vector2<f64> {
+    pub(crate) fn adjustment_to_offset<T>(offset: T, offset_mins: T) -> T
+    where
+        T: std::ops::Add<Output = T>,
+    {
         offset + offset_mins
     }
 

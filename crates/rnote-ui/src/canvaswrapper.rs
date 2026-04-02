@@ -332,20 +332,6 @@ mod imp {
                 ));
             }
 
-            // Actions when moving view with controls provided by the scroller ScrolledWindow.
-            // e.g. touch scrolling when inertial-scrolling is enabled.
-            {
-                self.scroller.connect_edge_overshot(clone!(
-                    #[weak(rename_to=canvaswrapper)]
-                    obj,
-                    move |_, _| {
-                        let canvas = canvaswrapper.canvas();
-                        let widget_flags = canvas.engine_mut().doc_expand_autoexpand();
-                        canvas.emit_handle_widget_flags(widget_flags);
-                    }
-                ));
-            }
-
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(

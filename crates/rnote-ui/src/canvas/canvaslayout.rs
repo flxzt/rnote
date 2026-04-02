@@ -64,21 +64,18 @@ mod imp {
 
         fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            let hadj = canvas.hadjustment().unwrap();
-            let vadj = canvas.vadjustment().unwrap();
-            let hadj_value = hadj.value();
-            let vadj_value = vadj.value();
-            
-            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
-            let adjustment_maxs = RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
-            let adjustment_value = na::vector![hadj_value, vadj_value];
             
             let new_size = na::vector![width as f64, height as f64];
-            let new_offset = RnCanvas::adjustment_to_offset(adjustment_value, offset_mins);
-
-            canvas.configure_adjustments(new_size, adjustment_maxs, adjustment_value);
-            let _ = canvas.engine_mut().camera_set_offset(new_offset);
             let _ = canvas.engine_mut().camera_set_size(new_size);
+            
+            // Configure adjustments using new size
+            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
+            let offset = canvas.engine_ref().camera.offset();
+            
+            let adjustment_maxs = RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
+            let adjustment_value = RnCanvas::offset_to_adjustment(offset, offset_mins);
+            
+            canvas.configure_adjustments(new_size, adjustment_maxs, adjustment_value);
 
             // Calculate new viewport from the updated camera state
             let old_viewport = self.old_viewport.get();

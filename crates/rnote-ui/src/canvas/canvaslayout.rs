@@ -68,17 +68,21 @@ mod imp {
             let vadj = canvas.vadjustment().unwrap();
             let hadj_value = hadj.value();
             let vadj_value = vadj.value();
+            
+            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
+            let adjustment_maxs = RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
+            let adjustment_value = na::vector![hadj_value, vadj_value];
+            
             let new_size = na::vector![width as f64, height as f64];
-            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
-            let new_offset = na::vector![hadj_value, vadj_value];
-            let old_viewport = self.old_viewport.get();
-            let new_viewport = canvas.engine_ref().camera.viewport();
+            let new_offset = RnCanvas::adjustment_to_offset(adjustment_value, offset_mins);
 
-            canvas.configure_adjustments(new_size, offset_mins_maxs, new_offset);
-
-            // Update the camera
+            canvas.configure_adjustments(new_size, adjustment_maxs, adjustment_value);
             let _ = canvas.engine_mut().camera_set_offset(new_offset);
             let _ = canvas.engine_mut().camera_set_size(new_size);
+
+            // Calculate new viewport from the updated camera state
+            let old_viewport = self.old_viewport.get();
+            let new_viewport = canvas.engine_ref().camera.viewport();
 
             // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering
             // before we reach it. This has two advantages: Strokes that might take longer to render have a head start

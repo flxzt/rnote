@@ -408,10 +408,7 @@ mod imp {
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
-                        touch_drag_start.set(na::vector![
-                            canvaswrapper.canvas().hadjustment().unwrap().value(),
-                            canvaswrapper.canvas().vadjustment().unwrap().value()
-                        ]);
+                        touch_drag_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
                 ));
                 self.canvas_drag_gesture.connect_drag_update(clone!(

@@ -24,7 +24,6 @@ use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
-use rnote_engine::Camera;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::ext::GrapheneRectExt;
 use rnote_engine::{Engine, WidgetFlags};
@@ -556,15 +555,17 @@ mod imp {
                 .borrow()
                 .as_ref()
                 .map(|adj| adj.value())
-                .unwrap_or(-Camera::OVERSHOOT_HORIZONTAL);
+                .unwrap_or(0.0);
             let vadj_value = self
                 .vadjustment
                 .borrow()
                 .as_ref()
                 .map(|adj| adj.value())
-                .unwrap_or(-Camera::OVERSHOOT_VERTICAL);
+                .unwrap_or(0.0);
             let widget_size = obj.widget_size();
-            let offset_mins_maxs = obj.engine_ref().camera_offset_mins_maxs();
+
+            let (offset_mins, offset_maxs) = obj.engine_ref().camera_offset_mins_maxs();
+            let adjustment_maxs = super::RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
 
             if let Some(signal_id) = self.connections.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
@@ -588,7 +589,7 @@ mod imp {
 
             obj.configure_adjustments(
                 widget_size,
-                offset_mins_maxs,
+                adjustment_maxs,
                 na::vector![hadj_value, vadj_value],
             );
         }
@@ -601,15 +602,17 @@ mod imp {
                 .borrow()
                 .as_ref()
                 .map(|adj| adj.value())
-                .unwrap_or(-Camera::OVERSHOOT_HORIZONTAL);
+                .unwrap_or(0.0);
             let vadj_value = self
                 .vadjustment
                 .borrow()
                 .as_ref()
                 .map(|adj| adj.value())
-                .unwrap_or(-Camera::OVERSHOOT_VERTICAL);
+                .unwrap_or(0.0);
             let widget_size = obj.widget_size();
-            let offset_mins_maxs = obj.engine_ref().camera_offset_mins_maxs();
+
+            let (offset_mins, offset_maxs) = obj.engine_ref().camera_offset_mins_maxs();
+            let adjustment_maxs = super::RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
 
             if let Some(signal_id) = self.connections.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
@@ -633,7 +636,7 @@ mod imp {
 
             obj.configure_adjustments(
                 widget_size,
-                offset_mins_maxs,
+                adjustment_maxs,
                 na::vector![hadj_value, vadj_value],
             );
         }
@@ -794,20 +797,34 @@ impl RnCanvas {
             .unwrap()
     }
 
+    #[inline]
+    pub(crate) fn offset_to_adjustment(
+        offset: na::Vector2<f64>,
+        offset_mins: na::Vector2<f64>,
+    ) -> na::Vector2<f64> {
+        offset - offset_mins
+    }
+
+    #[inline]
+    pub(crate) fn adjustment_to_offset(
+        offset: na::Vector2<f64>,
+        offset_mins: na::Vector2<f64>,
+    ) -> na::Vector2<f64> {
+        offset + offset_mins
+    }
+
     pub(crate) fn configure_adjustments(
         &self,
         widget_size: na::Vector2<f64>,
-        offset_mins_maxs: (na::Vector2<f64>, na::Vector2<f64>),
-        offset: na::Vector2<f64>,
+        adjustment_upper: na::Vector2<f64>,
+        adjustment_value: na::Vector2<f64>,
     ) {
-        let (offset_mins, offset_maxs) = offset_mins_maxs;
-
         if let Some(hadj) = self.hadjustment() {
             hadj.configure(
                 // This gets clamped to the lower and upper values
-                offset[0],
-                offset_mins[0],
-                offset_maxs[0],
+                adjustment_value[0],
+                0.0,
+                adjustment_upper[0].max(widget_size[0]),
                 0.1 * widget_size[0],
                 0.9 * widget_size[0],
                 widget_size[0],
@@ -817,9 +834,9 @@ impl RnCanvas {
         if let Some(vadj) = self.vadjustment() {
             vadj.configure(
                 // This gets clamped to the lower and upper values
-                offset[1],
-                offset_mins[1],
-                offset_maxs[1],
+                adjustment_value[1],
+                0.0,
+                adjustment_upper[1].max(widget_size[1]),
                 0.1 * widget_size[1],
                 0.9 * widget_size[1],
                 widget_size[1],

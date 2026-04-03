@@ -568,22 +568,19 @@ mod imp {
                     obj,
                     move |hadj_signal| {
                         // Apply scroll input from adjustment to camera
-                        let (offset_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
+                        let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
                         let new_offset = na::vector![
                             super::RnCanvas::adjustment_to_surface(
                                 hadj_signal.value(),
-                                offset_mins.x
+                                surface_mins.x
                             ),
                             offset.y
                         ];
 
-                        let _ = canvas.engine_mut().camera_set_offset_expand(new_offset);
-
-                        // this triggers a canvaslayout allocate() call,
-                        // where the camera and content rendering is updated based on some conditions
-                        canvas.queue_resize();
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
+                        canvas.emit_handle_widget_flags(widget_flags);
                     }
                 ));
 
@@ -615,22 +612,19 @@ mod imp {
                     obj,
                     move |vadj_signal| {
                         // Apply scroll input from adjustment to camera
-                        let (offset_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
+                        let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
                         let new_offset = na::vector![
                             offset.x,
                             super::RnCanvas::adjustment_to_surface(
                                 vadj_signal.value(),
-                                offset_mins.y
+                                surface_mins.y
                             )
                         ];
 
-                        let _ = canvas.engine_mut().camera_set_offset_expand(new_offset);
-
-                        // this triggers a canvaslayout allocate() call,
-                        // where the camera and content rendering is updated based on some conditions
-                        canvas.queue_resize();
+                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
+                        canvas.emit_handle_widget_flags(widget_flags);
                     }
                 ));
 

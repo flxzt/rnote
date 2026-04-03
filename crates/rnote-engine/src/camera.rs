@@ -117,7 +117,6 @@ impl Camera {
         ];
 
         widget_flags.view_modified = true;
-        widget_flags.resize = true;
         widget_flags
     }
 
@@ -276,7 +275,6 @@ impl Camera {
         let mut widget_flags = WidgetFlags::default();
         self.offset = center * self.total_zoom() - self.size * 0.5;
         widget_flags.view_modified = true;
-        widget_flags.resize = true;
         widget_flags
     }
 

@@ -552,9 +552,10 @@ mod imp {
             let widget_size = obj.widget_size();
             let offset = obj.engine_ref().camera.offset();
 
-            let (offset_mins, offset_maxs) = obj.engine_ref().camera_offset_mins_maxs();
-            let adjustment_maxs = super::RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
-            let adjustment_value = super::RnCanvas::offset_to_adjustment(offset, offset_mins);
+            let (surface_mins, surface_maxs) = obj.engine_ref().camera_surface_mins_maxs();
+            let adjustment_maxs =
+                super::RnCanvas::surface_to_adjustment(surface_maxs, surface_mins);
+            let adjustment_value = super::RnCanvas::surface_to_adjustment(offset, surface_mins);
 
             if let Some(signal_id) = self.connections.borrow_mut().hadjustment.take() {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
@@ -567,11 +568,11 @@ mod imp {
                     obj,
                     move |hadj_signal| {
                         // Apply scroll input from adjustment to camera
-                        let (offset_mins, _) = canvas.engine_ref().camera_offset_mins_maxs();
+                        let (offset_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
                         let new_offset = na::vector![
-                            super::RnCanvas::adjustment_to_offset(
+                            super::RnCanvas::adjustment_to_surface(
                                 hadj_signal.value(),
                                 offset_mins.x
                             ),
@@ -598,9 +599,10 @@ mod imp {
             let widget_size = obj.widget_size();
             let offset = obj.engine_ref().camera.offset();
 
-            let (offset_mins, offset_maxs) = obj.engine_ref().camera_offset_mins_maxs();
-            let adjustment_maxs = super::RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
-            let adjustment_value = super::RnCanvas::offset_to_adjustment(offset, offset_mins);
+            let (surface_mins, surface_maxs) = obj.engine_ref().camera_surface_mins_maxs();
+            let adjustment_maxs =
+                super::RnCanvas::surface_to_adjustment(surface_maxs, surface_mins);
+            let adjustment_value = super::RnCanvas::surface_to_adjustment(offset, surface_mins);
 
             if let Some(signal_id) = self.connections.borrow_mut().vadjustment.take() {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
@@ -613,14 +615,14 @@ mod imp {
                     obj,
                     move |vadj_signal| {
                         // Apply scroll input from adjustment to camera
-                        let (offset_mins, _) = canvas.engine_ref().camera_offset_mins_maxs();
+                        let (offset_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
                         let new_offset = na::vector![
                             offset.x,
-                            super::RnCanvas::adjustment_to_offset(
-                                offset_mins.y,
-                                vadj_signal.value()
+                            super::RnCanvas::adjustment_to_surface(
+                                vadj_signal.value(),
+                                offset_mins.y
                             )
                         ];
 
@@ -796,19 +798,19 @@ impl RnCanvas {
     }
 
     #[inline]
-    pub(crate) fn offset_to_adjustment<T>(offset: T, offset_mins: T) -> T
+    pub(crate) fn surface_to_adjustment<T>(offset: T, surface_min: T) -> T
     where
         T: std::ops::Sub<Output = T>,
     {
-        offset - offset_mins
+        offset - surface_min
     }
 
     #[inline]
-    pub(crate) fn adjustment_to_offset<T>(offset: T, offset_mins: T) -> T
+    pub(crate) fn adjustment_to_surface<T>(offset: T, surface_min: T) -> T
     where
         T: std::ops::Add<Output = T>,
     {
-        offset + offset_mins
+        offset + surface_min
     }
 
     pub(crate) fn configure_adjustments(

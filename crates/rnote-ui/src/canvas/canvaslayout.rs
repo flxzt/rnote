@@ -64,17 +64,17 @@ mod imp {
 
         fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            
+
             let new_size = na::vector![width as f64, height as f64];
             let _ = canvas.engine_mut().camera_set_size(new_size);
-            
+
             // Configure adjustments using new size
-            let (offset_mins, offset_maxs) = canvas.engine_ref().camera_offset_mins_maxs();
+            let (surface_mins, surface_maxs) = canvas.engine_ref().camera_surface_mins_maxs();
             let offset = canvas.engine_ref().camera.offset();
-            
-            let adjustment_maxs = RnCanvas::offset_to_adjustment(offset_maxs, offset_mins);
-            let adjustment_value = RnCanvas::offset_to_adjustment(offset, offset_mins);
-            
+
+            let adjustment_maxs = RnCanvas::surface_to_adjustment(surface_maxs, surface_mins);
+            let adjustment_value = RnCanvas::surface_to_adjustment(offset, surface_mins);
+
             canvas.configure_adjustments(new_size, adjustment_maxs, adjustment_value);
 
             // Calculate new viewport from the updated camera state

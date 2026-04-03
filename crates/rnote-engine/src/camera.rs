@@ -5,7 +5,7 @@ use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
 use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
-use rnote_compose::ext::Affine2Ext;
+use rnote_compose::ext::{AabbExt, Affine2Ext};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tracing::error;
@@ -132,28 +132,21 @@ impl Camera {
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn surface_mins_maxs(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
-        let bounds = self
+        let document_bounds = self
             .document_to_view_transform()
             .transform_aabb(doc.bounds());
 
-        let (h_lower, h_upper) = match doc.config.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => (
-                bounds.mins.x - Self::OVERSHOOT_HORIZONTAL,
-                bounds.maxs.x + Self::OVERSHOOT_HORIZONTAL,
-            ),
-            Layout::SemiInfinite => (bounds.mins.x - Self::OVERSHOOT_HORIZONTAL, bounds.maxs.x),
-            Layout::Infinite => (bounds.mins.x, bounds.maxs.x),
-        };
-        let (v_lower, v_upper) = match doc.config.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => (
-                bounds.mins.y - Self::OVERSHOOT_VERTICAL,
-                bounds.maxs.y + Self::OVERSHOOT_VERTICAL,
-            ),
-            Layout::SemiInfinite => (bounds.mins.y - Self::OVERSHOOT_VERTICAL, bounds.maxs.y),
-            Layout::Infinite => (bounds.mins.y, bounds.maxs.y),
+        let bounds = match doc.config.layout {
+            Layout::FixedSize | Layout::ContinuousVertical | Layout::SemiInfinite => {
+                document_bounds.extend_by(na::vector![
+                    Self::OVERSHOOT_HORIZONTAL,
+                    Self::OVERSHOOT_VERTICAL
+                ])
+            }
+            Layout::Infinite => document_bounds,
         };
 
-        (na::vector![h_lower, v_lower], na::vector![h_upper, v_upper])
+        (bounds.mins.coords, bounds.maxs.coords)
     }
 
     /// The current viewport size in surface coordinate space.

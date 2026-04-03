@@ -7,7 +7,7 @@ use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
-use rnote_compose::ext::DAffine2Ext;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tracing::error;
@@ -134,31 +134,21 @@ impl Camera {
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn surface_mins_maxs(&self, doc: &Document) -> (Vector2, Vector2) {
-        let bounds = self
+        let document_bounds = self
             .document_to_view_transform()
             .transform_aabb(doc.bounds());
 
-        let (h_lower, h_upper) = match doc.config.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => (
-                bounds.mins.x - Self::OVERSHOOT_HORIZONTAL,
-                bounds.maxs.x + Self::OVERSHOOT_HORIZONTAL,
-            ),
-            Layout::SemiInfinite => (bounds.mins.x - Self::OVERSHOOT_HORIZONTAL, bounds.maxs.x),
-            Layout::Infinite => (bounds.mins.x, bounds.maxs.x),
-        };
-        let (v_lower, v_upper) = match doc.config.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => (
-                bounds.mins.y - Self::OVERSHOOT_VERTICAL,
-                bounds.maxs.y + Self::OVERSHOOT_VERTICAL,
-            ),
-            Layout::SemiInfinite => (bounds.mins.y - Self::OVERSHOOT_VERTICAL, bounds.maxs.y),
-            Layout::Infinite => (bounds.mins.y, bounds.maxs.y),
+        let bounds = match doc.config.layout {
+            Layout::FixedSize | Layout::ContinuousVertical | Layout::SemiInfinite => {
+                document_bounds.extend_by(Vector2::new(
+                    Self::OVERSHOOT_HORIZONTAL,
+                    Self::OVERSHOOT_VERTICAL,
+                ))
+            }
+            Layout::Infinite => document_bounds,
         };
 
-        (
-            Vector2::new(h_lower, v_lower),
-            Vector2::new(h_upper, v_upper),
-        )
+        (bounds.mins, bounds.maxs)
     }
 
     /// The current viewport size in surface coordinate space.

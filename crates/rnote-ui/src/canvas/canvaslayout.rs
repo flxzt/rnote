@@ -45,19 +45,15 @@ mod imp {
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            let total_zoom = canvas.engine_ref().camera.total_zoom();
-            let document = canvas.engine_ref().document.clone();
+
+            let (surface_mins, surface_maxs) = canvas.engine_ref().camera_surface_mins_maxs();
+            let surface_size = surface_maxs - surface_mins;
 
             if orientation == Orientation::Horizontal {
-                let natural_width = (document.width * total_zoom
-                    + 2.0 * Camera::OVERSHOOT_HORIZONTAL)
-                    .ceil() as i32;
-
+                let natural_width = surface_size.x.ceil() as i32;
                 (0, natural_width, -1, -1)
             } else {
-                let natural_height =
-                    (document.height * total_zoom + 2.0 * Camera::OVERSHOOT_VERTICAL).ceil() as i32;
-
+                let natural_height = surface_size.y.ceil() as i32;
                 (0, natural_height, -1, -1)
             }
         }

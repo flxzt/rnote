@@ -580,11 +580,8 @@ mod imp {
                     move |gesture, scale| {
                         let canvas = canvaswrapper.canvas();
                         let old_zoom = canvas.engine_ref().camera.total_zoom();
-                        let new_zoom = zoom_begin.get() * scale;
-
-                        if !(Camera::ZOOM_MIN..=Camera::ZOOM_MAX).contains(&new_zoom) {
-                            return;
-                        }
+                        let new_zoom =
+                            (zoom_begin.get() * scale).clamp(Camera::ZOOM_MIN, Camera::ZOOM_MAX);
 
                         let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
 

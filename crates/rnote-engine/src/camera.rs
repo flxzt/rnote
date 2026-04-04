@@ -104,19 +104,24 @@ impl Camera {
 
     pub fn set_offset(&mut self, offset: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        let (lower, upper) = self.offset_lower_upper(doc);
+
+        let (mins, maxs) = self.surface_mins_maxs(doc);
+        let offset_maxs = na::vector![
+            (maxs.x - self.size.x).max(mins.x),
+            (maxs.y - self.size.y).max(mins.y)
+        ];
+
         self.offset = na::vector![
-            offset[0].clamp(lower[0], upper[0]),
-            offset[1].clamp(lower[1], upper[1])
+            offset.x.clamp(mins.x, offset_maxs.x),
+            offset.y.clamp(mins.y, offset_maxs.y)
         ];
 
         widget_flags.view_modified = true;
-        widget_flags.resize = true;
         widget_flags
     }
 
-    /// The offset minimum and maximum values in surface coordinate space.
-    pub fn offset_lower_upper(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
+    pub fn surface_mins_maxs(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
         let total_zoom = self.total_zoom();
 
         let (h_lower, h_upper) = match doc.config.layout {
@@ -270,7 +275,6 @@ impl Camera {
         let mut widget_flags = WidgetFlags::default();
         self.offset = center * self.total_zoom() - self.size * 0.5;
         widget_flags.view_modified = true;
-        widget_flags.resize = true;
         widget_flags
     }
 

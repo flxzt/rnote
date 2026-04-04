@@ -5,7 +5,7 @@ use gtk4::{
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use rnote_engine::{Camera, image};
+use rnote_engine::image;
 use std::cell::Cell;
 
 mod imp {

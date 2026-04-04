@@ -14,8 +14,8 @@ use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
     Adjustment, DropTarget, EventControllerKey, EventControllerLegacy, IMMulticontext,
-    PropagationPhase, Scrollable, ScrollablePolicy, Widget, gdk, gio, glib, glib::clone, graphene,
-    prelude::*, subclass::prelude::*,
+    PropagationPhase, Scrollable, ScrollablePolicy, ScrolledWindow, Widget, gdk, gio, glib,
+    glib::clone, graphene, prelude::*, subclass::prelude::*,
 };
 use notify::EventKind;
 use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
@@ -36,6 +36,8 @@ use tracing::{debug, error, warn};
 struct Connections {
     hadjustment: Option<glib::SignalHandlerId>,
     vadjustment: Option<glib::SignalHandlerId>,
+    hadjustment_upper: Option<glib::SignalHandlerId>,
+    vadjustment_upper: Option<glib::SignalHandlerId>,
     tab_page_output_file: Option<glib::Binding>,
     tab_page_unsaved_changes: Option<glib::Binding>,
     tab_page_invalidate_thumbnail: Option<glib::SignalHandlerId>,
@@ -59,6 +61,7 @@ mod imp {
         pub(super) connections: RefCell<Connections>,
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
+        pub(crate) workaround_kinetic_scrolling_pending: Cell<bool>,
         pub(crate) hscroll_policy: Cell<ScrollablePolicy>,
         pub(crate) vscroll_policy: Cell<ScrollablePolicy>,
         pub(crate) regular_cursor_icon_name: RefCell<String>,
@@ -153,6 +156,7 @@ mod imp {
 
                 hadjustment: RefCell::new(None),
                 vadjustment: RefCell::new(None),
+                workaround_kinetic_scrolling_pending: Cell::new(false),
                 hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 regular_cursor: RefCell::new(regular_cursor),
@@ -549,6 +553,10 @@ mod imp {
 
         fn set_hadjustment_prop(&self, hadj: Option<Adjustment>) {
             let obj = self.obj();
+            let scroller = obj
+                .parent()
+                .and_then(|parent| parent.downcast::<ScrolledWindow>().ok());
+
             let widget_size = obj.widget_size();
             let offset = obj.engine_ref().camera.offset();
 
@@ -561,11 +569,32 @@ mod imp {
                 let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
             }
+            if let Some(signal_id) = self.connections.borrow_mut().hadjustment_upper.take() {
+                let old_adj = self.hadjustment.borrow().as_ref().unwrap().clone();
+                old_adj.disconnect(signal_id);
+            }
 
             if let Some(ref hadj) = hadj {
+                let upper_signal_id = hadj.connect_notify_local(
+                    Some("upper"),
+                    clone!(
+                        #[weak(rename_to=canvas)]
+                        obj,
+                        #[strong]
+                        scroller,
+                        move |_adj: &Adjustment, _| {
+                            // restore kinetic scrolling after the canvas has been resized,
+                            // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/1494
+                            canvas.workaround_restore_kinetic_scrolling(scroller.as_ref());
+                        }
+                    ),
+                );
+
                 let signal_id = hadj.connect_value_changed(clone!(
                     #[weak(rename_to=canvas)]
                     obj,
+                    #[strong]
+                    scroller,
                     move |hadj_signal| {
                         // Apply scroll input from adjustment to camera
                         let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
@@ -580,11 +609,22 @@ mod imp {
                         ];
 
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
+
+                        if widget_flags.resize {
+                            // disable kinetic scrolling when the canvas is about to resize (i.e. when it was expanded),
+                            // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/1494
+                            canvas.workaround_disable_kinetic_scrolling(scroller.as_ref());
+                        }
+
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
                 ));
 
                 self.connections.borrow_mut().hadjustment.replace(signal_id);
+                self.connections
+                    .borrow_mut()
+                    .hadjustment_upper
+                    .replace(upper_signal_id);
             }
             self.hadjustment.replace(hadj);
 
@@ -593,6 +633,10 @@ mod imp {
 
         fn set_vadjustment_prop(&self, vadj: Option<Adjustment>) {
             let obj = self.obj();
+            let scroller = obj
+                .parent()
+                .and_then(|parent| parent.downcast::<ScrolledWindow>().ok());
+
             let widget_size = obj.widget_size();
             let offset = obj.engine_ref().camera.offset();
 
@@ -605,11 +649,32 @@ mod imp {
                 let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
                 old_adj.disconnect(signal_id);
             }
+            if let Some(signal_id) = self.connections.borrow_mut().vadjustment_upper.take() {
+                let old_adj = self.vadjustment.borrow().as_ref().unwrap().clone();
+                old_adj.disconnect(signal_id);
+            }
 
             if let Some(ref vadj) = vadj {
+                let upper_signal_id = vadj.connect_notify_local(
+                    Some("upper"),
+                    clone!(
+                        #[weak(rename_to=canvas)]
+                        obj,
+                        #[strong]
+                        scroller,
+                        move |_adj: &Adjustment, _| {
+                            // restore kinetic scrolling after the canvas has been resized,
+                            // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/1494
+                            canvas.workaround_restore_kinetic_scrolling(scroller.as_ref());
+                        }
+                    ),
+                );
+
                 let signal_id = vadj.connect_value_changed(clone!(
                     #[weak(rename_to=canvas)]
                     obj,
+                    #[strong]
+                    scroller,
                     move |vadj_signal| {
                         // Apply scroll input from adjustment to camera
                         let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
@@ -624,11 +689,22 @@ mod imp {
                         ];
 
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
+
+                        if widget_flags.resize {
+                            // disable kinetic scrolling when the canvas is about to resize (i.e. when it was expanded),
+                            // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/1494
+                            canvas.workaround_disable_kinetic_scrolling(scroller.as_ref());
+                        }
+
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
                 ));
 
                 self.connections.borrow_mut().vadjustment.replace(signal_id);
+                self.connections
+                    .borrow_mut()
+                    .vadjustment_upper
+                    .replace(upper_signal_id);
             }
             self.vadjustment.replace(vadj);
 
@@ -838,6 +914,29 @@ impl RnCanvas {
         }
 
         self.queue_resize();
+    }
+
+    fn workaround_disable_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
+        if let Some(scroller) = scroller
+            && scroller.is_kinetic_scrolling()
+        {
+            scroller.set_kinetic_scrolling(false);
+            self.imp().workaround_kinetic_scrolling_pending.set(true);
+        }
+    }
+
+    fn workaround_restore_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
+        if !self
+            .imp()
+            .workaround_kinetic_scrolling_pending
+            .replace(false)
+        {
+            return;
+        }
+
+        if let Some(scroller) = scroller {
+            scroller.set_kinetic_scrolling(true);
+        }
     }
 
     pub(crate) fn widget_size(&self) -> na::Vector2<f64> {

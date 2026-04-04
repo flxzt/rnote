@@ -9,6 +9,7 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
+use na::SimdPartialOrd;
 
 // Imports
 use self::background::PatternStyle;
@@ -251,20 +252,26 @@ impl Document {
     ) -> bool {
         let padding_horizontal = self.config.format.width() * 2.0;
         let padding_vertical = self.config.format.height() * 2.0;
+        let padding = na::vector![padding_horizontal, padding_vertical];
 
-        let mut new_bounds = self.bounds().merged(
-            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
-        );
+        let mut new_bounds = self.bounds();
+        let mut minimum_bounds = viewport.extend_right_and_bottom_by(padding);
+        minimum_bounds.mins = minimum_bounds.mins.simd_max(new_bounds.mins);
+
+        if !new_bounds.contains(&minimum_bounds) {
+            // Extend the bounds further than necessary, so that we don't trigger
+            // a resize again immediately when the viewport is slightly moved
+            new_bounds.merge(&minimum_bounds.extend_right_and_bottom_by(padding));
+        }
 
         if include_content {
             let keys = store.stroke_keys_as_rendered();
             let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds
-                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+                content_bounds.extend_right_and_bottom_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
-                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+                    .extend_right_and_bottom_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }
@@ -296,19 +303,24 @@ impl Document {
     ) -> bool {
         let padding_horizontal = self.config.format.width() * 2.0;
         let padding_vertical = self.config.format.height() * 2.0;
+        let padding = na::vector![padding_horizontal, padding_vertical];
 
-        let mut new_bounds = self
-            .bounds()
-            .merged(&viewport.extend_by(na::vector![padding_horizontal, padding_vertical]));
+        let mut new_bounds = self.bounds();
+        let minimum_bounds = viewport.extend_by(padding);
+
+        if !new_bounds.contains(&minimum_bounds) {
+            // Extend the bounds further than necessary, so that we don't trigger
+            // a resize again immediately when the viewport is slightly moved
+            new_bounds.merge(&minimum_bounds.extend_by(padding));
+        }
 
         if include_content {
             let keys = store.stroke_keys_as_rendered();
             let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
+                content_bounds.extend_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
-                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
-                    .extend_by(na::vector![padding_horizontal, padding_vertical])
+                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into()).extend_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }

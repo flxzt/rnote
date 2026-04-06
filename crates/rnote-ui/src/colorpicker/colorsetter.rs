@@ -188,10 +188,15 @@ mod imp {
                     height as f32 / (REPEAT_RATIO),
                 );
 
+                let checkboard_color = if adw::StyleManager::default().is_dark() {
+                    gdk::RGBA::BLACK.with_alpha(0.75)
+                } else {
+                    gdk::RGBA::BLACK.with_alpha(0.25)
+                };
                 snapshot.push_repeat(&bounds, Some(&checkboard_repeat));
-                snapshot.append_color(&gdk::RGBA::BLACK.with_alpha(0.75), &checkboard_bounds);
+                snapshot.append_color(&checkboard_color, &checkboard_bounds);
                 snapshot.append_color(
-                    &gdk::RGBA::BLACK.with_alpha(0.75),
+                    &checkboard_color,
                     &checkboard_bounds.offset_r(
                         width as f32 / (2.0 * REPEAT_RATIO),
                         height as f32 / (2.0 * REPEAT_RATIO),

@@ -241,14 +241,9 @@ mod imp {
 
             // bottom bar
             let current_foreground_color = if colorpad_color.alpha() == 0.0 {
-                // accessing colors through the style context is deprecated,
-                // but this needs new color API to fetch theme colors.
-                // TODO: where is this set ? any way around this ?
-                #[allow(deprecated)]
-                self.obj()
-                    .style_context()
-                    .lookup_color("window_fg_color")
-                    .unwrap_or(gdk::RGBA::BLACK)
+                // see https://gtk-rs.org/gtk4-rs/stable/latest/docs/gtk4/prelude/trait.WidgetExt.html#method.color
+                // Returns the foreground color for custom snapshot implementation
+                WidgetExt::color(&self.obj().clone().upcast::<Widget>())
             } else if colorpad_color.into_compose_color().luma() < color::FG_LUMINANCE_THRESHOLD {
                 gdk::RGBA::WHITE
             } else {
@@ -256,14 +251,7 @@ mod imp {
             };
             let foreground_color = if progress > 0.0 || progress < 1.0 {
                 let previous_foreground_color = if previous_color.alpha() == 0.0 {
-                    // accessing colors through the style context is deprecated,
-                    // but this needs new color API to fetch theme colors.
-                    // TODO: where is this set ? any way around this ?
-                    #[allow(deprecated)]
-                    self.obj()
-                        .style_context()
-                        .lookup_color("window_fg_color")
-                        .unwrap_or(gdk::RGBA::BLACK)
+                    WidgetExt::color(&self.obj().clone().upcast::<Widget>())
                 } else if colorpad_color.into_compose_color().luma() < color::FG_LUMINANCE_THRESHOLD
                 {
                     gdk::RGBA::WHITE

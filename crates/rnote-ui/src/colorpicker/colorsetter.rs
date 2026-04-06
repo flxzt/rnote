@@ -95,6 +95,15 @@ mod imp {
                 }
             ));
 
+            adw::StyleManager::default().connect_dark_notify(clone!(
+                #[weak]
+                obj,
+                move |_| {
+                    // force a redraw when the light/dark mode changes
+                    obj.queue_draw();
+                }
+            ));
+
             obj.queue_draw();
         }
 

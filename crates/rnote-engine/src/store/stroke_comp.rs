@@ -733,7 +733,8 @@ impl StrokeStore {
         ratio: f64,
         pos: Vector2,
     ) -> Vec<StrokeKey> {
-        if clipboard_content.strokes.is_empty() && clipboard_content.highlighter_strokes.is_empty() {
+        if clipboard_content.strokes.is_empty() && clipboard_content.highlighter_strokes.is_empty()
+        {
             return vec![];
         }
 
@@ -776,7 +777,11 @@ impl StrokeStore {
             };
 
         let mut inserted_keys = insert_group(strokes, None);
-        inserted_keys.extend(insert_group(highlighter_strokes, Some(StrokeLayer::Highlighter)));
+        inserted_keys.extend(insert_group(
+            highlighter_strokes,
+            Some(StrokeLayer::Highlighter),
+        ));
+
         inserted_keys
     }
 }

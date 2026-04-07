@@ -352,8 +352,7 @@ impl Engine {
     }
 
     pub fn extract_document_content(&self) -> StrokeContent {
-        self
-            .stroke_content_from_sorted_keys(self.store.stroke_keys_as_rendered())
+        self.stroke_content_from_sorted_keys(self.store.stroke_keys_as_rendered())
             .with_bounds(
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
@@ -368,7 +367,8 @@ impl Engine {
                     .store
                     .stroke_keys_as_rendered_intersecting_bounds(bounds);
 
-                self.stroke_content_from_sorted_keys(keys).with_bounds(bounds)
+                self.stroke_content_from_sorted_keys(keys)
+                    .with_bounds(bounds)
             })
             .collect()
     }
@@ -389,7 +389,8 @@ impl Engine {
         let scale_factor = self.camera.scale_factor();
         let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
         let bounds = bounds.unwrap_or_else(|| self.document.bounds());
-        self.stroke_content_from_sorted_keys(keys).with_bounds(bounds)
+        self.stroke_content_from_sorted_keys(keys)
+            .with_bounds(bounds)
     }
 
     /// Export the entire engine state as Json string.

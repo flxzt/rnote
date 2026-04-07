@@ -42,22 +42,14 @@ impl PartialOrd for StrokeLayer {
 
 impl Ord for StrokeLayer {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match (self, other) {
-            (StrokeLayer::UserLayer(this_ul), StrokeLayer::UserLayer(other_ul)) => {
-                this_ul.cmp(other_ul)
-            }
-            (StrokeLayer::UserLayer(_), _) => Ordering::Greater,
-            (StrokeLayer::Highlighter, StrokeLayer::UserLayer(_)) => Ordering::Less,
-            (StrokeLayer::Highlighter, StrokeLayer::Highlighter) => Ordering::Equal,
-            (StrokeLayer::Highlighter, _) => Ordering::Greater,
-            (StrokeLayer::Image, StrokeLayer::UserLayer(_) | StrokeLayer::Highlighter) => {
-                Ordering::Less
-            }
-            (StrokeLayer::Image, StrokeLayer::Image) => Ordering::Equal,
-            (StrokeLayer::Image, StrokeLayer::Document) => Ordering::Greater,
-            (StrokeLayer::Document, StrokeLayer::Document) => Ordering::Equal,
-            (StrokeLayer::Document, _) => Ordering::Less,
-        }
+        let key = |layer: &StrokeLayer| match layer {
+            StrokeLayer::Document => (0_u8, 0_u32),
+            StrokeLayer::Image => (1_u8, 0_u32),
+            StrokeLayer::UserLayer(layer_no) => (2_u8, *layer_no),
+            StrokeLayer::Highlighter => (3_u8, 0_u32),
+        };
+
+        key(self).cmp(&key(other))
     }
 }
 
@@ -87,6 +79,17 @@ impl ChronoComponent {
 
 /// Systems that are related to their chronological ordering.
 impl StrokeStore {
+    pub(crate) fn split_off_highlighter_keys(&self, keys: &mut Vec<StrokeKey>) -> Vec<StrokeKey> {
+        let split_index = keys.partition_point(|&key| {
+            self.chrono_components
+                .get(key)
+                .map(|chrono_comp| chrono_comp.layer != StrokeLayer::Highlighter)
+                .unwrap_or(true)
+        });
+
+        keys.split_off(split_index)
+    }
+
     pub(crate) fn update_chrono_to_last(&mut self, key: StrokeKey) {
         if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components).get_mut(key) {
             self.chrono_counter += 1;

@@ -17,6 +17,8 @@ use tracing::warn;
 pub struct StrokeContent {
     #[serde(rename = "strokes")]
     pub strokes: Vec<Arc<Stroke>>,
+    #[serde(default, rename = "highlighter_strokes")]
+    pub highlighter_strokes: Vec<Arc<Stroke>>,
     #[serde(rename = "bounds")]
     pub bounds: Option<Aabb>,
     #[serde(rename = "background")]
@@ -37,6 +39,11 @@ impl StrokeContent {
         self
     }
 
+    pub fn with_highlighter_strokes(mut self, highlighter_strokes: Vec<Arc<Stroke>>) -> Self {
+        self.highlighter_strokes = highlighter_strokes;
+        self
+    }
+
     pub fn with_background(mut self, background: Background) -> Self {
         self.background = Some(background);
         self
@@ -46,12 +53,13 @@ impl StrokeContent {
         if self.bounds.is_some() {
             return self.bounds;
         }
-        if self.strokes.is_empty() {
+        if self.strokes.is_empty() && self.highlighter_strokes.is_empty() {
             return None;
         }
         Some(
             self.strokes
                 .iter()
+                .chain(self.highlighter_strokes.iter())
                 .map(|s| s.bounds())
                 .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
         )
@@ -136,6 +144,7 @@ impl StrokeContent {
         let image_bounds = self
             .strokes
             .iter()
+            .chain(self.highlighter_strokes.iter())
             .filter_map(|stroke| match stroke.as_ref() {
                 Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
                 Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
@@ -143,7 +152,7 @@ impl StrokeContent {
             })
             .collect::<Vec<Aabb>>();
 
-        for stroke in self.strokes.iter() {
+        let draw_stroke = |stroke: &Arc<Stroke>, cairo_cx: &cairo::Context| -> anyhow::Result<()> {
             let stroke_bounds = stroke.bounds();
 
             if optimize_printing
@@ -157,10 +166,23 @@ impl StrokeContent {
                 let mut darkest_color_stroke = stroke.as_ref().clone();
                 darkest_color_stroke.set_to_darkest_color();
 
-                darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)?;
+                darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)
             } else {
-                stroke.draw_to_cairo(cairo_cx, image_scale)?;
+                stroke.draw_to_cairo(cairo_cx, image_scale)
             }
+        };
+
+        for stroke in self.strokes.iter() {
+            draw_stroke(stroke, cairo_cx)?;
+        }
+
+        if !self.highlighter_strokes.is_empty() {
+            cairo_cx.save()?;
+            cairo_cx.set_operator(cairo::Operator::Multiply);
+            for stroke in self.highlighter_strokes.iter() {
+                draw_stroke(stroke, cairo_cx)?;
+            }
+            cairo_cx.restore()?;
         }
 
         cairo_cx.restore()?;

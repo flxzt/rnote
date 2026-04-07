@@ -339,33 +339,36 @@ impl Engine {
         oneshot_receiver
     }
 
-    pub fn extract_document_content(&self) -> StrokeContent {
+    fn stroke_content_from_sorted_keys(
+        &self,
+        mut keys: Vec<crate::store::StrokeKey>,
+    ) -> StrokeContent {
+        let highlighter_keys = self.store.split_off_highlighter_keys(&mut keys);
+
         StrokeContent::default()
-            .with_strokes(
-                self.store
-                    .get_strokes_arc(&self.store.stroke_keys_as_rendered()),
-            )
+            .with_strokes(self.store.get_strokes_arc(&keys))
+            .with_highlighter_strokes(self.store.get_strokes_arc(&highlighter_keys))
+            .with_background(self.document.config.background)
+    }
+
+    pub fn extract_document_content(&self) -> StrokeContent {
+        self
+            .stroke_content_from_sorted_keys(self.store.stroke_keys_as_rendered())
             .with_bounds(
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
             )
-            .with_background(self.document.config.background)
     }
 
     pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
         self.pages_bounds_w_content(page_order)
             .into_iter()
             .map(|bounds| {
-                StrokeContent::default()
-                    .with_strokes(
-                        self.store.get_strokes_arc(
-                            &self
-                                .store
-                                .stroke_keys_as_rendered_intersecting_bounds(bounds),
-                        ),
-                    )
-                    .with_bounds(bounds)
-                    .with_background(self.document.config.background)
+                let keys = self
+                    .store
+                    .stroke_keys_as_rendered_intersecting_bounds(bounds);
+
+                self.stroke_content_from_sorted_keys(keys).with_bounds(bounds)
             })
             .collect()
     }
@@ -375,11 +378,7 @@ impl Engine {
         if selection_keys.is_empty() {
             return None;
         }
-        Some(
-            StrokeContent::default()
-                .with_strokes(self.store.get_strokes_arc(&selection_keys))
-                .with_background(self.document.config.background),
-        )
+        Some(self.stroke_content_from_sorted_keys(selection_keys))
     }
 
     /// Extract thumbnail content.
@@ -390,10 +389,7 @@ impl Engine {
         let scale_factor = self.camera.scale_factor();
         let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
         let bounds = bounds.unwrap_or_else(|| self.document.bounds());
-        StrokeContent::default()
-            .with_strokes(self.store.get_strokes_arc(&keys))
-            .with_bounds(bounds)
-            .with_background(self.document.config.background)
+        self.stroke_content_from_sorted_keys(keys).with_bounds(bounds)
     }
 
     /// Export the entire engine state as Json string.
@@ -572,6 +568,7 @@ impl Engine {
                         let xopp_strokestyles = page_content
                             .strokes
                             .into_iter()
+                            .chain(page_content.highlighter_strokes.into_iter())
                             .filter_map(|mut stroke| {
                                 let mut stroke = Arc::make_mut(&mut stroke).clone();
                                 stroke.translate(-page_bounds.mins.coords);

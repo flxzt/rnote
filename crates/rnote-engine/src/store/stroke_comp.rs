@@ -1,5 +1,6 @@
 // Imports
 use super::StrokeKey;
+use super::chrono_comp::StrokeLayer;
 use super::render_comp::RenderCompState;
 use crate::engine::StrokeContent;
 use crate::strokes::{Content, Stroke};
@@ -688,26 +689,45 @@ impl StrokeStore {
     }
 
     pub(crate) fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
-        let strokes = keys
+        let mut non_highlighter_keys = keys.to_vec();
+        let highlighter_keys = self.split_off_highlighter_keys(&mut non_highlighter_keys);
+
+        let strokes = non_highlighter_keys
+            .iter()
+            .filter_map(|k| self.stroke_components.get(*k).cloned())
+            .collect();
+        let highlighter_strokes = highlighter_keys
             .iter()
             .filter_map(|k| self.stroke_components.get(*k).cloned())
             .collect();
 
-        StrokeContent::default().with_strokes(strokes)
+        StrokeContent::default()
+            .with_strokes(strokes)
+            .with_highlighter_strokes(highlighter_strokes)
     }
 
     /// Cut the strokes for the given keys and return them as stroke content.
     pub(crate) fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
-        let strokes = keys
+        for &key in keys {
+            self.set_selected(key, false);
+            self.set_trashed(key, true);
+        }
+
+        let mut non_highlighter_keys = keys.to_vec();
+        let highlighter_keys = self.split_off_highlighter_keys(&mut non_highlighter_keys);
+
+        let strokes = non_highlighter_keys
             .iter()
-            .filter_map(|k| {
-                self.set_selected(*k, false);
-                self.set_trashed(*k, true);
-                self.stroke_components.get(*k).cloned()
-            })
+            .filter_map(|k| self.stroke_components.get(*k).cloned())
+            .collect();
+        let highlighter_strokes = highlighter_keys
+            .iter()
+            .filter_map(|k| self.stroke_components.get(*k).cloned())
             .collect();
 
-        StrokeContent::default().with_strokes(strokes)
+        StrokeContent::default()
+            .with_strokes(strokes)
+            .with_highlighter_strokes(highlighter_strokes)
     }
 
     /// Paste the clipboard content as a selection.
@@ -721,32 +741,50 @@ impl StrokeStore {
         ratio: f64,
         pos: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
-        if clipboard_content.strokes.is_empty() {
+        if clipboard_content.strokes.is_empty() && clipboard_content.highlighter_strokes.is_empty() {
             return vec![];
         }
+
         let clipboard_bounds = clipboard_content
             .strokes
             .iter()
+            .chain(clipboard_content.highlighter_strokes.iter())
             .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.bounds()));
 
-        clipboard_content
-            .strokes
-            .into_iter()
-            .map(|s| {
-                let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
-                let key = self.insert_stroke((*s).clone(), None);
-                // position strokes without resizing
-                self.set_stroke_pos(key, pos);
-                self.translate_strokes(&[key], offset);
+        let StrokeContent {
+            strokes,
+            highlighter_strokes,
+            ..
+        } = clipboard_content;
 
-                // apply a rescale around a pivot
-                self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
-                self.scale_strokes_images_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+        let mut insert_group =
+            |strokes: Vec<Arc<Stroke>>, layer: Option<StrokeLayer>| -> Vec<StrokeKey> {
+                strokes
+                    .into_iter()
+                    .map(|s| {
+                        let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
+                        let key = self.insert_stroke((*s).clone(), layer);
+                        // position strokes without resizing
+                        self.set_stroke_pos(key, pos);
+                        self.translate_strokes(&[key], offset);
 
-                // select keys
-                self.set_selected(key, true);
-                key
-            })
-            .collect()
+                        // apply a rescale around a pivot
+                        self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+                        self.scale_strokes_images_with_pivot(
+                            &[key],
+                            na::Vector2::new(ratio, ratio),
+                            pos,
+                        );
+
+                        // select keys
+                        self.set_selected(key, true);
+                        key
+                    })
+                    .collect()
+            };
+
+        let mut inserted_keys = insert_group(strokes, None);
+        inserted_keys.extend(insert_group(highlighter_strokes, Some(StrokeLayer::Highlighter)));
+        inserted_keys
     }
 }

@@ -117,6 +117,40 @@
             </object>
           </child>
           <child>
+            <object class="GtkBox">
+              <style>
+                <class name="linked" />
+              </style>
+              <property name="orientation">horizontal</property>
+              <property name="hexpand">true</property>
+              <child>
+                <object class="GtkButton" id="rotation_ccw_button">
+                  <property name="icon_name">rotate-left-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Rotate counterclockwise</property>
+                  <property name="width-request">50</property>
+                  <property name="hexpand">false</property>
+                  <property name="action-name">win.rotate-ccw</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="rotation_reset_button">
+                  <property name="action-name">win.rotation-reset</property>
+                  <property name="tooltip_text" translatable="yes">Reset Rotation</property>
+                  <property name="hexpand">true</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="rotation_cw_button">
+                  <property name="icon_name">rotate-right-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Rotate clockwise</property>
+                  <property name="width-request">50</property>
+                  <property name="hexpand">false</property>
+                  <property name="action-name">win.rotate-cw</property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
             <object class="GtkBox" id="fixedsize_quickactions_box">
               <property name="orientation">horizontal</property>
               <property name="spacing">6</property>

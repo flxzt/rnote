@@ -27,6 +27,8 @@ mod imp {
         #[template_child]
         pub(crate) zoom_fit_width_button: TemplateChild<Button>,
         #[template_child]
+        pub(crate) rotation_reset_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) fixedsize_quickactions_box: TemplateChild<gtk4::Box>,
     }
 
@@ -96,14 +98,19 @@ impl RnCanvasMenu {
     }
 
     pub(crate) fn init(&self, _appwindow: &RnAppWindow) {
-        self.imp()
-            .zoom_reset_button
-            .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());
+        self.refresh_zoom_reset_label(Camera::ZOOM_DEFAULT);
+        self.refresh_rotation_reset_label(0.0);
     }
 
     pub(crate) fn refresh_zoom_reset_label(&self, zoom: f64) {
         self.imp()
             .zoom_reset_button
-            .set_label(format!("{:.0}%", (100.0 * zoom).round()).as_str());
+            .set_label(format!("{:.0}%", 100.0 * zoom).as_str());
+    }
+
+    pub(crate) fn refresh_rotation_reset_label(&self, rotation: f64) {
+        self.imp()
+            .rotation_reset_button
+            .set_label(format!("{:.0}°", rotation.to_degrees()).as_str());
     }
 }

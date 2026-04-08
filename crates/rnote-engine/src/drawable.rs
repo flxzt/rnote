@@ -63,13 +63,13 @@ pub trait DrawableOnDoc {
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             let viewport = engine_view.camera.viewport();
+
             // Restrict to viewport as maximum bounds, else cairo is very unperformant
             // and will even crash for very large bounds
             let bounds = bounds.clamp(None, Some(viewport));
-            let mut bounds_on_surface = bounds
-                .scale(engine_view.camera.total_zoom())
-                .translate(-engine_view.camera.offset())
-                .ceil();
+
+            let mut bounds_on_surface =
+                engine_view.camera.transform().transform_aabb(bounds).ceil();
             bounds_on_surface.ensure_positive();
             bounds_on_surface.assert_valid()?;
 

@@ -113,6 +113,8 @@
         <file compressed="true">icons/scalable/actions/resize-to-fit-content-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/restore-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/return-origin-page-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/rotate-left-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/rotate-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-deselect-all-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>

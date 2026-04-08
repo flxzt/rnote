@@ -5,7 +5,7 @@ mod transformable;
 pub use transformable::Transformable;
 
 // Imports
-use crate::ext::{AabbExt, Affine2Ext};
+use crate::ext::Affine2Ext;
 use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 
@@ -87,17 +87,7 @@ impl Transform {
 
     /// Transforms the Aabb vertices and calculates a new that contains them.
     pub fn transform_aabb(&self, aabb: Aabb) -> Aabb {
-        let p0 = self.affine * na::point![aabb.mins[0], aabb.mins[1]];
-        let p1 = self.affine * na::point![aabb.mins[0], aabb.maxs[1]];
-        let p2 = self.affine * na::point![aabb.maxs[0], aabb.maxs[1]];
-        let p3 = self.affine * na::point![aabb.maxs[0], aabb.mins[1]];
-
-        let min_x = p0[0].min(p1[0]).min(p2[0]).min(p3[0]);
-        let min_y = p0[1].min(p1[1]).min(p2[1]).min(p3[1]);
-        let max_x = p0[0].max(p1[0]).max(p2[0]).max(p3[0]);
-        let max_y = p0[1].max(p1[1]).max(p2[1]).max(p3[1]);
-
-        Aabb::new_positive(na::point![min_x, min_y], na::point![max_x, max_y])
+        self.affine.transform_aabb(aabb)
     }
 
     /// Append a translation to the transform.

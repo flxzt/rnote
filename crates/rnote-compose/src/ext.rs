@@ -467,6 +467,8 @@ where
     fn to_kurbo(self) -> kurbo::Affine;
     /// converting from kurbo affine
     fn from_kurbo(affine: kurbo::Affine) -> Self;
+    /// Transforms the Aabb vertices and calculates a new that contains them.
+    fn transform_aabb(&self, aabb: Aabb) -> Aabb;
 }
 
 impl Affine2Ext for na::Affine2<f64> {
@@ -489,6 +491,21 @@ impl Affine2Ext for na::Affine2<f64> {
             matrix[0], matrix[2], matrix[4], matrix[1], matrix[3], matrix[5], 0.0, 0.0, 1.0,
         ))
         .unwrap()
+    }
+
+    /// Transforms the Aabb and returns the minimum enclosing Aabb
+    fn transform_aabb(&self, aabb: Aabb) -> Aabb {
+        let p0 = self * na::point![aabb.mins[0], aabb.mins[1]];
+        let p1 = self * na::point![aabb.mins[0], aabb.maxs[1]];
+        let p2 = self * na::point![aabb.maxs[0], aabb.maxs[1]];
+        let p3 = self * na::point![aabb.maxs[0], aabb.mins[1]];
+
+        let min_x = p0[0].min(p1[0]).min(p2[0]).min(p3[0]);
+        let min_y = p0[1].min(p1[1]).min(p2[1]).min(p3[1]);
+        let max_x = p0[0].max(p1[0]).max(p2[0]).max(p3[0]);
+        let max_y = p0[1].max(p1[1]).max(p2[1]).max(p3[1]);
+
+        Aabb::new_positive(na::point![min_x, min_y], na::point![max_x, max_y])
     }
 }
 

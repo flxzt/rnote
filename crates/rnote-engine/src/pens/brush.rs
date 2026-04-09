@@ -363,13 +363,9 @@ impl Brush {
             .brush_config
             .style_for_current_options();
 
-        if let Some(stroke_color) = style.stroke_color()
-            && stroke_color.a < 1.0
-        {
-            let mixed_opaque =
-                stroke_color.with_background_color(engine_view.document.config.background.color);
-
-            style.set_stroke_color(mixed_opaque);
+        if let Some(mut stroke_color) = style.stroke_color() {
+            stroke_color.a = 1.0;
+            style.set_stroke_color(stroke_color);
         }
 
         style

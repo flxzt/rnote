@@ -130,18 +130,6 @@ impl Color {
         0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
     }
 
-    /// Mix the color with a background color, resulting in a new opaque color.
-    pub fn with_background_color(self, background_color: Self) -> Self {
-        let a = self.a;
-
-        Self::new(
-            self.r * a + background_color.r * (1.0 - a),
-            self.g * a + background_color.g * (1.0 - a),
-            self.b * a + background_color.b * (1.0 - a),
-            1.0,
-        )
-    }
-
     /// Invert the perceived brightness of the color.
     pub fn to_inverted_brightness_color(self) -> Self {
         let mut hwba_color: palette::Okhwba<f64> = self.into_color();

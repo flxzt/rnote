@@ -509,6 +509,15 @@ mod imp {
                     obj,
                     move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
+                        // Workaround for a GTK bug where kinetic scroll deceleration continues
+                        // with stale values during a pinch-to-zoom, causing sudden position jumps.
+                        // Toggling kinetic scrolling off/on cancels any active deceleration.
+                        // See: https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        let scroller = canvaswrapper.scroller();
+                        if scroller.is_kinetic_scrolling() {
+                            scroller.set_kinetic_scrolling(false);
+                            scroller.set_kinetic_scrolling(true);
+                        }
                         let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
 
                         zoom_begin.set(current_zoom);

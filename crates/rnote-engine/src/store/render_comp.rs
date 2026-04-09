@@ -483,73 +483,36 @@ impl StrokeStore {
 
     /// Draw all strokes on the gtk snapshot.
     #[cfg(feature = "ui")]
-    pub(crate) fn draw_strokes_to_gtk_snapshot(
+    pub(crate) fn draw_stroke_key_to_gtk_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
-        doc_bounds: Aabb,
-        viewport: Aabb,
+        key: StrokeKey,
     ) {
         use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use gtk4::{gdk, graphene, prelude::*};
         use rnote_compose::color;
 
-        // push clip
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
-
-        let mut non_highlighter_keys = self.stroke_keys_as_rendered_intersecting_bounds(viewport);
-        let highlighter_keys = self.split_off_highlighter_keys(&mut non_highlighter_keys);
-
-        let draw_key = |key: StrokeKey, snapshot: &gtk4::Snapshot| {
-            if let Some(stroke) = self.stroke_components.get(key)
-                && let Some(render_comp) = self.render_components.get(key)
+        if let Some(stroke) = self.stroke_components.get(key)
+            && let Some(render_comp) = self.render_components.get(key)
+        {
+            // if the stroke currently does not have a rendering and is will create one,
+            // draw a placeholder filled rect
+            if render_comp.rendernodes.is_empty()
+                && matches!(
+                    render_comp.state,
+                    RenderCompState::Dirty | RenderCompState::BusyRenderingInTask
+                )
             {
-                // if the stroke currently does not have a rendering and is will create one,
-                // draw a placeholder filled rect
-                if render_comp.rendernodes.is_empty()
-                    && matches!(
-                        render_comp.state,
-                        RenderCompState::Dirty | RenderCompState::BusyRenderingInTask
-                    )
-                {
-                    snapshot.append_color(
-                        &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.13)),
-                        &graphene::Rect::from_p2d_aabb(stroke.bounds()),
-                    );
-                }
-
-                for rendernode in render_comp.rendernodes.iter() {
-                    snapshot.append_node(rendernode);
-                }
-            }
-        };
-
-        if highlighter_keys.is_empty() {
-            for &key in non_highlighter_keys.iter() {
-                draw_key(key, snapshot);
-            }
-        } else {
-            // push blend
-            snapshot.push_blend(gtk4::gsk::BlendMode::Multiply);
-
-            // bottom image in blend (regular content)
-            for &key in non_highlighter_keys.iter() {
-                draw_key(key, snapshot);
+                snapshot.append_color(
+                    &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.13)),
+                    &graphene::Rect::from_p2d_aabb(stroke.bounds()),
+                );
             }
 
-            // pop blend bottom image
-            snapshot.pop();
-
-            // top image in blend (highlighter layer)
-            for &key in highlighter_keys.iter() {
-                draw_key(key, snapshot);
+            for rendernode in render_comp.rendernodes.iter() {
+                snapshot.append_node(rendernode);
             }
-
-            // pop blend top image
-            snapshot.pop();
         }
-
-        // pop clip
-        snapshot.pop();
     }
 
     /// Draw the strokes for the given keys on the [piet::RenderContext].

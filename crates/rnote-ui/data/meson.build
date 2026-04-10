@@ -334,6 +334,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/workspacelistentryicon-weather-symbolic.svg',
     'icons/scalable/actions/workspacelistentryicon-weight-symbolic.svg',
     'icons/scalable/actions/zoom-fit-width-symbolic.svg',
+    'icons/scalable/actions/zoom-real-width-symbolic.svg',
     'icons/scalable/actions/zoom-in-symbolic.svg',
     'icons/scalable/actions/zoom-out-symbolic.svg',
     'icons/scalable/apps/rnote-devel.svg',

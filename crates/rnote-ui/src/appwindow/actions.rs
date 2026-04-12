@@ -10,6 +10,7 @@ use gtk4::{
 use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
@@ -661,7 +662,8 @@ impl RnAppWindow {
                 let Some(monitor) = canvas.display().monitor_at_surface(&surface) else {
                     return;
                 };
-                let ppi = monitor.geometry().width() as f64 / monitor.width_mm() as f64 * 25.4;
+                let ppi = monitor.geometry().width() as f64 / monitor.width_mm() as f64
+                    * MeasureUnit::AMOUNT_MM_IN_INCH;
                 let new_zoom = ppi / wrapper.canvas().engine_ref().document.config.format.dpi();
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
                 widget_flags |= canvas

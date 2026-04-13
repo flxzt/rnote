@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 19:35+0100\n"
+"POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2025-04-21 15:01+0000\n"
 "Last-Translator: Erik Holmquist <erik.holmquist@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -32,10 +32,6 @@ msgstr "Gnome;GTK;Kontor;Grafik;Anteckningar;"
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
 msgstr "Nytt Fönster"
-
-#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
-msgid "@APP_NAME_CAPITALIZED@"
-msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -614,8 +610,8 @@ msgid "Mark underneath other strokes"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
 msgid "Solid"
 msgstr "Solid"
 
@@ -752,7 +748,7 @@ msgstr ""
 msgid "Trash Strokes"
 msgstr "Penselformat"
 
-#: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
+#: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:28
 #, fuzzy
 msgid "Split Strokes"
 msgstr "Multistroke"
@@ -793,228 +789,228 @@ msgstr "Verktyg"
 msgid "Select With a Polygon"
 msgstr "Välja med en polygon"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:29
 #, fuzzy
 #| msgid "Selecting with a rectangle"
 msgid "Select With a Rectangle"
 msgstr "Markera med en rektangel"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:36
 msgid "Select One by One"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:43
 #, fuzzy
 msgid "Select Intersecting Path"
 msgstr "Markera med en rektangel"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:61
 #, fuzzy
 #| msgid "Lock aspectratio while resizing the selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "Lås bildförhållandet vid storleksändring av markeringen"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:70
 #, fuzzy
 msgid "Select All Strokes"
 msgstr "Markera alla linjer"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:80
 #, fuzzy
 msgid "Deselect All Strokes"
 msgstr "Markera alla linjer"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:90
 msgid "Invert Color Brightness of All Selected Strokes"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:100
 #: crates/rnote-ui/data/ui/shortcuts.ui:260
 #, fuzzy
 #| msgid "Duplicate selection"
 msgid "Duplicate Selection"
 msgstr "Duplicera markering"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 #, fuzzy
 #| msgid "Delete selection"
 msgid "Delete Selection"
 msgstr "Ta bort markering"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:294
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 #, fuzzy
 msgid "Shape Builders"
 msgstr "Form"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:32
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:41
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:80
 #, fuzzy
 msgid "Shape Configuration"
 msgstr "Konfiguration av grova former"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:94
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:103
 #, fuzzy
 msgid "Shaper Style"
 msgstr "Form"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:104
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:113
 #, fuzzy
 msgid "Smooth"
 msgstr "Jämna former"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:115
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:124
 #, fuzzy
 msgid "Rough"
 msgstr "Grovhet"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlighting"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:144
 msgid "Highlight-Mode"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:145
 msgid "Fade active color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:150
 msgid "Highlight-Opacity"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:151
 msgid "Modify the highlight opacity (%)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 #, fuzzy
 msgid "Smooth Style"
 msgstr "Solid"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 #, fuzzy
 msgid "Line Cap"
 msgstr "Linje"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a line cap"
 msgstr "Välj ett format"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #, fuzzy
 #| msgid "Height"
 msgid "Straight"
 msgstr "Höjd"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Round"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 #, fuzzy
 msgid "Line Style"
 msgstr "Solid"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a line style"
 msgstr "Välj ett format"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:193
 msgid "Dotted"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:194
 msgid "Dashed (narrow)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
 msgid "Dashed (equidistant)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
 msgid "Dashed (wide)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
 #, fuzzy
 msgid "Rough Style"
 msgstr "Penselformat"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
 #, fuzzy
 msgid "Fill Style"
 msgstr "Solid"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a fill style"
 msgstr "Välj ett format"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
 msgid "Hachure"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
 msgid "Zig-Zag"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:210
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:219
 msgid "Zig-Zag Line"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:220
 msgid "Crosshatch"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "Prickar"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:213
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
 msgid "Dashed"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 msgid "Hachure Angle"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:231
 #, fuzzy
 msgid "Set the angle of hachure fills"
 msgstr "Välj bakrundsfärgen"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:241
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:250
 #, fuzzy
 msgid "Constraints"
 msgstr "Porträtt"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:252
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:261
 msgid "Enabled"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:262
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
 "constraints when this switch is off/on"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:268
 msgid "1:1"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:264
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:273
 msgid "3:2"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:269
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:278
 msgid "Golden Ratio (1:1.618)"
 msgstr ""
 
@@ -1022,23 +1018,23 @@ msgstr ""
 msgid "Insert Vertical Space"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:32
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:102
 #, fuzzy
 msgid "Vertical-Space Tool Configuration"
 msgstr "Konfiguration av grova former"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:48
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Move View"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:65
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:63
 #, fuzzy
 msgid "Zoom In/Out"
 msgstr "Zooma ut"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:78
 #, fuzzy
 #| msgid "Eraser"
 msgid "Laser"
@@ -1048,50 +1044,50 @@ msgstr "Suddgummi"
 msgid "Font Chooser"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
 msgid "Edit Font Size"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:44
 msgid "Pick And Insert Emoji"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:70
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
 msgid "Reset Text Attributes"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
 #: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:87
 #: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
 #: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:107
 msgid "Strikethrough"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:129
 msgid "Align Left"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:136
 msgid "Align Center"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:143
 msgid "Align Right"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:150
 msgid "Fill"
 msgstr ""
 
@@ -2175,17 +2171,17 @@ msgstr ""
 msgid "Opened file was renamed or moved."
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1038
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 #, fuzzy
 msgid "Opened file was removed."
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1264
+#: crates/rnote-ui/src/canvas/mod.rs:1269
 #, fuzzy
 msgid "Inserting file failed"
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1276
+#: crates/rnote-ui/src/canvas/mod.rs:1281
 #, fuzzy
 msgid "Inserting text failed"
 msgstr "Exportera blad som SVG"

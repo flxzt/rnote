@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-25 19:35+0100\n"
+"POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2025-01-10 09:10+0545\n"
 "Last-Translator: Manish Goyal <manishgoyal016@gmail.com>\n"
 "Language-Team: Nepali <https://hosted.weblate.org/projects/rnote/repo/ne/>\n"
@@ -33,10 +33,6 @@ msgstr "नोम; जि टि के; कार्यालय; ग्रा�
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
 msgid "New Window"
 msgstr "नयाँ विन्डो"
-
-#: crates/rnote-ui/data/app.metainfo.xml.in.in:7
-msgid "@APP_NAME_CAPITALIZED@"
-msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:21
 msgid ""
@@ -579,8 +575,8 @@ msgid "Mark underneath other strokes"
 msgstr "अन्य धर्काहरु मुनि चिन्ह लगाउनुहोस्"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
 msgid "Solid"
 msgstr "ठोस"
 
@@ -710,7 +706,7 @@ msgstr "उल्टो घाताङ्किय"
 msgid "Trash Strokes"
 msgstr "ट्र्यास धर्काहरू"
 
-#: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:31
+#: crates/rnote-ui/data/ui/penssidebar/eraserpage.ui:28
 msgid "Split Strokes"
 msgstr "विभाजित धर्काहरू"
 
@@ -748,202 +744,202 @@ msgstr "औजारहरू"
 msgid "Select With a Polygon"
 msgstr "बहुभुजले चयन गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:32
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:29
 msgid "Select With a Rectangle"
 msgstr "आयतले चयन गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:42
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:36
 msgid "Select One by One"
 msgstr "एक-एक गरेर चयन गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:52
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:43
 msgid "Select Intersecting Path"
 msgstr "प्रतिच्‍छेदित मार्ग चयन गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:73
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:61
 #, fuzzy
 #| msgid "Lock Aspectratio While Resizing the Selection"
 msgid "Lock Aspect Ratio While Resizing the Selection"
 msgstr "चयनको आकार फेर्दाखेरी आकार अनुपात उही राख्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:83
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:70
 msgid "Select All Strokes"
 msgstr "सबै धर्काहरू चयनबाट हटाउनुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:94
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:80
 msgid "Deselect All Strokes"
 msgstr "सबै धर्काहरू चयनबाट हटाउनुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:105
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:90
 msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "चयन गरिएका धर्काहरूको रङ्ग उज्यालोपन उल्टाउनुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:116
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:100
 #: crates/rnote-ui/data/ui/shortcuts.ui:260
 msgid "Duplicate Selection"
 msgstr "चयन नक्कल गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:127
+#: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Delete Selection"
 msgstr "चयन मेटाउनुहोस्"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:294
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Shape Builders"
 msgstr "आकार निर्माता"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:32
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:41
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:80
 msgid "Shape Configuration"
 msgstr "आकार विन्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:94
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:103
 msgid "Shaper Style"
 msgstr "आकार दिनेको शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:104
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:113
 msgid "Smooth"
 msgstr "सम्म"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:115
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:124
 msgid "Rough"
 msgstr "खस्रो"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
 msgid "Highlighting"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:135
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:144
 msgid "Highlight-Mode"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:136
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:145
 msgid "Fade active color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:150
 msgid "Highlight-Opacity"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:142
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:151
 msgid "Modify the highlight opacity (%)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
 #, fuzzy
 #| msgid "Solid Style"
 msgid "Smooth Style"
 msgstr "ठोस शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:164
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:173
 #, fuzzy
 #| msgid "Linear"
 msgid "Line Cap"
 msgstr "रेखीय"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a line cap"
 msgstr "प्रकार छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:169
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
 #, fuzzy
 #| msgctxt "part of string representation of a color"
 #| msgid "bright"
 msgid "Straight"
 msgstr "उज्यालो"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Round"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 #, fuzzy
 #| msgid "Fill Style"
 msgid "Line Style"
 msgstr "शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 #, fuzzy
 #| msgid "Choose a fill style"
 msgid "Choose a line style"
 msgstr "भर्ने शैली छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:193
 msgid "Dotted"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:194
 msgid "Dashed (narrow)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:186
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
 msgid "Dashed (equidistant)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
 #, fuzzy
 #| msgid "Dashed"
 msgid "Dashed (wide)"
 msgstr "ड्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
 #, fuzzy
 #| msgid "Rough style"
 msgid "Rough Style"
 msgstr "खस्रो शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
 msgid "Fill Style"
 msgstr "शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
 msgid "Choose a fill style"
 msgstr "भर्ने शैली छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
 msgid "Hachure"
 msgstr "रेखा छायाङ्कन"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
 msgid "Zig-Zag"
 msgstr "बाङ्गोटिङ्गो"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:210
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:219
 msgid "Zig-Zag Line"
 msgstr "बाङ्गोटिङ्गो धर्को"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:220
 msgid "Crosshatch"
 msgstr "क्रसह्याच"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "बिन्दुहरू"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:213
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
 msgid "Dashed"
 msgstr "ड्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 msgid "Hachure Angle"
 msgstr "रेखा छायाङ्कन कोण"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:231
 msgid "Set the angle of hachure fills"
 msgstr "रेखा छायाङ्कन भरणको कोण राख्नुहोस् "
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:241
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:250
 msgid "Constraints"
 msgstr "बाधाहरू"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:252
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:261
 msgid "Enabled"
 msgstr "सक्षम"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:253
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:262
 #, fuzzy
 #| msgid ""
 #| "Hold Ctrl to temporarily\n"
@@ -957,15 +953,15 @@ msgstr ""
 "अवरोधहरू सक्षम/असक्षम गर्न\n"
 "Ctrl थिच्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:268
 msgid "1:1"
 msgstr "१:१"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:264
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:273
 msgid "3:2"
 msgstr "३:२"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:269
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:278
 msgid "Golden Ratio (1:1.618)"
 msgstr "सुनौलो अनुपात(१:१.६१८)"
 
@@ -973,23 +969,23 @@ msgstr "सुनौलो अनुपात(१:१.६१८)"
 msgid "Insert Vertical Space"
 msgstr "ठाडो ठाउँ हाल्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:106
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:32
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:102
 #, fuzzy
 #| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
 msgstr "आकार विन्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:48
 #: crates/rnote-ui/data/ui/shortcuts.ui:114
 msgid "Move View"
 msgstr "दृश्य सार्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:65
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:63
 msgid "Zoom In/Out"
 msgstr "ठूलो/सानो पार्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:81
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:78
 #, fuzzy
 #| msgid "Eraser"
 msgid "Laser"
@@ -999,50 +995,50 @@ msgstr "इरेजर"
 msgid "Font Chooser"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:29
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:28
 msgid "Edit Font Size"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:45
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:44
 msgid "Pick And Insert Emoji"
 msgstr "इमोजी छानेर हाल्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:70
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:68
 msgid "Reset Text Attributes"
 msgstr "पाठ विशेषताहरू रिसेट गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:79
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
 #: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Bold"
 msgstr "गाढा"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:89
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:87
 #: crates/rnote-ui/data/ui/shortcuts.ui:227
 msgid "Italic"
 msgstr "ढल्किएको"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:99
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
 #: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Underline"
 msgstr "तल धर्को तान्नु"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:109
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:107
 msgid "Strikethrough"
 msgstr "बीचमा धर्को तान्नु"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:131
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:129
 msgid "Align Left"
 msgstr "बायाँपट्टी पङ्क्तिबद्ध गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:138
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:136
 msgid "Align Center"
 msgstr "बीचमा पङ्क्तिबद्ध गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:145
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:143
 msgid "Align Right"
 msgstr "दायाँपट्टी पङ्क्तिबद्ध गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:152
+#: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:150
 msgid "Fill"
 msgstr "भर्नु"
 
@@ -2011,15 +2007,15 @@ msgstr "डिस्कबाट .rnote फाइल पुन: लोड गर
 msgid "Opened file was renamed or moved."
 msgstr "खोलिएको फाइलको नाम फेरियो वा सारियो।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1038
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 msgid "Opened file was removed."
 msgstr "खोलिएको फाइल हटाइयो।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1264
+#: crates/rnote-ui/src/canvas/mod.rs:1269
 msgid "Inserting file failed"
 msgstr "फाइल छिराउन असफल"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1276
+#: crates/rnote-ui/src/canvas/mod.rs:1281
 msgid "Inserting text failed"
 msgstr "पाठ छिराउन असफल"
 

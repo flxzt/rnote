@@ -916,7 +916,7 @@ impl RnCanvas {
         self.queue_resize();
     }
 
-    fn workaround_disable_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
+    pub(crate) fn workaround_disable_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
         if let Some(scroller) = scroller
             && scroller.is_kinetic_scrolling()
         {
@@ -925,7 +925,7 @@ impl RnCanvas {
         }
     }
 
-    fn workaround_restore_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
+    pub(crate) fn workaround_restore_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
         if !self
             .imp()
             .workaround_kinetic_scrolling_pending

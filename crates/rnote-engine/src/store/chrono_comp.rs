@@ -79,15 +79,11 @@ impl ChronoComponent {
 
 /// Systems that are related to their chronological ordering.
 impl StrokeStore {
-    pub(crate) fn split_off_highlighter_keys(&self, keys: &mut Vec<StrokeKey>) -> Vec<StrokeKey> {
-        let split_index = keys.partition_point(|&key| {
-            self.chrono_components
-                .get(key)
-                .map(|chrono_comp| chrono_comp.layer != StrokeLayer::Highlighter)
-                .unwrap_or(true)
-        });
-
-        keys.split_off(split_index)
+    pub(crate) fn get_chrono_layer(&self, key: StrokeKey) -> StrokeLayer {
+        self.chrono_components
+            .get(key)
+            .map(|chrono_comp| chrono_comp.layer)
+            .unwrap_or_default()
     }
 
     pub(crate) fn update_chrono_to_last(&mut self, key: StrokeKey) {

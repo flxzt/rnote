@@ -1,8 +1,7 @@
 // Imports
 use super::StrokeKey;
-use super::chrono_comp::StrokeLayer;
 use super::render_comp::RenderCompState;
-use crate::engine::StrokeContent;
+use crate::engine::{LayeredStroke, StrokeContent};
 use crate::strokes::{Content, Stroke};
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
@@ -44,6 +43,7 @@ impl StrokeStore {
     }
 
     /// Gets the strokes by cloning the Arc's that are wrapped around them.
+    #[allow(unused)]
     pub(crate) fn get_strokes_arc(&self, keys: &[StrokeKey]) -> Vec<Arc<Stroke>> {
         keys.iter()
             .filter_map(|&key| self.stroke_components.get(key).cloned())
@@ -689,21 +689,21 @@ impl StrokeStore {
     }
 
     pub(crate) fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
-        let mut non_highlighter_keys = keys.to_vec();
-        let highlighter_keys = self.split_off_highlighter_keys(&mut non_highlighter_keys);
-
-        let strokes = non_highlighter_keys
+        let strokes = keys
             .iter()
-            .filter_map(|k| self.stroke_components.get(*k).cloned())
-            .collect();
-        let highlighter_strokes = highlighter_keys
-            .iter()
-            .filter_map(|k| self.stroke_components.get(*k).cloned())
-            .collect();
+            .filter_map(|&key| {
+                let stroke = self.stroke_components.get(key).cloned()?;
+                let layer = self
+                    .chrono_components
+                    .get(key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_else(|| stroke.extract_default_layer());
 
-        StrokeContent::default()
-            .with_strokes(strokes)
-            .with_highlighter_strokes(highlighter_strokes)
+                Some(LayeredStroke { stroke, layer })
+            })
+            .collect::<Vec<LayeredStroke>>();
+
+        StrokeContent::default().with_strokes(strokes)
     }
 
     /// Cut the strokes for the given keys and return them as stroke content.
@@ -713,21 +713,21 @@ impl StrokeStore {
             self.set_trashed(key, true);
         }
 
-        let mut non_highlighter_keys = keys.to_vec();
-        let highlighter_keys = self.split_off_highlighter_keys(&mut non_highlighter_keys);
-
-        let strokes = non_highlighter_keys
+        let strokes = keys
             .iter()
-            .filter_map(|k| self.stroke_components.get(*k).cloned())
-            .collect();
-        let highlighter_strokes = highlighter_keys
-            .iter()
-            .filter_map(|k| self.stroke_components.get(*k).cloned())
-            .collect();
+            .filter_map(|&key| {
+                let stroke = self.stroke_components.get(key).cloned()?;
+                let layer = self
+                    .chrono_components
+                    .get(key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_else(|| stroke.extract_default_layer());
 
-        StrokeContent::default()
-            .with_strokes(strokes)
-            .with_highlighter_strokes(highlighter_strokes)
+                Some(LayeredStroke { stroke, layer })
+            })
+            .collect::<Vec<LayeredStroke>>();
+
+        StrokeContent::default().with_strokes(strokes)
     }
 
     /// Paste the clipboard content as a selection.
@@ -741,55 +741,35 @@ impl StrokeStore {
         ratio: f64,
         pos: na::Vector2<f64>,
     ) -> Vec<StrokeKey> {
-        if clipboard_content.strokes.is_empty() && clipboard_content.highlighter_strokes.is_empty()
-        {
+        if clipboard_content.strokes.is_empty() {
             return vec![];
         }
 
         let clipboard_bounds = clipboard_content
             .strokes
             .iter()
-            .chain(clipboard_content.highlighter_strokes.iter())
-            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.bounds()));
+            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.stroke.bounds()));
 
-        let StrokeContent {
-            strokes,
-            highlighter_strokes,
-            ..
-        } = clipboard_content;
+        clipboard_content
+            .strokes
+            .into_iter()
+            .map(|stroke_content_stroke| {
+                let LayeredStroke { stroke, layer } = stroke_content_stroke;
+                let offset = stroke.bounds().mins.coords - clipboard_bounds.mins.coords;
+                let key = self.insert_stroke((*stroke).clone(), Some(layer));
 
-        let mut insert_group =
-            |strokes: Vec<Arc<Stroke>>, layer: Option<StrokeLayer>| -> Vec<StrokeKey> {
-                strokes
-                    .into_iter()
-                    .map(|s| {
-                        let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
-                        let key = self.insert_stroke((*s).clone(), layer);
-                        // position strokes without resizing
-                        self.set_stroke_pos(key, pos);
-                        self.translate_strokes(&[key], offset);
+                // position strokes without resizing
+                self.set_stroke_pos(key, pos);
+                self.translate_strokes(&[key], offset);
 
-                        // apply a rescale around a pivot
-                        self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
-                        self.scale_strokes_images_with_pivot(
-                            &[key],
-                            na::Vector2::new(ratio, ratio),
-                            pos,
-                        );
+                // apply a rescale around a pivot
+                self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+                self.scale_strokes_images_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
 
-                        // select keys
-                        self.set_selected(key, true);
-                        key
-                    })
-                    .collect()
-            };
-
-        let mut inserted_keys = insert_group(strokes, None);
-        inserted_keys.extend(insert_group(
-            highlighter_strokes,
-            Some(StrokeLayer::Highlighter),
-        ));
-
-        inserted_keys
+                // select keys
+                self.set_selected(key, true);
+                key
+            })
+            .collect()
     }
 }

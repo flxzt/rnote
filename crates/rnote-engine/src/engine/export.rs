@@ -339,15 +339,9 @@ impl Engine {
         oneshot_receiver
     }
 
-    fn stroke_content_from_sorted_keys(
-        &self,
-        mut keys: Vec<crate::store::StrokeKey>,
-    ) -> StrokeContent {
-        let highlighter_keys = self.store.split_off_highlighter_keys(&mut keys);
-
-        StrokeContent::default()
-            .with_strokes(self.store.get_strokes_arc(&keys))
-            .with_highlighter_strokes(self.store.get_strokes_arc(&highlighter_keys))
+    fn stroke_content_from_sorted_keys(&self, keys: Vec<crate::store::StrokeKey>) -> StrokeContent {
+        self.store
+            .fetch_stroke_content(&keys)
             .with_background(self.document.config.background)
     }
 
@@ -569,9 +563,9 @@ impl Engine {
                         let xopp_strokestyles = page_content
                             .strokes
                             .into_iter()
-                            .chain(page_content.highlighter_strokes.into_iter())
-                            .filter_map(|mut stroke| {
-                                let mut stroke = Arc::make_mut(&mut stroke).clone();
+                            .filter_map(|mut stroke_content_stroke| {
+                                let mut stroke =
+                                    Arc::make_mut(&mut stroke_content_stroke.stroke).clone();
                                 stroke.translate(-page_bounds.mins.coords);
                                 stroke.into_xopp(document.config.format.dpi())
                             })

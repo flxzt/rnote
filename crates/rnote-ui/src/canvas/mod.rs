@@ -917,6 +917,8 @@ impl RnCanvas {
     }
 
     pub(crate) fn workaround_disable_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
+        // Only intervene when kinetic scrolling is currently enabled.
+        // If we disable it here, record that this workaround changed the state using the pending flag.
         if let Some(scroller) = scroller
             && scroller.is_kinetic_scrolling()
         {
@@ -926,16 +928,13 @@ impl RnCanvas {
     }
 
     pub(crate) fn workaround_restore_kinetic_scrolling(&self, scroller: Option<&ScrolledWindow>) {
-        if !self
-            .imp()
-            .workaround_kinetic_scrolling_pending
-            .replace(false)
+        // The pending flag is set to true only if we disabled kinetic scrolling before.
+        // This avoids forcing kinetic scrolling on for scrollers that started with it being disabled.
+        if self.imp().workaround_kinetic_scrolling_pending.get()
+            && let Some(scroller) = scroller
         {
-            return;
-        }
-
-        if let Some(scroller) = scroller {
             scroller.set_kinetic_scrolling(true);
+            self.imp().workaround_kinetic_scrolling_pending.set(false);
         }
     }
 

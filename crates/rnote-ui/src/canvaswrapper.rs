@@ -627,7 +627,9 @@ mod imp {
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
-                        if modifiers.contains(gdk::ModifierType::ALT_MASK) {
+                        if modifiers.contains(gdk::ModifierType::ALT_MASK)
+                            && !modifiers.contains(gdk::ModifierType::SHIFT_MASK)
+                        {
                             gesture.set_state(EventSequenceState::Claimed);
                             offset_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
                         } else {
@@ -715,9 +717,9 @@ mod imp {
                             let modifiers = gesture.current_event_state();
 
                             // At the start BUTTON1_MASK is not included
-                            if modifiers.contains(
-                                gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK,
-                            ) {
+                            if modifiers.contains(gdk::ModifierType::ALT_MASK)
+                                && modifiers.contains(gdk::ModifierType::SHIFT_MASK)
+                            {
                                 gesture.set_state(EventSequenceState::Claimed);
                                 let current_zoom =
                                     canvaswrapper.canvas().engine_ref().camera.total_zoom();

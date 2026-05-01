@@ -311,6 +311,23 @@ mod imp {
             );
         }
 
+        fn workaround_disable_kinetic_scrolling(&self) {
+            let scroller = self.scroller.get();
+            self.canvas
+                .workaround_disable_kinetic_scrolling(Some(&scroller));
+        }
+
+        fn workaround_restore_kinetic_scrolling(&self) {
+            let scroller = self.scroller.get();
+            self.canvas
+                .workaround_restore_kinetic_scrolling(Some(&scroller));
+        }
+
+        pub(super) fn workaround_cancel_kinetic_scrolling_for_zoom(&self) {
+            self.workaround_disable_kinetic_scrolling();
+            self.workaround_restore_kinetic_scrolling();
+        }
+
         fn setup_input(&self) {
             let obj = self.obj();
 
@@ -332,20 +349,6 @@ mod imp {
                 ));
             }
 
-            // Actions when moving view with controls provided by the scroller ScrolledWindow.
-            // e.g. touch scrolling when inertial-scrolling is enabled.
-            {
-                self.scroller.connect_edge_overshot(clone!(
-                    #[weak(rename_to=canvaswrapper)]
-                    obj,
-                    move |_, _| {
-                        let canvas = canvaswrapper.canvas();
-                        let widget_flags = canvas.engine_mut().doc_expand_autoexpand();
-                        canvas.emit_handle_widget_flags(widget_flags);
-                    }
-                ));
-            }
-
             // zoom scrolling with <ctrl> + scroll
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(
@@ -359,6 +362,11 @@ mod imp {
                         if !modifiers.contains(gdk::ModifierType::CONTROL_MASK) {
                             return glib::Propagation::Proceed;
                         }
+
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper
+                            .imp()
+                            .workaround_cancel_kinetic_scrolling_for_zoom();
 
                         let canvas = canvaswrapper.canvas();
                         let old_zoom = canvas.engine_ref().camera.total_zoom();
@@ -411,10 +419,7 @@ mod imp {
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
-                        touch_drag_start.set(na::vector![
-                            canvaswrapper.canvas().hadjustment().unwrap().value(),
-                            canvaswrapper.canvas().vadjustment().unwrap().value()
-                        ]);
+                        touch_drag_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
                 ));
                 self.canvas_drag_gesture.connect_drag_update(clone!(
@@ -512,15 +517,10 @@ mod imp {
                     obj,
                     move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
-                        // Workaround for a GTK bug where kinetic scroll deceleration continues
-                        // with stale values during a pinch-to-zoom, causing sudden position jumps.
-                        // Toggling kinetic scrolling off/on cancels any active deceleration.
-                        // See: https://gitlab.gnome.org/GNOME/gtk/-/issues/187
-                        let scroller = canvaswrapper.scroller();
-                        if scroller.is_kinetic_scrolling() {
-                            scroller.set_kinetic_scrolling(false);
-                            scroller.set_kinetic_scrolling(true);
-                        }
+
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_disable_kinetic_scrolling();
+
                         let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
 
                         zoom_begin.set(current_zoom);
@@ -588,6 +588,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_gesture, _event_sequence| {
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -603,6 +606,10 @@ mod imp {
                     obj,
                     move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
+
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -721,6 +728,10 @@ mod imp {
                                 && modifiers.contains(gdk::ModifierType::SHIFT_MASK)
                             {
                                 gesture.set_state(EventSequenceState::Claimed);
+
+                                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                                canvaswrapper.imp().workaround_disable_kinetic_scrolling();
+
                                 let current_zoom =
                                     canvaswrapper.canvas().engine_ref().camera.total_zoom();
                                 zoom_begin.set(current_zoom);
@@ -768,6 +779,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, _, _| {
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -877,6 +891,10 @@ impl RnCanvasWrapper {
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {
         self.imp().scroller.get()
+    }
+
+    pub(crate) fn workaround_cancel_kinetic_scrolling_for_zoom(&self) {
+        self.imp().workaround_cancel_kinetic_scrolling_for_zoom();
     }
 
     pub(crate) fn canvas(&self) -> RnCanvas {

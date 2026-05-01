@@ -704,11 +704,9 @@ impl Engine {
         self.camera.set_size(size)
     }
 
-    /// Update the viewport size of the camera.
-    ///
-    /// Background and content rendering then need to be updated.
-    pub fn camera_offset_mins_maxs(&self) -> (na::Vector2<f64>, na::Vector2<f64>) {
-        self.camera.offset_lower_upper(&self.document)
+    /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
+    pub fn camera_surface_mins_maxs(&self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+        self.camera.surface_mins_maxs(&self.document)
     }
 
     /// Update the current pen with the current engine state.

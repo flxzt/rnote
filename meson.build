@@ -253,6 +253,13 @@ if build_ui == true
     inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
     inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
     inno_script_conf.set_quoted('UI_OUTPUT', ui_output)
+
+    if host_machine.system() == 'windows'
+        cli_output = cli_name + '.exe'
+    else
+        cli_output = cli_name
+    endif
+    inno_script_conf.set_quoted('CLI_OUTPUT', cli_output)
     inno_script_conf.set_quoted('INSTALLER_NAME', win_installer_name)
 
     inno_script = configure_file(

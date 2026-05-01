@@ -5,6 +5,7 @@
 #define MyAppPublisher @APP_AUTHOR_NAME@
 #define MyAppURL @APP_WEBSITE@
 #define MyAppExeName @UI_OUTPUT@
+#define MyAppCliExeName @CLI_OUTPUT@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".rnote"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -84,6 +85,7 @@ Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\LICENSES.md"; Dest
 
 ; Binary
 Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
+Source: "{#meson_build_root}\{#MyAppCliExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
@@ -98,4 +100,3 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks
 
 [Run]
 Filename: "{app}\bin\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-

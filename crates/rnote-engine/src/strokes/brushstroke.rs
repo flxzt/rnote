@@ -56,8 +56,10 @@ impl Content for BrushStroke {
             > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[0]
             || self.style.stroke_width() > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[1];
 
+        let stroke_opacity_condition = self.style.stroke_color().is_some_and(|color| color.a < 1.0);
+
         // if these conditions evaluate true the stroke is rendered as a single image
-        let images = if image_size_condition || stroke_width_condition {
+        let images = if image_size_condition || stroke_width_condition || stroke_opacity_condition {
             // generate a single image when bounds are smaller than threshold
             match &self.style {
                 Style::Smooth(options) => {

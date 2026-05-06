@@ -15,6 +15,7 @@ app_name_capitalized = sys.argv[5]
 app_id = sys.argv[6]
 ui_output = sys.argv[7]
 inno_script = sys.argv[8]
+define_cli_output = sys.argv[9]
 
 print(f"""
 ### executing Inno-Setup installer build script with arguments: ###
@@ -26,6 +27,7 @@ print(f"""
     app_id: {app_id}
     ui_output: {ui_output}
     inno_script: {inno_script}
+    (optional) define cli {define_cli_output}
 """, file=sys.stderr)
 
 def run_command(command, error_message):
@@ -138,7 +140,7 @@ for file in os.listdir(app_mo_dir):
 print("Running ISCC...", file=sys.stderr)
 
 run_command(
-    f"iscc {inno_script}",
+    f"iscc {inno_script} {define_cli_output}",
     "Running ISCC failed"
 )
 

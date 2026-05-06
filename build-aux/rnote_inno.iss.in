@@ -5,7 +5,6 @@
 #define MyAppPublisher @APP_AUTHOR_NAME@
 #define MyAppURL @APP_WEBSITE@
 #define MyAppExeName @UI_OUTPUT@
-#define MyAppCliExeName @CLI_OUTPUT@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".rnote"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -50,6 +49,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce
+#if Defined(MyAppCliExeName)
+    Name: "addtopath"; Description: "Add rnote-cli to PATH (requires logging in again)"; Flags: checkedonce
+#endif
 
 [Files]
 ; DLLs
@@ -85,7 +87,9 @@ Source: "{#meson_source_root}\crates\rnote-engine\data\sounds\LICENSES.md"; Dest
 
 ; Binary
 Source: "{#meson_build_root}\{#MyAppExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
-Source: "{#meson_build_root}\{#MyAppCliExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
+#if Defined(MyAppCliExeName)
+    Source: "{#meson_build_root}\{#MyAppCliExeName}"; DestDir: "{app}\bin\"; Flags: ignoreversion
+#endif
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocKey}"; ValueType: string; ValueName: ""; ValueData: "{#MyAppAssocName}"; Flags: uninsdeletekey
@@ -100,3 +104,65 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks
 
 [Run]
 Filename: "{app}\bin\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+#if Defined(MyAppCliExeName)
+    procedure EnvAddPath(Path: string);
+    var
+        Paths: string;
+    begin
+        { Retrieve current path (use empty string if entry does not exists) }
+        { Taken from https://github.com/mentebinaria/retoolkit/blob/f86f5e608836b898da36a3787eb5135d2baef976/src/installer/retoolkit.iss }
+        if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths)
+        then Paths := '';
+
+        { Skip if string already found in path }
+        if Pos(';' + Uppercase(Path) + ';', ';' + Uppercase(Paths) + ';') > 0 then exit;
+
+        { App string to the end of the path variable }
+        Paths := Paths + ';'+ Path //+';'
+
+        { Overwrite (or create if missing) path environment variable }
+        if RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths)
+        then Log(Format('The [%s] added to PATH: [%s]', [Path, Paths]))
+        else Log(Format('Error while adding the [%s] to PATH: [%s]', [Path, Paths]));
+    end;
+
+    procedure EnvRemovePath(Path: string);
+    var
+        Paths: string;
+        P: Integer;
+    begin
+        { Skip if registry entry not exists }
+        if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths) then
+            exit;
+
+        { Skip if string not found in path }
+        P := Pos(';' + Uppercase(Path) + ';', ';' + Uppercase(Paths) + ';');
+        if P = 0 then exit;
+
+        { Update path variable }
+        Delete(Paths, P - 1, Length(Path) + 1);
+
+        { Overwrite path environment variable }
+        if RegWriteStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Paths)
+        then Log(Format('The [%s] removed from PATH: [%s]', [Path, Paths]))
+        else Log(Format('Error while removing the [%s] from PATH: [%s]', [Path, Paths]));
+    end;
+
+    procedure CurStepChanged(CurStep: TSetupStep);
+    begin
+        if CurStep = ssPostInstall then
+        begin
+            if WizardIsTaskSelected('addtopath') then EnvAddPath(ExpandConstant('{app}\bin\'));
+        end
+    end;
+
+    procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+    begin
+        if CurUninstallStep = usPostUninstall then
+        begin
+            EnvRemovePath(ExpandConstant('{app}\bin\'));
+        end
+    end;
+#endif

@@ -253,13 +253,6 @@ if build_ui == true
     inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
     inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
     inno_script_conf.set_quoted('UI_OUTPUT', ui_output)
-
-    if host_machine.system() == 'windows'
-        cli_output = cli_name + '.exe'
-    else
-        cli_output = cli_name
-    endif
-    inno_script_conf.set_quoted('CLI_OUTPUT', cli_output)
     inno_script_conf.set_quoted('INSTALLER_NAME', win_installer_name)
 
     inno_script = configure_file(
@@ -267,6 +260,12 @@ if build_ui == true
         output: 'rnote_inno.iss',
         configuration: inno_script_conf,
     )
+
+    if build_cli and host_machine.system() == 'windows' 
+        define_cli_output = '/DMyAppCliExeName=' + cli_name + '.exe'
+    else
+        define_cli_output = ''    
+    endif
 
     if host_machine.system() == 'windows'
         # build installer
@@ -284,6 +283,7 @@ if build_ui == true
                 app_id,
                 ui_output,
                 meson.project_build_root() / '@INPUT@',
+                define_cli_output,
             ],
             build_by_default: false,
             depends: app_cargo_build,

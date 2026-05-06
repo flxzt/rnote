@@ -10,7 +10,7 @@ name: Generate Dist Archive
 jobs:
   dist:
     runs-on: ubuntu-24.04
-    container: fedora:42
+    container: fedora:44
     permissions:
       # needed for uploading release artifact
       contents: write
@@ -23,7 +23,7 @@ jobs:
           dnf install -y git gh
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -32,7 +32,9 @@ jobs:
 
       - name: Install rust toolchain
         id: toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
+        with:
+          toolchain: 1.95
 
       - name: Prerequisites
         run: |
@@ -52,7 +54,7 @@ jobs:
           echo "sha=$(basename _mesonbuild/meson-dist/rnote-*.tar.xz.sha256sum | tail -n1)" >> $GITHUB_OUTPUT
 
       - name: Upload dist archive (workflow artifact)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rnote-dist-archive-artifact
           path: |

@@ -262,8 +262,7 @@ impl TextStyle {
         //
         // see https://docs.rs/piet/latest/piet/trait.TextLayoutBuilder.html#tymethod.range_attribute
         let mut ranged_text_attributes = self.ranged_text_attributes.clone();
-        ranged_text_attributes
-            .sort_unstable_by(|first, second| first.range.start.cmp(&second.range.start));
+        ranged_text_attributes.sort_unstable_by_key(|first| first.range.start);
 
         // Apply ranged attributes
         for (range, piet_attr) in ranged_text_attributes

@@ -261,10 +261,10 @@ if build_ui == true
         configuration: inno_script_conf,
     )
 
-    if build_cli and host_machine.system() == 'windows' 
+    if build_cli and host_machine.system() == 'windows'
         define_cli_output = '/DMyAppCliExeName=' + cli_name + '.exe'
     else
-        define_cli_output = ''    
+        define_cli_output = ''
     endif
 
     if host_machine.system() == 'windows'

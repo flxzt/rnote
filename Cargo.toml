@@ -36,6 +36,8 @@ futures = "0.3.31"
 geo = "0.32.0"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
 gio = "0.21.1"
+glam = { version = "0.32.1", features = ["serde"] }
+glamx = { version = "0.2.0", features = ["serde"] }
 glib = "0.21.1"
 glib-build-tools = "0.21.0"
 gtk4 = { version = "0.10.0", features = ["v4_18"] }
@@ -57,7 +59,6 @@ ink-stroke-modeler-rs = "0.1.0"
 itertools = "0.14.0"
 kurbo = "0.11.2"
 librsvg = "=2.61"
-nalgebra = { version = "0.34.0", features = ["serde-serialize"] }
 notify-debouncer-full = "0.7.0"
 num-derive = "0.4.2"
 num-traits = "0.2.19"
@@ -65,7 +66,7 @@ numeric-sort = "0.1.5"
 once_cell = "1.21"
 open = "5.3"
 palette = "0.7.6"
-parry2d-f64 = { version = "0.25.3", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.26.0", features = ["serde-serialize"] }
 path-absolutize = "3.1"
 piet = "0.8.0"
 piet-cairo = "0.8.0"

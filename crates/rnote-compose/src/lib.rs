@@ -44,5 +44,4 @@ pub use style::Style;
 pub use transform::Transform;
 
 // Renames
-extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;

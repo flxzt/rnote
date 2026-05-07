@@ -24,13 +24,14 @@ chrono = { workspace = true }
 fs_extra = { workspace = true }
 futures = { workspace = true }
 gettext-rs = { workspace = true }
+glam = { workspace = true }
+glamx = { workspace = true }
 gtk4 = { workspace = true }
 hayro = { workspace = true }
 ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }
 kurbo = { workspace = true }
-nalgebra = { workspace = true }
 notify-debouncer-full = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }

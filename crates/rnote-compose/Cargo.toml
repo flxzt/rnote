@@ -13,9 +13,10 @@ anyhow = { workspace = true }
 approx = { workspace = true }
 base64 = { workspace = true }
 clap = { workspace = true, optional = true }
+glam = { workspace = true }
+glamx = { workspace = true }
 ink-stroke-modeler-rs = { workspace = true }
 kurbo = { workspace = true }
-nalgebra = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
 once_cell = { workspace = true }

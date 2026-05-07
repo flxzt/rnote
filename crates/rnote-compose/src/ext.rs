@@ -292,7 +292,7 @@ impl AabbExt for Aabb {
         )
     }
 
-    fn extend_right_and_bottom_by(&self, extend_by: nalgebra::Vector2<f64>) -> Aabb {
+    fn extend_right_and_bottom_by(&self, extend_by: na::Vector2<f64>) -> Aabb {
         Aabb::new(
             self.mins.coords.into(),
             (self.maxs.coords + extend_by).into(),

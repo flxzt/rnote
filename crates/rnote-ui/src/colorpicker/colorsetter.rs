@@ -218,14 +218,7 @@ mod imp {
 
             // bottom bar
             let foreground_color = if color_stroke.alpha() == 0.0 {
-                // accessing colors through the style context is deprecated,
-                // but this needs new color API to fetch theme colors.
-                // TODO: where is this set ? any way around this ?
-                #[allow(deprecated)]
-                self.obj()
-                    .style_context()
-                    .lookup_color("window_fg_color")
-                    .unwrap_or(gdk::RGBA::BLACK)
+                WidgetExt::color(&self.obj().clone().upcast::<Widget>())
             } else if color_stroke.into_compose_color().luma() < color::FG_LUMINANCE_THRESHOLD {
                 gdk::RGBA::WHITE
             } else {

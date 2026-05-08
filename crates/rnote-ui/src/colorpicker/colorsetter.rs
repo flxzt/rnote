@@ -15,6 +15,8 @@ mod imp {
     const REPEAT_RATIO: f32 = 1.8;
     const OFFSET_RATIO: f32 = 0.0;
     const ANIMATION_TIME_MS: u32 = 150;
+    // to keep synchronized with style.css.colorsetter.border-radius -1 
+    const BORDER_RADIUS: f32 = 1.0;
 
     use super::*;
 
@@ -156,6 +158,14 @@ mod imp {
             let height = self.obj().height();
 
             let bounds = graphene::Rect::new(0.0, 0.0, width as f32, height as f32);
+            let bounds_clipped = gtk4::gsk::RoundedRect::new(
+                bounds,
+                graphene::Size::new(BORDER_RADIUS, BORDER_RADIUS),
+                graphene::Size::new(BORDER_RADIUS, BORDER_RADIUS),
+                graphene::Size::new(BORDER_RADIUS, BORDER_RADIUS),
+                graphene::Size::new(BORDER_RADIUS, BORDER_RADIUS),
+            );
+            snapshot.push_rounded_clip(&bounds_clipped);
 
             let color_stroke = self.color.get();
             let mut color = self.color.get().clone();
@@ -233,7 +243,8 @@ mod imp {
                 BOTTOM_BAR_PROPORTION * (self.display_progress.get() as f32) * (height as f32),
             );
             snapshot.append_color(&foreground_color, &bounds_active);
-            
+            snapshot.pop();
+
             self.obj().queue_draw();
         }
     }

@@ -16,8 +16,8 @@ mod imp {
     const REPEAT_RATIO: f32 = 1.8;
     const OFFSET_RATIO: f32 = 0.0;
     const ANIMATION_TIME_MS: u32 = 150;
-    // to keep synchronized with style.css.colorpad.border-radius
-    const BORDER_RADIUS: f32 = 4.0;
+    // to keep synchronized with style.css.colorpad.border-radius -1 
+    const BORDER_RADIUS: f32 = 3.0;
 
     use super::*;
 

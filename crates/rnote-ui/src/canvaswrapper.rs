@@ -415,9 +415,19 @@ mod imp {
                     touch_drag_start,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
-                    move |_, _, _| {
+                    move |gesture, _, _| {
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
+
+                        if let Some(event) = gesture.current_event()
+                            && event.device_tool().is_some()
+                        {
+                            let pressure = event.axis(gdk::AxisUse::Pressure).unwrap_or(0.0);
+                            if pressure <= 0.0 {
+                                gesture.set_state(EventSequenceState::Denied);
+                                return;
+                            }
+                        }
 
                         touch_drag_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
@@ -459,7 +469,19 @@ mod imp {
                         mouse_drag_start,
                         #[weak(rename_to=canvaswrapper)]
                         obj,
-                        move |_, _, _| {
+                        move |gesture, _, _| {
+                            // Stylus hover can trigger button events; ignore pan without pressure.
+                            if let Some(event) = gesture.current_event()
+                                && event.device_tool().is_some()
+                            {
+                                let pressure =
+                                    event.axis(gdk::AxisUse::Pressure).unwrap_or(0.0);
+                                if pressure <= 0.0 {
+                                    gesture.set_state(EventSequenceState::Denied);
+                                    return;
+                                }
+                            }
+
                             mouse_drag_start
                                 .set(canvaswrapper.canvas().engine_ref().camera.offset());
                         }

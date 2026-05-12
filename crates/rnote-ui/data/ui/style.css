@@ -88,7 +88,7 @@
     color: @colorsetter_fg_color;
     background-size: 18px 18px;
     background-position: 0px 0px, 9px 9px;
-    border: 1px solid @borders;
+    border: 1px solid gray;
     border-radius: 2px; 
     transition: all 0.15s ease-out;
 }

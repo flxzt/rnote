@@ -109,6 +109,12 @@
                       <attribute name="action">win.active-tab-close</attribute>
                     </item>
                   </section>
+                  <section>
+                    <item>
+                      <attribute name="label" translatable="yes">_Move to New Window</attribute>
+                      <attribute name="action">win.active-tab-move-to-new-window</attribute>
+                    </item>
+                  </section>
                 </menu>
               </object>
             </property>

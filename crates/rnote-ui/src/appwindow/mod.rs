@@ -205,7 +205,7 @@ impl RnAppWindow {
     }
 
     /// Must be called after application is associated with the window else the init will panic
-    pub(crate) fn init(&self, add_initial_tab:bool) {
+    pub(crate) fn init(&self, add_initial_tab: bool) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
@@ -337,6 +337,18 @@ impl RnAppWindow {
     /// Get the active (selected) tab page.
     pub(crate) fn active_tab_page(&self) -> Option<adw::TabPage> {
         self.imp().overlays.tabview().selected_page()
+    }
+
+    pub(crate) fn transfer_page(
+        &self,
+        page: &adw::TabPage,
+        other_view: &adw::TabView,
+        position: i32,
+    ) {
+        self.imp()
+            .overlays
+            .tabview()
+            .transfer_page(page, other_view, position);
     }
 
     pub(crate) fn n_tabs_open(&self) -> usize {

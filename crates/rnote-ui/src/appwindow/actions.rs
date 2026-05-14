@@ -131,6 +131,9 @@ impl RnAppWindow {
         self.add_action(&action_active_tab_move_right);
         let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
         self.add_action(&action_active_tab_close);
+        let action_active_tab_move_window =
+            gio::SimpleAction::new("active-tab-move-to-new-window", None);
+        self.add_action(&action_active_tab_move_window);
         let action_drawing_pad_pressed_button_0 =
             gio::SimpleAction::new("drawing-pad-pressed-button-0", None);
         self.add_action(&action_drawing_pad_pressed_button_0);
@@ -379,6 +382,21 @@ impl RnAppWindow {
                     appwindow.close();
                 } else {
                     appwindow.close_tab_request(&active_tab_page);
+                }
+            }
+        ));
+
+        action_active_tab_move_window.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                use crate::RnApp;
+                if let Some(active_tab_page) = appwindow.active_tab_page() {
+                    if let Some(rn_app_out) = appwindow.application() {
+                        let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
+                        let tab_view = rnapp.new_appwindow_init_return_tab();
+                        appwindow.transfer_page(&active_tab_page, &tab_view, 0);
+                    }
                 }
             }
         ));

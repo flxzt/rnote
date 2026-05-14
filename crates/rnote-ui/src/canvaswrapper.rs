@@ -422,8 +422,8 @@ mod imp {
                         if let Some(event) = gesture.current_event()
                             && event.device_tool().is_some()
                         {
-                            let pressure = event.axis(gdk::AxisUse::Pressure).unwrap_or(0.0);
-                            if pressure <= 0.0 {
+                            let pressure = event.axis(gdk::AxisUse::Pressure);
+                            if pressure.is_some_and(|p| p <= 0.0) {
                                 gesture.set_state(EventSequenceState::Denied);
                                 return;
                             }
@@ -474,9 +474,8 @@ mod imp {
                             if let Some(event) = gesture.current_event()
                                 && event.device_tool().is_some()
                             {
-                                let pressure =
-                                    event.axis(gdk::AxisUse::Pressure).unwrap_or(0.0);
-                                if pressure <= 0.0 {
+                                let pressure = event.axis(gdk::AxisUse::Pressure);
+                                if pressure.is_some_and(|p| p <= 0.0) {
                                     gesture.set_state(EventSequenceState::Denied);
                                     return;
                                 }

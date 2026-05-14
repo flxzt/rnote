@@ -205,7 +205,7 @@ impl RnAppWindow {
     }
 
     /// Must be called after application is associated with the window else the init will panic
-    pub(crate) fn init(&self) {
+    pub(crate) fn init(&self, add_initial_tab:bool) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
@@ -235,7 +235,9 @@ impl RnAppWindow {
         }
 
         // An initial tab (canvas).
-        self.add_initial_tab();
+        if add_initial_tab {
+            self.add_initial_tab();
+        }
 
         // Anything that needs to be done right before showing the appwindow
 

@@ -154,7 +154,7 @@ mod imp {
             }
         }
 
-        pub(crate) fn new_appwindow_init_return_tab(&self)->adw::TabView{
+        pub(crate) fn new_appwindow_init_return_tab(&self) -> adw::TabView {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
             appwindow.init(false);
 
@@ -166,9 +166,7 @@ mod imp {
             window_group.add_window(&appwindow);
 
             appwindow.present();
-            // this isn't enough
-            // (rnote:11838): Gtk-CRITICAL **: 14:08:17.296: New application windows must be added after the GApplication::startup signal has been emitted.
-            return appwindow.overlays().tabview()
+            return appwindow.overlays().tabview();
         }
     }
 }
@@ -208,5 +206,9 @@ impl RnApp {
 
     pub(crate) fn new_appwindow_init_show(&self) {
         self.imp().new_appwindow_init_show(None);
+    }
+
+    pub(crate) fn new_appwindow_init_return_tab(&self) -> adw::TabView {
+        self.imp().new_appwindow_init_return_tab()
     }
 }

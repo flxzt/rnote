@@ -331,12 +331,20 @@ impl RnOverlays {
             }
         ));
 
-        imp.tabview.connect_create_window(clone!( 
+        imp.tabview.connect_create_window(clone!(
+            #[weak]
+            appwindow,
+            #[upgrade_or_default]
             move |_tab| {
-            use crate::RnApp;
-            let app = RnApp::new();
-            Some(app.imp().new_appwindow_init_return_tab())
-        }));
+                use crate::RnApp;
+                if let Some(rn_app_out) = appwindow.application() {
+                    let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
+                    Some(rnapp.new_appwindow_init_return_tab())
+                } else {
+                    None
+                }
+            }
+        ));
     }
 
     pub(crate) fn progressbar_start_pulsing(&self) {

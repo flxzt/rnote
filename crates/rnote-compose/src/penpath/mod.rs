@@ -307,33 +307,20 @@ pub(crate) fn no_subsegments_for_segment_len(len: f64) -> i32 {
     }
 }
 
-/// Projection parameter t of point `p` onto segment `a..b`.
-fn projection_t(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
+/// Projection parameter of point `p` onto segment `a..b`.
+fn segment_projection(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
     let ab = b - a;
     let ab_len_sq = ab.norm_squared();
 
     if ab_len_sq == 0.0 {
-        return 0.5; // if a == b, use midpoint for pressure interpolation
+        // if a == b, interpret as midpoint (for pressure interpolation)
+        return 0.5; 
     }
 
     ((p - a).dot(&ab) / ab_len_sq).clamp(0.0, 1.0)
 }
 
-/// Squared distance from point `p` to the segment `a..b`.
-fn point_segment_distance_sq(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
-    let t = projection_t(p, a, b);
-    let projection = a + (b - a) * t;
-    (p - projection).norm_squared()
-}
-
-/// Absolute deviation of point `p`'s pressure from linear interpolation between the pressures of points `a` and `b` at the projection of `p` onto the segment `a..b`.
-fn pressure_deviation_on_segment(p: &Element, a: &Element, b: &Element) -> f64 {
-    let t = projection_t(p.pos, a.pos, b.pos);
-    let interpolated_pressure = a.pressure + (b.pressure - a.pressure) * t;
-    (p.pressure - interpolated_pressure).abs()
-}
-
-/// Modified Ramer-Douglas-Peucker simplification that additionally considerspressure.
+/// Modified Ramer-Douglas-Peucker simplification that additionally considers pressure.
 /// Returns a mask for which points to keep.
 ///
 /// https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
@@ -358,12 +345,20 @@ fn ramer_douglas_peucker(points: &[Element], geometry_epsilon: f64, pressure_eps
         let mut max_score_index = start_index;
 
         for point_index in (start_index + 1)..end_index {
-            let geometry_score =
-                point_segment_distance_sq(points[point_index].pos, start_point.pos, end_point.pos)
-                    / geometry_epsilon_sq;
+            let current_point = &points[point_index];
 
+            let t = segment_projection(current_point.pos, start_point.pos, end_point.pos);
+            let projected_point = start_point.pos + t * (end_point.pos - start_point.pos);
+            let projected_point_pressure = start_point.pressure + t * (end_point.pressure - start_point.pressure);
+
+            // squared distance to the closest point on the segment
+            let geometry_score =
+                (current_point.pos - projected_point).norm_squared()
+                    / geometry_epsilon_sq;
+                    
+            // pressure deviation from the interpolated pressure of the closest point on the segment
             let pressure_score =
-                pressure_deviation_on_segment(&points[point_index], start_point, end_point)
+                (current_point.pressure - projected_point_pressure).abs()
                     / pressure_epsilon;
 
             let combined_score = geometry_score.max(pressure_score);

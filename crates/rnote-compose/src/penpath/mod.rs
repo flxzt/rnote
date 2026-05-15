@@ -143,18 +143,24 @@ impl PenPath {
         Some(Self { start, segments })
     }
 
-    /// Simplify this path in place using Ramer-Douglas-Peucker.
-    pub fn simplify_rdp(&mut self, epsilon: f64) {
+    /// Simplify this path in place.
+    pub fn simplify(&mut self, geometry_epsilon: f64, pressure_epsilon: f64) {
         let elements = self.as_elements();
-        let simplified = ramer_douglas_peucker(&elements, epsilon);
+
+        if elements.len() < 3 {
+            return;
+        }
+
+        let keep_mask = ramer_douglas_peucker(&elements, geometry_epsilon, pressure_epsilon);
+        let simplified_elements = redistribute_pressure(&elements, &keep_mask);
 
         debug!(
             "simplified path from {} to {} elements",
             elements.len(),
-            simplified.len()
+            simplified_elements.len()
         );
 
-        if let Some(path) = Self::try_from_elements(simplified.into_iter()) {
+        if let Some(path) = Self::try_from_elements(simplified_elements.into_iter()) {
             *self = path;
         }
     }
@@ -301,68 +307,129 @@ pub(crate) fn no_subsegments_for_segment_len(len: f64) -> i32 {
     }
 }
 
-/// Squared distance from point p to the line segment ab.
-fn point_segment_distance_sq(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
+/// Projection parameter t of point `p` onto segment `a..b`.
+fn projection_t(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
     let ab = b - a;
     let ab_len_sq = ab.norm_squared();
 
     if ab_len_sq == 0.0 {
-        return (p - a).norm_squared();
+        return 0.5; // if a == b, use midpoint for pressure interpolation
     }
 
-    let t = ((p - a).dot(&ab) / ab_len_sq).clamp(0.0, 1.0);
-    (p - (a + ab * t)).norm_squared()
+    ((p - a).dot(&ab) / ab_len_sq).clamp(0.0, 1.0)
 }
 
-/// Ramer-Douglas-Peucker simplification for a slice of `Element`.
+/// Squared distance from point `p` to the segment `a..b`.
+fn point_segment_distance_sq(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
+    let t = projection_t(p, a, b);
+    let projection = a + (b - a) * t;
+    (p - projection).norm_squared()
+}
+
+/// Absolute deviation of point `p`'s pressure from linear interpolation between the pressures of points `a` and `b` at the projection of `p` onto the segment `a..b`.
+fn pressure_deviation_on_segment(p: &Element, a: &Element, b: &Element) -> f64 {
+    let t = projection_t(p.pos, a.pos, b.pos);
+    let interpolated_pressure = a.pressure + (b.pressure - a.pressure) * t;
+    (p.pressure - interpolated_pressure).abs()
+}
+
+/// Modified Ramer-Douglas-Peucker simplification that additionally considerspressure.
+/// Returns a mask for which points to keep.
 ///
 /// https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
-fn ramer_douglas_peucker(points: &[Element], epsilon: f64) -> Vec<Element> {
-    if points.len() < 3 {
-        return points.to_vec();
-    }
+fn ramer_douglas_peucker(points: &[Element], geometry_epsilon: f64, pressure_epsilon: f64) -> Vec<bool> {
+    let geometry_epsilon_sq = geometry_epsilon * geometry_epsilon;
 
-    let epsilon_sq = epsilon * epsilon;
+    let mut keep_mask = vec![false; points.len()];
+    keep_mask[0] = true;
+    keep_mask[points.len() - 1] = true;
 
-    // marks points that should be kept
-    let mut keep = vec![false; points.len()];
-    keep[0] = true;
-    keep[points.len() - 1] = true;
+    let mut ranges_stack = vec![(0, points.len() - 1)];
 
-    // stack of ranges [start, end]
-    let mut stack = vec![(0, points.len() - 1)];
-
-    while let Some((start_idx, end_idx)) = stack.pop() {
-        if end_idx <= start_idx + 1 {
+    while let Some((start_index, end_index)) = ranges_stack.pop() {
+        if end_index <= start_index + 1 {
             continue;
         }
 
-        let start = points[start_idx].pos;
-        let end = points[end_idx].pos;
+        let start_point = &points[start_index];
+        let end_point = &points[end_index];
 
-        let mut max_distance = 0.0;
-        let mut max_distance_index = 0;
+        let mut max_score = 0.0;
+        let mut max_score_index = start_index;
 
-        for i in (start_idx + 1)..end_idx {
-            let distance = point_segment_distance_sq(points[i].pos, start, end);
+        for point_index in (start_index + 1)..end_index {
+            let geometry_score =
+                point_segment_distance_sq(points[point_index].pos, start_point.pos, end_point.pos)
+                    / geometry_epsilon_sq;
 
-            if distance > max_distance {
-                max_distance = distance;
-                max_distance_index = i;
+            let pressure_score =
+                pressure_deviation_on_segment(&points[point_index], start_point, end_point)
+                    / pressure_epsilon;
+
+            let combined_score = geometry_score.max(pressure_score);
+
+            if combined_score > max_score {
+                max_score = combined_score;
+                max_score_index = point_index;
             }
         }
 
-        if max_distance > epsilon_sq {
-            keep[max_distance_index] = true;
-
-            stack.push((start_idx, max_distance_index));
-            stack.push((max_distance_index, end_idx));
+        if max_score > 1.0 {
+            keep_mask[max_score_index] = true;
+            ranges_stack.push((start_index, max_score_index));
+            ranges_stack.push((max_score_index, end_index));
         }
     }
 
-    points
+    keep_mask
+}
+
+/// Redistribute pressure from removed points to their neighboring kept points.
+fn redistribute_pressure(points: &[Element], keep_mask: &[bool]) -> Vec<Element> {
+    // build ordered kept indices
+    let kept_indices: Vec<usize> = keep_mask
         .iter()
-        .zip(keep)
-        .filter_map(|(point, keep)| keep.then_some(*point))
+        .enumerate()
+        .filter_map(|(idx, &keep)| keep.then_some(idx))
+        .collect();
+
+    let mut pressure_sums = vec![0.0; points.len()];
+    let mut pressure_weights = vec![0.0; points.len()];
+
+    let mut span_index = 0;
+    for point_index in 0..points.len() {
+        if keep_mask[point_index] {
+            continue;
+        }
+
+        while span_index + 1 < kept_indices.len() && point_index > kept_indices[span_index + 1] {
+            span_index += 1;
+        }
+
+        let left_index = kept_indices[span_index];
+        let right_index = kept_indices[span_index + 1];
+
+        let span_length = (right_index - left_index) as f64;
+        let t = (point_index - left_index) as f64 / span_length;
+        let left_weight = 1.0 - t;
+        let right_weight = t;
+
+        let pressure_value = points[point_index].pressure;
+        pressure_sums[left_index] += pressure_value * left_weight;
+        pressure_weights[left_index] += left_weight;
+        pressure_sums[right_index] += pressure_value * right_weight;
+        pressure_weights[right_index] += right_weight;
+    }
+
+    kept_indices
+        .into_iter()
+        .map(|index| {
+            let mut kept_point = points[index];
+            let weight = pressure_weights[index];
+            if weight > 0.0 {
+                kept_point.pressure = (pressure_sums[index] / weight).clamp(0.0, 1.0);
+            }
+            kept_point
+        })
         .collect()
 }

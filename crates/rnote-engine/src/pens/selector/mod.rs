@@ -198,10 +198,12 @@ impl PenBehaviour for Selector {
                                 "generated inkml :  {:?}",
                                 str::from_utf8(&inkml_bytes)
                             );
-                            clipboard_content.push((
-                                inkml_bytes.clone(),
-                                "application/x.windows.InkML Format".to_string(),
-                            ));
+                            if cfg!(target_os = "windows") {
+                                clipboard_content.push((
+                                    inkml_bytes.clone(),
+                                    "application/x.windows.InkML Format".to_string(),
+                                ));
+                            }
                             clipboard_content
                                 .push((inkml_bytes, "application/inkml+xml".to_string()));
                         }

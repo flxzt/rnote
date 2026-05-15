@@ -631,7 +631,7 @@ impl StrokeStore {
                 match stroke.as_ref() {
                     // Draw positions for brushstrokes
                     Stroke::BrushStroke(brushstroke) => {
-                        for element in brushstroke.path.clone().into_elements().iter() {
+                        for element in brushstroke.path.as_elements().iter() {
                             visual_debug::draw_pos_to_gtk_snapshot(
                                 snapshot,
                                 element.pos,

@@ -13,6 +13,7 @@ use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
+use tracing::debug;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "pen_path")]
@@ -118,10 +119,10 @@ impl PenPath {
     }
 
     /// extracts the elements from the path. the path shape will be lost, as only the actual input elements are returned.
-    pub fn into_elements(self) -> Vec<Element> {
+    pub fn as_elements(&self) -> Vec<Element> {
         let mut elements = vec![self.start];
 
-        elements.extend(self.segments.into_iter().map(|seg| match seg {
+        elements.extend(self.segments.iter().map(|seg| match seg {
             Segment::LineTo { end } => end,
             Segment::QuadBezTo { end, .. } => end,
             Segment::CubBezTo { end, .. } => end,
@@ -140,6 +141,22 @@ impl PenPath {
             .collect::<Vec<Segment>>();
 
         Some(Self { start, segments })
+    }
+
+    /// Simplify this path in place using Ramer-Douglas-Peucker.
+    pub fn simplify_rdp(&mut self, epsilon: f64) {
+        let elements = self.as_elements();
+        let simplified = ramer_douglas_peucker(&elements, epsilon);
+
+        debug!(
+            "simplified path from {} to {} elements",
+            elements.len(),
+            simplified.len()
+        );
+
+        if let Some(path) = Self::try_from_elements(simplified.into_iter()) {
+            *self = path;
+        }
     }
 
     /// Checks whether bounds collide with the path. If it does, it returns the indices of the colliding segments
@@ -282,4 +299,63 @@ pub(crate) fn no_subsegments_for_segment_len(len: f64) -> i32 {
         // avoiding huge amounts of hitboxes for large strokes that are drawn when zoomed out
         MAX_SUBSEGMENT_ELEMENTS
     }
+}
+
+/// Ramer-Douglas-Peucker simplification for a slice of `Element`.
+/// 
+/// https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
+fn ramer_douglas_peucker(points: &[Element], epsilon: f64) -> Vec<Element> {
+    if points.len() < 3 {
+        return points.to_vec();
+    }
+
+    // shortest distance from point p to the line segment ab
+    fn point_segment_distance(
+        p: na::Vector2<f64>,
+        a: na::Vector2<f64>,
+        b: na::Vector2<f64>,
+    ) -> f64 {
+        let ab = b - a;
+        let len_sq = ab.norm_squared();
+
+        if len_sq == 0.0 {
+            return (p - a).norm();
+        }
+
+        let t = ((p - a).dot(&ab) / len_sq).clamp(0.0, 1.0);
+        (p - (a + ab * t)).norm()
+    }
+
+    fn rdp_recursive(pts: &[Element], eps: f64, out: &mut Vec<Element>) {
+        if pts.len() < 3 {
+            out.extend_from_slice(pts);
+            return;
+        }
+
+        let start = pts.first().unwrap();
+        let end = pts.last().unwrap();
+
+        let mut max_distance = 0.0;
+        let mut max_distance_index = 0;
+        for i in 1..(pts.len() - 1) {
+            let d = point_segment_distance(pts[i].pos, start.pos, end.pos);
+            if d > max_distance {
+                max_distance = d;
+                max_distance_index = i;
+            }
+        }
+
+        if max_distance > eps {
+            rdp_recursive(&pts[..=max_distance_index], eps, out);
+            out.pop(); // remove duplicated midpoint
+            rdp_recursive(&pts[max_distance_index..], eps, out);
+        } else {
+            out.push(*start);
+            out.push(*end);
+        }
+    }
+
+    let mut out: Vec<Element> = Vec::with_capacity(points.len());
+    rdp_recursive(points, epsilon, &mut out);
+    out
 }

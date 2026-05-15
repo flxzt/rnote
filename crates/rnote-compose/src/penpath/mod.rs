@@ -301,61 +301,68 @@ pub(crate) fn no_subsegments_for_segment_len(len: f64) -> i32 {
     }
 }
 
+/// Squared distance from point p to the line segment ab.
+fn point_segment_distance_sq(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f64>) -> f64 {
+    let ab = b - a;
+    let ab_len_sq = ab.norm_squared();
+
+    if ab_len_sq == 0.0 {
+        return (p - a).norm_squared();
+    }
+
+    let t = ((p - a).dot(&ab) / ab_len_sq).clamp(0.0, 1.0);
+    (p - (a + ab * t)).norm_squared()
+}
+
 /// Ramer-Douglas-Peucker simplification for a slice of `Element`.
-/// 
+///
 /// https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
 fn ramer_douglas_peucker(points: &[Element], epsilon: f64) -> Vec<Element> {
     if points.len() < 3 {
         return points.to_vec();
     }
 
-    // shortest distance from point p to the line segment ab
-    fn point_segment_distance(
-        p: na::Vector2<f64>,
-        a: na::Vector2<f64>,
-        b: na::Vector2<f64>,
-    ) -> f64 {
-        let ab = b - a;
-        let len_sq = ab.norm_squared();
+    let epsilon_sq = epsilon * epsilon;
 
-        if len_sq == 0.0 {
-            return (p - a).norm();
+    // marks points that should be kept
+    let mut keep = vec![false; points.len()];
+    keep[0] = true;
+    keep[points.len() - 1] = true;
+
+    // stack of ranges [start, end]
+    let mut stack = vec![(0, points.len() - 1)];
+
+    while let Some((start_idx, end_idx)) = stack.pop() {
+        if end_idx <= start_idx + 1 {
+            continue;
         }
 
-        let t = ((p - a).dot(&ab) / len_sq).clamp(0.0, 1.0);
-        (p - (a + ab * t)).norm()
-    }
-
-    fn rdp_recursive(pts: &[Element], eps: f64, out: &mut Vec<Element>) {
-        if pts.len() < 3 {
-            out.extend_from_slice(pts);
-            return;
-        }
-
-        let start = pts.first().unwrap();
-        let end = pts.last().unwrap();
+        let start = points[start_idx].pos;
+        let end = points[end_idx].pos;
 
         let mut max_distance = 0.0;
         let mut max_distance_index = 0;
-        for i in 1..(pts.len() - 1) {
-            let d = point_segment_distance(pts[i].pos, start.pos, end.pos);
-            if d > max_distance {
-                max_distance = d;
+
+        for i in (start_idx + 1)..end_idx {
+            let distance = point_segment_distance_sq(points[i].pos, start, end);
+
+            if distance > max_distance {
+                max_distance = distance;
                 max_distance_index = i;
             }
         }
 
-        if max_distance > eps {
-            rdp_recursive(&pts[..=max_distance_index], eps, out);
-            out.pop(); // remove duplicated midpoint
-            rdp_recursive(&pts[max_distance_index..], eps, out);
-        } else {
-            out.push(*start);
-            out.push(*end);
+        if max_distance > epsilon_sq {
+            keep[max_distance_index] = true;
+
+            stack.push((start_idx, max_distance_index));
+            stack.push((max_distance_index, end_idx));
         }
     }
 
-    let mut out: Vec<Element> = Vec::with_capacity(points.len());
-    rdp_recursive(points, epsilon, &mut out);
-    out
+    points
+        .iter()
+        .zip(keep)
+        .filter_map(|(point, keep)| keep.then_some(*point))
+        .collect()
 }

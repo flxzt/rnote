@@ -10,7 +10,9 @@ use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::pensconfig::BrushConfig;
-use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
+use rnote_engine::pens::pensconfig::brushconfig::{
+    BrushStyle, SimplificationMode, SimplificationQuality, SolidOptions,
+};
 
 mod imp {
     use super::*;
@@ -46,6 +48,10 @@ mod imp {
         pub(crate) brush_buildertype_curved: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) brush_buildertype_modeled: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub(crate) simplification_mode_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub(crate) simplification_quality_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -155,6 +161,33 @@ impl RnBrushPage {
                 .brush_buildertype_listbox
                 .select_row(Some(&*self.imp().brush_buildertype_modeled)),
         }
+    }
+
+    pub(crate) fn simplification_mode(&self) -> SimplificationMode {
+        SimplificationMode::try_from(self.imp().simplification_mode_row.get().selected()).unwrap()
+    }
+
+    pub(crate) fn set_simplification_mode(&self, mode: SimplificationMode) {
+        let position = mode.to_u32().unwrap();
+
+        self.imp()
+            .simplification_mode_row
+            .get()
+            .set_selected(position);
+    }
+
+    pub(crate) fn simplification_quality(&self) -> SimplificationQuality {
+        SimplificationQuality::try_from(self.imp().simplification_quality_row.get().selected())
+            .unwrap()
+    }
+
+    pub(crate) fn set_simplification_quality(&self, quality: SimplificationQuality) {
+        let position = quality.to_u32().unwrap();
+
+        self.imp()
+            .simplification_quality_row
+            .get()
+            .set_selected(position);
     }
 
     pub(crate) fn solidstyle_pressure_curve(&self) -> PressureCurve {
@@ -363,6 +396,45 @@ impl RnBrushPage {
             }
         ));
 
+        // Simplification
+        // Mode
+        imp.simplification_mode_row
+            .get()
+            .connect_selected_notify(clone!(
+                #[weak(rename_to=brushpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .brush_config
+                        .simplification_options
+                        .mode = brushpage.simplification_mode();
+                }
+            ));
+
+        // Quality
+        imp.simplification_quality_row
+            .get()
+            .connect_selected_notify(clone!(
+                #[weak(rename_to=brushpage)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    appwindow
+                        .engine_config()
+                        .write()
+                        .pens_config
+                        .brush_config
+                        .simplification_options
+                        .quality = brushpage.simplification_quality();
+                }
+            ));
+
         // Solid style
         // Pressure curve
         imp.solidstyle_pressure_curves_row
@@ -443,6 +515,8 @@ impl RnBrushPage {
 
         self.set_brush_style(brush_config.style);
         self.set_buildertype(brush_config.builder_type);
+        self.set_simplification_mode(brush_config.simplification_options.mode);
+        self.set_simplification_quality(brush_config.simplification_options.quality);
 
         match brush_config.style {
             BrushStyle::Marker => {

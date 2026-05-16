@@ -145,8 +145,8 @@ impl PenPath {
         Some(Self { start, segments })
     }
 
-    /// Simplify this path in place.
-    pub fn simplify(&mut self, geometry_epsilon: f64, pressure_epsilon: f64) {
+    /// Simplify this path in place as a polyline that approximates the original path.
+    pub fn simplify_polyline(&mut self, geometry_epsilon: f64, pressure_epsilon: f64) {
         let elements = self.as_elements();
 
         if elements.len() < 3 {
@@ -157,7 +157,7 @@ impl PenPath {
         let simplified_elements = apply_mask_redistribute_pressure(&elements, &keep_mask);
 
         debug!(
-            "simplified path from {} to {} elements",
+            "simplified path from {} to {} elements (polyline)",
             elements.len(),
             simplified_elements.len()
         );

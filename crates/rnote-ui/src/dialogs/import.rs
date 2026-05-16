@@ -289,7 +289,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         .pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
-    pdf_import_columns_row.set_value(pdf_import_prefs.columns);
+    pdf_import_columns_row.set_value(pdf_import_prefs.columns as f64);
     pdf_import_width_row.set_value(pdf_import_prefs.page_width_perc);
     match pdf_import_prefs.pages_type {
         PdfImportPagesType::Bitmap => {
@@ -402,7 +402,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                 .write()
                 .import_prefs
                 .pdf_import_prefs
-                .columns = row.value();
+                .columns = row.value() as u32;
         }
     ));
 

@@ -100,7 +100,7 @@ impl RnCanvas {
         let widget_flags = self.engine_mut().import_generated_content(
             vec![(Stroke::VectorImage(vectorimage), None)],
             false,
-            1.0,
+            1,
         );
 
         self.emit_handle_widget_flags(widget_flags);
@@ -125,7 +125,7 @@ impl RnCanvas {
         let widget_flags = self.engine_mut().import_generated_content(
             vec![(Stroke::BitmapImage(bitmapimage), None)],
             false,
-            1.0,
+            1,
         );
 
         self.emit_handle_widget_flags(widget_flags);

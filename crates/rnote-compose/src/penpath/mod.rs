@@ -9,7 +9,7 @@ pub use segment::Segment;
 
 // Imports
 use crate::ext::{KurboShapeExt, Vector2Ext};
-use crate::penpath::simplification::{apply_mask_redistribute_pressure, ramer_douglas_peucker};
+use crate::penpath::simplification::ramer_douglas_peucker;
 use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
 use crate::transform::Transformable;
 use kurbo::Shape;
@@ -148,13 +148,8 @@ impl PenPath {
     /// Simplify this path in place as a polyline that approximates the original path.
     pub fn simplify_polyline(&mut self, geometry_epsilon: f64, pressure_epsilon: f64) {
         let elements = self.as_elements();
-
-        if elements.len() < 3 {
-            return;
-        }
-
-        let keep_mask = ramer_douglas_peucker(&elements, geometry_epsilon, pressure_epsilon);
-        let simplified_elements = apply_mask_redistribute_pressure(&elements, &keep_mask);
+        let simplified_elements =
+            ramer_douglas_peucker(&elements, geometry_epsilon, pressure_epsilon);
 
         debug!(
             "simplified path from {} to {} elements (polyline)",

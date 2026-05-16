@@ -14,14 +14,18 @@ fn segment_projection(p: na::Vector2<f64>, a: na::Vector2<f64>, b: na::Vector2<f
 }
 
 /// Modified Ramer-Douglas-Peucker simplification that additionally considers pressure.
-/// Returns a mask for which points to keep.
+/// Returns the optimized polyline elements that approximate the original path.
 ///
 /// https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
 pub(crate) fn ramer_douglas_peucker(
     points: &[Element],
     geometry_epsilon: f64,
     pressure_epsilon: f64,
-) -> Vec<bool> {
+) -> Vec<Element> {
+    if points.len() < 3 {
+        return points.to_vec();
+    }
+
     let geometry_epsilon_sq = geometry_epsilon * geometry_epsilon;
 
     let mut keep_mask = vec![false; points.len()];
@@ -73,57 +77,8 @@ pub(crate) fn ramer_douglas_peucker(
     }
 
     keep_mask
-}
-
-/// Redistribute pressure from removed points to their neighboring kept points.
-pub(crate) fn apply_mask_redistribute_pressure(
-    points: &[Element],
-    keep_mask: &[bool],
-) -> Vec<Element> {
-    // build ordered kept indices
-    let kept_indices: Vec<usize> = keep_mask
         .iter()
-        .enumerate()
-        .filter_map(|(idx, &keep)| keep.then_some(idx))
-        .collect();
-
-    let mut pressure_sums = vec![0.0; points.len()];
-    let mut pressure_weights = vec![0.0; points.len()];
-
-    let mut span_index = 0;
-    for point_index in 0..points.len() {
-        if keep_mask[point_index] {
-            continue;
-        }
-
-        while span_index + 1 < kept_indices.len() && point_index > kept_indices[span_index + 1] {
-            span_index += 1;
-        }
-
-        let left_index = kept_indices[span_index];
-        let right_index = kept_indices[span_index + 1];
-
-        let span_length = (right_index - left_index) as f64;
-        let t = (point_index - left_index) as f64 / span_length;
-        let left_weight = 1.0 - t;
-        let right_weight = t;
-
-        let pressure_value = points[point_index].pressure;
-        pressure_sums[left_index] += pressure_value * left_weight;
-        pressure_weights[left_index] += left_weight;
-        pressure_sums[right_index] += pressure_value * right_weight;
-        pressure_weights[right_index] += right_weight;
-    }
-
-    kept_indices
-        .into_iter()
-        .map(|index| {
-            let mut kept_point = points[index];
-            let weight = pressure_weights[index];
-            if weight > 0.0 {
-                kept_point.pressure = (pressure_sums[index] / weight).clamp(0.0, 1.0);
-            }
-            kept_point
-        })
+        .zip(points.iter())
+        .filter_map(|(&keep, point)| keep.then_some(*point))
         .collect()
 }

@@ -11,11 +11,13 @@
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="export_doc_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="export_doc_button_confirm">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Export</property>
                 <property name="sensitive">false</property>
                 <style>
@@ -180,11 +182,13 @@ are cut into pages</property>
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="export_doc_pages_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="export_doc_pages_button_confirm">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Export</property>
                 <property name="sensitive">false</property>
                 <style>
@@ -420,11 +424,13 @@ to the actual size on the document</property>
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="export_selection_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="export_selection_button_confirm">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Export</property>
                 <property name="sensitive">false</property>
                 <style>

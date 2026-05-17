@@ -11,11 +11,13 @@
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="import_pdf_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="import_pdf_button_confirm">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Import</property>
                 <style>
                   <class name="suggested-action" />
@@ -204,11 +206,13 @@ to the actual size on the document</property>
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="import_xopp_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="import_xopp_button_confirm">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Import</property>
                 <style>
                   <class name="suggested-action" />

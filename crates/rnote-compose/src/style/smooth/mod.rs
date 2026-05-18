@@ -397,6 +397,37 @@ impl Composer<SmoothOptions> for crate::Shape {
     }
 }
 
+fn append_arc_between_points(
+    path: &mut kurbo::BezPath,
+    center: kurbo::Point,
+    start: kurbo::Point,
+    end: kurbo::Point,
+    direction: kurbo::Vec2,
+) {
+    let start_vector = start - center;
+    let end_vector = end - center;
+
+    let radius = start_vector.length();
+    let start_angle = start_vector.angle();
+    let end_angle = end_vector.angle();
+
+    let short_sweep = (end_angle - start_angle + std::f64::consts::PI)
+        .rem_euclid(std::f64::consts::TAU)
+        - std::f64::consts::PI;
+
+    let mid_angle = start_angle + short_sweep * 0.5;
+    let mid_direction = kurbo::Vec2::new(mid_angle.cos(), mid_angle.sin());
+
+    let sweep = if mid_direction.dot(direction) >= 0.0 {
+        short_sweep
+    } else {
+        short_sweep - std::f64::consts::TAU * short_sweep.signum()
+    };
+
+    let arc = kurbo::Arc::new(center, (radius, radius), start_angle, sweep, 0.0);
+    path.extend(arc.append_iter(0.1));
+}
+
 /// Composes lines with variable width. Must be drawn with only a fill.
 fn compose_lines_variable_width(
     lines: &[Line],
@@ -414,29 +445,53 @@ fn compose_lines_variable_width(
         return kurbo::BezPath::new();
     }
 
-    let (pos_offset_coords, neg_offset_coords): (Vec<_>, Vec<_>) = lines
-        .iter()
-        .enumerate()
-        .flat_map(|(i, line)| {
-            let line_start_width = start_width
-                + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_lines as u32));
-            let line_end_width = start_width
-                + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_lines as u32));
+    // For each line we compute the two tangent directions that connect the circles centered at
+    // the line endpoints. This yields tangential joins between differing radii.
+    let mut pos_offset_coords: Vec<_> = Vec::with_capacity(n_lines * 2);
+    let mut neg_offset_coords: Vec<_> = Vec::with_capacity(n_lines * 2);
 
-            let dir_orth_unit = (line.end - line.start).orth_unit();
+    for (i, line) in lines.iter().enumerate() {
+        let t_start = i as f64 / n_lines as f64;
+        let t_end = (i + 1) as f64 / n_lines as f64;
 
-            [
-                (
-                    line.start + dir_orth_unit * line_start_width * 0.5,
-                    line.start - dir_orth_unit * line_start_width * 0.5,
-                ),
-                (
-                    line.end + dir_orth_unit * line_end_width * 0.5,
-                    line.end - dir_orth_unit * line_end_width * 0.5,
-                ),
-            ]
-        })
-        .unzip();
+        let start_radius = 0.5 * (start_width + (end_width - start_width) * t_start);
+        let end_radius = 0.5 * (start_width + (end_width - start_width) * t_end);
+
+        let segment = line.end - line.start;
+        let segment_length = segment.magnitude();
+
+        if segment_length == 0.0 {
+            continue;
+        }
+
+        let segment_dir = segment / segment_length;
+        let segment_normal = segment_dir.orth_unit();
+
+        // constraint for tangent line between offset circles:
+        // dot(normal, direction) = (r_start - r_end) / length
+        let axial_constraint = (start_radius - end_radius) / segment_length;
+
+        let (positive_normal, negative_normal) = if axial_constraint.abs() < 1.0 {
+            let normal_scale = (1.0 - axial_constraint * axial_constraint).sqrt();
+            (
+                segment_dir * axial_constraint + segment_normal * normal_scale,
+                segment_dir * axial_constraint - segment_normal * normal_scale,
+            )
+        } else {
+            // degenerate case (no solution), use normals perpendicular to the segment
+            (segment_normal, -segment_normal)
+        };
+
+        pos_offset_coords.extend([
+            line.start + positive_normal * start_radius,
+            line.end + positive_normal * end_radius,
+        ]);
+
+        neg_offset_coords.extend([
+            line.start + negative_normal * start_radius,
+            line.end + negative_normal * end_radius,
+        ]);
+    }
 
     let first_line = lines.first().unwrap();
     let last_line = lines.last().unwrap();
@@ -452,10 +507,12 @@ fn compose_lines_variable_width(
     // Start cap
     if start_width > 0.0 && start_pos_offset_coord != start_neg_offset_coord {
         bez_path.move_to(start_neg_offset_coord.to_kurbo_point());
-        bez_path.curve_to(
-            (start_neg_offset_coord - start_dir_unit * start_width * (2.0 / 3.0)).to_kurbo_point(),
-            (start_pos_offset_coord - start_dir_unit * start_width * (2.0 / 3.0)).to_kurbo_point(),
+        append_arc_between_points(
+            &mut bez_path,
+            first_line.start.to_kurbo_point(),
+            start_neg_offset_coord.to_kurbo_point(),
             start_pos_offset_coord.to_kurbo_point(),
+            -start_dir_unit.to_kurbo_vec(),
         );
     } else {
         bez_path.move_to(start_pos_offset_coord.to_kurbo_point());
@@ -470,10 +527,12 @@ fn compose_lines_variable_width(
 
     // End cap
     if end_width > 0.0 && end_pos_offset_coord != end_neg_offset_coord {
-        bez_path.curve_to(
-            (end_pos_offset_coord + end_dir_unit * end_width * (2.0 / 3.0)).to_kurbo_point(),
-            (end_neg_offset_coord + end_dir_unit * end_width * (2.0 / 3.0)).to_kurbo_point(),
+        append_arc_between_points(
+            &mut bez_path,
+            last_line.end.to_kurbo_point(),
+            end_pos_offset_coord.to_kurbo_point(),
             end_neg_offset_coord.to_kurbo_point(),
+            end_dir_unit.to_kurbo_vec(),
         );
     } else {
         bez_path.line_to(end_neg_offset_coord.to_kurbo_point());
@@ -486,6 +545,7 @@ fn compose_lines_variable_width(
             .rev()
             .map(|c| kurbo::PathEl::LineTo(c.to_kurbo_point())),
     );
+
     bez_path.close_path();
 
     bez_path

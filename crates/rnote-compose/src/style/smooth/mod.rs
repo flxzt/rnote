@@ -397,6 +397,10 @@ impl Composer<SmoothOptions> for crate::Shape {
     }
 }
 
+/// Appends a circular arc between two points on a circle.
+///
+/// The arc is centered at `center` and connects `start` to `end`.
+/// Between the two possible sweeps, the arc whose midpoint direction best aligns with `direction` is selected.
 fn append_arc_between_points(
     path: &mut kurbo::BezPath,
     center: kurbo::Point,
@@ -411,6 +415,7 @@ fn append_arc_between_points(
     let start_angle = start_vector.angle();
     let end_angle = end_vector.angle();
 
+    // shortest signed angular sweep from start to end, constrained to [-PI, PI]
     let short_sweep = (end_angle - start_angle + std::f64::consts::PI)
         .rem_euclid(std::f64::consts::TAU)
         - std::f64::consts::PI;
@@ -418,6 +423,7 @@ fn append_arc_between_points(
     let mid_angle = start_angle + short_sweep * 0.5;
     let mid_direction = kurbo::Vec2::new(mid_angle.cos(), mid_angle.sin());
 
+    // determine if the short or long arc is in the direction of the provided direction vector
     let sweep = if mid_direction.dot(direction) >= 0.0 {
         short_sweep
     } else {
@@ -428,6 +434,76 @@ fn append_arc_between_points(
     path.extend(arc.append_iter(0.1));
 }
 
+#[derive(Clone, Copy)]
+struct Offsets {
+    positive_start: kurbo::Point,
+    positive_end: kurbo::Point,
+    negative_start: kurbo::Point,
+    negative_end: kurbo::Point,
+}
+
+/// Computes the pair of tangent offset edges for a variable-width line segment.
+///
+/// The segment endpoints are treated as circles whose radii are interpolated from the overall stroke width.
+/// This computes the two lines that are tangent to both circles, resulting in smooth joins between differing widths.
+///
+/// Returns the positive- and negative-side offset coordinates for both segment endpoints.
+///
+/// In degenerate cases where no valid external tangent exists (e.g. when one endpoint
+/// radius dominates the segment length), this falls back to simple perpendicular offsets.
+fn line_offsets(
+    line: &Line,
+    i: usize,
+    n_lines: usize,
+    start_width: f64,
+    end_width: f64,
+) -> Offsets {
+    let t_start = i as f64 / n_lines as f64;
+    let t_end = (i + 1) as f64 / n_lines as f64;
+
+    let start_radius = 0.5 * (start_width + (end_width - start_width) * t_start);
+    let end_radius = 0.5 * (start_width + (end_width - start_width) * t_end);
+
+    let segment = line.end - line.start;
+    let segment_length = segment.magnitude();
+
+    let segment_direction = segment / segment_length;
+    let segment_normal = segment_direction.orth_unit();
+
+    // we want an offset line that is tangent to both endpoint circles.
+
+    // the tangent direction is composed of:
+    // - an axial component along the segment (`segment_direction`)
+    // - a lateral component perpendicular to the segment (`segment_normal`)
+
+    // projecting that tangent direction onto the segment axis yields the axial component:
+    // dot(normal, direction) = (start_radius - end_radius) / length
+    let axial = (start_radius - end_radius) / segment_length;
+
+    let (positive_direction, negative_direction) = if axial.abs() < 1.0 {
+        // case with solutions, the two solutions are symmetric around the segment
+        // since the direction must remain unit length, we can calculate the lateral component:
+        // axial^2 + lateral^2 = 1
+        let lateral = (1.0 - axial * axial).sqrt();
+
+        (
+            segment_direction * axial + segment_normal * lateral,
+            segment_direction * axial - segment_normal * lateral,
+        )
+    } else {
+        // degenerate case with no solution, the circles are too close or one contains the other
+        // fall back to perpendicular offsets
+        (segment_normal, -segment_normal)
+    };
+
+    Offsets {
+        positive_start: (line.start + positive_direction * start_radius).to_kurbo_point(),
+        positive_end: (line.end + positive_direction * end_radius).to_kurbo_point(),
+        negative_start: (line.start + negative_direction * start_radius).to_kurbo_point(),
+        negative_end: (line.end + negative_direction * end_radius).to_kurbo_point(),
+    }
+}
+
 /// Composes lines with variable width. Must be drawn with only a fill.
 fn compose_lines_variable_width(
     lines: &[Line],
@@ -436,117 +512,71 @@ fn compose_lines_variable_width(
     _options: &SmoothOptions,
 ) -> kurbo::BezPath {
     // The lines variable is ghosted here, to make sure we can only use the filtered
-    let lines = lines
+    let lines: Vec<_> = lines
         .iter()
         .filter(|line| (line.end - line.start).magnitude() > 0.0)
-        .collect::<Vec<&Line>>();
+        .collect();
+
     let n_lines = lines.len();
     if n_lines == 0 {
         return kurbo::BezPath::new();
     }
 
-    // For each line we compute the two tangent directions that connect the circles centered at
-    // the line endpoints. This yields tangential joins between differing radii.
-    let mut pos_offset_coords: Vec<_> = Vec::with_capacity(n_lines * 2);
-    let mut neg_offset_coords: Vec<_> = Vec::with_capacity(n_lines * 2);
-
+    let mut offsets = Vec::with_capacity(n_lines);
     for (i, line) in lines.iter().enumerate() {
-        let t_start = i as f64 / n_lines as f64;
-        let t_end = (i + 1) as f64 / n_lines as f64;
-
-        let start_radius = 0.5 * (start_width + (end_width - start_width) * t_start);
-        let end_radius = 0.5 * (start_width + (end_width - start_width) * t_end);
-
-        let segment = line.end - line.start;
-        let segment_length = segment.magnitude();
-
-        if segment_length == 0.0 {
-            continue;
-        }
-
-        let segment_dir = segment / segment_length;
-        let segment_normal = segment_dir.orth_unit();
-
-        // constraint for tangent line between offset circles:
-        // dot(normal, direction) = (r_start - r_end) / length
-        let axial_constraint = (start_radius - end_radius) / segment_length;
-
-        let (positive_normal, negative_normal) = if axial_constraint.abs() < 1.0 {
-            let normal_scale = (1.0 - axial_constraint * axial_constraint).sqrt();
-            (
-                segment_dir * axial_constraint + segment_normal * normal_scale,
-                segment_dir * axial_constraint - segment_normal * normal_scale,
-            )
-        } else {
-            // degenerate case (no solution), use normals perpendicular to the segment
-            (segment_normal, -segment_normal)
-        };
-
-        pos_offset_coords.extend([
-            line.start + positive_normal * start_radius,
-            line.end + positive_normal * end_radius,
-        ]);
-
-        neg_offset_coords.extend([
-            line.start + negative_normal * start_radius,
-            line.end + negative_normal * end_radius,
-        ]);
+        offsets.push(line_offsets(line, i, n_lines, start_width, end_width));
     }
 
-    let first_line = lines.first().unwrap();
-    let last_line = lines.last().unwrap();
-    let start_dir_unit = (first_line.end - first_line.start).normalize();
-    let end_dir_unit = (last_line.end - last_line.start).normalize();
-    let start_pos_offset_coord = pos_offset_coords.first().unwrap().to_owned();
-    let end_pos_offset_coord = pos_offset_coords.last().unwrap().to_owned();
-    let start_neg_offset_coord = neg_offset_coords.first().unwrap().to_owned();
-    let end_neg_offset_coord = neg_offset_coords.last().unwrap().to_owned();
+    let first_line = lines[0];
+    let last_line = lines[n_lines - 1];
+    let first_offsets = offsets[0];
+    let last_offsets = offsets[n_lines - 1];
 
     let mut bez_path = kurbo::BezPath::new();
 
     // Start cap
-    if start_width > 0.0 && start_pos_offset_coord != start_neg_offset_coord {
-        bez_path.move_to(start_neg_offset_coord.to_kurbo_point());
+    if start_width > 0.0 && first_offsets.positive_start != first_offsets.negative_start {
+        let cap_direction = (first_line.start - first_line.end).normalize();
+
+        bez_path.move_to(first_offsets.negative_start);
         append_arc_between_points(
             &mut bez_path,
             first_line.start.to_kurbo_point(),
-            start_neg_offset_coord.to_kurbo_point(),
-            start_pos_offset_coord.to_kurbo_point(),
-            -start_dir_unit.to_kurbo_vec(),
+            first_offsets.negative_start,
+            first_offsets.positive_start,
+            cap_direction.to_kurbo_vec(),
         );
     } else {
-        bez_path.move_to(start_pos_offset_coord.to_kurbo_point());
+        bez_path.move_to(first_offsets.positive_start);
     }
 
     // Positive offset path
-    bez_path.extend(
-        pos_offset_coords
-            .into_iter()
-            .map(|c| kurbo::PathEl::LineTo(c.to_kurbo_point())),
-    );
+    for o in &offsets {
+        bez_path.line_to(o.positive_start);
+        bez_path.line_to(o.positive_end);
+    }
 
     // End cap
-    if end_width > 0.0 && end_pos_offset_coord != end_neg_offset_coord {
+    if end_width > 0.0 && last_offsets.positive_end != last_offsets.negative_end {
+        let cap_direction = (last_line.end - last_line.start).normalize();
+
         append_arc_between_points(
             &mut bez_path,
             last_line.end.to_kurbo_point(),
-            end_pos_offset_coord.to_kurbo_point(),
-            end_neg_offset_coord.to_kurbo_point(),
-            end_dir_unit.to_kurbo_vec(),
+            last_offsets.positive_end,
+            last_offsets.negative_end,
+            cap_direction.to_kurbo_vec(),
         );
     } else {
-        bez_path.line_to(end_neg_offset_coord.to_kurbo_point());
+        bez_path.line_to(last_offsets.negative_end);
     }
 
     // Negative offset path (needs to be reversed)
-    bez_path.extend(
-        neg_offset_coords
-            .into_iter()
-            .rev()
-            .map(|c| kurbo::PathEl::LineTo(c.to_kurbo_point())),
-    );
+    for o in offsets.iter().rev() {
+        bez_path.line_to(o.negative_end);
+        bez_path.line_to(o.negative_start);
+    }
 
     bez_path.close_path();
-
     bez_path
 }

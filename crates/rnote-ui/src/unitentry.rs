@@ -187,6 +187,8 @@ mod imp {
 
     impl RnUnitEntry {
         const MIN_VAL_IN_PX: f64 = 1.0;
+        const MIN_VAL_IN_MM: f64 = 0.1;
+        const MIN_VAL_IN_CM: f64 = 0.01;
         const MAX_VAL_IN_PX: f64 = 100_000.0;
 
         const STEP_INCREMENT_PX: f64 = 1.0;
@@ -203,7 +205,13 @@ mod imp {
 
         fn configure_spinner(&self, unit: MeasureUnit, dpi: f64) {
             let min_val = MeasureUnit::convert_measurement(
-                Self::MIN_VAL_IN_PX,
+                {
+                    match self.unit.get() {
+                        MeasureUnit::Px => Self::MIN_VAL_IN_PX,
+                        MeasureUnit::Mm => Self::MIN_VAL_IN_MM,
+                        MeasureUnit::Cm => Self::MIN_VAL_IN_CM,
+                    }
+                },
                 MeasureUnit::Px,
                 dpi,
                 unit,

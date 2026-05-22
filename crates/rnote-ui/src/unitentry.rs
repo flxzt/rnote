@@ -154,13 +154,14 @@ mod imp {
                     .expect("Could not convert u32 to MeasureUnit.");
                     if unit != self.unit.get() {
                         let value = self.value.get();
+                        let dpi = self.dpi.get();
                         self.configure_spinner(unit, self.dpi.get());
                         obj.set_value(MeasureUnit::convert_measurement(
                             value,
                             self.unit.get(),
-                            self.dpi.get(),
+                            dpi,
                             unit,
-                            self.dpi.get(),
+                            dpi,
                         ));
                         self.unit.replace(unit);
                     }

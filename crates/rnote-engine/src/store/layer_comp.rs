@@ -106,14 +106,15 @@ impl StrokeStore {
     }
 
     pub(crate) fn rename_layer(&mut self, layer_id: DocumentLayerId, name: String) -> bool {
-        if let Some(layer) = Arc::make_mut(&mut self.layers)
-            .iter_mut()
-            .find(|layer| layer.id == layer_id)
-        {
-            layer.name = name;
-            true
-        } else {
+        let Some(layer_index) = self.layers.iter().position(|layer| layer.id == layer_id) else {
+            return false;
+        };
+
+        if self.layers[layer_index].name == name {
             false
+        } else {
+            Arc::make_mut(&mut self.layers)[layer_index].name = name;
+            true
         }
     }
 
@@ -122,15 +123,16 @@ impl StrokeStore {
             return false;
         }
 
-        if let Some(layer) = Arc::make_mut(&mut self.layers)
-            .iter_mut()
-            .find(|layer| layer.id == layer_id)
-        {
-            layer.visible = visible;
+        let Some(layer_index) = self.layers.iter().position(|layer| layer.id == layer_id) else {
+            return false;
+        };
+
+        if self.layers[layer_index].visible == visible {
+            false
+        } else {
+            Arc::make_mut(&mut self.layers)[layer_index].visible = visible;
             self.ensure_active_layer_editable();
             true
-        } else {
-            false
         }
     }
 
@@ -139,15 +141,16 @@ impl StrokeStore {
             return false;
         }
 
-        if let Some(layer) = Arc::make_mut(&mut self.layers)
-            .iter_mut()
-            .find(|layer| layer.id == layer_id)
-        {
-            layer.locked = locked;
+        let Some(layer_index) = self.layers.iter().position(|layer| layer.id == layer_id) else {
+            return false;
+        };
+
+        if self.layers[layer_index].locked == locked {
+            false
+        } else {
+            Arc::make_mut(&mut self.layers)[layer_index].locked = locked;
             self.ensure_active_layer_editable();
             true
-        } else {
-            false
         }
     }
 

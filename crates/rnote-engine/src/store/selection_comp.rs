@@ -152,7 +152,9 @@ impl StrokeStore {
         let keys: Vec<(StrokeKey, Aabb)> = self
             .key_tree
             .iter()
-            .filter(|(key, _)| !(self.trashed(*key).unwrap_or(false)))
+            .filter(|(key, _)| {
+                !(self.trashed(*key).unwrap_or(false)) && self.stroke_layer_visible(*key)
+            })
             .collect();
         if keys.is_empty() {
             return (Vec::new(), None);

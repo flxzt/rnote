@@ -852,8 +852,8 @@ impl Engine {
                 | self.record(Instant::now())
                 | self.update_rendering_current_viewport();
             widget_flags.store_modified = true;
-            widget_flags.refresh_ui = true;
         }
+        widget_flags.refresh_ui = true;
         widget_flags
     }
 
@@ -862,8 +862,8 @@ impl Engine {
         if self.store.set_layer_locked(layer_id, locked) {
             widget_flags |= self.current_pen_update_state() | self.record(Instant::now());
             widget_flags.store_modified = true;
-            widget_flags.refresh_ui = true;
         }
+        widget_flags.refresh_ui = true;
         widget_flags
     }
 

@@ -73,6 +73,9 @@ mod tests {
         assert!(store.set_layer_visible(new_layer, false));
 
         assert_eq!(store.stroke_keys_as_rendered(), vec![first]);
+        let (thumbnail_keys, _) = store.thumbnail_keys_as_rendered(na::vector![1000.0, 1000.0]);
+        assert!(thumbnail_keys.contains(&first));
+        assert!(!thumbnail_keys.contains(&second));
     }
 
     #[test]
@@ -129,6 +132,20 @@ mod tests {
 
         assert_eq!(store.layers().len(), 1);
         assert_eq!(store.active_layer_id(), 0);
+    }
+
+    #[test]
+    fn renaming_layer_to_same_name_is_noop() {
+        let mut store = StrokeStore::default();
+
+        let layer = store.add_layer(Some(String::from("Layer 2")));
+        store.record(Instant::now());
+        assert!(!store.rename_layer(layer, String::from("Layer 2")));
+        store.record(Instant::now());
+
+        store.undo(Instant::now());
+
+        assert_eq!(store.layers().len(), 1);
     }
 
     #[test]

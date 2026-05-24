@@ -71,7 +71,17 @@ impl StrokeStore {
     pub(crate) fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
-            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)) && self.stroke_layer_visible(key))
+            .collect::<Vec<StrokeKey>>()
+    }
+
+    /// Stroke keys in rendering order that can be edited on the active layer.
+    pub(crate) fn stroke_keys_as_rendered_editable_active(&self) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono()
+            .into_iter()
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && self.stroke_editable_in_active_layer(key)
+            })
             .collect::<Vec<StrokeKey>>()
     }
 
@@ -82,7 +92,19 @@ impl StrokeStore {
     ) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
-            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)) && self.stroke_layer_visible(key))
+            .collect::<Vec<StrokeKey>>()
+    }
+
+    pub(crate) fn stroke_keys_as_rendered_intersecting_bounds_editable_active(
+        &self,
+        bounds: Aabb,
+    ) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono_intersecting_bounds(bounds)
+            .into_iter()
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && self.stroke_editable_in_active_layer(key)
+            })
             .collect::<Vec<StrokeKey>>()
     }
 
@@ -90,7 +112,7 @@ impl StrokeStore {
     pub(crate) fn stroke_keys_as_rendered_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_in_bounds(bounds)
             .into_iter()
-            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
+            .filter(|&key| !(self.trashed(key).unwrap_or(false)) && self.stroke_layer_visible(key))
             .collect::<Vec<StrokeKey>>()
     }
 
@@ -492,7 +514,7 @@ impl StrokeStore {
             .into_iter()
             .filter_map(|key| {
                 // skip if stroke is trashed
-                if self.trashed(key)? {
+                if self.trashed(key)? || !self.stroke_editable_in_active_layer(key) {
                     return None;
                 }
 
@@ -547,7 +569,7 @@ impl StrokeStore {
             .into_iter()
             .filter_map(|key| {
                 // skip if stroke is trashed
-                if self.trashed(key)? {
+                if self.trashed(key)? || !self.stroke_editable_in_active_layer(key) {
                     return None;
                 }
 
@@ -580,7 +602,7 @@ impl StrokeStore {
             .into_iter()
             .filter_map(|key| {
                 // skip if stroke is trashed
-                if self.trashed(key)? {
+                if self.trashed(key)? || !self.stroke_editable_in_active_layer(key) {
                     return None;
                 }
 
@@ -613,7 +635,7 @@ impl StrokeStore {
         let mut bounds = viewport;
         bounds.take_point(coord.into());
 
-        self.stroke_keys_as_rendered_intersecting_bounds(bounds)
+        self.stroke_keys_as_rendered_intersecting_bounds_editable_active(bounds)
             .into_iter()
             .filter(|&key| {
                 if let Some(stroke) = self.stroke_components.get(key) {

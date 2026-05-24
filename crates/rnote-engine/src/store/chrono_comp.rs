@@ -4,6 +4,7 @@ use p2d::bounding_volume::Aabb;
 use rayon::slice::ParallelSliceMut;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
+use std::collections::HashMap;
 use std::sync::Arc;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq)]
@@ -115,10 +116,33 @@ impl StrokeStore {
 
     pub(super) fn sort_keys_chrono(&self, keys: &mut [StrokeKey]) {
         let chrono_components = &self.chrono_components;
+        let layer_components = &self.layer_components;
+        let layer_order = self
+            .layers
+            .iter()
+            .enumerate()
+            .map(|(index, layer)| (layer.id, index))
+            .collect::<HashMap<_, _>>();
         keys.par_sort_unstable_by(|&first, &second| {
             if let Some(first_chrono) = chrono_components.get(first)
                 && let Some(second_chrono) = chrono_components.get(second)
             {
+                let first_layer_order = layer_components
+                    .get(first)
+                    .and_then(|layer_comp| layer_order.get(&layer_comp.layer_id))
+                    .copied()
+                    .unwrap_or_default();
+                let second_layer_order = layer_components
+                    .get(second)
+                    .and_then(|layer_comp| layer_order.get(&layer_comp.layer_id))
+                    .copied()
+                    .unwrap_or_default();
+                let document_layer_order = first_layer_order.cmp(&second_layer_order);
+
+                if document_layer_order != std::cmp::Ordering::Equal {
+                    return document_layer_order;
+                }
+
                 let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
 
                 if layer_order != std::cmp::Ordering::Equal {

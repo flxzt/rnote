@@ -708,6 +708,7 @@ impl RnAppWindow {
             .refresh_ui(self);
         self.overlays().penssidebar().tools_page().refresh_ui(self);
         self.sidebar().settings_panel().refresh_ui(self);
+        self.sidebar().refresh_layers_panel(self);
 
         if let Some(canvas) = canvas {
             self.refresh_titles(&canvas);

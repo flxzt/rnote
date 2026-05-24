@@ -2,7 +2,7 @@
 use crate::document::background;
 use crate::engine::import::XoppImportPrefs;
 use crate::fileformats::{FileFormatLoader, rnoteformat, xoppformat};
-use crate::store::{ChronoComponent, StrokeKey};
+use crate::store::{ChronoComponent, DocumentLayer, DocumentLayerId, LayerComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
 use anyhow::Context;
@@ -29,6 +29,14 @@ pub struct EngineSnapshot {
     pub stroke_components: Arc<SlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "chrono_components")]
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    #[serde(rename = "layer_components")]
+    pub layer_components: Arc<SecondaryMap<StrokeKey, Arc<LayerComponent>>>,
+    #[serde(rename = "layers")]
+    pub layers: Arc<Vec<DocumentLayer>>,
+    #[serde(rename = "active_layer_id")]
+    pub active_layer_id: DocumentLayerId,
+    #[serde(rename = "layer_counter")]
+    pub layer_counter: u32,
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
 }
@@ -40,6 +48,10 @@ impl Default for EngineSnapshot {
             camera: Camera::default(),
             stroke_components: Arc::new(SlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
+            layer_components: Arc::new(SecondaryMap::new()),
+            layers: Arc::new(vec![DocumentLayer::default()]),
+            active_layer_id: DocumentLayer::default().id,
+            layer_counter: DocumentLayer::default().id,
             chrono_counter: 0,
         }
     }

@@ -1,6 +1,7 @@
 // Modules
 pub mod chrono_comp;
 pub mod keytree;
+pub mod layer_comp;
 pub mod render_comp;
 pub mod selection_comp;
 pub mod stroke_comp;
@@ -9,6 +10,7 @@ pub mod trash_comp;
 // Re-exports
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
+pub use layer_comp::{DocumentLayer, DocumentLayerId, LayerComponent};
 pub use render_comp::RenderComponent;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
@@ -30,6 +32,129 @@ slotmap::new_key_type! {
     pub struct StrokeKey;
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::strokes::BrushStroke;
+    use rnote_compose::Style;
+    use rnote_compose::penpath::Element;
+    use std::time::Instant;
+
+    fn test_stroke(x: f64) -> Stroke {
+        Stroke::BrushStroke(BrushStroke::new(
+            Element::new(na::vector![x, 0.0], Element::PRESSURE_DEFAULT),
+            Style::default(),
+        ))
+    }
+
+    #[test]
+    fn inserted_strokes_use_active_layer() {
+        let mut store = StrokeStore::default();
+
+        let first = store.insert_stroke(test_stroke(0.0), None);
+        let new_layer = store.add_layer(Some(String::from("Layer 2")));
+        let second = store.insert_stroke(test_stroke(10.0), None);
+
+        assert_eq!(store.stroke_document_layer_id(first), Some(0));
+        assert_eq!(store.stroke_document_layer_id(second), Some(new_layer));
+        assert_eq!(store.active_layer_id(), new_layer);
+    }
+
+    #[test]
+    fn hidden_layers_are_not_rendered() {
+        let mut store = StrokeStore::default();
+
+        let first = store.insert_stroke(test_stroke(0.0), None);
+        let new_layer = store.add_layer(Some(String::from("Layer 2")));
+        let second = store.insert_stroke(test_stroke(10.0), None);
+
+        assert_eq!(store.stroke_keys_as_rendered(), vec![first, second]);
+
+        assert!(store.set_layer_visible(new_layer, false));
+
+        assert_eq!(store.stroke_keys_as_rendered(), vec![first]);
+    }
+
+    #[test]
+    fn locked_and_hidden_active_layer_strokes_cannot_be_selected() {
+        let mut store = StrokeStore::default();
+
+        let layer = store.add_layer(Some(String::from("Layer 2")));
+        let key = store.insert_stroke(test_stroke(0.0), None);
+
+        assert!(store.set_layer_locked(layer, true));
+        store.set_selected(key, true);
+        assert!(!store.selected(key).unwrap());
+
+        assert!(store.set_layer_locked(layer, false));
+        assert!(store.set_layer_visible(layer, false));
+        store.set_selected(key, true);
+        assert!(!store.selected(key).unwrap());
+    }
+
+    #[test]
+    fn document_layer_order_controls_render_order() {
+        let mut store = StrokeStore::default();
+
+        let first = store.insert_stroke(test_stroke(0.0), None);
+        let layer = store.add_layer(Some(String::from("Layer 2")));
+        let second = store.insert_stroke(test_stroke(10.0), None);
+
+        assert_eq!(store.stroke_keys_as_rendered(), vec![first, second]);
+
+        assert!(store.move_layer_up(0));
+
+        assert_eq!(
+            store
+                .layers()
+                .iter()
+                .map(|layer| layer.id)
+                .collect::<Vec<_>>(),
+            vec![layer, 0]
+        );
+        assert_eq!(store.stroke_keys_as_rendered(), vec![second, first]);
+    }
+
+    #[test]
+    fn layer_changes_are_undoable() {
+        let mut store = StrokeStore::default();
+
+        let layer = store.add_layer(Some(String::from("Layer 2")));
+        store.record(Instant::now());
+
+        assert_eq!(store.layers().len(), 2);
+        assert_eq!(store.active_layer_id(), layer);
+
+        store.undo(Instant::now());
+
+        assert_eq!(store.layers().len(), 1);
+        assert_eq!(store.active_layer_id(), 0);
+    }
+
+    #[test]
+    fn importing_snapshot_without_layers_assigns_default_layer() {
+        let mut stroke_components = SlotMap::with_key();
+        let key = stroke_components.insert(Arc::new(test_stroke(0.0)));
+        let mut chrono_components = SecondaryMap::new();
+        chrono_components.insert(
+            key,
+            Arc::new(ChronoComponent::new(1, StrokeLayer::UserLayer(0))),
+        );
+        let snapshot = EngineSnapshot {
+            stroke_components: Arc::new(stroke_components),
+            chrono_components: Arc::new(chrono_components),
+            chrono_counter: 1,
+            ..EngineSnapshot::default()
+        };
+        let mut store = StrokeStore::default();
+
+        store.import_from_snapshot(&snapshot);
+
+        assert_eq!(store.layers(), &[DocumentLayer::default()]);
+        assert_eq!(store.stroke_document_layer_id(key), Some(0));
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "history_entry")]
 pub struct HistoryEntry {
@@ -39,6 +164,14 @@ pub struct HistoryEntry {
     pub trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
     #[serde(rename = "chrono_components")]
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    #[serde(rename = "layer_components")]
+    pub layer_components: Arc<SecondaryMap<StrokeKey, Arc<LayerComponent>>>,
+    #[serde(rename = "layers")]
+    pub layers: Arc<Vec<DocumentLayer>>,
+    #[serde(rename = "active_layer_id")]
+    pub active_layer_id: DocumentLayerId,
+    #[serde(rename = "layer_counter")]
+    pub layer_counter: u32,
     #[serde(rename = "chrono_counter")]
     pub chrono_counter: u32,
 }
@@ -49,6 +182,10 @@ impl Default for HistoryEntry {
             stroke_components: Arc::new(SlotMap::with_key()),
             trash_components: Arc::new(SecondaryMap::new()),
             chrono_components: Arc::new(SecondaryMap::new()),
+            layer_components: Arc::new(SecondaryMap::new()),
+            layers: Arc::new(vec![DocumentLayer::default()]),
+            active_layer_id: DocumentLayer::default().id,
+            layer_counter: DocumentLayer::default().id,
 
             chrono_counter: 0,
         }
@@ -79,6 +216,14 @@ pub struct StrokeStore {
     selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
     chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    #[serde(rename = "layer_components")]
+    layer_components: Arc<SecondaryMap<StrokeKey, Arc<LayerComponent>>>,
+    #[serde(rename = "layers")]
+    layers: Arc<Vec<DocumentLayer>>,
+    #[serde(rename = "active_layer_id")]
+    active_layer_id: DocumentLayerId,
+    #[serde(rename = "layer_counter")]
+    layer_counter: u32,
     /// Incrementing counter for chrono_components.
     ///
     /// Value must be kept equal to the [ChronoComponent] of the newest inserted or modified stroke.
@@ -105,6 +250,10 @@ impl Default for StrokeStore {
             trash_components: Arc::new(SecondaryMap::new()),
             selection_components: Arc::new(SecondaryMap::new()),
             chrono_components: Arc::new(SecondaryMap::new()),
+            layer_components: Arc::new(SecondaryMap::new()),
+            layers: Arc::new(vec![DocumentLayer::default()]),
+            active_layer_id: DocumentLayer::default().id,
+            layer_counter: DocumentLayer::default().id,
             render_components: SecondaryMap::new(),
 
             // Start off with state in the history
@@ -131,7 +280,12 @@ impl StrokeStore {
         widget_flags |= self.clear();
         self.stroke_components = Arc::clone(&snapshot.stroke_components);
         self.chrono_components = Arc::clone(&snapshot.chrono_components);
+        self.layer_components = Arc::clone(&snapshot.layer_components);
+        self.layers = Arc::clone(&snapshot.layers);
+        self.active_layer_id = snapshot.active_layer_id;
+        self.layer_counter = snapshot.layer_counter;
         self.chrono_counter = snapshot.chrono_counter;
+        self.normalize_layers();
 
         self.update_geometry_for_strokes(&self.keys_unordered());
         self.rebuild_selection_components_slotmap();
@@ -158,6 +312,10 @@ impl StrokeStore {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
+            && Arc::ptr_eq(&self.layer_components, &history_entry.layer_components)
+            && Arc::ptr_eq(&self.layers, &history_entry.layers)
+            && self.active_layer_id == history_entry.active_layer_id
+            && self.layer_counter == history_entry.layer_counter
             && self.chrono_counter == history_entry.chrono_counter
     }
 
@@ -167,6 +325,10 @@ impl StrokeStore {
             stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
             chrono_components: Arc::clone(&self.chrono_components),
+            layer_components: Arc::clone(&self.layer_components),
+            layers: Arc::clone(&self.layers),
+            active_layer_id: self.active_layer_id,
+            layer_counter: self.layer_counter,
             chrono_counter: self.chrono_counter,
         }
     }
@@ -176,7 +338,12 @@ impl StrokeStore {
         self.stroke_components = Arc::clone(&history_entry.stroke_components);
         self.trash_components = Arc::clone(&history_entry.trash_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
+        self.layer_components = Arc::clone(&history_entry.layer_components);
+        self.layers = Arc::clone(&history_entry.layers);
+        self.active_layer_id = history_entry.active_layer_id;
+        self.layer_counter = history_entry.layer_counter;
         self.chrono_counter = history_entry.chrono_counter;
+        self.normalize_layers();
 
         // Since we don't store the rtree in the history, we need to rebuild it.
         self.rebuild_rtree();
@@ -321,6 +488,7 @@ impl StrokeStore {
     ) -> StrokeKey {
         let bounds = stroke.bounds();
         let layer = layer.unwrap_or_else(|| stroke.extract_default_layer());
+        let document_layer_id = self.active_layer_id;
 
         let key = Arc::make_mut(&mut self.stroke_components).insert(Arc::new(stroke));
         self.key_tree.insert_with_key(key, bounds);
@@ -332,6 +500,12 @@ impl StrokeStore {
         Arc::make_mut(&mut self.chrono_components).insert(
             key,
             Arc::new(ChronoComponent::new(self.chrono_counter, layer)),
+        );
+        Arc::make_mut(&mut self.layer_components).insert(
+            key,
+            Arc::new(LayerComponent {
+                layer_id: document_layer_id,
+            }),
         );
         self.render_components
             .insert(key, RenderComponent::default());
@@ -345,6 +519,7 @@ impl StrokeStore {
         Arc::make_mut(&mut self.trash_components).remove(key);
         Arc::make_mut(&mut self.selection_components).remove(key);
         Arc::make_mut(&mut self.chrono_components).remove(key);
+        Arc::make_mut(&mut self.layer_components).remove(key);
         self.render_components.remove(key);
 
         self.key_tree.remove_with_key(key);
@@ -359,6 +534,10 @@ impl StrokeStore {
         Arc::make_mut(&mut self.trash_components).clear();
         Arc::make_mut(&mut self.selection_components).clear();
         Arc::make_mut(&mut self.chrono_components).clear();
+        Arc::make_mut(&mut self.layer_components).clear();
+        self.layers = Arc::new(vec![DocumentLayer::default()]);
+        self.active_layer_id = DocumentLayer::default().id;
+        self.layer_counter = DocumentLayer::default().id;
 
         self.chrono_counter = 0;
         let widget_flags = self.clear_history(HistoryEntry::default());

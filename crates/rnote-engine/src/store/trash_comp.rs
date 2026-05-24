@@ -85,7 +85,7 @@ impl StrokeStore {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+        self.stroke_keys_as_rendered_intersecting_bounds_editable_active(viewport)
             .into_iter()
             .for_each(|key| {
                 let mut trash_current_stroke = false;
@@ -135,7 +135,7 @@ impl StrokeStore {
         let mut modified_keys = vec![];
 
         let new_strokes = self
-            .stroke_keys_as_rendered_intersecting_bounds(viewport)
+            .stroke_keys_as_rendered_intersecting_bounds_editable_active(viewport)
             .into_iter()
             .flat_map(|key| {
                 let Some(stroke) = Arc::make_mut(&mut self.stroke_components)

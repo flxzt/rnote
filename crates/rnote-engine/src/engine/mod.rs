@@ -22,8 +22,8 @@ use crate::Image;
 use crate::document::Layout;
 use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
-use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
+use crate::store::{DocumentLayer, DocumentLayerId, StrokeKey};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{Camera, Document, PenHolder, StrokeStore};
@@ -328,6 +328,8 @@ impl Engine {
 
         for key in trashed_keys {
             Arc::make_mut(&mut store_history_entry.stroke_components).remove(key);
+            Arc::make_mut(&mut store_history_entry.layer_components).remove(key);
+            Arc::make_mut(&mut store_history_entry.chrono_components).remove(key);
         }
 
         EngineSnapshot {
@@ -335,6 +337,10 @@ impl Engine {
             camera: self.camera.extract_snapshot_data(),
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
+            layer_components: Arc::clone(&store_history_entry.layer_components),
+            layers: Arc::clone(&store_history_entry.layers),
+            active_layer_id: store_history_entry.active_layer_id,
+            layer_counter: store_history_entry.layer_counter,
             chrono_counter: store_history_entry.chrono_counter,
         }
     }
@@ -365,18 +371,22 @@ impl Engine {
 
     /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
-        self.store.undo(now)
+        let mut widget_flags = self.store.undo(now)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
-            | self.update_rendering_current_viewport()
+            | self.update_rendering_current_viewport();
+        widget_flags.refresh_ui = true;
+        widget_flags
     }
 
     /// Redo the latest changes.
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
-        self.store.redo(now)
+        let mut widget_flags = self.store.redo(now)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
-            | self.update_rendering_current_viewport()
+            | self.update_rendering_current_viewport();
+        widget_flags.refresh_ui = true;
+        widget_flags
     }
 
     pub fn can_undo(&self) -> bool {
@@ -747,7 +757,7 @@ impl Engine {
     pub fn select_all_strokes(&mut self) -> WidgetFlags {
         let widget_flags = self.change_pen_style(PenStyle::Selector);
         self.store
-            .set_selected_keys(&self.store.stroke_keys_as_rendered(), true);
+            .set_selected_keys(&self.store.stroke_keys_as_rendered_editable_active(), true);
         widget_flags
             | self.current_pen_update_state()
             | self.doc_resize_autoexpand()
@@ -776,11 +786,108 @@ impl Engine {
             SelectionCollision::Intersects => self
                 .store
                 .stroke_keys_as_rendered_intersecting_bounds(bounds),
-        };
+        }
+        .into_iter()
+        .filter(|&key| self.store.stroke_editable_in_active_layer(key))
+        .collect::<Vec<StrokeKey>>();
         self.store.set_selected_keys(&select, true);
         self.doc_resize_autoexpand()
             | self.record(Instant::now())
             | self.update_rendering_current_viewport()
+    }
+
+    pub fn layers(&self) -> &[DocumentLayer] {
+        self.store.layers()
+    }
+
+    pub fn active_layer_id(&self) -> DocumentLayerId {
+        self.store.active_layer_id()
+    }
+
+    pub fn set_active_layer(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.set_active_layer(layer_id) {
+            widget_flags |= self.current_pen_update_state() | self.record(Instant::now());
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn add_layer(&mut self, name: Option<String>) -> WidgetFlags {
+        self.store.add_layer(name);
+        let mut widget_flags = self.current_pen_update_state() | self.record(Instant::now());
+        widget_flags.store_modified = true;
+        widget_flags.refresh_ui = true;
+        widget_flags
+    }
+
+    pub fn delete_layer(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.delete_layer(layer_id) {
+            widget_flags |= self.current_pen_update_state()
+                | self.doc_resize_autoexpand()
+                | self.record(Instant::now())
+                | self.update_rendering_current_viewport();
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn rename_layer(&mut self, layer_id: DocumentLayerId, name: String) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.rename_layer(layer_id, name) {
+            widget_flags |= self.record(Instant::now());
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn set_layer_visible(&mut self, layer_id: DocumentLayerId, visible: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.set_layer_visible(layer_id, visible) {
+            widget_flags |= self.current_pen_update_state()
+                | self.record(Instant::now())
+                | self.update_rendering_current_viewport();
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn set_layer_locked(&mut self, layer_id: DocumentLayerId, locked: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.set_layer_locked(layer_id, locked) {
+            widget_flags |= self.current_pen_update_state() | self.record(Instant::now());
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn move_layer_up(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        self.move_layer(layer_id, true)
+    }
+
+    pub fn move_layer_down(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        self.move_layer(layer_id, false)
+    }
+
+    fn move_layer(&mut self, layer_id: DocumentLayerId, up: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        let moved = if up {
+            self.store.move_layer_up(layer_id)
+        } else {
+            self.store.move_layer_down(layer_id)
+        };
+        if moved {
+            widget_flags |= self.record(Instant::now()) | self.update_rendering_current_viewport();
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
     }
 
     pub fn duplicate_selection(&mut self) -> WidgetFlags {
@@ -911,5 +1018,78 @@ impl Engine {
     pub fn current_pen_style_w_override(&self) -> PenStyle {
         self.penholder
             .current_pen_style_w_override(&engine_view!(self))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::fileformats::FileFormatLoader;
+    use crate::fileformats::FileFormatSaver;
+    use crate::fileformats::rnoteformat::RnoteFile;
+
+    #[test]
+    fn rnote_snapshot_roundtrip_preserves_layer_metadata() {
+        let mut engine = Engine::default();
+
+        engine.add_layer(Some(String::from("Annotations")));
+        let layer_id = engine.active_layer_id();
+        engine.rename_layer(layer_id, String::from("Renamed"));
+        engine.set_layer_locked(layer_id, true);
+        engine.set_layer_visible(layer_id, false);
+        engine.move_layer_down(layer_id);
+
+        let snapshot = engine.take_snapshot();
+        let bytes = RnoteFile {
+            engine_snapshot: ijson::to_value(&snapshot).unwrap(),
+        }
+        .save_as_bytes("test.rnote")
+        .unwrap();
+        let loaded_file = RnoteFile::load_from_bytes(&bytes).unwrap();
+        let loaded_snapshot: EngineSnapshot =
+            ijson::from_value(&loaded_file.engine_snapshot).unwrap();
+
+        assert_eq!(loaded_snapshot.layers.len(), 2);
+        assert_eq!(loaded_snapshot.layers[0].id, layer_id);
+        assert_eq!(loaded_snapshot.layers[0].name, "Renamed");
+        assert!(!loaded_snapshot.layers[0].visible);
+        assert!(loaded_snapshot.layers[0].locked);
+        assert_eq!(loaded_snapshot.layers[1].id, 0);
+        assert!(loaded_snapshot.layers[1].visible);
+        assert!(!loaded_snapshot.layers[1].locked);
+    }
+
+    #[test]
+    fn engine_layer_operations_are_undoable_and_redoable() {
+        let mut engine = Engine::default();
+
+        engine.add_layer(Some(String::from("Layer 2")));
+        let layer_id = engine.active_layer_id();
+        assert_eq!(engine.layers().len(), 2);
+
+        engine.undo(Instant::now());
+        assert_eq!(engine.layers().len(), 1);
+
+        engine.redo(Instant::now());
+        assert_eq!(engine.layers().len(), 2);
+        assert_eq!(engine.active_layer_id(), layer_id);
+
+        engine.rename_layer(layer_id, String::from("Renamed"));
+        assert_eq!(engine.layers()[1].name, "Renamed");
+
+        engine.undo(Instant::now());
+        assert_eq!(engine.layers()[1].name, "Layer 2");
+
+        engine.redo(Instant::now());
+        assert_eq!(engine.layers()[1].name, "Renamed");
+
+        engine.set_layer_locked(layer_id, true);
+        assert!(engine.layers()[1].locked);
+
+        engine.undo(Instant::now());
+        assert!(!engine.layers()[1].locked);
+
+        engine.redo(Instant::now());
+        assert!(engine.layers()[1].locked);
     }
 }

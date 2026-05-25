@@ -1027,6 +1027,12 @@ mod tests {
     use crate::fileformats::FileFormatLoader;
     use crate::fileformats::FileFormatSaver;
     use crate::fileformats::rnoteformat::RnoteFile;
+    use crate::fileformats::xoppformat;
+    use crate::engine::import::XoppImportPrefs;
+    use crate::strokes::BrushStroke;
+    use crate::strokes::Stroke;
+    use rnote_compose::Style;
+    use rnote_compose::penpath::Element;
 
     #[test]
     fn rnote_snapshot_roundtrip_preserves_layer_metadata() {
@@ -1092,4 +1098,238 @@ mod tests {
         engine.redo(Instant::now());
         assert!(engine.layers()[1].locked);
     }
+
+    fn build_minimal_xopp_bytes(
+        pages: Vec<Vec<(Option<&str>, Vec<&str>)>>,
+    ) -> Vec<u8> {
+        let mut xml = String::new();
+        xml.push_str(
+            r#"<?xml version="1.0" encoding="UTF-8"?><xournal creator="rnote test" fileversion="4"><title>Test</title>"#,
+        );
+
+        for page_layers in &pages {
+            let width = 800.0;
+            let height = 600.0;
+            xml.push_str(&format!(
+                "<page width=\"{}\" height=\"{}\"><background type=\"solid\" color=\"#ffffffff\" style=\"plain\"/>",
+                width, height
+            ));
+            for (name_opt, coords_list) in page_layers {
+                xml.push_str("<layer");
+                if let Some(name) = name_opt {
+                    xml.push_str(&format!(" name=\"{}\"", xml_escape(name)));
+                }
+                xml.push('>');
+                for coords in coords_list {
+                    xml.push_str(&format!(
+                        r##"<stroke tool="pen" color="#000000ff" width="2.0 2.0 2.0 2.0">{}</stroke>"##,
+                        xml_escape(coords)
+                    ));
+                }
+                xml.push_str("</layer>");
+            }
+            xml.push_str("</page>");
+        }
+
+        xml.push_str("</xournal>");
+        xoppformat::compress_to_gzip(xml.as_bytes()).unwrap()
+    }
+
+    fn xml_escape(s: &str) -> String {
+        s.replace('&', "&amp;")
+            .replace('<', "&lt;")
+            .replace('>', "&gt;")
+            .replace('"', "&quot;")
+            .replace('\'', "&apos;")
+    }
+
+    #[test]
+    fn xopp_xml_layer_elements_roundtrip() {
+        // Test that elements field is populated during parse and used during write
+        let xopp_bytes = build_minimal_xopp_bytes(vec![vec![
+            (Some("Layer A"), vec!["10.0 20.0 30.0 40.0"]),
+            (Some("Layer B"), vec!["50.0 60.0 70.0 80.0"]),
+        ]]);
+
+        let xopp_file = xoppformat::XoppFile::load_from_bytes(&xopp_bytes).unwrap();
+        let pages = &xopp_file.xopp_root.pages;
+
+        // Verify elements are populated
+        assert_eq!(pages.len(), 1);
+        assert_eq!(pages[0].layers.len(), 2);
+        assert_eq!(pages[0].layers[0].name, Some("Layer A".into()));
+        assert_eq!(pages[0].layers[1].name, Some("Layer B".into()));
+        assert!(!pages[0].layers[0].elements.is_empty());
+        assert!(!pages[0].layers[1].elements.is_empty());
+
+        // Roundtrip through XML write and verify names preserved
+        let roundtrip_bytes = xopp_file.save_as_bytes("test.xopp").unwrap();
+        let roundtrip_file = xoppformat::XoppFile::load_from_bytes(&roundtrip_bytes).unwrap();
+        assert_eq!(roundtrip_file.xopp_root.pages[0].layers.len(), 2);
+        assert_eq!(
+            roundtrip_file.xopp_root.pages[0].layers[0].name,
+            Some("Layer A".into())
+        );
+        assert_eq!(
+            roundtrip_file.xopp_root.pages[0].layers[1].name,
+            Some("Layer B".into())
+        );
+    }
+
+    #[test]
+    fn xopp_import_preserves_named_layers() {
+        let xopp_bytes = build_minimal_xopp_bytes(vec![vec![
+            (Some("Notes"), vec!["10.0 20.0 30.0 40.0"]),
+            (Some("Sketches"), vec!["50.0 60.0 70.0 80.0"]),
+        ]]);
+
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 2);
+        assert_eq!(layers[0].name, "Notes");
+        assert_eq!(layers[1].name, "Sketches");
+    }
+
+    #[test]
+    fn xopp_import_merges_layers_by_name_across_pages() {
+        // Two pages, each with "Notes" and "Sketches" layers
+        let xopp_bytes = build_minimal_xopp_bytes(vec![
+            vec![
+                (Some("Notes"), vec!["10.0 20.0 30.0 40.0"]),
+                (Some("Sketches"), vec!["50.0 60.0 70.0 80.0"]),
+            ],
+            vec![
+                (Some("Notes"), vec!["90.0 100.0 110.0 120.0"]),
+                (Some("Sketches"), vec!["130.0 140.0 150.0 160.0"]),
+            ],
+        ]);
+
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        // Should be merged to 2 layers, not 4
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 2);
+        assert_eq!(layers[0].name, "Notes");
+        assert_eq!(layers[1].name, "Sketches");
+
+        // All 4 strokes should be imported
+        assert_eq!(snapshot.stroke_components.len(), 4);
+    }
+
+    #[test]
+    fn xopp_import_handles_unnamed_layers() {
+        // Two pages with unnamed layers at the same position
+        let xopp_bytes = build_minimal_xopp_bytes(vec![
+            vec![(None, vec!["10.0 20.0 30.0 40.0"])],
+            vec![(None, vec!["50.0 60.0 70.0 80.0"])],
+        ]);
+
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        // Unnamed layers at same position should merge into Layer 1
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 1);
+        assert!(layers[0].name.starts_with("Layer"));
+    }
+
+    fn make_test_stroke(x: f64) -> Stroke {
+        Stroke::BrushStroke(BrushStroke::new(
+            Element::new(na::vector![x, 0.0], Element::PRESSURE_DEFAULT),
+            Style::default(),
+        ))
+    }
+
+    #[test]
+    fn xopp_export_preserves_layer_names() {
+        let mut engine = Engine::default();
+
+        // Layer 1 (default) with a stroke
+        engine.store.insert_stroke(make_test_stroke(10.0), None);
+
+        // Add a second named layer with a stroke
+        let layer2_id = engine.store.add_layer(Some("Sketches".into()));
+        engine.store.set_active_layer(layer2_id);
+        engine.store.insert_stroke(make_test_stroke(50.0), None);
+
+        // Add a third named layer with a stroke
+        let layer3_id = engine.store.add_layer(Some("Annotations".into()));
+        engine.store.set_active_layer(layer3_id);
+        engine.store.insert_stroke(make_test_stroke(100.0), None);
+
+        // Export to xopp
+        let xopp_bytes: Vec<u8> = smol::block_on(
+            engine.export_doc_as_xopp_bytes("test".into(), None),
+        )
+        .unwrap()
+        .unwrap();
+
+        // Re-import to verify layer structure
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 3);
+        assert!(layers.iter().any(|l| l.name == "Sketches"));
+        assert!(layers.iter().any(|l| l.name == "Annotations"));
+    }
+
+    #[test]
+    fn xopp_export_excludes_hidden_layers() {
+        let mut engine = Engine::default();
+
+        engine.store.insert_stroke(make_test_stroke(10.0), None);
+        let hidden_layer_id = engine.store.add_layer(Some("Hidden".into()));
+        engine.store.insert_stroke(make_test_stroke(50.0), None);
+        engine.store.set_layer_visible(hidden_layer_id, false);
+
+        let xopp_bytes: Vec<u8> = smol::block_on(
+            engine.export_doc_as_xopp_bytes("test".into(), None),
+        )
+        .unwrap()
+        .unwrap();
+
+        // Parse the xopp XML to check it doesn't contain "Hidden" layer
+        let xopp_xml = xoppformat::decompress_from_gzip(&xopp_bytes).unwrap();
+        let xopp_str = String::from_utf8(xopp_xml).unwrap();
+        assert!(!xopp_str.contains("Hidden"));
+    }
+
+    #[test]
+    fn xopp_empty_named_layer_writes_self_closing_tag() {
+        // An rnote document with an empty named layer should still write it to xopp
+        let mut engine = Engine::default();
+
+        engine.store.insert_stroke(make_test_stroke(10.0), None);
+        let _empty_layer_id = engine.store.add_layer(Some("Empty".into()));
+        // Don't insert any strokes in this layer
+
+        let xopp_bytes: Vec<u8> = smol::block_on(
+            engine.export_doc_as_xopp_bytes("test".into(), None),
+        )
+        .unwrap()
+        .unwrap();
+
+        // Parse the xopp XML to verify the empty named layer tag exists
+        let xopp_xml = xoppformat::decompress_from_gzip(&xopp_bytes).unwrap();
+        let xopp_str = String::from_utf8(xopp_xml).unwrap();
+        // The layer "Empty" should appear in the output even if it's empty
+        assert!(xopp_str.contains("Empty"));
+    }
 }
+

@@ -62,6 +62,7 @@ gtk4 = { workspace = true, optional = true }
 
 [dev-dependencies]
 approx = { workspace = true }
+smol = { workspace = true }
 
 [features]
 cli = ["dep:clap"]

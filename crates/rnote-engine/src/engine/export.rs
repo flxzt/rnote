@@ -2,12 +2,14 @@
 use super::{Engine, StrokeContent};
 use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{FileFormatSaver, xoppformat};
+use crate::store::DocumentLayerId;
 use anyhow::Context;
 use futures::channel::oneshot;
 use rayon::prelude::*;
 use rnote_compose::SplitOrder;
 use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::io::Cursor;
 use std::sync::Arc;
 use tracing::error;
@@ -540,7 +542,7 @@ impl Engine {
     }
 
     /// Export the document as a Xournal++ .xopp file.
-    fn export_doc_as_xopp_bytes(
+    pub(crate) fn export_doc_as_xopp_bytes(
         &self,
         title: String,
         doc_export_prefs_override: Option<DocExportPrefs>,
@@ -548,8 +550,60 @@ impl Engine {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
-        let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
+        let dpi = self.document.config.format.dpi();
         let document = self.document.clone();
+
+        // Pre-compute page content grouped by DocumentLayer.
+        // We must do this before rayon::spawn because StrokeStore is not Clone/Send.
+        let pages_bounds = self.pages_bounds_w_content(doc_export_prefs.page_order);
+        let layers_arc = self.store.layers().to_vec();
+        let mut pages_layer_data: Vec<(
+            p2d::bounding_volume::Aabb,
+            Vec<(DocumentLayerId, String, Vec<Arc<crate::strokes::Stroke>>)>,
+        )> = vec![];
+
+        for &page_bounds in &pages_bounds {
+            let keys = self
+                .store
+                .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+            let mut layer_strokes: HashMap<
+                DocumentLayerId,
+                (String, Vec<Arc<crate::strokes::Stroke>>),
+            > = HashMap::new();
+
+            for &key in &keys {
+                if let Some(stroke) = self.store.get_stroke_arc(key) {
+                    let layer_id = self.store.stroke_document_layer_id(key).unwrap_or(0);
+                    let entry = layer_strokes.entry(layer_id).or_insert_with(|| {
+                        let name = layers_arc
+                            .iter()
+                            .find(|l| l.id == layer_id)
+                            .map(|l| l.name.clone())
+                            .unwrap_or_else(|| format!("Layer {}", layer_id));
+                        (name, vec![])
+                    });
+                    entry.1.push(stroke);
+                }
+            }
+
+            // Preserve DocumentLayer order from rnote
+            let mut ordered = vec![];
+            for layer in layers_arc.iter() {
+                match layer_strokes.remove(&layer.id) {
+                    Some((name, strokes)) => ordered.push((layer.id, name, strokes)),
+                    None if !layer.name.is_empty() && layer.visible => {
+                        ordered.push((layer.id, layer.name.clone(), vec![]));
+                    }
+                    None => {}
+                }
+            }
+            // Any leftover layers (should be unreachable if all layers are in layers_arc)
+            for (id, (name, strokes)) in layer_strokes {
+                ordered.push((id, name, strokes));
+            }
+
+            pages_layer_data.push((page_bounds, ordered));
+        }
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
@@ -557,91 +611,67 @@ impl Engine {
                 let xopp_background = xoppformat::XoppBackground {
                     name: None,
                     bg_type: xoppformat::XoppBackgroundType::Solid {
-                        color: crate::utils::xoppcolor_from_color(document.config.background.color),
+                        color: crate::utils::xoppcolor_from_color(
+                            document.config.background.color,
+                        ),
                         style: xoppformat::XoppBackgroundSolidStyle::Plain,
                     },
                 };
 
-                // xopp spec needs at least one page in vec,
-                // but it is fine because pages_bounds_w_content() always produces at least one.
-                let pages = pages_content
+                let pages = pages_layer_data
                     .into_iter()
-                    .filter_map(|page_content| {
-                        let page_bounds = page_content.bounds()?;
-                        // Translate strokes to to page mins and convert to XoppStrokStyle
-                        let xopp_strokestyles = page_content
-                            .strokes
-                            .into_iter()
-                            .filter_map(|mut stroke| {
-                                let mut stroke = Arc::make_mut(&mut stroke).clone();
-                                stroke.translate(-page_bounds.mins.coords);
-                                stroke.into_xopp(document.config.format.dpi())
-                            })
-                            .collect::<Vec<xoppformat::XoppStrokeType>>();
-
-                        // Extract the strokes
-                        let xopp_strokes = xopp_strokestyles
-                            .iter()
-                            .filter_map(|stroke| {
-                                if let xoppformat::XoppStrokeType::XoppStroke(xoppstroke) = stroke {
-                                    Some(xoppstroke.clone())
-                                } else {
-                                    None
-                                }
-                            })
-                            .collect::<Vec<xoppformat::XoppStroke>>();
-
-                        // Extract the texts
-                        let xopp_texts = xopp_strokestyles
-                            .iter()
-                            .filter_map(|stroke| {
-                                if let xoppformat::XoppStrokeType::XoppText(xopptext) = stroke {
-                                    Some(xopptext.clone())
-                                } else {
-                                    None
-                                }
-                            })
-                            .collect::<Vec<xoppformat::XoppText>>();
-
-                        // Extract the images
-                        let xopp_images = xopp_strokestyles
-                            .iter()
-                            .filter_map(|stroke| {
-                                if let xoppformat::XoppStrokeType::XoppImage(xoppstroke) = stroke {
-                                    Some(xoppstroke.clone())
-                                } else {
-                                    None
-                                }
-                            })
-                            .collect::<Vec<xoppformat::XoppImage>>();
-
-                        // In Rnote images are always rendered below strokes and text.
-                        // To match this behaviour accurately, images are separated into another layer.
-                        let image_layer = xoppformat::XoppLayer {
-                            name: None,
-                            strokes: vec![],
-                            texts: vec![],
-                            images: xopp_images,
-                        };
-
-                        let strokes_layer = xoppformat::XoppLayer {
-                            name: None,
-                            strokes: xopp_strokes,
-                            texts: xopp_texts,
-                            images: vec![],
-                        };
+                    .filter_map(|(page_bounds, layer_strokes)| {
+                        if page_bounds.extents()[0] <= f64::EPSILON
+                            || page_bounds.extents()[1] <= f64::EPSILON
+                        {
+                            return None;
+                        }
 
                         let page_dimensions = crate::utils::convert_coord_dpi(
                             page_bounds.extents(),
-                            document.config.format.dpi(),
+                            dpi,
                             xoppformat::XoppFile::DPI,
                         );
+
+                        let xopp_layers: Vec<xoppformat::XoppLayer> = layer_strokes
+                            .into_iter()
+                            .filter_map(|(_layer_id, layer_name, strokes)| {
+                                let elements: Vec<xoppformat::XoppStrokeType> = strokes
+                                    .into_iter()
+                                    .filter_map(|stroke| {
+                                        let mut s = (*stroke).clone();
+                                        s.translate(-page_bounds.mins.coords);
+                                        s.into_xopp(dpi)
+                                    })
+                                    .collect();
+
+                                if elements.is_empty() && layer_name.is_empty() {
+                                    None
+                                } else {
+                                    Some(xoppformat::XoppLayer {
+                                        name: if layer_name.is_empty() {
+                                            None
+                                        } else {
+                                            Some(layer_name)
+                                        },
+                                        strokes: vec![],
+                                        texts: vec![],
+                                        images: vec![],
+                                        elements,
+                                    })
+                                }
+                            })
+                            .collect();
+
+                        if xopp_layers.is_empty() {
+                            return None;
+                        }
 
                         Some(xoppformat::XoppPage {
                             width: page_dimensions[0],
                             height: page_dimensions[1],
                             background: xopp_background.clone(),
-                            layers: vec![image_layer, strokes_layer],
+                            layers: xopp_layers,
                         })
                     })
                     .collect::<Vec<xoppformat::XoppPage>>();

@@ -4231,6 +4231,7 @@ dependencies = [
  "serde",
  "serde_json",
  "slotmap",
+ "smol",
  "svg",
  "tempfile",
  "thiserror 2.0.18",

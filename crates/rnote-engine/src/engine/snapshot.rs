@@ -157,10 +157,58 @@ impl EngineSnapshot {
                 // Offsetting as rnote has one global coordinate space
                 let mut offset = na::Vector2::<f64>::zeros();
 
+                // Map from layer key to rnote DocumentLayerId for merging layers across pages.
+                // Named layers use their name as key; unnamed layers use page-level index.
+                let mut layer_id_map: std::collections::HashMap<String, DocumentLayerId> =
+                    std::collections::HashMap::new();
+                let mut is_first_layer = true;
+
                 for page in xopp_file.xopp_root.pages.into_iter() {
-                    for layers in page.layers.into_iter() {
-                        // import strokes
-                        for new_xoppstroke in layers.strokes.into_iter() {
+                    let mut page_unnamed_index: usize = 0;
+
+                    for xopp_layer in page.layers.into_iter() {
+                        let layer_key = xopp_layer
+                            .name
+                            .as_ref()
+                            .filter(|n| !n.is_empty())
+                            .cloned()
+                            .unwrap_or_else(|| {
+                                let index = page_unnamed_index;
+                                page_unnamed_index += 1;
+                                format!("__unnamed_{}", index)
+                            });
+
+                        let layer_id = if is_first_layer {
+                            is_first_layer = false;
+                            if let Some(ref name) = xopp_layer.name {
+                                if !name.is_empty() {
+                                    engine.store.rename_layer(0, name.clone());
+                                }
+                            }
+                            layer_id_map.insert(layer_key, 0);
+                            0
+                        } else if let Some(&existing_id) = layer_id_map.get(&layer_key) {
+                            existing_id
+                        } else {
+                            let display_name = if layer_key.starts_with("__unnamed_") {
+                                None
+                            } else {
+                                Some(layer_key.clone())
+                            };
+                            let new_id = engine.store.add_layer(display_name);
+                            layer_id_map.insert(layer_key, new_id);
+                            new_id
+                        };
+
+                        if !engine.store.set_active_layer(layer_id) {
+                            error!(
+                                "failed to set active layer to {} while importing xopp, skipping layer content",
+                                layer_id
+                            );
+                            continue;
+                        }
+
+                        for new_xoppstroke in xopp_layer.strokes.into_iter() {
                             match Stroke::from_xoppstroke(
                                 new_xoppstroke,
                                 offset,
@@ -171,14 +219,13 @@ impl EngineSnapshot {
                                 }
                                 Err(e) => {
                                     error!(
-                                        "Creating Stroke from XoppStroke failed while loading Xopp bytess, Err: {e:?}",
+                                        "Creating Stroke from XoppStroke failed while loading Xopp bytes, Err: {e:?}",
                                     );
                                 }
                             }
                         }
 
-                        // import images
-                        for new_xoppimage in layers.images.into_iter() {
+                        for new_xoppimage in xopp_layer.images.into_iter() {
                             match Stroke::from_xoppimage(
                                 new_xoppimage,
                                 offset,
@@ -195,9 +242,12 @@ impl EngineSnapshot {
                             }
                         }
 
-                        for new_xopptext in layers.texts.into_iter() {
-                            match Stroke::from_xopptext(new_xopptext, offset, xopp_import_prefs.dpi)
-                            {
+                        for new_xopptext in xopp_layer.texts.into_iter() {
+                            match Stroke::from_xopptext(
+                                new_xopptext,
+                                offset,
+                                xopp_import_prefs.dpi,
+                            ) {
                                 Ok(new_text) => {
                                     engine.store.insert_stroke(new_text, None);
                                 }

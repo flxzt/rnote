@@ -139,6 +139,8 @@ mod imp {
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             let obj = self.obj();
+            // Storing self.value before calling configure_spinner() to avoid issue #1777
+            let saved_value = self.value.get();
 
             match pspec.name() {
                 "value" => {
@@ -153,15 +155,13 @@ mod imp {
                     )
                     .expect("Could not convert u32 to MeasureUnit.");
                     if unit != self.unit.get() {
-                        let value = self.value.get();
-                        let dpi = self.dpi.get();
                         self.configure_spinner(unit, self.dpi.get());
                         obj.set_value(MeasureUnit::convert_measurement(
-                            value,
+                            saved_value,
                             self.unit.get(),
-                            dpi,
+                            self.dpi.get(),
                             unit,
-                            dpi,
+                            self.dpi.get(),
                         ));
                         self.unit.replace(unit);
                     }
@@ -171,7 +171,7 @@ mod imp {
                     if dpi != self.dpi.get() {
                         self.configure_spinner(self.unit.get(), dpi);
                         obj.set_value(MeasureUnit::convert_measurement(
-                            self.value.get(),
+                            saved_value,
                             self.unit.get(),
                             self.dpi.get(),
                             self.unit.get(),

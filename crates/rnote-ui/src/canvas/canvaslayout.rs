@@ -5,7 +5,7 @@ use gtk4::{
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
-use rnote_engine::{Camera, image};
+use rnote_engine::image;
 use std::cell::Cell;
 
 mod imp {
@@ -45,40 +45,40 @@ mod imp {
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            let total_zoom = canvas.engine_ref().camera.total_zoom();
-            let document = canvas.engine_ref().document.clone();
+
+            let (surface_mins, surface_maxs) = canvas.engine_ref().camera_surface_mins_maxs();
+            let surface_size = surface_maxs - surface_mins;
 
             if orientation == Orientation::Horizontal {
-                let natural_width = (document.width * total_zoom
-                    + 2.0 * Camera::OVERSHOOT_HORIZONTAL)
-                    .ceil() as i32;
-
+                let natural_width = surface_size.x.ceil() as i32;
                 (0, natural_width, -1, -1)
             } else {
-                let natural_height =
-                    (document.height * total_zoom + 2.0 * Camera::OVERSHOOT_VERTICAL).ceil() as i32;
-
+                let natural_height = surface_size.y.ceil() as i32;
                 (0, natural_height, -1, -1)
             }
         }
 
         fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
-            let hadj = canvas.hadjustment().unwrap();
-            let vadj = canvas.vadjustment().unwrap();
-            let hadj_value = hadj.value();
-            let vadj_value = vadj.value();
+
             let new_size = na::vector![width as f64, height as f64];
-            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
-            let new_offset = na::vector![hadj_value, vadj_value];
+            let offset = canvas.engine_ref().camera.offset();
+
+            // Configure adjustments using new size
+            let (surface_mins, surface_maxs) = canvas.engine_ref().camera_surface_mins_maxs();
+
+            let adjustment_maxs = RnCanvas::surface_to_adjustment(surface_maxs, surface_mins);
+            let adjustment_value = RnCanvas::surface_to_adjustment(offset, surface_mins);
+
+            canvas.configure_adjustments(new_size, adjustment_maxs, adjustment_value);
+
+            // Update the camera size and re-clamp the offset to the new size
+            let _ = canvas.engine_mut().camera_set_size(new_size);
+            let _ = canvas.engine_mut().camera_set_offset(offset);
+
+            // Calculate new viewport from the updated camera state
             let old_viewport = self.old_viewport.get();
             let new_viewport = canvas.engine_ref().camera.viewport();
-
-            canvas.configure_adjustments(new_size, offset_mins_maxs, new_offset);
-
-            // Update the camera
-            let _ = canvas.engine_mut().camera_set_offset(new_offset);
-            let _ = canvas.engine_mut().camera_set_size(new_size);
 
             // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering
             // before we reach it. This has two advantages: Strokes that might take longer to render have a head start

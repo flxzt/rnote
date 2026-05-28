@@ -610,9 +610,14 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = Camera::ZOOM_DEFAULT;
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
@@ -632,6 +637,10 @@ impl RnAppWindow {
                 let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
                 let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = f64::from(wrapper.scroller().width())
@@ -679,9 +688,14 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom =
                     canvas.engine_ref().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
@@ -699,9 +713,14 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = canvas.engine_ref().camera.total_zoom()
                     * (1.0 / (1.0 + RnCanvas::ZOOM_SCROLL_STEP));

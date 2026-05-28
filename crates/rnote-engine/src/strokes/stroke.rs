@@ -375,7 +375,7 @@ impl Stroke {
         let penpath = PenPath::try_from_elements(
             coords
                 .into_iter()
-                .zip(widths.into_iter())
+                .zip(widths)
                 .map(|(pos, pressure)| Element::new(pos + offset, pressure)),
         )
         .ok_or_else(|| anyhow::anyhow!("Could not generate pen path from coordinates vector"))?;

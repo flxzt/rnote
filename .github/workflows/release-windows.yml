@@ -41,7 +41,7 @@ jobs:
             | sed -e 's/[^A-Za-z0-9._-]/_/g')-x86_64" >> $GITHUB_OUTPUT
 
       - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
+        uses: msys2/setup-msys2@e9898307ac31d1a803454791be09ab9973336e1c
         with:
           release: false
           update: true
@@ -49,15 +49,15 @@ jobs:
             mingw-w64-x86_64-binutils
 
       - name: Install rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
         with:
-          toolchain: stable-gnu
+          toolchain: 1.95-gnu
 
       - name: Configure PATH
         run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" > ~/.bashrc
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prerequisites
         run: |
@@ -74,7 +74,7 @@ jobs:
         run: just ci=true build-win-installer
 
       - name: Upload installer (workflow artifact)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rnote-win-installer-artifact
           path: _mesonbuild/${{ steps.set_installer_name.outputs.name }}.exe

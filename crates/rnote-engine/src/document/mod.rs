@@ -9,8 +9,10 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
+use na::SimdPartialOrd;
 
 // Imports
+use self::background::PatternStyle;
 use crate::engine::EngineConfig;
 use crate::engine::snapshot::Snapshotable;
 use crate::{Camera, StrokeStore, WidgetFlags};
@@ -250,20 +252,26 @@ impl Document {
     ) -> bool {
         let padding_horizontal = self.config.format.width() * 2.0;
         let padding_vertical = self.config.format.height() * 2.0;
+        let padding = na::vector![padding_horizontal, padding_vertical];
 
-        let mut new_bounds = self.bounds().merged(
-            &viewport.extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical]),
-        );
+        let mut new_bounds = self.bounds();
+        let mut minimum_bounds = viewport.extend_right_and_bottom_by(padding);
+        minimum_bounds.mins = minimum_bounds.mins.simd_max(new_bounds.mins);
+
+        if !new_bounds.contains(&minimum_bounds) {
+            // Extend the bounds further than necessary, so that we don't trigger
+            // a resize again immediately when the viewport is slightly moved
+            new_bounds.merge(&minimum_bounds.extend_right_and_bottom_by(padding));
+        }
 
         if include_content {
             let keys = store.stroke_keys_as_rendered();
             let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds
-                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+                content_bounds.extend_right_and_bottom_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
-                    .extend_right_and_bottom_by(na::vector![padding_horizontal, padding_vertical])
+                    .extend_right_and_bottom_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }
@@ -295,19 +303,24 @@ impl Document {
     ) -> bool {
         let padding_horizontal = self.config.format.width() * 2.0;
         let padding_vertical = self.config.format.height() * 2.0;
+        let padding = na::vector![padding_horizontal, padding_vertical];
 
-        let mut new_bounds = self
-            .bounds()
-            .merged(&viewport.extend_by(na::vector![padding_horizontal, padding_vertical]));
+        let mut new_bounds = self.bounds();
+        let minimum_bounds = viewport.extend_by(padding);
+
+        if !new_bounds.contains(&minimum_bounds) {
+            // Extend the bounds further than necessary, so that we don't trigger
+            // a resize again immediately when the viewport is slightly moved
+            new_bounds.merge(&minimum_bounds.extend_by(padding));
+        }
 
         if include_content {
             let keys = store.stroke_keys_as_rendered();
             let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
+                content_bounds.extend_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
-                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
-                    .extend_by(na::vector![padding_horizontal, padding_vertical])
+                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into()).extend_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }
@@ -335,18 +348,21 @@ impl Document {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
         let doc_format_size = self.config.format.size();
         let pattern_size = self.config.background.pattern_size;
+        let pattern_style = self.config.background.pattern;
 
         if !config.snap_positions {
             return pos;
         }
 
-        let snap_to_grid = |pos: na::Vector2<f64>, grid_size: na::Vector2<f64>| {
-            let grid_pos = pos.component_div(&grid_size);
-            grid_size.component_mul(&grid_pos.round())
-        };
-
-        let pos_snapped_pattern = snap_to_grid(pos, pattern_size);
         let pos_snapped_document = snap_to_grid(pos, doc_format_size);
+        let pos_snapped_pattern = match pattern_style {
+            PatternStyle::None => pos,
+            PatternStyle::Lines => snap_to_line(pos, pattern_size[1]),
+            PatternStyle::Grid | PatternStyle::Dots => snap_to_grid(pos, pattern_size),
+            PatternStyle::IsometricGrid | PatternStyle::IsometricDots => {
+                snap_to_isometric_pattern(pos, pattern_size[1])
+            }
+        };
 
         let mut pos_snapped = pos_snapped_pattern;
 
@@ -360,6 +376,51 @@ impl Document {
 
         pos_snapped
     }
+}
+
+fn snap_to_grid(pos: na::Vector2<f64>, grid_size: na::Vector2<f64>) -> na::Vector2<f64> {
+    let grid_pos = pos.component_div(&grid_size);
+    grid_size.component_mul(&grid_pos.round())
+}
+
+fn snap_to_line(pos: na::Vector2<f64>, line_spacing: f64) -> na::Vector2<f64> {
+    let line_pos = pos[1] / line_spacing;
+    na::vector![pos[0], line_spacing * line_pos.round()]
+}
+
+fn snap_to_isometric_pattern(pos: na::Vector2<f64>, spacing: f64) -> na::Vector2<f64> {
+    const SQRT_THREE: f64 = 1.7320508075688772;
+
+    let column_width = spacing * SQRT_THREE;
+    let row_height = spacing * 0.5;
+
+    // convert the cartesian coordinates to cube coordinates
+    let q = pos[0] / column_width + pos[1] / spacing;
+    let r = pos[0] / column_width - pos[1] / spacing;
+    let s = -q - r;
+
+    // cube coordinate rounding
+    // https://www.redblobgames.com/grids/hexagons/#rounding
+    let mut rounded_q = q.round();
+    let mut rounded_r = r.round();
+    let rounded_s = s.round();
+
+    let q_diff = (rounded_q - q).abs();
+    let r_diff = (rounded_r - r).abs();
+    let s_diff = (rounded_s - s).abs();
+
+    // we can omit the s coordinate case, because we can compute it from q and r and don't need it in the conversion below
+    if q_diff > r_diff && q_diff > s_diff {
+        rounded_q = -rounded_r - rounded_s;
+    } else if r_diff > s_diff {
+        rounded_r = -rounded_q - rounded_s;
+    }
+
+    // convert the rounded cube coordinates back to cartesian coordinates
+    na::vector![
+        (rounded_q + rounded_r) * column_width * 0.5,
+        (rounded_q - rounded_r) * row_height,
+    ]
 }
 
 #[must_use = "Determines if the resize flag should be set"]

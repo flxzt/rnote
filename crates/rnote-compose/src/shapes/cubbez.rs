@@ -37,7 +37,7 @@ impl Transformable for CubicBezier {
     }
 
     fn rotate(&mut self, angle: f64, center: Vector2) {
-        let pose = DPose2::IDENTITY.append_rotation_wrt_center(angle, center);
+        let pose = DPose2::from_rotation_wrt_center(angle, center);
         self.start = pose.transform_point(self.start);
         self.cp1 = pose.transform_point(self.cp1);
         self.cp2 = pose.transform_point(self.cp2);

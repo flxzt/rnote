@@ -61,7 +61,7 @@ impl Transformable for Segment {
     }
 
     fn rotate(&mut self, angle: f64, center: Vector2) {
-        let pose = DPose2::IDENTITY.append_rotation_wrt_center(angle, center);
+        let pose = DPose2::from_rotation_wrt_center(angle, center);
         match self {
             Self::LineTo { end } => {
                 end.pos = pose.transform_point(end.pos);

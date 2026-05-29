@@ -505,16 +505,16 @@ pub trait DPose2Ext
 where
     Self: Sized,
 {
-    /// Append rotation with regards to a supplied center
-    fn append_rotation_wrt_center(self, rotation: f64, center: Vector2) -> Self;
+    /// Create a pose from a rotation with regards to a center
+    fn from_rotation_wrt_center(rotation: f64, center: Vector2) -> Self;
 }
 
 impl DPose2Ext for DPose2 {
-    fn append_rotation_wrt_center(self, angle: f64, center: Vector2) -> Self {
+    fn from_rotation_wrt_center(angle: f64, center: Vector2) -> Self {
         DPose2::from_rotation(DRot2::from_angle(angle))
             .prepend_translation(-center)
             .append_translation(center)
-            * self
+            * Self::IDENTITY
     }
 }
 

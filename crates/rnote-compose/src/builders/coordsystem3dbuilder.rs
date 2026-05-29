@@ -116,11 +116,7 @@ impl CoordSystem3DBuilder {
 
         let backward_axis = Line {
             start: center,
-            end: center
-                + Vector2 {
-                    x: tip_x_offset,
-                    y: -tip_x_offset,
-                },
+            end: center + Vector2::new(tip_x_offset, -tip_x_offset),
         };
 
         vec![

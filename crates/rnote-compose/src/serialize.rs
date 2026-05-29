@@ -25,10 +25,9 @@ pub mod glam_vector2_dp3 {
 
     /// Serialize a [`Vector2`] rounded to 3 decimal places
     pub fn serialize<S: Serializer>(v: &Vector2, s: S) -> Result<S::Ok, S::Error> {
-        const D: f64 = (10_u32.pow(3)) as f64;
-        let mut a = v * D;
-        a = Vector2::new(a.x.round(), a.y.round());
-        (a / D).serialize(s)
+        const SCALE: f64 = (10_u32.pow(3)) as f64;
+        let r: p2d::math::Vec2 = (v * SCALE).round() / SCALE;
+        r.serialize(s)
     }
 
     /// Deserialize a [`Vector2`]

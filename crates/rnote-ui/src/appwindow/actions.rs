@@ -1127,13 +1127,13 @@ impl RnAppWindow {
                 let canvas = wrapper.canvas();
 
                 let last_contextmenu_pos = wrapper.last_contextmenu_pos().map(|vec2| {
-                    let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
+                    let p = graphene::Point::from_p2d_vec(vec2);
                     canvas
                         .engine_ref()
                         .camera
                         .transform()
                         .inverse()
-                        .transform_point2(Vector2::new(p.x() as f64, p.y() as f64))
+                        .transform_point2(p.to_p2d_vec())
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos);

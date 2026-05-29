@@ -4,13 +4,13 @@ use gtk4::{
     LayoutManager, Orientation, SizeRequestMode, Widget, glib, prelude::*, subclass::prelude::*,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::ext::AabbExt;
 use rnote_engine::image;
 use std::cell::Cell;
 
 mod imp {
     use super::*;
-    use p2d::math::Vector2;
 
     #[derive(Debug)]
     pub(crate) struct RnCanvasLayout {

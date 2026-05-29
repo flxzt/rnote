@@ -62,8 +62,6 @@ impl Engine {
 
             if let Some(image) = &self.origin_indicator_image {
                 // Only create the texture once, it is expensive
-
-                use p2d::math::Vector2;
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {

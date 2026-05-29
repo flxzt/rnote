@@ -356,7 +356,7 @@ fn retrieve_pointer_elements(
                     .camera
                     .transform()
                     .inverse()
-                    .transform_point2(Vector2::new(p.x() as f64, p.y() as f64))
+                    .transform_point2(p.to_p2d_vec())
             })
             .unwrap()
     };

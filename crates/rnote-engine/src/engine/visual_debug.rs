@@ -142,8 +142,6 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
 
     // A statistics overlay
     {
-        use p2d::math::Vector2;
-
         let text_bounds = Aabb::new(
             Vector2::new(
                 surface_bounds.maxs[0] - 320.0,

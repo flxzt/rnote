@@ -4,8 +4,10 @@ use crate::{Camera, Drawable};
 use itertools::Itertools;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::prelude::DPose2;
+use p2d::math::Vector2;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
-use rnote_compose::ext::{AabbExt, Affine2Ext, Vector2Ext};
+use rnote_compose::ext::{AabbExt, DAffine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, Transform, color};
@@ -282,14 +284,13 @@ impl TextStyle {
             .map_err(|e| anyhow::anyhow!("Building piet text layout failed, Err: {e:?}"))
     }
 
-    pub fn untransformed_size<T>(&self, piet_text: &mut T, text: String) -> Option<na::Vector2<f64>>
+    pub fn untransformed_size<T>(&self, piet_text: &mut T, text: String) -> anyhow::Result<Vector2>
     where
         T: piet::Text,
     {
-        let text_layout = self.build_text_layout(piet_text, text).ok()?;
-
+        let text_layout = self.build_text_layout(piet_text, text)?;
         let size = text_layout.size();
-        Some(na::vector![size.width, size.height])
+        Ok(Vector2::new(size.width, size.height))
     }
 
     /// The cursors line metric relative to the textstroke bounds.
@@ -446,22 +447,22 @@ impl Default for TextStroke {
     fn default() -> Self {
         Self {
             text: String::default(),
-            transform: Transform::default(),
+            transform: Transform::IDENTITY,
             text_style: TextStyle::default(),
         }
     }
 }
 
 impl Transformable for TextStroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.transform.append_translation_mut(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        self.transform.append_rotation_wrt_point_mut(angle, center);
+    fn rotate(&mut self, angle: f64, center: Vector2) {
+        self.transform.append_rotation_wrt_center_mut(angle, center);
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.transform.append_scale_mut(scale);
     }
 }
@@ -471,11 +472,11 @@ impl Shapeable for TextStroke {
         let untransformed_size = self
             .text_style
             .untransformed_size(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size))
-            .maxs(&na::vector![1.0, 1.0]);
+            .unwrap_or(Vector2::splat(self.text_style.font_size))
+            .maxs(&Vector2::splat(1.));
 
         self.transform
-            .transform_aabb(Aabb::new(na::point![0.0, 0.0], untransformed_size.into()))
+            .transform_aabb(Aabb::new(Vector2::ZERO, untransformed_size))
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -499,14 +500,10 @@ impl Shapeable for TextStroke {
         let text_size = text_layout.size();
 
         if hitboxes.is_empty() {
-            hitboxes.push(
-                self.transform.transform_aabb(Aabb::new_positive(
-                    na::point![0.0, 0.0],
-                    na::vector![text_size.width, text_size.height]
-                        .maxs(&na::vector![1.0, 1.0])
-                        .into(),
-                )),
-            )
+            hitboxes.push(self.transform.transform_aabb(Aabb::new_positive(
+                Vector2::ZERO,
+                Vector2::new(text_size.width, text_size.height).maxs(&Vector2::splat(1.)),
+            )))
         }
 
         hitboxes
@@ -530,7 +527,7 @@ impl Drawable for TextStroke {
             .build_text_layout(cx.text(), self.text.clone())
         {
             cx.transform(self.transform.affine.to_kurbo());
-            cx.draw_text(&text_layout, kurbo::Point::new(0.0, 0.0))
+            cx.draw_text(&text_layout, kurbo::Point::ZERO)
         }
 
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -539,10 +536,10 @@ impl Drawable for TextStroke {
 }
 
 impl TextStroke {
-    pub fn new(text: String, upper_left_pos: na::Vector2<f64>, text_style: TextStyle) -> Self {
+    pub fn new(text: String, upper_left_pos: Vector2, text_style: TextStyle) -> Self {
         Self {
             text,
-            transform: Transform::new_w_isometry(na::Isometry2::new(upper_left_pos, 0.0)),
+            transform: Transform::new_w_pose(DPose2::from_translation(upper_left_pos)),
             text_style,
         }
     }
@@ -554,10 +551,7 @@ impl TextStroke {
     /// Get a cursor matching best for the given coordinate.
     ///
     /// `coord` must be in global coordinate space.
-    pub fn get_cursor_for_global_coord(
-        &self,
-        coord: na::Vector2<f64>,
-    ) -> anyhow::Result<GraphemeCursor> {
+    pub fn get_cursor_for_global_coord(&self, coord: Vector2) -> anyhow::Result<GraphemeCursor> {
         let text_layout = self
             .text_style
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
@@ -566,8 +560,7 @@ impl TextStroke {
             self.transform
                 .affine
                 .inverse()
-                .transform_point(&coord.into())
-                .coords
+                .transform_point2(coord)
                 .to_kurbo_point(),
         );
 

@@ -9,6 +9,7 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -16,9 +17,9 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct LineBuilder {
     /// Start position.
-    start: na::Vector2<f64>,
+    start: Vector2,
     /// Current position.
-    current: na::Vector2<f64>,
+    current: Vector2,
 }
 
 impl BuilderCreator for LineBuilder {

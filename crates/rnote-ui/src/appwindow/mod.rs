@@ -12,6 +12,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
 use gtk4::{Application, IconTheme, Widget, gdk, gio, glib};
+use p2d::math::Vector2;
 use rnote_compose::Color;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
@@ -550,7 +551,7 @@ impl RnAppWindow {
     pub(crate) async fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
     ) {
         self.overlays().progressbar_start_pulsing();
@@ -580,7 +581,7 @@ impl RnAppWindow {
     async fn try_open_file(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
     ) -> anyhow::Result<bool> {
         let file_imported = match FileType::lookup_file_type(&input_file) {

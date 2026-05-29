@@ -1,11 +1,12 @@
 // Imports
 use super::Line;
-use crate::ext::Vector2Ext;
+use crate::ext::{DPose2Ext, Vector2Ext};
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
 use kurbo::{PathEl, Shape};
-use na::Rotation2;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::prelude::{DPose2, DRot2};
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 /// All doc-comments of this file and [ArrowBuilder][crate::builders] rely on the following
@@ -29,32 +30,27 @@ use serde::{Deserialize, Serialize};
 #[serde(default, rename = "arrow")]
 pub struct Arrow {
     /// Start of the arrow.
-    pub start: na::Vector2<f64>,
+    pub start: Vector2,
 
     /// Tip of the arow.
-    pub tip: na::Vector2<f64>,
+    pub tip: Vector2,
 }
 
 impl Transformable for Arrow {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.start += offset;
         self.tip += offset;
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        let isometry = {
-            let mut isometry = na::Isometry2::identity();
-            isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
-            isometry
-        };
-
-        self.start = isometry.transform_point(&self.start.into()).coords;
-        self.tip = isometry.transform_point(&self.tip.into()).coords;
+    fn rotate(&mut self, angle: f64, center: Vector2) {
+        let pose = DPose2::IDENTITY.append_rotation_wrt_center(angle, center);
+        self.start = pose.transform_point(self.start);
+        self.tip = pose.transform_point(self.tip);
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
-        self.start = self.start.component_mul(&scale);
-        self.tip = self.tip.component_mul(&scale);
+    fn scale(&mut self, scale: Vector2) {
+        self.start *= scale;
+        self.tip *= scale;
     }
 }
 
@@ -64,8 +60,7 @@ impl Shapeable for Arrow {
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
-        let n_splits = super::hitbox_elems_for_shape_len((self.tip - self.start).norm());
-
+        let n_splits = super::hitbox_elems_for_shape_len((self.tip - self.start).length());
         self.split(n_splits)
             .into_iter()
             .map(|line| line.bounds())
@@ -86,11 +81,8 @@ impl Arrow {
     /// The angle for `rline` and `lline` to the stem of the arrow.
     const TIP_LINES_STEM_OBTUSE_ANGLE: f64 = (13.0 / 16.0) * std::f64::consts::PI;
 
-    /// The default direction vector (the stem) if the stem has length 0.
-    const DEFAULT_DIRECTION_VECTOR: na::Vector2<f64> = na::Vector2::new(1.0, 0.0);
-
     /// Creating a new arrow with the given start and tip vectors.
-    pub fn new(start: na::Vector2<f64>, tip: na::Vector2<f64>) -> Self {
+    pub fn new(start: Vector2, tip: Vector2) -> Self {
         Self { start, tip }
     }
 
@@ -100,10 +92,10 @@ impl Arrow {
             .map(|i| {
                 let sub_start = self
                     .start
-                    .lerp(&self.tip, f64::from(i) / f64::from(n_splits));
+                    .lerp(self.tip, f64::from(i) / f64::from(n_splits));
                 let sub_end = self
                     .start
-                    .lerp(&self.tip, f64::from(i + 1) / f64::from(n_splits));
+                    .lerp(self.tip, f64::from(i + 1) / f64::from(n_splits));
 
                 Line {
                     start: sub_start,
@@ -133,48 +125,35 @@ impl Arrow {
     /// Compute the `lline` of the arrow tip.
     ///
     /// Optionally add the stroke width to adjust the length of the line.
-    pub fn compute_lline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
+    pub fn compute_lline(&self, stroke_width: Option<f64>) -> Vector2 {
         let vec_a =
             self.compute_stem_direction_vector() * Self::compute_tip_lines_length(stroke_width);
-        let rotation_matrix = Rotation2::new(Self::TIP_LINES_STEM_OBTUSE_ANGLE);
-
-        rotation_matrix * vec_a + self.tip
+        DRot2::new(Self::TIP_LINES_STEM_OBTUSE_ANGLE) * vec_a + self.tip
     }
 
     /// Compute the `rline` of the arrow tip.
     ///
     /// Optionally add the stroke width to adjust the length of the line.
-    pub fn compute_rline(&self, stroke_width: Option<f64>) -> na::Vector2<f64> {
+    pub fn compute_rline(&self, stroke_width: Option<f64>) -> Vector2 {
         let vec_b =
             self.compute_stem_direction_vector() * Self::compute_tip_lines_length(stroke_width);
-        let rotation_matrix = Rotation2::new(-Self::TIP_LINES_STEM_OBTUSE_ANGLE);
-
-        rotation_matrix * vec_b + self.tip
+        DRot2::new(-Self::TIP_LINES_STEM_OBTUSE_ANGLE) * vec_b + self.tip
     }
 
     /// Compute the bounds of the arrow in respect to the given stroke width.
     pub fn internal_compute_bounds(&self, stroke_width: Option<f64>) -> Aabb {
-        let points: Vec<na::Point2<f64>> = {
-            let lline = self.compute_lline(stroke_width);
-            let rline = self.compute_rline(stroke_width);
-
-            [lline, rline, self.start, self.tip]
-                .into_iter()
-                .map(|vector| na::Point2::new(vector.x, vector.y))
-                .collect()
-        };
-
-        Aabb::from_points(points)
+        let lline = self.compute_lline(stroke_width);
+        let rline = self.compute_rline(stroke_width);
+        Aabb::from_points([lline, rline, self.start, self.tip])
     }
 
     /// Compute the normalized direction vector from `start` to `tip`.
-    fn compute_stem_direction_vector(&self) -> na::Vector2<f64> {
+    fn compute_stem_direction_vector(&self) -> Vector2 {
         let direction_vector = self.tip - self.start;
-
-        if direction_vector.norm() == 0.0 {
-            Self::DEFAULT_DIRECTION_VECTOR
+        if direction_vector.length() == 0.0 {
+            Vector2::X
         } else {
-            direction_vector / direction_vector.norm()
+            direction_vector / direction_vector.length()
         }
     }
 

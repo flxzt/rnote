@@ -17,8 +17,6 @@ async-fs = { workspace = true }
 clap = { workspace = true }
 dialoguer = { workspace = true }
 futures = { workspace = true }
-glam = { workspace = true }
-glamx = { workspace = true }
 image = { workspace = true }
 indicatif = { workspace = true }
 open = { workspace = true }

@@ -1675,35 +1675,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "glam"
-version = "0.32.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f70749695b063ecbf6b62949ccccde2e733ec3ecbbd71d467dca4e5c6c97cca0"
-dependencies = [
- "serde_core",
-]
-
-[[package]]
 name = "glamx"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "375b4fa374a343fef990a18a6e0413d54bd990c6d7b8c7ada2d3c884275edea3"
 dependencies = [
  "approx 0.5.1",
- "glam 0.30.10",
- "num-traits",
- "serde",
- "simba",
-]
-
-[[package]]
-name = "glamx"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59157a5886a9c68eb694df59254f7c9419c5648fc6ca1b728601a8baecc0dfcd"
-dependencies = [
- "approx 0.5.1",
- "glam 0.32.1",
+ "glam",
  "num-traits",
  "serde",
  "simba",
@@ -3321,7 +3299,7 @@ dependencies = [
  "either",
  "ena",
  "foldhash 0.2.0",
- "glamx 0.1.3",
+ "glamx",
  "hashbrown 0.16.1",
  "log",
  "num-derive",
@@ -3933,8 +3911,6 @@ dependencies = [
  "fs_extra",
  "futures",
  "gettext-rs",
- "glam 0.32.1",
- "glamx 0.2.0",
  "glib-build-tools",
  "gtk4",
  "hayro",
@@ -3983,8 +3959,6 @@ dependencies = [
  "clap",
  "dialoguer",
  "futures",
- "glam 0.32.1",
- "glamx 0.2.0",
  "image",
  "indicatif",
  "open",
@@ -4004,8 +3978,6 @@ dependencies = [
  "approx 0.5.1",
  "base64",
  "clap",
- "glam 0.32.1",
- "glamx 0.2.0",
  "ink-stroke-modeler-rs",
  "kurbo 0.11.3",
  "num-derive",
@@ -4040,8 +4012,6 @@ dependencies = [
  "futures",
  "geo",
  "gio",
- "glam 0.32.1",
- "glamx 0.2.0",
  "glib",
  "gtk4",
  "hayro",

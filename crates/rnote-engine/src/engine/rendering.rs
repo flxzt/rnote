@@ -2,6 +2,7 @@
 use crate::Image;
 use crate::{Engine, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::color;
 use tracing::error;
@@ -61,6 +62,8 @@ impl Engine {
 
             if let Some(image) = &self.origin_indicator_image {
                 // Only create the texture once, it is expensive
+
+                use p2d::math::Vector2;
                 let new_texture = match image.to_memtexture() {
                     Ok(t) => t,
                     Err(e) => {
@@ -75,8 +78,7 @@ impl Engine {
                     gsk::TextureNode::new(
                         &new_texture,
                         &graphene::Rect::from_p2d_aabb(
-                            origin_indicator_bounds()
-                                .scaled(&na::Vector2::repeat(1.0 / total_zoom)),
+                            origin_indicator_bounds().scaled(Vector2::splat(1.0 / total_zoom)),
                         ),
                     )
                     .upcast(),
@@ -340,8 +342,8 @@ impl Engine {
 
 /// Origin indicator bounds in document coordinate space.
 fn origin_indicator_bounds() -> Aabb {
-    const SIZE: na::Vector2<f64> = na::vector![17., 17.];
-    Aabb::from_half_extents(na::Vector2::zeros().into(), SIZE * 0.5)
+    const SIZE: Vector2 = Vector2::splat(17.);
+    Aabb::from_half_extents(Vector2::ZERO, SIZE * 0.5)
 }
 
 fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {

@@ -1,4 +1,6 @@
 // Imports
+#[cfg(feature = "ui")]
+use p2d::math::Vector2;
 use rnote_compose::Color;
 
 pub const COLOR_POS: Color = Color {
@@ -90,7 +92,7 @@ pub(crate) fn draw_bounds_to_gtk_snapshot(
 #[cfg(feature = "ui")]
 pub(crate) fn draw_pos_to_gtk_snapshot(
     snapshot: &gtk4::Snapshot,
-    pos: na::Vector2<f64>,
+    pos: Vector2,
     color: Color,
     width: f64,
 ) {
@@ -140,15 +142,17 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
 
     // A statistics overlay
     {
+        use p2d::math::Vector2;
+
         let text_bounds = Aabb::new(
-            na::point![
+            Vector2::new(
                 surface_bounds.maxs[0] - 320.0,
-                surface_bounds.mins[1] + 20.0
-            ],
-            na::point![
+                surface_bounds.mins[1] + 20.0,
+            ),
+            Vector2::new(
                 surface_bounds.maxs[0] - 20.0,
-                surface_bounds.mins[1] + 120.0
-            ],
+                surface_bounds.mins[1] + 120.0,
+            ),
         );
         let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
         let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
@@ -189,7 +193,7 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
         );
         piet_cx.draw_text(
             &text_layout,
-            (text_bounds.mins.coords + na::vector![10.0, 10.0]).to_kurbo_point(),
+            (text_bounds.mins + Vector2::splat(10.0)).to_kurbo_point(),
         );
         piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
     }

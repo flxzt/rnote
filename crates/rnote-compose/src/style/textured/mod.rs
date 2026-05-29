@@ -14,6 +14,7 @@ use crate::penpath::Segment;
 use crate::shapes::{Line, Shapeable};
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rand_distr::{Distribution, Uniform};
 
 impl Composer<TexturedOptions> for Line {
@@ -112,7 +113,7 @@ impl Composer<TexturedOptions> for PenPath {
 
 fn compose_textured_line_path(line: &Line, options: &TexturedOptions) -> kurbo::BezPath {
     // Return early if line has no length, else Uniform::new() will panic for range with low >= high
-    if (line.end - line.start).magnitude() <= 0.0 {
+    if (line.end - line.start).length() <= 0.0 {
         return kurbo::BezPath::new();
     }
 
@@ -149,14 +150,16 @@ fn compose_textured_line_path(line: &Line, options: &TexturedOptions) -> kurbo::
             .distribution
             .sample_for_range_symmetrical_clipped(&mut rng, range_y.clone());
 
-        let pos = line_rect.transform.affine * na::point![x_pos, y_pos];
+        let pos = line_rect
+            .transform
+            .affine
+            .transform_point2(Vector2::new(x_pos, y_pos));
 
-        let rotation_angle = na::Rotation2::rotation_between(&na::Vector2::x(), &line_vec).angle()
-            + distr_dots_rot.sample(&mut rng);
-        let radii = na::vector![
+        let rotation_angle = Vector2::X.angle_to(line_vec) + distr_dots_rot.sample(&mut rng);
+        let radii = Vector2::new(
             distr_dots_rx.sample(&mut rng),
-            distr_dots_ry.sample(&mut rng)
-        ];
+            distr_dots_ry.sample(&mut rng),
+        );
 
         let ellipse = kurbo::Ellipse::new(
             kurbo::Point {

@@ -1,6 +1,7 @@
 // Imports
 use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 
 /// Types that behave as a shape.
 pub trait Shapeable: Transformable {
@@ -9,11 +10,11 @@ pub trait Shapeable: Transformable {
     /// The hitboxes of the shape.
     fn hitboxes(&self) -> Vec<Aabb>;
     /// The absolute position of the shapes upper-left corner.
-    fn pos(&self) -> na::Vector2<f64> {
-        self.bounds().mins.coords
+    fn pos(&self) -> Vector2 {
+        self.bounds().mins
     }
     /// Set the absolute position of the shapes upper-left corner.
-    fn set_pos(&mut self, pos: na::Vector2<f64>) {
+    fn set_pos(&mut self, pos: Vector2) {
         self.translate(-self.pos());
         self.translate(pos)
     }

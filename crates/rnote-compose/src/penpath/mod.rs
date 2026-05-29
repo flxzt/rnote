@@ -12,6 +12,7 @@ use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
 use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,13 +29,13 @@ pub struct PenPath {
 
 impl Shapeable for PenPath {
     fn bounds(&self) -> Aabb {
-        let mut bounds = Aabb::from_points(std::iter::once(self.start.pos.into()));
+        let mut bounds = Aabb::from_points(std::iter::once(self.start.pos));
 
         let mut prev = self.start;
         for seg in self.segments.iter() {
             match seg {
                 Segment::LineTo { end } => {
-                    bounds.take_point(end.pos.into());
+                    bounds.take_point(end.pos);
 
                     prev = *end;
                 }
@@ -78,21 +79,21 @@ impl Shapeable for PenPath {
 }
 
 impl Transformable for PenPath {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.start.translate(offset);
         self.segments.iter_mut().for_each(|segment| {
             segment.translate(offset);
         });
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         self.start.rotate(angle, center);
         self.segments.iter_mut().for_each(|segment| {
             segment.rotate(angle, center);
         });
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.start.scale(scale);
         self.segments.iter_mut().for_each(|segment| {
             segment.scale(scale);
@@ -163,8 +164,8 @@ impl PenPath {
             return vec![(
                 None,
                 vec![Aabb::from_half_extents(
-                    self.start.pos.into(),
-                    na::Vector2::from_element(self.start.pressure),
+                    self.start.pos,
+                    Vector2::splat(self.start.pressure),
                 )],
             )];
         }
@@ -173,7 +174,7 @@ impl PenPath {
         for (i, seg) in self.segments.iter().enumerate() {
             match seg {
                 Segment::LineTo { end } => {
-                    let n_splits = no_subsegments_for_segment_len((end.pos - prev.pos).magnitude());
+                    let n_splits = no_subsegments_for_segment_len((end.pos - prev.pos).length());
                     let line = Line {
                         start: prev.pos,
                         end: end.pos,

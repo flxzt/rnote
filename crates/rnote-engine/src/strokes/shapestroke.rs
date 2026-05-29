@@ -2,6 +2,7 @@
 use super::Content;
 use crate::{Drawable, strokes::content};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::Style;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shape;
@@ -85,13 +86,13 @@ impl Shapeable for ShapeStroke {
 }
 
 impl Transformable for ShapeStroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.shape.translate(offset);
     }
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         self.shape.rotate(angle, center);
     }
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.shape.scale(scale);
         // Using the geometric mean behaves the best when scaling non-uniformly.
         let scale_scalar = (scale[0] * scale[1]).sqrt();

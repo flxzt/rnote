@@ -36,8 +36,6 @@ futures = "0.3.31"
 geo = "0.32.0"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
 gio = "0.21.1"
-glam = { version = "0.32.1", features = ["serde"] }
-glamx = { version = "0.2.0", features = ["serde"] }
 glib = "0.21.1"
 glib-build-tools = "0.21.0"
 gtk4 = { version = "0.10.0", features = ["v4_18"] }

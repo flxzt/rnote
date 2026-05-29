@@ -1,15 +1,19 @@
 // Imports
+use crate::ext::DPose2Ext;
 use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
+use p2d::glamx::prelude::DPose2;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 /// A pen input element.
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, rename = "element")]
 pub struct Element {
-    #[serde(rename = "pos", with = "crate::serialize::na_vector2_f64_dp3")]
+    #[serde(rename = "pos", with = "crate::serialize::glam_vector2_dp3")]
     /// The position of the element.
-    pub pos: na::Vector2<f64>,
+    pub pos: Vector2,
     #[serde(rename = "pressure", with = "crate::serialize::f64_dp3")]
     /// The pen pressure. The valid range is [0.0, 1.0].
     pub pressure: f64,
@@ -17,23 +21,22 @@ pub struct Element {
 
 impl Default for Element {
     fn default() -> Self {
-        Self::new(na::vector![0.0, 0.0], Self::PRESSURE_DEFAULT)
+        Self::new(Vector2::ZERO, Self::PRESSURE_DEFAULT)
     }
 }
 
 impl Transformable for Element {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.pos += offset;
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        let mut isometry = na::Isometry2::identity();
-        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
-        self.pos = isometry.transform_point(&self.pos.into()).coords;
+    fn rotate(&mut self, angle: f64, center: Vector2) {
+        let pose = DPose2::IDENTITY.append_rotation_wrt_center(angle, center);
+        self.pos = pose.transform_point(self.pos);
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
-        self.pos = self.pos.component_mul(&scale);
+    fn scale(&mut self, scale: Vector2) {
+        self.pos *= scale;
     }
 }
 
@@ -42,7 +45,7 @@ impl Element {
     pub const PRESSURE_DEFAULT: f64 = 0.5;
 
     /// A new element from a position and pressure.
-    pub fn new(pos: na::Vector2<f64>, pressure: f64) -> Self {
+    pub fn new(pos: Vector2, pressure: f64) -> Self {
         Self {
             pos,
             pressure: pressure.clamp(0.0, 1.0),
@@ -58,11 +61,11 @@ impl Element {
     ///
     /// Returns true if element pos is not inside the bounds.
     pub fn filter_by_bounds(&self, filter_bounds: Aabb) -> bool {
-        !filter_bounds.contains_local_point(&self.pos.into())
+        !filter_bounds.contains_local_point(self.pos)
     }
 
     /// Transforms the element position by the given transform.
-    pub fn transform_by(&mut self, transform: na::Affine2<f64>) {
-        self.pos = transform.transform_point(&self.pos.into()).coords;
+    pub fn transform_by(&mut self, transform: DAffine2) {
+        self.pos = transform.transform_point2(self.pos);
     }
 }

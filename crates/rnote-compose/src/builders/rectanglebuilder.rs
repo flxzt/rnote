@@ -8,6 +8,8 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style, Transform};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::glamx::prelude::DPose2;
+use p2d::math::Vector2;
 use p2d::shape::Cuboid;
 use piet::RenderContext;
 use std::time::Instant;
@@ -16,9 +18,9 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct RectangleBuilder {
     /// Start position.
-    start: na::Vector2<f64>,
+    start: Vector2,
     /// Current position.
-    current: na::Vector2<f64>,
+    current: Vector2,
 }
 
 impl BuilderCreator for RectangleBuilder {
@@ -80,7 +82,7 @@ impl RectangleBuilder {
     /// The current state as a rectangle.
     pub fn state_as_rect(&self) -> Rectangle {
         let center = (self.start + self.current) * 0.5;
-        let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
+        let transform = Transform::new_w_pose(DPose2::from_translation(center));
         let half_extents = (self.current - self.start) * 0.5;
         let cuboid = Cuboid::new(half_extents);
 

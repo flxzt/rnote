@@ -4,6 +4,7 @@ use crate::fileformats::rnoteformat::RnoteFile;
 use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
 use futures::channel::oneshot;
+use p2d::math::Vector2;
 use rayon::prelude::*;
 use rnote_compose::SplitOrder;
 use rnote_compose::transform::Transformable;
@@ -386,7 +387,7 @@ impl Engine {
     ///
     /// It is ensureed this [StrokeContent] has bounds and a background.
     /// Therefore it is ensured generating a SVG from it will never return `Ok(None)`.
-    pub fn extract_thumbnail_content(&self, size: na::Vector2<f64>) -> StrokeContent {
+    pub fn extract_thumbnail_content(&self, size: Vector2) -> StrokeContent {
         let scale_factor = self.camera.scale_factor();
         let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
         let bounds = bounds.unwrap_or_else(|| self.document.bounds());
@@ -574,7 +575,7 @@ impl Engine {
                             .into_iter()
                             .filter_map(|mut stroke| {
                                 let mut stroke = Arc::make_mut(&mut stroke).clone();
-                                stroke.translate(-page_bounds.mins.coords);
+                                stroke.translate(-page_bounds.mins);
                                 stroke.into_xopp(document.config.format.dpi())
                             })
                             .collect::<Vec<xoppformat::XoppStrokeType>>();
@@ -932,7 +933,7 @@ impl Engine {
             ..Default::default()
         };
 
-        let content = self.extract_thumbnail_content(na::vector![size as f64, size as f64]);
+        let content = self.extract_thumbnail_content(Vector2::new(size as f64, size as f64));
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
                 let svg = content

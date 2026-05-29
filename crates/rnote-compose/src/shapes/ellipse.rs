@@ -1,11 +1,13 @@
 // Imports
 use super::Line;
 use crate::Transform;
-use crate::ext::{Affine2Ext, Vector2Ext};
+use crate::ext::{DAffine2Ext, Vector2Ext};
 use crate::shapes::Shapeable;
 use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::prelude::DPose2;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13,8 +15,8 @@ use serde::{Deserialize, Serialize};
 /// An Ellipse.
 pub struct Ellipse {
     /// The radii of the ellipse.
-    #[serde(rename = "radii", with = "crate::serialize::na_vector2_f64_dp3")]
-    pub radii: na::Vector2<f64>,
+    #[serde(rename = "radii", with = "crate::serialize::glam_vector2_dp3")]
+    pub radii: Vector2,
     /// The transform of the center of the ellipse.
     #[serde(rename = "transform")]
     pub transform: Transform,
@@ -23,37 +25,30 @@ pub struct Ellipse {
 impl Default for Ellipse {
     fn default() -> Self {
         Self {
-            radii: na::Vector2::zeros(),
-            transform: Transform::default(),
+            radii: Vector2::ZERO,
+            transform: Transform::IDENTITY,
         }
     }
 }
 
 impl Transformable for Ellipse {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.transform.append_translation_mut(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        self.transform.append_rotation_wrt_point_mut(angle, center)
+    fn rotate(&mut self, angle: f64, center: Vector2) {
+        self.transform.append_rotation_wrt_center_mut(angle, center)
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.transform.append_scale_mut(scale);
     }
 }
 
 impl Shapeable for Ellipse {
     fn bounds(&self) -> Aabb {
-        let center = self.transform.affine * na::point![0.0, 0.0];
-        // using a vector to ignore the translation
-        let half_extents = na::Vector2::from_homogeneous(
-            self.transform.affine.into_inner().abs() * self.radii.to_homogeneous(),
-        )
-        .unwrap()
-        .abs();
-
-        Aabb::from_half_extents(center, half_extents)
+        self.transform
+            .transform_aabb(Aabb::from_half_extents(Vector2::ZERO, self.radii))
     }
 
     fn hitboxes(&self) -> Vec<Aabb> {
@@ -72,23 +67,18 @@ impl Shapeable for Ellipse {
 
 impl Ellipse {
     /// from foci and point
-    pub fn from_foci_and_point(foci: [na::Vector2<f64>; 2], point: na::Vector2<f64>) -> Self {
-        let sum = (point - foci[0]).magnitude() + (point - foci[1]).magnitude();
-
-        let d = (foci[0] - foci[1]).magnitude() * 0.5;
+    pub fn from_foci_and_point(foci: [Vector2; 2], point: Vector2) -> Self {
+        let sum = (point - foci[0]).length() + (point - foci[1]).length();
+        let d = (foci[0] - foci[1]).length() * 0.5;
         let semimajor = sum * 0.5;
         let semiminor = (semimajor.powi(2) - d.powi(2)).sqrt();
-        let v = foci[1] - foci[0];
-
+        let vec = foci[1] - foci[0];
         let center = (foci[0] + foci[1]) * 0.5;
-        let angle = na::Vector2::x().angle_ahead(&v);
-
+        let angle = Vector2::X.angle_to(vec);
         let semimajor = if semimajor == 0.0 { 1.0 } else { semimajor };
         let semiminor = if semiminor == 0.0 { 1.0 } else { semiminor };
-
-        let radii = na::vector![semimajor, semiminor];
-
-        let transform = Transform::new_w_isometry(na::Isometry2::new(center, angle));
+        let radii = Vector2::new(semimajor, semiminor);
+        let transform = Transform::new_w_pose(DPose2::new(center, angle));
 
         Self { radii, transform }
     }
@@ -96,14 +86,14 @@ impl Ellipse {
     /// Approximate with lines.
     pub fn approx_with_lines(&self) -> Vec<Line> {
         let mut lines = Vec::new();
-        let mut prev = kurbo::Point::new(0.0, 0.0);
+        let mut prev = kurbo::Point::ZERO;
 
         kurbo::flatten(self.outline_path(), 0.25, |el| match el {
             kurbo::PathEl::MoveTo(point) => prev = point,
             kurbo::PathEl::LineTo(next) => {
                 lines.push(Line {
-                    start: na::vector![prev.x, prev.y],
-                    end: na::vector![next.x, next.y],
+                    start: Vector2::new(prev.x, prev.y),
+                    end: Vector2::new(next.x, next.y),
                 });
                 prev = next
             }

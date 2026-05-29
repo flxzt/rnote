@@ -24,8 +24,6 @@ chrono = { workspace = true }
 fs_extra = { workspace = true }
 futures = { workspace = true }
 gettext-rs = { workspace = true }
-glam = { workspace = true }
-glamx = { workspace = true }
 gtk4 = { workspace = true }
 hayro = { workspace = true }
 ijson = { workspace = true }

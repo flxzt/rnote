@@ -9,7 +9,6 @@ pub use background::Background;
 pub use config::DocumentConfig;
 pub use format::Format;
 pub use layout::Layout;
-use na::SimdPartialOrd;
 
 // Imports
 use self::background::PatternStyle;
@@ -17,7 +16,8 @@ use crate::engine::EngineConfig;
 use crate::engine::snapshot::Snapshotable;
 use crate::{Camera, StrokeStore, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use rnote_compose::ext::{AabbExt, Vector2Ext};
+use p2d::math::Vector2;
+use rnote_compose::ext::AabbExt;
 use rnote_compose::{Color, SplitOrder};
 use serde::{Deserialize, Serialize};
 
@@ -56,7 +56,7 @@ impl Snapshotable for Document {
 
 impl Document {
     pub const SHADOW_WIDTH: f64 = 12.0;
-    pub const SHADOW_OFFSET: na::Vector2<f64> = na::vector![4.0, 4.0];
+    pub const SHADOW_OFFSET: Vector2 = Vector2::splat(4.0);
     pub const SHADOW_COLOR: Color = Color {
         r: 0.0,
         g: 0.0,
@@ -66,8 +66,8 @@ impl Document {
 
     pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new(
-            na::point![self.x, self.y],
-            na::point![self.x + self.width, self.y + self.height],
+            Vector2::new(self.x, self.y),
+            Vector2::new(self.x + self.width, self.y + self.height),
         )
     }
 
@@ -80,7 +80,7 @@ impl Document {
 
         if self.config.format.height() > 0.0 && self.config.format.width() > 0.0 {
             doc_bounds.split_extended_origin_aligned(
-                na::vector![self.config.format.width(), self.config.format.height()],
+                Vector2::new(self.config.format.width(), self.config.format.height()),
                 split_order,
             )
         } else {
@@ -252,11 +252,11 @@ impl Document {
     ) -> bool {
         let padding_horizontal = self.config.format.width() * 2.0;
         let padding_vertical = self.config.format.height() * 2.0;
-        let padding = na::vector![padding_horizontal, padding_vertical];
+        let padding = Vector2::new(padding_horizontal, padding_vertical);
 
         let mut new_bounds = self.bounds();
         let mut minimum_bounds = viewport.extend_right_and_bottom_by(padding);
-        minimum_bounds.mins = minimum_bounds.mins.simd_max(new_bounds.mins);
+        minimum_bounds.mins = minimum_bounds.mins.max(new_bounds.mins);
 
         if !new_bounds.contains(&minimum_bounds) {
             // Extend the bounds further than necessary, so that we don't trigger
@@ -270,7 +270,7 @@ impl Document {
                 content_bounds.extend_right_and_bottom_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
-                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into())
+                Aabb::new(Vector2::ZERO, self.config.format.size())
                     .extend_right_and_bottom_by(padding)
             };
             new_bounds.merge(&content_bounds);
@@ -303,8 +303,7 @@ impl Document {
     ) -> bool {
         let padding_horizontal = self.config.format.width() * 2.0;
         let padding_vertical = self.config.format.height() * 2.0;
-        let padding = na::vector![padding_horizontal, padding_vertical];
-
+        let padding = Vector2::new(padding_horizontal, padding_vertical);
         let mut new_bounds = self.bounds();
         let minimum_bounds = viewport.extend_by(padding);
 
@@ -320,7 +319,7 @@ impl Document {
                 content_bounds.extend_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
-                Aabb::new(na::point![0.0, 0.0], self.config.format.size().into()).extend_by(padding)
+                Aabb::new(Vector2::ZERO, self.config.format.size()).extend_by(padding)
             };
             new_bounds.merge(&content_bounds);
         }
@@ -340,11 +339,7 @@ impl Document {
     /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
     ///
     /// If not, the original coordinates are returned.
-    pub(crate) fn snap_position(
-        &self,
-        pos: na::Vector2<f64>,
-        config: &EngineConfig,
-    ) -> na::Vector2<f64> {
+    pub(crate) fn snap_position(&self, pos: Vector2, config: &EngineConfig) -> Vector2 {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
         let doc_format_size = self.config.format.size();
         let pattern_size = self.config.background.pattern_size;
@@ -378,17 +373,17 @@ impl Document {
     }
 }
 
-fn snap_to_grid(pos: na::Vector2<f64>, grid_size: na::Vector2<f64>) -> na::Vector2<f64> {
-    let grid_pos = pos.component_div(&grid_size);
-    grid_size.component_mul(&grid_pos.round())
+fn snap_to_grid(pos: Vector2, grid_size: Vector2) -> Vector2 {
+    let grid_pos = pos / grid_size;
+    grid_size * grid_pos.round()
 }
 
-fn snap_to_line(pos: na::Vector2<f64>, line_spacing: f64) -> na::Vector2<f64> {
+fn snap_to_line(pos: Vector2, line_spacing: f64) -> Vector2 {
     let line_pos = pos[1] / line_spacing;
-    na::vector![pos[0], line_spacing * line_pos.round()]
+    Vector2::new(pos[0], line_spacing * line_pos.round())
 }
 
-fn snap_to_isometric_pattern(pos: na::Vector2<f64>, spacing: f64) -> na::Vector2<f64> {
+fn snap_to_isometric_pattern(pos: Vector2, spacing: f64) -> Vector2 {
     const SQRT_THREE: f64 = 1.7320508075688772;
 
     let column_width = spacing * SQRT_THREE;
@@ -417,10 +412,10 @@ fn snap_to_isometric_pattern(pos: na::Vector2<f64>, spacing: f64) -> na::Vector2
     }
 
     // convert the rounded cube coordinates back to cartesian coordinates
-    na::vector![
+    Vector2::new(
         (rounded_q + rounded_r) * column_width * 0.5,
         (rounded_q - rounded_r) * row_height,
-    ]
+    )
 }
 
 #[must_use = "Determines if the resize flag should be set"]

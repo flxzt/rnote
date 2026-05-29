@@ -1,6 +1,6 @@
 // Imports
+use crate::Transformable;
 use crate::ext::DPose2Ext;
-use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::glamx::prelude::DPose2;

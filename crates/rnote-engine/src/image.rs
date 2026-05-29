@@ -6,9 +6,9 @@ use image::ImageReader;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use piet::RenderContext;
-use rnote_compose::ext::AabbExt;
+use rnote_compose::Transformable;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::{Rectangle, Shapeable};
-use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 
@@ -154,7 +154,7 @@ impl Drawable for Image {
                 piet_image_format,
             )
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        cx.transform(self.rectangle.transform.to_kurbo());
+        cx.transform(self.rectangle.affine.to_kurbo());
         cx.draw_image(
             &piet_image,
             self.rectangle.cuboid.local_aabb().to_kurbo_rect(),
@@ -301,7 +301,7 @@ impl Image {
         .upcast();
         let transform_node = gsk::TransformNode::new(
             &texture_node,
-            &crate::utils::transform_to_gsk(&self.rectangle.transform),
+            &crate::utils::affine_to_gsk(&self.rectangle.affine),
         )
         .upcast();
 

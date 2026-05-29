@@ -1,12 +1,11 @@
 // Imports
 use super::Line;
-use crate::Transform;
+use crate::Transformable;
 use crate::ext::{DAffine2Ext, Vector2Ext};
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
-use p2d::glamx::prelude::DPose2;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
@@ -17,37 +16,41 @@ pub struct Ellipse {
     /// The radii of the ellipse.
     #[serde(rename = "radii", with = "crate::serialize::glam_vector2_dp3")]
     pub radii: Vector2,
-    /// The transform of the center of the ellipse.
-    #[serde(rename = "transform")]
-    pub transform: Transform,
+    /// The affine transform of the center of the ellipse.
+    #[serde(
+        rename = "affine",
+        alias = "transform",
+        with = "crate::serialize::glam_daffine2_f64_dp3"
+    )]
+    pub affine: DAffine2,
 }
 
 impl Default for Ellipse {
     fn default() -> Self {
         Self {
             radii: Vector2::ZERO,
-            transform: Transform::IDENTITY,
+            affine: DAffine2::IDENTITY,
         }
     }
 }
 
 impl Transformable for Ellipse {
     fn translate(&mut self, offset: Vector2) {
-        self.transform.append_translation_mut(offset);
+        self.affine.append_translation_mut(offset);
     }
 
     fn rotate(&mut self, angle: f64, center: Vector2) {
-        self.transform.append_rotation_wrt_center_mut(angle, center)
+        self.affine.append_rotation_wrt_center_mut(angle, center)
     }
 
     fn scale(&mut self, scale: Vector2) {
-        self.transform.append_scale_mut(scale);
+        self.affine.append_scale_mut(scale);
     }
 }
 
 impl Shapeable for Ellipse {
     fn bounds(&self) -> Aabb {
-        self.transform
+        self.affine
             .transform_aabb(Aabb::from_half_extents(Vector2::ZERO, self.radii))
     }
 
@@ -59,7 +62,7 @@ impl Shapeable for Ellipse {
     }
 
     fn outline_path(&self) -> kurbo::BezPath {
-        (self.transform.affine.to_kurbo()
+        (self.affine.to_kurbo()
             * kurbo::Ellipse::new(kurbo::Point::ZERO, self.radii.to_kurbo_vec(), 0.0))
         .to_path(0.25)
     }
@@ -78,9 +81,9 @@ impl Ellipse {
         let semimajor = if semimajor == 0.0 { 1.0 } else { semimajor };
         let semiminor = if semiminor == 0.0 { 1.0 } else { semiminor };
         let radii = Vector2::new(semimajor, semiminor);
-        let transform = Transform::new_w_pose(DPose2::new(center, angle));
+        let affine = DAffine2::from_angle_translation(angle, center);
 
-        Self { radii, transform }
+        Self { radii, affine }
     }
 
     /// Approximate with lines.

@@ -1,9 +1,9 @@
 // Imports
 use super::line::Line;
 use super::quadbez::QuadraticBezier;
+use crate::Transformable;
 use crate::ext::{DPose2Ext, KurboShapeExt, Vector2Ext};
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::prelude::DPose2;

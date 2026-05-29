@@ -9,13 +9,13 @@ use anyhow::anyhow;
 use hayro::{hayro_interpret, hayro_syntax, vello_cpu};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rnote_compose::Transformable;
 use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
@@ -51,7 +51,7 @@ impl Drawable for BitmapImage {
         let piet_image_format = piet::ImageFormat::from(self.image.memory_format);
 
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        cx.transform(self.rectangle.transform.affine.to_kurbo());
+        cx.transform(self.rectangle.affine.to_kurbo());
 
         let piet_image = cx
             .make_image(
@@ -107,7 +107,6 @@ impl BitmapImage {
     ) -> Result<Self, anyhow::Error> {
         let image = Image::try_from_encoded_bytes(bytes)?;
         let initial_size = Vector2::new(image.pixel_width as f64, image.pixel_height as f64);
-
         let (size, resize_ratio) = match size_option {
             ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
             ImageSizeOption::ImposeSize(given_size) => (given_size, 1.0f64),
@@ -116,14 +115,14 @@ impl BitmapImage {
                 calculate_resize_ratio(resize_struct, initial_size, pos),
             ),
         };
-
-        let mut transform = Transform::IDENTITY;
-        transform.append_scale_mut(Vector2::new(resize_ratio, resize_ratio));
+        let mut transform = DAffine2::IDENTITY;
+        transform.append_scale_mut(Vector2::splat(resize_ratio));
         transform.append_translation_mut(pos + size * resize_ratio * 0.5);
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(size * 0.5),
-            transform,
+            affine: transform,
         };
+
         Ok(Self { image, rectangle })
     }
 

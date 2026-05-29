@@ -1,8 +1,8 @@
 // Imports
 use super::Line;
+use crate::Transformable;
 use crate::ext::{DPose2Ext, Vector2Ext};
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
 use kurbo::{PathEl, Shape};
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::prelude::{DPose2, DRot2};

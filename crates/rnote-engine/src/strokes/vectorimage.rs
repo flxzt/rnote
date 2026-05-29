@@ -11,13 +11,13 @@ use anyhow::anyhow;
 use hayro::{hayro_interpret, hayro_syntax};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use rnote_compose::ext::AabbExt;
+use rnote_compose::Transformable;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
@@ -65,7 +65,7 @@ impl Content for VectorImage {
         let group = svg::node::element::Group::new()
             .set(
                 "transform",
-                self.rectangle.transform.to_svg_transform_attr_str(),
+                self.rectangle.affine.to_svg_transform_attr_str(),
             )
             .add(svg_root);
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
@@ -169,31 +169,31 @@ impl VectorImage {
         );
         let svg_data = svg_tree.to_string(&xml_options);
 
-        let mut transform = Transform::IDENTITY;
+        let mut affine = DAffine2::IDENTITY;
         let rectangle = match size_option {
             ImageSizeOption::RespectOriginalSize => {
                 // Size not given : use the intrinsic size
-                transform.append_translation_mut(pos + intrinsic_size * 0.5);
+                affine.append_translation_mut(pos + intrinsic_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
-                    transform,
+                    affine,
                 }
             }
             ImageSizeOption::ImposeSize(given_size) => {
                 // Size given : use the given size
-                transform.append_translation_mut(pos + given_size * 0.5);
+                affine.append_translation_mut(pos + given_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(given_size * 0.5),
-                    transform,
+                    affine,
                 }
             }
             ImageSizeOption::ResizeImage(resize_struct) => {
                 // Resize : calculate the ratio
                 let resize_ratio = calculate_resize_ratio(resize_struct, intrinsic_size, pos);
-                transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
+                affine.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * resize_ratio * 0.5),
-                    transform,
+                    affine,
                 }
             }
         };

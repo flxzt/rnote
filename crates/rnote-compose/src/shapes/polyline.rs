@@ -1,7 +1,7 @@
 // Imports
 use super::{Line, Shapeable};
+use crate::Transformable;
 use crate::ext::{DPose2Ext, Vector2Ext};
-use crate::transform::Transformable;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::prelude::DPose2;
 use p2d::math::Vector2;

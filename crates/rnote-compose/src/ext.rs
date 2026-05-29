@@ -432,6 +432,16 @@ where
     fn to_kurbo(self) -> kurbo::Affine;
     /// converting from kurbo affine
     fn from_kurbo(affine: kurbo::Affine) -> Self;
+    /// Transforms the Aabb vertices and calculates a new that contains them.
+    fn transform_aabb(&self, aabb: Aabb) -> Aabb;
+    /// Append a translation to the transform.
+    fn append_translation_mut(&mut self, offset: Vector2);
+    /// Append a rotation around a center to the transform.
+    fn append_rotation_wrt_center_mut(&mut self, angle: f64, center: Vector2);
+    /// Append a scale to the transform.
+    fn append_scale_mut(&mut self, scale: Vector2);
+    /// Convert the transform to a Svg attribute string, insertable into svg elements.
+    fn to_svg_transform_attr_str(&self) -> String;
 }
 
 impl DAffine2Ext for DAffine2 {
@@ -452,6 +462,41 @@ impl DAffine2Ext for DAffine2 {
         Self::from_cols_array(&[
             matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
         ])
+    }
+
+    fn transform_aabb(&self, aabb: Aabb) -> Aabb {
+        let p0 = self.transform_point2(Vector2::new(aabb.mins.x, aabb.mins.y));
+        let p1 = self.transform_point2(Vector2::new(aabb.mins.x, aabb.maxs.y));
+        let p2 = self.transform_point2(Vector2::new(aabb.maxs.x, aabb.maxs.y));
+        let p3 = self.transform_point2(Vector2::new(aabb.maxs.x, aabb.mins.y));
+        let min_x = p0.x.min(p1.x).min(p2.x).min(p3.x);
+        let min_y = p0.y.min(p1.y).min(p2.y).min(p3.y);
+        let max_x = p0.x.max(p1.x).max(p2.x).max(p3.x);
+        let max_y = p0.y.max(p1.y).max(p2.y).max(p3.y);
+        Aabb::new_positive(Vector2::new(min_x, min_y), Vector2::new(max_x, max_y))
+    }
+
+    fn append_translation_mut(&mut self, offset: Vector2) {
+        *self = DAffine2::from_translation(offset) * *self;
+    }
+
+    fn append_rotation_wrt_center_mut(&mut self, angle: f64, center: Vector2) {
+        *self = DAffine2::from_translation(-center) * *self;
+        *self = DAffine2::from_angle(angle) * *self;
+        *self = DAffine2::from_translation(center) * *self;
+    }
+
+    fn append_scale_mut(&mut self, scale: Vector2) {
+        *self = DAffine2::from_scale(scale) * *self;
+    }
+
+    /// Convert the transform to a Svg attribute string, insertable into svg elements.
+    fn to_svg_transform_attr_str(&self) -> String {
+        let array = self.to_cols_array_2d();
+        format!(
+            "matrix({:.3} {:.3} {:.3} {:.3} {:.3} {:.3})",
+            array[0][0], array[0][1], array[1][0], array[1][1], array[2][0], array[2][1],
+        )
     }
 }
 

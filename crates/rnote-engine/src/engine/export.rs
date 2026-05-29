@@ -7,7 +7,7 @@ use futures::channel::oneshot;
 use p2d::math::Vector2;
 use rayon::prelude::*;
 use rnote_compose::SplitOrder;
-use rnote_compose::transform::Transformable;
+use rnote_compose::Transformable;
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 use std::sync::Arc;

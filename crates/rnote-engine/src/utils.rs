@@ -4,6 +4,8 @@ use anyhow::Context;
 use geo::line_string;
 use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
+#[cfg(feature = "ui")]
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use rnote_compose::Color;
 use std::{io::Write, ops::Range};
@@ -68,8 +70,8 @@ pub fn convert_coord_dpi(coord: Vector2, current_dpi: f64, target_dpi: f64) -> V
 }
 
 #[cfg(feature = "ui")]
-pub fn transform_to_gsk(transform: &rnote_compose::Transform) -> gtk4::gsk::Transform {
-    let array = transform.affine.to_cols_array_2d();
+pub fn affine_to_gsk(affine: &DAffine2) -> gtk4::gsk::Transform {
+    let array = affine.to_cols_array_2d();
     gtk4::gsk::Transform::new().matrix(&gtk4::graphene::Matrix::from_2d(
         array[0][0],
         array[0][1],

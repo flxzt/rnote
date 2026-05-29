@@ -149,18 +149,14 @@ fn compose_textured_line_path(line: &Line, options: &TexturedOptions) -> kurbo::
         let y_pos = options
             .distribution
             .sample_for_range_symmetrical_clipped(&mut rng, range_y.clone());
-
         let pos = line_rect
-            .transform
             .affine
             .transform_point2(Vector2::new(x_pos, y_pos));
-
         let rotation_angle = Vector2::X.angle_to(line_vec) + distr_dots_rot.sample(&mut rng);
         let radii = Vector2::new(
             distr_dots_rx.sample(&mut rng),
             distr_dots_ry.sample(&mut rng),
         );
-
         let ellipse = kurbo::Ellipse::new(
             kurbo::Point {
                 x: pos[0],
@@ -169,7 +165,6 @@ fn compose_textured_line_path(line: &Line, options: &TexturedOptions) -> kurbo::
             radii.to_kurbo_vec(),
             rotation_angle,
         );
-
         bez_path.extend(ellipse.to_path(0.1));
     }
 

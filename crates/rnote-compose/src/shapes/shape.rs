@@ -2,7 +2,7 @@
 use super::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::transform::Transformable;
+use crate::Transformable;
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};

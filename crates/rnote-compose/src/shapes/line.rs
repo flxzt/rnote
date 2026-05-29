@@ -1,11 +1,11 @@
 // Imports
-use crate::Transform;
+use crate::Transformable;
 use crate::ext::{AabbExt, DPose2Ext, Vector2Ext};
 use crate::shapes::Rectangle;
 use crate::shapes::Shapeable;
-use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
 use p2d::glamx::prelude::DPose2;
 use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
@@ -73,7 +73,7 @@ impl Line {
 
         Rectangle {
             cuboid: p2d::shape::Cuboid::new(Vector2::new(magn * 0.5, width * 0.5)),
-            transform: Transform::new_w_pose(DPose2::new(self.start + vec * 0.5, angle)),
+            affine: DAffine2::from_angle_translation(angle, self.start + vec * 0.5),
         }
     }
 

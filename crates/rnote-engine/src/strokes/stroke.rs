@@ -13,14 +13,13 @@ use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::textstroke::TextStyle;
 use crate::{Drawable, utils};
 use p2d::bounding_volume::Aabb;
-use p2d::glamx::prelude::DPose2;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
+use rnote_compose::Transformable;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -425,7 +424,7 @@ impl Stroke {
 
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
-            transform: Transform::new_w_pose(DPose2::from_translation(bounds.center())),
+            affine: DAffine2::from_translation(bounds.center()),
         };
         let image = Image::try_from_encoded_bytes(&bytes)?;
 

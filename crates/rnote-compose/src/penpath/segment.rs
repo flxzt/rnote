@@ -1,7 +1,7 @@
 // Imports
 use super::Element;
+use crate::Transformable;
 use crate::ext::DPose2Ext;
-use crate::transform::Transformable;
 use p2d::glamx::prelude::DPose2;
 use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};

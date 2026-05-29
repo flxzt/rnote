@@ -12,15 +12,15 @@ use crate::strokes::{Stroke, TextStroke};
 use crate::{Camera, DrawableOnDoc, WidgetFlags};
 use futures::channel::oneshot;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use p2d::glamx::prelude::DPose2;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::EventResult;
+use rnote_compose::color;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
-use rnote_compose::{Transform, color};
 use std::ops::Range;
 use std::time::{Duration, Instant};
 use tracing::error;
@@ -174,7 +174,7 @@ impl DrawableOnDoc for Typewriter {
                                 cx,
                                 cursor_text,
                                 &GraphemeCursor::new(0, cursor_text_len, true),
-                                &Transform::new_w_pose(DPose2::from_translation(*pos)),
+                                &DAffine2::from_translation(*pos),
                                 engine_view.camera,
                             )?;
                     }
@@ -209,7 +209,7 @@ impl DrawableOnDoc for Typewriter {
                             textstroke.text.clone(),
                             cursor,
                             selection_cursor,
-                            &textstroke.transform,
+                            &textstroke.affine,
                             engine_view.camera,
                         );
                     }
@@ -220,7 +220,7 @@ impl DrawableOnDoc for Typewriter {
                             cx,
                             textstroke.text.clone(),
                             cursor,
-                            &textstroke.transform,
+                            &textstroke.affine,
                             engine_view.camera,
                         )?;
                     }
@@ -626,7 +626,7 @@ impl Typewriter {
 
     /// The bounds of the text rect enclosing the textstroke.
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> Aabb {
-        let origin = textstroke.transform.translation_part();
+        let origin = textstroke.affine.translation;
         Aabb::new(origin, Vector2::new(origin[0] + text_width, origin[1]))
             .merged(&textstroke.bounds())
     }

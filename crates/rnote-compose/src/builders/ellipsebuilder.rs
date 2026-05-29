@@ -6,9 +6,9 @@ use crate::penpath::Element;
 use crate::shapes::Ellipse;
 use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
-use crate::{Shape, Style, Transform};
+use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use p2d::glamx::prelude::DPose2;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
@@ -80,8 +80,9 @@ impl Buildable for EllipseBuilder {
 impl EllipseBuilder {
     /// The current state as an ellipse.
     pub fn state_as_ellipse(&self) -> Ellipse {
-        let transform = Transform::new_w_pose(DPose2::from_translation(self.start));
+        let affine = DAffine2::from_translation(self.start);
         let radii = (self.current - self.start).abs();
-        Ellipse { radii, transform }
+
+        Ellipse { radii, affine }
     }
 }

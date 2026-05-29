@@ -1,5 +1,5 @@
 // Imports
-use crate::transform::Transformable;
+use crate::Transformable;
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
 

@@ -4,13 +4,13 @@ use crate::{Camera, Drawable};
 use itertools::Itertools;
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
-use p2d::glamx::prelude::DPose2;
+use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use piet::{RenderContext, TextLayout, TextLayoutBuilder};
+use rnote_compose::Transformable;
 use rnote_compose::ext::{AabbExt, DAffine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transformable;
-use rnote_compose::{Color, Transform, color};
+use rnote_compose::{Color, color};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use tracing::error;
@@ -362,7 +362,7 @@ impl TextStyle {
         cx: &mut impl piet::RenderContext,
         text: String,
         cursor: &GraphemeCursor,
-        transform: &Transform,
+        affine: &DAffine2,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         const CURSOR_COLOR: piet::Color = color::GNOME_DARKS[2];
@@ -377,7 +377,7 @@ impl TextStyle {
                 .point
                 .x;
 
-            let text_cursor = transform.to_kurbo()
+            let text_cursor = affine.to_kurbo()
                 * kurbo::Line::new(
                     kurbo::Point::new(x_pos, cursor_line_metric.y_offset),
                     kurbo::Point::new(
@@ -409,7 +409,7 @@ impl TextStyle {
         text: String,
         cursor: &GraphemeCursor,
         selection_cursor: &GraphemeCursor,
-        transform: &Transform,
+        affine: &DAffine2,
         camera: &Camera,
     ) {
         const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2];
@@ -420,7 +420,7 @@ impl TextStyle {
             self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
         {
             for selection_rect in selection_rects {
-                let outline = transform.to_kurbo() * selection_rect.to_path(0.5);
+                let outline = affine.to_kurbo() * selection_rect.to_path(0.5);
 
                 cx.fill(&outline, &FILL_COLOR);
                 cx.stroke(&outline, &OUTLINE_COLOR, outline_width);
@@ -434,11 +434,15 @@ impl TextStyle {
 pub struct TextStroke {
     #[serde(rename = "text")]
     pub text: String,
-    /// The transformation.
+    /// The affine transformation of the text stroke.
     ///
-    /// The translation part Is the position of the upper left corner
-    #[serde(rename = "transform")]
-    pub transform: Transform,
+    /// The translation part is the position of the upper left corner
+    #[serde(
+        rename = "affine",
+        alias = "transform",
+        with = "rnote_compose::serialize::glam_daffine2_f64_dp3"
+    )]
+    pub affine: DAffine2,
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
 }
@@ -447,7 +451,7 @@ impl Default for TextStroke {
     fn default() -> Self {
         Self {
             text: String::default(),
-            transform: Transform::IDENTITY,
+            affine: DAffine2::IDENTITY,
             text_style: TextStyle::default(),
         }
     }
@@ -455,15 +459,15 @@ impl Default for TextStroke {
 
 impl Transformable for TextStroke {
     fn translate(&mut self, offset: Vector2) {
-        self.transform.append_translation_mut(offset);
+        self.affine.append_translation_mut(offset);
     }
 
     fn rotate(&mut self, angle: f64, center: Vector2) {
-        self.transform.append_rotation_wrt_center_mut(angle, center);
+        self.affine.append_rotation_wrt_center_mut(angle, center);
     }
 
     fn scale(&mut self, scale: Vector2) {
-        self.transform.append_scale_mut(scale);
+        self.affine.append_scale_mut(scale);
     }
 }
 
@@ -475,7 +479,7 @@ impl Shapeable for TextStroke {
             .unwrap_or(Vector2::splat(self.text_style.font_size))
             .maxs(&Vector2::splat(1.));
 
-        self.transform
+        self.affine
             .transform_aabb(Aabb::new(Vector2::ZERO, untransformed_size))
     }
 
@@ -494,13 +498,13 @@ impl Shapeable for TextStroke {
         let mut hitboxes: Vec<Aabb> = text_layout
             .rects_for_range(0..self.text.len())
             .into_iter()
-            .map(|rect| self.transform.transform_aabb(Aabb::from_kurbo_rect(rect)))
+            .map(|rect| self.affine.transform_aabb(Aabb::from_kurbo_rect(rect)))
             .collect();
 
         let text_size = text_layout.size();
 
         if hitboxes.is_empty() {
-            hitboxes.push(self.transform.transform_aabb(Aabb::new_positive(
+            hitboxes.push(self.affine.transform_aabb(Aabb::new_positive(
                 Vector2::ZERO,
                 Vector2::new(text_size.width, text_size.height).maxs(&Vector2::splat(1.)),
             )))
@@ -526,7 +530,7 @@ impl Drawable for TextStroke {
             .text_style
             .build_text_layout(cx.text(), self.text.clone())
         {
-            cx.transform(self.transform.affine.to_kurbo());
+            cx.transform(self.affine.to_kurbo());
             cx.draw_text(&text_layout, kurbo::Point::ZERO)
         }
 
@@ -539,7 +543,7 @@ impl TextStroke {
     pub fn new(text: String, upper_left_pos: Vector2, text_style: TextStyle) -> Self {
         Self {
             text,
-            transform: Transform::new_w_pose(DPose2::from_translation(upper_left_pos)),
+            affine: DAffine2::from_translation(upper_left_pos),
             text_style,
         }
     }
@@ -557,8 +561,7 @@ impl TextStroke {
             .build_text_layout(&mut piet_cairo::CairoText::new(), self.text.clone())
             .map_err(|e| anyhow::anyhow!("Building text layout failed, Err: {e:?}"))?;
         let hit_test_point = text_layout.hit_test_point(
-            self.transform
-                .affine
+            self.affine
                 .inverse()
                 .transform_point2(coord)
                 .to_kurbo_point(),

@@ -7,9 +7,9 @@ pub use element::Element;
 pub use segment::Segment;
 
 // Imports
+use crate::Transformable;
 use crate::ext::{KurboShapeExt, Vector2Ext};
 use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
-use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;

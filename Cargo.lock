@@ -3899,7 +3899,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.14.2"
+version = "0.15.0"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -3952,7 +3952,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-cli"
-version = "0.14.2"
+version = "0.15.0"
 dependencies = [
  "anyhow",
  "async-fs",
@@ -3972,7 +3972,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-compose"
-version = "0.14.2"
+version = "0.15.0"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -4000,7 +4000,7 @@ dependencies = [
 
 [[package]]
 name = "rnote-engine"
-version = "0.14.2"
+version = "0.15.0"
 dependencies = [
  "anyhow",
  "approx 0.5.1",

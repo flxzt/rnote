@@ -10,6 +10,7 @@ use gtk4::{
 use p2d::bounding_volume::BoundingVolume;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
@@ -68,6 +69,8 @@ impl RnAppWindow {
         self.add_action(&action_zoom_reset);
         let action_zoom_fit_width = gio::SimpleAction::new("zoom-fit-width", None);
         self.add_action(&action_zoom_fit_width);
+        let action_zoom_real_width = gio::SimpleAction::new("zoom-real-width", None);
+        self.add_action(&action_zoom_real_width);
         let action_zoomin = gio::SimpleAction::new("zoom-in", None);
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
@@ -643,6 +646,34 @@ impl RnAppWindow {
                 let new_zoom = f64::from(wrapper.scroller().width())
                     / (wrapper.canvas().engine_ref().document.config.format.width()
                         + 2.0 * Camera::OVERSHOOT_HORIZONTAL);
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
+
+        // Zoom real to width
+        action_zoom_real_width.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let Some(surface) = appwindow.surface() else {
+                    return;
+                };
+                let Some(monitor) = canvas.display().monitor_at_surface(&surface) else {
+                    return;
+                };
+                let ppi = monitor.geometry().width() as f64 / monitor.width_mm() as f64
+                    * MeasureUnit::AMOUNT_MM_IN_INCH;
+                let new_zoom = ppi / wrapper.canvas().engine_ref().document.config.format.dpi();
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
                 widget_flags |= canvas
                     .engine_mut()

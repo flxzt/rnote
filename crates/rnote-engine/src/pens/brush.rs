@@ -261,6 +261,13 @@ impl PenBehaviour for Brush {
                         if let Some(Stroke::BrushStroke(brushstroke)) =
                             engine_view.store.get_stroke_mut(*current_stroke_key)
                         {
+                            engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .simplification_options
+                                .simplify(&mut brushstroke.path);
+
                             brushstroke.style = engine_view
                                 .config
                                 .pens_config

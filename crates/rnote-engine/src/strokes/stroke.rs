@@ -473,7 +473,7 @@ impl Stroke {
                 };
 
                 let tool = xoppformat::XoppTool::Pen;
-                let elements_vec = brushstroke.path.into_elements();
+                let elements_vec = brushstroke.path.as_elements();
                 let stroke_style = &brushstroke.style;
                 let stroke_width =
                     utils::convert_value_dpi(stroke_width, current_dpi, xoppformat::XoppFile::DPI);

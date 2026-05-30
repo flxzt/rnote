@@ -1,6 +1,7 @@
 // Imports
 use crate::store::chrono_comp::StrokeLayer;
 use rand::{RngExt, SeedableRng};
+use rnote_compose::PenPath;
 use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
@@ -97,6 +98,110 @@ impl std::ops::DerefMut for SolidOptions {
     }
 }
 
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
+#[serde(rename = "simplification_mode")]
+pub enum SimplificationMode {
+    #[serde(rename = "none")]
+    None = 0,
+    #[serde(rename = "polyline")]
+    Polyline,
+}
+
+impl Default for SimplificationMode {
+    fn default() -> Self {
+        Self::Polyline
+    }
+}
+
+impl TryFrom<u32> for SimplificationMode {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "SimplificationMode try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
+#[serde(rename = "simplification_quality")]
+pub enum SimplificationQuality {
+    #[serde(rename = "low")]
+    Low = 0,
+    #[serde(rename = "medium")]
+    Medium,
+    #[serde(rename = "high")]
+    High,
+}
+
+impl Default for SimplificationQuality {
+    fn default() -> Self {
+        Self::Medium
+    }
+}
+
+impl TryFrom<u32> for SimplificationQuality {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "SimplificationQuality try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(rename = "simplification_options")]
+pub struct SimplificationOptions {
+    #[serde(rename = "mode")]
+    pub mode: SimplificationMode,
+    #[serde(rename = "quality")]
+    pub quality: SimplificationQuality,
+}
+
+impl SimplificationOptions {
+    pub(crate) fn simplify(&self, path: &mut PenPath) {
+        match self.mode {
+            SimplificationMode::None => {}
+            SimplificationMode::Polyline => {
+                let (geometry_epsilon, pressure_epsilon) = match self.quality {
+                    SimplificationQuality::Low => (0.175, 0.175 * 0.5),
+                    SimplificationQuality::Medium => (0.1, 0.1 * 0.5),
+                    SimplificationQuality::High => (0.025, 0.025 * 0.5),
+                };
+
+                path.simplify_polyline(geometry_epsilon, pressure_epsilon);
+            }
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[serde(default, rename = "brush_config")]
 pub struct BrushConfig {
@@ -110,6 +215,8 @@ pub struct BrushConfig {
     pub solid_options: SolidOptions,
     #[serde(rename = "textured_options")]
     pub textured_options: TexturedOptions,
+    #[serde(rename = "simplification_options")]
+    pub simplification_options: SimplificationOptions,
 }
 
 impl BrushConfig {

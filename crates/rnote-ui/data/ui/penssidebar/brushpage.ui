@@ -206,6 +206,41 @@ Results in the best looking handwriting.</property>
             </object>
           </child>
           <child>
+            <!-- Simplification options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Path Simplification</property>
+              <child>
+                <object class="AdwComboRow" id="simplification_mode_row">
+                  <property name="title" translatable="yes">Mode</property>
+                  <property name="subtitle" translatable="yes">Choose a simplification algorithm</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">None</item>
+                        <item translatable="yes">Polyline</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwComboRow" id="simplification_quality_row">
+                  <property name="title" translatable="yes">Quality</property>
+                  <property name="subtitle" translatable="yes">Choose a simplification quality</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Low</item>
+                        <item translatable="yes">Medium</item>
+                        <item translatable="yes">High</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
             <!-- Solid options -->
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Solid Style</property>

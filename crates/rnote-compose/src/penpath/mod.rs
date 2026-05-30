@@ -1,6 +1,7 @@
 // Modules
 mod element;
 mod segment;
+mod simplification;
 
 // Re-exports
 pub use element::Element;
@@ -8,11 +9,13 @@ pub use segment::Segment;
 
 // Imports
 use crate::ext::{KurboShapeExt, Vector2Ext};
+use crate::penpath::simplification::ramer_douglas_peucker;
 use crate::shapes::{CubicBezier, Line, QuadraticBezier, Shapeable};
 use crate::transform::Transformable;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use serde::{Deserialize, Serialize};
+use tracing::debug;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "pen_path")]
@@ -118,10 +121,10 @@ impl PenPath {
     }
 
     /// extracts the elements from the path. the path shape will be lost, as only the actual input elements are returned.
-    pub fn into_elements(self) -> Vec<Element> {
+    pub fn as_elements(&self) -> Vec<Element> {
         let mut elements = vec![self.start];
 
-        elements.extend(self.segments.into_iter().map(|seg| match seg {
+        elements.extend(self.segments.iter().map(|seg| match seg {
             Segment::LineTo { end } => end,
             Segment::QuadBezTo { end, .. } => end,
             Segment::CubBezTo { end, .. } => end,
@@ -140,6 +143,23 @@ impl PenPath {
             .collect::<Vec<Segment>>();
 
         Some(Self { start, segments })
+    }
+
+    /// Simplify this path in place as a polyline that approximates the original path.
+    pub fn simplify_polyline(&mut self, geometry_epsilon: f64, pressure_epsilon: f64) {
+        let elements = self.as_elements();
+        let simplified_elements =
+            ramer_douglas_peucker(&elements, geometry_epsilon, pressure_epsilon);
+
+        debug!(
+            "simplified path from {} to {} elements (polyline)",
+            elements.len(),
+            simplified_elements.len()
+        );
+
+        if let Some(path) = Self::try_from_elements(simplified_elements.into_iter()) {
+            *self = path;
+        }
     }
 
     /// Checks whether bounds collide with the path. If it does, it returns the indices of the colliding segments

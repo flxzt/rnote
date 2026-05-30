@@ -15,7 +15,7 @@ pub use config::EngineConfigShared;
 pub use export::ExportPrefs;
 pub use import::ImportPrefs;
 pub use snapshot::EngineSnapshot;
-pub use strokecontent::StrokeContent;
+pub use strokecontent::{LayeredStroke, StrokeContent};
 
 // Imports
 use crate::Image;

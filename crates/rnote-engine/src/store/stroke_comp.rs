@@ -1,7 +1,7 @@
 // Imports
 use super::StrokeKey;
 use super::render_comp::RenderCompState;
-use crate::engine::StrokeContent;
+use crate::engine::{LayeredStroke, StrokeContent};
 use crate::strokes::{Content, Stroke};
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
@@ -43,6 +43,7 @@ impl StrokeStore {
     }
 
     /// Gets the strokes by cloning the Arc's that are wrapped around them.
+    #[allow(unused)]
     pub(crate) fn get_strokes_arc(&self, keys: &[StrokeKey]) -> Vec<Arc<Stroke>> {
         keys.iter()
             .filter_map(|&key| self.stroke_components.get(key).cloned())
@@ -690,22 +691,41 @@ impl StrokeStore {
     pub(crate) fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()
-            .filter_map(|k| self.stroke_components.get(*k).cloned())
-            .collect();
+            .filter_map(|&key| {
+                let stroke = self.stroke_components.get(key).cloned()?;
+                let layer = self
+                    .chrono_components
+                    .get(key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_else(|| stroke.extract_default_layer());
+
+                Some(LayeredStroke { stroke, layer })
+            })
+            .collect::<Vec<LayeredStroke>>();
 
         StrokeContent::default().with_strokes(strokes)
     }
 
     /// Cut the strokes for the given keys and return them as stroke content.
     pub(crate) fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
+        for &key in keys {
+            self.set_selected(key, false);
+            self.set_trashed(key, true);
+        }
+
         let strokes = keys
             .iter()
-            .filter_map(|k| {
-                self.set_selected(*k, false);
-                self.set_trashed(*k, true);
-                self.stroke_components.get(*k).cloned()
+            .filter_map(|&key| {
+                let stroke = self.stroke_components.get(key).cloned()?;
+                let layer = self
+                    .chrono_components
+                    .get(key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_else(|| stroke.extract_default_layer());
+
+                Some(LayeredStroke { stroke, layer })
             })
-            .collect();
+            .collect::<Vec<LayeredStroke>>();
 
         StrokeContent::default().with_strokes(strokes)
     }
@@ -724,17 +744,20 @@ impl StrokeStore {
         if clipboard_content.strokes.is_empty() {
             return vec![];
         }
+
         let clipboard_bounds = clipboard_content
             .strokes
             .iter()
-            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.bounds()));
+            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.stroke.bounds()));
 
         clipboard_content
             .strokes
             .into_iter()
-            .map(|s| {
-                let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
-                let key = self.insert_stroke((*s).clone(), None);
+            .map(|stroke_content_stroke| {
+                let LayeredStroke { stroke, layer } = stroke_content_stroke;
+                let offset = stroke.bounds().mins.coords - clipboard_bounds.mins.coords;
+                let key = self.insert_stroke((*stroke).clone(), Some(layer));
+
                 // position strokes without resizing
                 self.set_stroke_pos(key, pos);
                 self.translate_strokes(&[key], offset);

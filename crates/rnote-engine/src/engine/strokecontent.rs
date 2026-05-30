@@ -2,12 +2,22 @@
 use crate::Drawable;
 use crate::Svg;
 use crate::document::Background;
+use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::Stroke;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tracing::warn;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "layered_stroke")]
+pub struct LayeredStroke {
+    #[serde(rename = "stroke")]
+    pub stroke: Arc<Stroke>,
+    #[serde(rename = "layer")]
+    pub layer: StrokeLayer,
+}
 
 /// Stroke content.
 ///
@@ -16,13 +26,12 @@ use tracing::warn;
 #[serde(default, rename = "stroke_content")]
 pub struct StrokeContent {
     #[serde(rename = "strokes")]
-    pub strokes: Vec<Arc<Stroke>>,
+    pub strokes: Vec<LayeredStroke>,
     #[serde(rename = "bounds")]
     pub bounds: Option<Aabb>,
     #[serde(rename = "background")]
     pub background: Option<Background>,
 }
-
 impl StrokeContent {
     pub const MIME_TYPE: &'static str = "application/rnote-stroke-content";
     pub const CLIPBOARD_EXPORT_MARGIN: f64 = 6.0;
@@ -32,7 +41,7 @@ impl StrokeContent {
         self
     }
 
-    pub fn with_strokes(mut self, strokes: Vec<Arc<Stroke>>) -> Self {
+    pub fn with_strokes(mut self, strokes: Vec<LayeredStroke>) -> Self {
         self.strokes = strokes;
         self
     }
@@ -52,7 +61,7 @@ impl StrokeContent {
         Some(
             self.strokes
                 .iter()
-                .map(|s| s.bounds())
+                .map(|stroke_content_stroke| stroke_content_stroke.stroke.bounds())
                 .fold(Aabb::new_invalid(), |acc, x| acc.merged(&x)),
         )
     }
@@ -136,15 +145,19 @@ impl StrokeContent {
         let image_bounds = self
             .strokes
             .iter()
-            .filter_map(|stroke| match stroke.as_ref() {
-                Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
-                Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
-                _ => None,
-            })
+            .filter_map(
+                |stroke_content_stroke| match stroke_content_stroke.stroke.as_ref() {
+                    Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                    Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                    _ => None,
+                },
+            )
             .collect::<Vec<Aabb>>();
 
-        for stroke in self.strokes.iter() {
-            let stroke_bounds = stroke.bounds();
+        let draw_stroke = |stroke_content_stroke: &LayeredStroke,
+                           cairo_cx: &cairo::Context|
+         -> anyhow::Result<()> {
+            let stroke_bounds = stroke_content_stroke.stroke.bounds();
 
             if optimize_printing
                 && image_bounds
@@ -154,13 +167,35 @@ impl StrokeContent {
                 // Using the stroke's bounds instead of hitboxes works for inclusion.
                 // If this is changed to intersection, all hitboxes must be checked individually.
 
-                let mut darkest_color_stroke = stroke.as_ref().clone();
+                let mut darkest_color_stroke = stroke_content_stroke.stroke.as_ref().clone();
                 darkest_color_stroke.set_to_darkest_color();
 
-                darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)?;
+                darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)
             } else {
-                stroke.draw_to_cairo(cairo_cx, image_scale)?;
+                stroke_content_stroke
+                    .stroke
+                    .draw_to_cairo(cairo_cx, image_scale)
             }
+        };
+
+        let (non_highlighter_strokes, highlighter_strokes): (Vec<_>, Vec<_>) = self
+            .strokes
+            .iter()
+            .partition(|stroke| stroke.layer != StrokeLayer::Highlighter);
+
+        for stroke in non_highlighter_strokes {
+            draw_stroke(stroke, cairo_cx)?;
+        }
+
+        if !highlighter_strokes.is_empty() {
+            cairo_cx.save()?;
+            cairo_cx.set_operator(cairo::Operator::Multiply);
+
+            for stroke in highlighter_strokes {
+                draw_stroke(stroke, cairo_cx)?;
+            }
+
+            cairo_cx.restore()?;
         }
 
         cairo_cx.restore()?;

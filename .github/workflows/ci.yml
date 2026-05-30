@@ -73,6 +73,10 @@ jobs:
         run: just ci=true lint
         continue-on-error: true
 
+      - name: Lint dependencies
+        run: just ci=true lint-dependencies
+        continue-on-error: true
+
       - name: Upload test report
         uses: actions/upload-artifact@v7
         if: success() || failure()

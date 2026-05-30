@@ -2617,3 +2617,35 @@ msgstr ""
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#: crates/rnote-ui/data/ui/sidebar.ui:61
+msgid "Layers"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/sidebar.ui:73
+msgid "Add Layer"
+msgstr ""
+
+#: crates/rnote-ui/src/sidebar.rs:178
+msgid "Set as active layer"
+msgstr ""
+
+#: crates/rnote-ui/src/sidebar.rs:246
+msgid "Layer visible"
+msgstr ""
+
+#: crates/rnote-ui/src/sidebar.rs:271
+msgid "Layer locked"
+msgstr ""
+
+#: crates/rnote-ui/src/sidebar.rs:292
+msgid "Move layer down"
+msgstr ""
+
+#: crates/rnote-ui/src/sidebar.rs:312
+msgid "Move layer up"
+msgstr ""
+
+#: crates/rnote-ui/src/sidebar.rs:333
+msgid "Delete layer"
+msgstr ""

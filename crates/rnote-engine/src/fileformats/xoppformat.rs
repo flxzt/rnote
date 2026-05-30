@@ -10,7 +10,7 @@ use tracing::{error, trace};
 pub const VALS_DEC_PLACES: usize = 3;
 
 /// Compress bytes with gzip.
-fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
+pub(crate) fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     let mut encoder =
         flate2::write::GzEncoder::new(Vec::<u8>::new(), flate2::Compression::default());
     encoder.write_all(to_compress)?;
@@ -18,7 +18,7 @@ fn compress_to_gzip(to_compress: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
 }
 
 /// Decompress from gzip.
-fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
+pub(crate) fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
     let mut bytes: Vec<u8> = Vec::new();
     decoder.read_to_end(&mut bytes)?;
@@ -429,16 +429,35 @@ impl XmlWritable for XoppBackground {
 }
 
 /// A Xopp Layer.
-#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct XoppLayer {
     /// Optional layer name.
     pub name: Option<String>,
     /// Strokes on this layer.
+    #[serde(default)]
     pub strokes: Vec<XoppStroke>,
     /// Texts on this layer.
+    #[serde(default)]
     pub texts: Vec<XoppText>,
     /// Images on this layer.
+    #[serde(default)]
     pub images: Vec<XoppImage>,
+    /// All elements in the layer, preserving XML order.
+    /// When set, `write_to_xml` writes from this instead of the separate Vec fields.
+    #[serde(default)]
+    pub elements: Vec<XoppStrokeType>,
+}
+
+impl Default for XoppLayer {
+    fn default() -> Self {
+        Self {
+            name: None,
+            strokes: vec![],
+            texts: vec![],
+            images: vec![],
+            elements: vec![],
+        }
+    }
 }
 
 impl XmlLoadable for XoppLayer {
@@ -451,17 +470,23 @@ impl XmlLoadable for XoppLayer {
                     "stroke" => {
                         let mut new_stroke = XoppStroke::default();
                         new_stroke.load_from_xml(child)?;
-                        self.strokes.push(new_stroke);
+                        self.strokes.push(new_stroke.clone());
+                        self.elements
+                            .push(XoppStrokeType::XoppStroke(new_stroke));
                     }
                     "text" => {
                         let mut new_text = XoppText::default();
                         new_text.load_from_xml(child)?;
-                        self.texts.push(new_text);
+                        self.texts.push(new_text.clone());
+                        self.elements
+                            .push(XoppStrokeType::XoppText(new_text));
                     }
                     "image" => {
                         let mut new_image = XoppImage::default();
                         new_image.load_from_xml(child)?;
-                        self.images.push(new_image);
+                        self.images.push(new_image.clone());
+                        self.elements
+                            .push(XoppStrokeType::XoppImage(new_image));
                     }
                     _ => {}
                 },
@@ -474,11 +499,20 @@ impl XmlLoadable for XoppLayer {
 
 impl XmlWritable for XoppLayer {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
-        // only do something if we are sure the layer is not empty
-        // Fix for #985
-        let is_empty = self.strokes.is_empty() && self.texts.is_empty() && self.images.is_empty();
+        let has_elements = !self.elements.is_empty();
+        let is_empty = self.strokes.is_empty()
+            && self.texts.is_empty()
+            && self.images.is_empty()
+            && !has_elements;
+
         if is_empty {
-            trace!("empty layer, skipped")
+            if self.name.is_some() {
+                w.start_element("layer");
+                w.write_attribute("name", self.name.as_ref().unwrap().as_str());
+                w.end_element();
+            } else {
+                trace!("empty layer, skipped")
+            }
         } else {
             w.start_element("layer");
             trace!("layer element opened");
@@ -487,14 +521,24 @@ impl XmlWritable for XoppLayer {
                 w.write_attribute("name", name.as_str());
             }
 
-            for stroke in self.strokes.iter() {
-                stroke.write_to_xml(w);
-            }
-            for text in self.texts.iter() {
-                text.write_to_xml(w);
-            }
-            for image in self.images.iter() {
-                image.write_to_xml(w);
+            if has_elements {
+                for element in self.elements.iter() {
+                    match element {
+                        XoppStrokeType::XoppStroke(stroke) => stroke.write_to_xml(w),
+                        XoppStrokeType::XoppText(text) => text.write_to_xml(w),
+                        XoppStrokeType::XoppImage(image) => image.write_to_xml(w),
+                    }
+                }
+            } else {
+                for stroke in self.strokes.iter() {
+                    stroke.write_to_xml(w);
+                }
+                for text in self.texts.iter() {
+                    text.write_to_xml(w);
+                }
+                for image in self.images.iter() {
+                    image.write_to_xml(w);
+                }
             }
             w.end_element();
         }

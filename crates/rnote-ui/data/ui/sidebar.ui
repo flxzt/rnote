@@ -57,6 +57,41 @@
             <!-- settings page -->
             <child>
               <object class="AdwViewStackPage">
+                <property name="name">layers_page</property>
+                <property name="title" translatable="yes">Layers</property>
+                <property name="icon-name">view-list-symbolic</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">12</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">12</property>
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <child>
+                      <object class="GtkButton" id="new_layer_button">
+                        <property name="label" translatable="yes">Add Layer</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="vexpand">true</property>
+                        <property name="child">
+                          <object class="GtkListBox" id="layers_list">
+                            <style>
+                              <class name="boxed-list" />
+                            </style>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <!-- settings page -->
+            <child>
+              <object class="AdwViewStackPage">
                 <property name="name">settings_page</property>
                 <property name="title" translatable="yes">Settings</property>
                 <property name="icon-name">settings-symbolic</property>

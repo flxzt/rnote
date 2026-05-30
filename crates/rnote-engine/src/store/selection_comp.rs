@@ -46,6 +46,10 @@ impl StrokeStore {
 
     /// Set if the stroke is currently selected.
     pub(crate) fn set_selected(&mut self, key: StrokeKey, selected: bool) {
+        if selected && !self.stroke_editable_in_active_layer(key) {
+            return;
+        }
+
         if let Some(selection_comp) = Arc::make_mut(&mut self.selection_components)
             .get_mut(key)
             .map(Arc::make_mut)
@@ -66,7 +70,9 @@ impl StrokeStore {
         self.stroke_components
             .keys()
             .filter(|&key| {
-                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
+                !(self.trashed(key).unwrap_or(false))
+                    && self.stroke_editable_in_active_layer(key)
+                    && (self.selected(key).unwrap_or(false))
             })
             .collect()
     }
@@ -80,7 +86,9 @@ impl StrokeStore {
         keys_sorted_chrono
             .into_iter()
             .filter(|&key| {
-                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
+                !(self.trashed(key).unwrap_or(false))
+                    && self.stroke_editable_in_active_layer(key)
+                    && (self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -144,7 +152,9 @@ impl StrokeStore {
         let keys: Vec<(StrokeKey, Aabb)> = self
             .key_tree
             .iter()
-            .filter(|(key, _)| !(self.trashed(*key).unwrap_or(false)))
+            .filter(|(key, _)| {
+                !(self.trashed(*key).unwrap_or(false)) && self.stroke_layer_visible(*key)
+            })
             .collect();
         if keys.is_empty() {
             return (Vec::new(), None);

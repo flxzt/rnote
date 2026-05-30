@@ -2673,6 +2673,38 @@ msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "白色"
 
+#: crates/rnote-ui/data/ui/sidebar.ui:61
+msgid "Layers"
+msgstr "图层"
+
+#: crates/rnote-ui/data/ui/sidebar.ui:73
+msgid "Add Layer"
+msgstr "添加图层"
+
+#: crates/rnote-ui/src/sidebar.rs:178
+msgid "Set as active layer"
+msgstr "设为活动图层"
+
+#: crates/rnote-ui/src/sidebar.rs:246
+msgid "Layer visible"
+msgstr "图层可见"
+
+#: crates/rnote-ui/src/sidebar.rs:271
+msgid "Layer locked"
+msgstr "图层锁定"
+
+#: crates/rnote-ui/src/sidebar.rs:292
+msgid "Move layer down"
+msgstr "下移图层"
+
+#: crates/rnote-ui/src/sidebar.rs:312
+msgid "Move layer up"
+msgstr "上移图层"
+
+#: crates/rnote-ui/src/sidebar.rs:333
+msgid "Delete layer"
+msgstr "删除图层"
+
 #~ msgid "Page Borders"
 #~ msgstr "页面边框"
 

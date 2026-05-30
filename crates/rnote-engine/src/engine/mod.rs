@@ -22,8 +22,8 @@ use crate::Image;
 use crate::document::Layout;
 use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
-use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
+use crate::store::{DocumentLayer, DocumentLayerId, StrokeKey};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
 use crate::{Camera, Document, PenHolder, StrokeStore};
@@ -328,6 +328,8 @@ impl Engine {
 
         for key in trashed_keys {
             Arc::make_mut(&mut store_history_entry.stroke_components).remove(key);
+            Arc::make_mut(&mut store_history_entry.layer_components).remove(key);
+            Arc::make_mut(&mut store_history_entry.chrono_components).remove(key);
         }
 
         EngineSnapshot {
@@ -335,6 +337,10 @@ impl Engine {
             camera: self.camera.extract_snapshot_data(),
             stroke_components: Arc::clone(&store_history_entry.stroke_components),
             chrono_components: Arc::clone(&store_history_entry.chrono_components),
+            layer_components: Arc::clone(&store_history_entry.layer_components),
+            layers: Arc::clone(&store_history_entry.layers),
+            active_layer_id: store_history_entry.active_layer_id,
+            layer_counter: store_history_entry.layer_counter,
             chrono_counter: store_history_entry.chrono_counter,
         }
     }
@@ -365,18 +371,22 @@ impl Engine {
 
     /// Undo the latest changes.
     pub fn undo(&mut self, now: Instant) -> WidgetFlags {
-        self.store.undo(now)
+        let mut widget_flags = self.store.undo(now)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
-            | self.update_rendering_current_viewport()
+            | self.update_rendering_current_viewport();
+        widget_flags.refresh_ui = true;
+        widget_flags
     }
 
     /// Redo the latest changes.
     pub fn redo(&mut self, now: Instant) -> WidgetFlags {
-        self.store.redo(now)
+        let mut widget_flags = self.store.redo(now)
             | self.doc_resize_autoexpand()
             | self.current_pen_update_state()
-            | self.update_rendering_current_viewport()
+            | self.update_rendering_current_viewport();
+        widget_flags.refresh_ui = true;
+        widget_flags
     }
 
     pub fn can_undo(&self) -> bool {
@@ -747,7 +757,7 @@ impl Engine {
     pub fn select_all_strokes(&mut self) -> WidgetFlags {
         let widget_flags = self.change_pen_style(PenStyle::Selector);
         self.store
-            .set_selected_keys(&self.store.stroke_keys_as_rendered(), true);
+            .set_selected_keys(&self.store.stroke_keys_as_rendered_editable_active(), true);
         widget_flags
             | self.current_pen_update_state()
             | self.doc_resize_autoexpand()
@@ -776,11 +786,108 @@ impl Engine {
             SelectionCollision::Intersects => self
                 .store
                 .stroke_keys_as_rendered_intersecting_bounds(bounds),
-        };
+        }
+        .into_iter()
+        .filter(|&key| self.store.stroke_editable_in_active_layer(key))
+        .collect::<Vec<StrokeKey>>();
         self.store.set_selected_keys(&select, true);
         self.doc_resize_autoexpand()
             | self.record(Instant::now())
             | self.update_rendering_current_viewport()
+    }
+
+    pub fn layers(&self) -> &[DocumentLayer] {
+        self.store.layers()
+    }
+
+    pub fn active_layer_id(&self) -> DocumentLayerId {
+        self.store.active_layer_id()
+    }
+
+    pub fn set_active_layer(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.set_active_layer(layer_id) {
+            widget_flags |= self.current_pen_update_state() | self.record(Instant::now());
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn add_layer(&mut self, name: Option<String>) -> WidgetFlags {
+        self.store.add_layer(name);
+        let mut widget_flags = self.current_pen_update_state() | self.record(Instant::now());
+        widget_flags.store_modified = true;
+        widget_flags.refresh_ui = true;
+        widget_flags
+    }
+
+    pub fn delete_layer(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.delete_layer(layer_id) {
+            widget_flags |= self.current_pen_update_state()
+                | self.doc_resize_autoexpand()
+                | self.record(Instant::now())
+                | self.update_rendering_current_viewport();
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn rename_layer(&mut self, layer_id: DocumentLayerId, name: String) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.rename_layer(layer_id, name) {
+            widget_flags |= self.record(Instant::now());
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
+    }
+
+    pub fn set_layer_visible(&mut self, layer_id: DocumentLayerId, visible: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.set_layer_visible(layer_id, visible) {
+            widget_flags |= self.current_pen_update_state()
+                | self.record(Instant::now())
+                | self.update_rendering_current_viewport();
+            widget_flags.store_modified = true;
+        }
+        widget_flags.refresh_ui = true;
+        widget_flags
+    }
+
+    pub fn set_layer_locked(&mut self, layer_id: DocumentLayerId, locked: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        if self.store.set_layer_locked(layer_id, locked) {
+            widget_flags |= self.current_pen_update_state() | self.record(Instant::now());
+            widget_flags.store_modified = true;
+        }
+        widget_flags.refresh_ui = true;
+        widget_flags
+    }
+
+    pub fn move_layer_up(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        self.move_layer(layer_id, true)
+    }
+
+    pub fn move_layer_down(&mut self, layer_id: DocumentLayerId) -> WidgetFlags {
+        self.move_layer(layer_id, false)
+    }
+
+    fn move_layer(&mut self, layer_id: DocumentLayerId, up: bool) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        let moved = if up {
+            self.store.move_layer_up(layer_id)
+        } else {
+            self.store.move_layer_down(layer_id)
+        };
+        if moved {
+            widget_flags |= self.record(Instant::now()) | self.update_rendering_current_viewport();
+            widget_flags.store_modified = true;
+            widget_flags.refresh_ui = true;
+        }
+        widget_flags
     }
 
     pub fn duplicate_selection(&mut self) -> WidgetFlags {
@@ -913,3 +1020,316 @@ impl Engine {
             .current_pen_style_w_override(&engine_view!(self))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::fileformats::FileFormatLoader;
+    use crate::fileformats::FileFormatSaver;
+    use crate::fileformats::rnoteformat::RnoteFile;
+    use crate::fileformats::xoppformat;
+    use crate::engine::import::XoppImportPrefs;
+    use crate::strokes::BrushStroke;
+    use crate::strokes::Stroke;
+    use rnote_compose::Style;
+    use rnote_compose::penpath::Element;
+
+    #[test]
+    fn rnote_snapshot_roundtrip_preserves_layer_metadata() {
+        let mut engine = Engine::default();
+
+        engine.add_layer(Some(String::from("Annotations")));
+        let layer_id = engine.active_layer_id();
+        engine.rename_layer(layer_id, String::from("Renamed"));
+        engine.set_layer_locked(layer_id, true);
+        engine.set_layer_visible(layer_id, false);
+        engine.move_layer_down(layer_id);
+
+        let snapshot = engine.take_snapshot();
+        let bytes = RnoteFile {
+            engine_snapshot: ijson::to_value(&snapshot).unwrap(),
+        }
+        .save_as_bytes("test.rnote")
+        .unwrap();
+        let loaded_file = RnoteFile::load_from_bytes(&bytes).unwrap();
+        let loaded_snapshot: EngineSnapshot =
+            ijson::from_value(&loaded_file.engine_snapshot).unwrap();
+
+        assert_eq!(loaded_snapshot.layers.len(), 2);
+        assert_eq!(loaded_snapshot.layers[0].id, layer_id);
+        assert_eq!(loaded_snapshot.layers[0].name, "Renamed");
+        assert!(!loaded_snapshot.layers[0].visible);
+        assert!(loaded_snapshot.layers[0].locked);
+        assert_eq!(loaded_snapshot.layers[1].id, 0);
+        assert!(loaded_snapshot.layers[1].visible);
+        assert!(!loaded_snapshot.layers[1].locked);
+    }
+
+    #[test]
+    fn engine_layer_operations_are_undoable_and_redoable() {
+        let mut engine = Engine::default();
+
+        engine.add_layer(Some(String::from("Layer 2")));
+        let layer_id = engine.active_layer_id();
+        assert_eq!(engine.layers().len(), 2);
+
+        engine.undo(Instant::now());
+        assert_eq!(engine.layers().len(), 1);
+
+        engine.redo(Instant::now());
+        assert_eq!(engine.layers().len(), 2);
+        assert_eq!(engine.active_layer_id(), layer_id);
+
+        engine.rename_layer(layer_id, String::from("Renamed"));
+        assert_eq!(engine.layers()[1].name, "Renamed");
+
+        engine.undo(Instant::now());
+        assert_eq!(engine.layers()[1].name, "Layer 2");
+
+        engine.redo(Instant::now());
+        assert_eq!(engine.layers()[1].name, "Renamed");
+
+        engine.set_layer_locked(layer_id, true);
+        assert!(engine.layers()[1].locked);
+
+        engine.undo(Instant::now());
+        assert!(!engine.layers()[1].locked);
+
+        engine.redo(Instant::now());
+        assert!(engine.layers()[1].locked);
+    }
+
+    fn build_minimal_xopp_bytes(
+        pages: Vec<Vec<(Option<&str>, Vec<&str>)>>,
+    ) -> Vec<u8> {
+        let mut xml = String::new();
+        xml.push_str(
+            r#"<?xml version="1.0" encoding="UTF-8"?><xournal creator="rnote test" fileversion="4"><title>Test</title>"#,
+        );
+
+        for page_layers in &pages {
+            let width = 800.0;
+            let height = 600.0;
+            xml.push_str(&format!(
+                "<page width=\"{}\" height=\"{}\"><background type=\"solid\" color=\"#ffffffff\" style=\"plain\"/>",
+                width, height
+            ));
+            for (name_opt, coords_list) in page_layers {
+                xml.push_str("<layer");
+                if let Some(name) = name_opt {
+                    xml.push_str(&format!(" name=\"{}\"", xml_escape(name)));
+                }
+                xml.push('>');
+                for coords in coords_list {
+                    xml.push_str(&format!(
+                        r##"<stroke tool="pen" color="#000000ff" width="2.0 2.0 2.0 2.0">{}</stroke>"##,
+                        xml_escape(coords)
+                    ));
+                }
+                xml.push_str("</layer>");
+            }
+            xml.push_str("</page>");
+        }
+
+        xml.push_str("</xournal>");
+        xoppformat::compress_to_gzip(xml.as_bytes()).unwrap()
+    }
+
+    fn xml_escape(s: &str) -> String {
+        s.replace('&', "&amp;")
+            .replace('<', "&lt;")
+            .replace('>', "&gt;")
+            .replace('"', "&quot;")
+            .replace('\'', "&apos;")
+    }
+
+    #[test]
+    fn xopp_xml_layer_elements_roundtrip() {
+        // Test that elements field is populated during parse and used during write
+        let xopp_bytes = build_minimal_xopp_bytes(vec![vec![
+            (Some("Layer A"), vec!["10.0 20.0 30.0 40.0"]),
+            (Some("Layer B"), vec!["50.0 60.0 70.0 80.0"]),
+        ]]);
+
+        let xopp_file = xoppformat::XoppFile::load_from_bytes(&xopp_bytes).unwrap();
+        let pages = &xopp_file.xopp_root.pages;
+
+        // Verify elements are populated
+        assert_eq!(pages.len(), 1);
+        assert_eq!(pages[0].layers.len(), 2);
+        assert_eq!(pages[0].layers[0].name, Some("Layer A".into()));
+        assert_eq!(pages[0].layers[1].name, Some("Layer B".into()));
+        assert!(!pages[0].layers[0].elements.is_empty());
+        assert!(!pages[0].layers[1].elements.is_empty());
+
+        // Roundtrip through XML write and verify names preserved
+        let roundtrip_bytes = xopp_file.save_as_bytes("test.xopp").unwrap();
+        let roundtrip_file = xoppformat::XoppFile::load_from_bytes(&roundtrip_bytes).unwrap();
+        assert_eq!(roundtrip_file.xopp_root.pages[0].layers.len(), 2);
+        assert_eq!(
+            roundtrip_file.xopp_root.pages[0].layers[0].name,
+            Some("Layer A".into())
+        );
+        assert_eq!(
+            roundtrip_file.xopp_root.pages[0].layers[1].name,
+            Some("Layer B".into())
+        );
+    }
+
+    #[test]
+    fn xopp_import_preserves_named_layers() {
+        let xopp_bytes = build_minimal_xopp_bytes(vec![vec![
+            (Some("Notes"), vec!["10.0 20.0 30.0 40.0"]),
+            (Some("Sketches"), vec!["50.0 60.0 70.0 80.0"]),
+        ]]);
+
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 2);
+        assert_eq!(layers[0].name, "Notes");
+        assert_eq!(layers[1].name, "Sketches");
+    }
+
+    #[test]
+    fn xopp_import_merges_layers_by_name_across_pages() {
+        // Two pages, each with "Notes" and "Sketches" layers
+        let xopp_bytes = build_minimal_xopp_bytes(vec![
+            vec![
+                (Some("Notes"), vec!["10.0 20.0 30.0 40.0"]),
+                (Some("Sketches"), vec!["50.0 60.0 70.0 80.0"]),
+            ],
+            vec![
+                (Some("Notes"), vec!["90.0 100.0 110.0 120.0"]),
+                (Some("Sketches"), vec!["130.0 140.0 150.0 160.0"]),
+            ],
+        ]);
+
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        // Should be merged to 2 layers, not 4
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 2);
+        assert_eq!(layers[0].name, "Notes");
+        assert_eq!(layers[1].name, "Sketches");
+
+        // All 4 strokes should be imported
+        assert_eq!(snapshot.stroke_components.len(), 4);
+    }
+
+    #[test]
+    fn xopp_import_handles_unnamed_layers() {
+        // Two pages with unnamed layers at the same position
+        let xopp_bytes = build_minimal_xopp_bytes(vec![
+            vec![(None, vec!["10.0 20.0 30.0 40.0"])],
+            vec![(None, vec!["50.0 60.0 70.0 80.0"])],
+        ]);
+
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        // Unnamed layers at same position should merge into Layer 1
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 1);
+        assert!(layers[0].name.starts_with("Layer"));
+    }
+
+    fn make_test_stroke(x: f64) -> Stroke {
+        Stroke::BrushStroke(BrushStroke::new(
+            Element::new(na::vector![x, 0.0], Element::PRESSURE_DEFAULT),
+            Style::default(),
+        ))
+    }
+
+    #[test]
+    fn xopp_export_preserves_layer_names() {
+        let mut engine = Engine::default();
+
+        // Layer 1 (default) with a stroke
+        engine.store.insert_stroke(make_test_stroke(10.0), None);
+
+        // Add a second named layer with a stroke
+        let layer2_id = engine.store.add_layer(Some("Sketches".into()));
+        engine.store.set_active_layer(layer2_id);
+        engine.store.insert_stroke(make_test_stroke(50.0), None);
+
+        // Add a third named layer with a stroke
+        let layer3_id = engine.store.add_layer(Some("Annotations".into()));
+        engine.store.set_active_layer(layer3_id);
+        engine.store.insert_stroke(make_test_stroke(100.0), None);
+
+        // Export to xopp
+        let xopp_bytes: Vec<u8> = smol::block_on(
+            engine.export_doc_as_xopp_bytes("test".into(), None),
+        )
+        .unwrap()
+        .unwrap();
+
+        // Re-import to verify layer structure
+        let snapshot = smol::block_on(EngineSnapshot::load_from_xopp_bytes(
+            xopp_bytes,
+            XoppImportPrefs::default(),
+        ))
+        .unwrap();
+
+        let layers: Vec<&DocumentLayer> = snapshot.layers.iter().collect();
+        assert_eq!(layers.len(), 3);
+        assert!(layers.iter().any(|l| l.name == "Sketches"));
+        assert!(layers.iter().any(|l| l.name == "Annotations"));
+    }
+
+    #[test]
+    fn xopp_export_excludes_hidden_layers() {
+        let mut engine = Engine::default();
+
+        engine.store.insert_stroke(make_test_stroke(10.0), None);
+        let hidden_layer_id = engine.store.add_layer(Some("Hidden".into()));
+        engine.store.insert_stroke(make_test_stroke(50.0), None);
+        engine.store.set_layer_visible(hidden_layer_id, false);
+
+        let xopp_bytes: Vec<u8> = smol::block_on(
+            engine.export_doc_as_xopp_bytes("test".into(), None),
+        )
+        .unwrap()
+        .unwrap();
+
+        // Parse the xopp XML to check it doesn't contain "Hidden" layer
+        let xopp_xml = xoppformat::decompress_from_gzip(&xopp_bytes).unwrap();
+        let xopp_str = String::from_utf8(xopp_xml).unwrap();
+        assert!(!xopp_str.contains("Hidden"));
+    }
+
+    #[test]
+    fn xopp_empty_named_layer_writes_self_closing_tag() {
+        // An rnote document with an empty named layer should still write it to xopp
+        let mut engine = Engine::default();
+
+        engine.store.insert_stroke(make_test_stroke(10.0), None);
+        let _empty_layer_id = engine.store.add_layer(Some("Empty".into()));
+        // Don't insert any strokes in this layer
+
+        let xopp_bytes: Vec<u8> = smol::block_on(
+            engine.export_doc_as_xopp_bytes("test".into(), None),
+        )
+        .unwrap()
+        .unwrap();
+
+        // Parse the xopp XML to verify the empty named layer tag exists
+        let xopp_xml = xoppformat::decompress_from_gzip(&xopp_bytes).unwrap();
+        let xopp_str = String::from_utf8(xopp_xml).unwrap();
+        // The layer "Empty" should appear in the output even if it's empty
+        assert!(xopp_str.contains("Empty"));
+    }
+}
+

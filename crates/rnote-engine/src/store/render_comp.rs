@@ -244,9 +244,20 @@ impl StrokeStore {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
         for key in keys {
+            let stroke_layer_visible = self.stroke_layer_visible(key);
             if let Some(stroke) = self.stroke_components.get(key)
                 && let Some(render_comp) = self.render_components.get_mut(key)
             {
+                if !stroke_layer_visible {
+                    #[cfg(feature = "ui")]
+                    {
+                        render_comp.rendernodes = vec![];
+                    }
+                    render_comp.images = vec![];
+                    render_comp.state = RenderCompState::Dirty;
+                    continue;
+                }
+
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
                 let viewport_extended =

@@ -256,6 +256,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     let pdf_page_start_row: adw::SpinRow = builder.object("pdf_page_start_row").unwrap();
     let pdf_page_end_row: adw::SpinRow = builder.object("pdf_page_end_row").unwrap();
     let pdf_info_label: Label = builder.object("pdf_info_label").unwrap();
+    let pdf_import_columns_row: adw::SpinRow = builder.object("pdf_import_columns_row").unwrap();
     let pdf_import_width_row: adw::SpinRow = builder.object("pdf_import_width_row").unwrap();
     let pdf_import_page_spacing_row: adw::ComboRow =
         builder.object("pdf_import_page_spacing_row").unwrap();
@@ -288,6 +289,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         .pdf_import_prefs;
 
     // Set the widget state from the pdf import prefs
+    pdf_import_columns_row.set_value(pdf_import_prefs.columns as f64);
     pdf_import_width_row.set_value(pdf_import_prefs.page_width_perc);
     match pdf_import_prefs.pages_type {
         PdfImportPagesType::Bitmap => {
@@ -388,6 +390,19 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
                 .import_prefs
                 .pdf_import_prefs
                 .page_width_perc = row.value();
+        }
+    ));
+
+    pdf_import_columns_row.connect_value_notify(clone!(
+        #[weak]
+        appwindow,
+        move |row| {
+            appwindow
+                .engine_config()
+                .write()
+                .import_prefs
+                .pdf_import_prefs
+                .columns = row.value() as u32;
         }
     ));
 

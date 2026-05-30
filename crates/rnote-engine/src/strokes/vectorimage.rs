@@ -239,8 +239,23 @@ impl VectorImage {
         } else {
             return Ok(vec![]);
         };
-        let x = insert_pos[0];
+        let mut x = insert_pos[0];
         let mut y = insert_pos[1];
+
+        let mut row_height = 0.0;
+        let columns = pdf_import_prefs.columns as usize;
+
+        // calculate the width of the widest page
+        let mut max_width = 0.0;
+        for page_i in page_range.clone() {
+            let page = pages
+                .get(page_i)
+                .ok_or_else(|| anyhow::anyhow!("no page at index '{page_i}"))?;
+            let width = page.render_dimensions().0 as f64 * page_zoom;
+            if width > max_width {
+                max_width = width;
+            }
+        }
 
         // TODO: investigate if this can be parallelized with rayon's `par_iter()`
         let svgs = page_range
@@ -254,16 +269,36 @@ impl VectorImage {
                 let height = intrinsic_height * page_zoom;
                 let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
 
-                if pdf_import_prefs.adjust_document {
-                    y += height
-                } else {
-                    y += match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
-                            height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
-                        }
-                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
-                    };
+                if height > row_height || page_i % columns == 0 {
+                    row_height = height;
                 }
+
+                if (page_i + 1) % columns == 0 {
+                    x = insert_pos[0];
+
+                    if pdf_import_prefs.adjust_document {
+                        y += row_height;
+                    } else {
+                        y += match pdf_import_prefs.page_spacing {
+                            PdfImportPageSpacing::Continuous => {
+                                row_height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
+                            }
+                            PdfImportPageSpacing::OnePerDocumentPage => format.height(),
+                        };
+                    }
+                } else {
+                    if pdf_import_prefs.adjust_document {
+                        x += max_width;
+                    } else {
+                        x += match pdf_import_prefs.page_spacing {
+                            PdfImportPageSpacing::Continuous => {
+                                max_width + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
+                            }
+                            PdfImportPageSpacing::OnePerDocumentPage => format.width(),
+                        };
+                    }
+                }
+
                 let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
                 let svg = Svg { svg_data, bounds };
 

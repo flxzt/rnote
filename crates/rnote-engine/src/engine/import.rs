@@ -81,6 +81,9 @@ impl TryFrom<u32> for PdfImportPageSpacing {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "pdf_import_prefs")]
 pub struct PdfImportPrefs {
+    /// The number of Pdf pages in each row.
+    #[serde(rename = "columns")]
+    pub columns: u32,
     /// Pdf page width in percentage to the format width.
     #[serde(rename = "page_width_perc")]
     pub page_width_perc: f64,
@@ -101,6 +104,7 @@ pub struct PdfImportPrefs {
 impl Default for PdfImportPrefs {
     fn default() -> Self {
         Self {
+            columns: 1,
             pages_type: PdfImportPagesType::default(),
             page_width_perc: 50.0,
             page_spacing: PdfImportPageSpacing::default(),
@@ -294,6 +298,7 @@ impl Engine {
         &mut self,
         strokes: Vec<(Stroke, Option<StrokeLayer>)>,
         adjust_document: bool,
+        columns: u32,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if strokes.is_empty() {
@@ -315,7 +320,11 @@ impl Engine {
                 .iter()
                 .map(|(stroke, _)| stroke.bounds().extents())
                 .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
-            self.document.config.format.set_width(max_size[0]);
+            let columns_used = columns.min(strokes.len() as u32);
+            self.document
+                .config
+                .format
+                .set_width(max_size[0] * columns_used as f64);
             self.document.config.format.set_height(max_size[1]);
             widget_flags |= self.set_doc_layout(Layout::FixedSize) | self.doc_resize_autoexpand()
         }

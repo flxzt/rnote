@@ -434,6 +434,7 @@ impl DrawableOnDoc for Selector {
                     modify_state,
                     self.pos,
                     engine_view.camera,
+                    engine_view.document.config.background.color,
                 )?;
 
                 match modify_state {
@@ -545,6 +546,7 @@ impl Selector {
         modify_state: &ModifyState,
         pos: Option<na::Vector2<f64>>,
         camera: &Camera,
+        background_color: Color,
     ) -> anyhow::Result<()> {
         piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = camera.total_zoom();
@@ -709,7 +711,13 @@ impl Selector {
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         // Rotate Node
-        indicators::draw_circular_node(piet_cx, rotate_node_state, rotate_node_sphere, total_zoom);
+        indicators::draw_circular_node(
+            piet_cx,
+            rotate_node_state,
+            rotate_node_sphere,
+            total_zoom,
+            piet::Color::from(background_color),
+        );
 
         // Resize Nodes
         indicators::draw_rectangular_node(
@@ -717,24 +725,28 @@ impl Selector {
             resize_tl_node_state,
             resize_tl_node_bounds,
             total_zoom,
+            piet::Color::from(background_color),
         );
         indicators::draw_rectangular_node(
             piet_cx,
             resize_tr_node_state,
             resize_tr_node_bounds,
             total_zoom,
+            piet::Color::from(background_color),
         );
         indicators::draw_rectangular_node(
             piet_cx,
             resize_bl_node_state,
             resize_bl_node_bounds,
             total_zoom,
+            piet::Color::from(background_color),
         );
         indicators::draw_rectangular_node(
             piet_cx,
             resize_br_node_state,
             resize_br_node_bounds,
             total_zoom,
+            piet::Color::from(background_color),
         );
 
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;

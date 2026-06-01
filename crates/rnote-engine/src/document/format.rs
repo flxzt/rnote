@@ -1,4 +1,5 @@
 // Imports
+use p2d::math::Vector2;
 use rnote_compose::{Color, color};
 use serde::{Deserialize, Serialize};
 
@@ -53,7 +54,7 @@ impl TryFrom<u32> for PredefinedFormat {
 }
 
 impl PredefinedFormat {
-    pub fn size_mm(&self, orientation: Orientation) -> Option<na::Vector2<f64>> {
+    pub fn size_mm(&self, orientation: Orientation) -> Option<Vector2> {
         let mut size_portrait = match self {
             PredefinedFormat::A6 => Some((105.0, 148.0)),
             PredefinedFormat::A5 => Some((148.0, 210.0)),
@@ -69,7 +70,7 @@ impl PredefinedFormat {
         {
             std::mem::swap(width, height);
         }
-        size_portrait.map(|(width, height)| na::vector![width, height])
+        size_portrait.map(|(width, height)| Vector2::new(width, height))
     }
 }
 
@@ -227,8 +228,8 @@ impl Format {
         self.orientation
     }
 
-    pub fn size(&self) -> na::Vector2<f64> {
-        na::vector![self.width, self.height]
+    pub fn size(&self) -> Vector2 {
+        Vector2::new(self.width, self.height)
     }
 
     fn determine_orientation(&self) -> Orientation {

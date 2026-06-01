@@ -12,7 +12,6 @@ pub(crate) mod thumbnail;
 pub(crate) mod validators;
 
 // Renames
-extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
 fn main() -> anyhow::Result<()> {

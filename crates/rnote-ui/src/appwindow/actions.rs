@@ -8,6 +8,7 @@ use gtk4::{
     prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
+use p2d::math::Vector2;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::document::format::MeasureUnit;
@@ -1092,18 +1093,19 @@ impl RnAppWindow {
 
                 let pointer_pos = wrapper.pointer_pos().and_then(|wrapper_point| {
                     let canvas_point = wrapper
-                        .compute_point(&canvas, &graphene::Point::from_na_vec(wrapper_point));
+                        .compute_point(&canvas, &graphene::Point::from_p2d_vec(wrapper_point));
 
                     if let Some(point) = canvas_point {
                         let x = point.x() as f64;
                         let y = point.y() as f64;
 
                         if canvas.contains(x, y) {
-                            let transformed_point =
-                                (canvas.engine_ref().camera.transform().inverse()
-                                    * na::point![x, y])
-                                .coords;
-
+                            let transformed_point = canvas
+                                .engine_ref()
+                                .camera
+                                .transform()
+                                .inverse()
+                                .transform_point2(Vector2::new(x, y));
                             return Some(transformed_point);
                         }
                     }
@@ -1125,10 +1127,13 @@ impl RnAppWindow {
                 let canvas = wrapper.canvas();
 
                 let last_contextmenu_pos = wrapper.last_contextmenu_pos().map(|vec2| {
-                    let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
-                    (canvas.engine_ref().camera.transform().inverse()
-                        * na::point![p.x() as f64, p.y() as f64])
-                    .coords
+                    let p = graphene::Point::from_p2d_vec(vec2);
+                    canvas
+                        .engine_ref()
+                        .camera
+                        .transform()
+                        .inverse()
+                        .transform_point2(p.to_p2d_vec())
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos);
@@ -1181,7 +1186,7 @@ impl RnAppWindow {
         }
     }
 
-    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>) {
+    fn clipboard_paste(&self, target_pos: Option<Vector2>) {
         let content_formats = self.clipboard().formats();
         let Some(canvas) = self.active_tab_canvas() else {
             return;

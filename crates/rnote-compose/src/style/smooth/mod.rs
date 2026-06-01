@@ -407,7 +407,7 @@ fn compose_lines_variable_width(
     // The lines variable is ghosted here, to make sure we can only use the filtered
     let lines = lines
         .iter()
-        .filter(|line| (line.end - line.start).magnitude() > 0.0)
+        .filter(|line| (line.end - line.start).length() > 0.0)
         .collect::<Vec<&Line>>();
     let n_lines = lines.len();
     if n_lines == 0 {

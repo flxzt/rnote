@@ -1,4 +1,5 @@
 // Imports
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -16,13 +17,13 @@ pub struct Constraints {
 
 impl Constraints {
     /// Constrain the coordinates of a vector by the current stored constraint ratios
-    pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
+    pub fn constrain(&self, pos: Vector2) -> Vector2 {
         if !self.enabled {
             return pos;
         }
         self.ratios
             .iter()
-            .map(|ratio| ((ratio.constrain(pos) - pos).norm(), ratio.constrain(pos)))
+            .map(|ratio| ((ratio.constrain(pos) - pos).length(), ratio.constrain(pos)))
             .reduce(|(acc_dist, acc_posi), (dist, posi)| {
                 if dist <= acc_dist {
                     (dist, posi)
@@ -61,32 +62,32 @@ impl ConstraintRatio {
     pub const GOLDEN_RATIO: f64 = 1.618;
 
     /// Constrain the coordinates of a vector by the constraint ratio.
-    pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
-        let dx = pos[0];
-        let dy = pos[1];
+    pub fn constrain(&self, pos: Vector2) -> Vector2 {
+        let x = pos.x;
+        let y = pos.y;
 
         match self {
-            ConstraintRatio::Horizontal => na::vector![dx, 0.0],
-            ConstraintRatio::Vertical => na::vector![0.0, dy],
+            ConstraintRatio::Horizontal => Vector2::new(x, 0.),
+            ConstraintRatio::Vertical => Vector2::new(0., y),
             ConstraintRatio::OneToOne => {
-                if dx.abs() > dy.abs() {
-                    na::vector![dx, dx.abs() * dy.signum()]
+                if x.abs() > y.abs() {
+                    Vector2::new(x, x.abs() * y.signum())
                 } else {
-                    na::vector![dy.abs() * dx.signum(), dy]
+                    Vector2::new(y.abs() * x.signum(), y)
                 }
             }
             ConstraintRatio::ThreeToTwo => {
-                if dx.abs() > dy.abs() {
-                    na::vector![dx, (dx / 1.5).abs() * dy.signum()]
+                if x.abs() > y.abs() {
+                    Vector2::new(x, (x / 1.5).abs() * y.signum())
                 } else {
-                    na::vector![(dy / 1.5).abs() * dx.signum(), dy]
+                    Vector2::new((y / 1.5).abs() * x.signum(), y)
                 }
             }
             ConstraintRatio::Golden => {
-                if dx.abs() > dy.abs() {
-                    na::vector![dx, (dx / Self::GOLDEN_RATIO).abs() * dy.signum()]
+                if x.abs() > y.abs() {
+                    Vector2::new(x, (x / Self::GOLDEN_RATIO).abs() * y.signum())
                 } else {
-                    na::vector![(dy / Self::GOLDEN_RATIO).abs() * dx.signum(), dy]
+                    Vector2::new((y / Self::GOLDEN_RATIO).abs() * x.signum(), y)
                 }
             }
         }

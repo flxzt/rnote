@@ -4,10 +4,11 @@ use anyhow::Context;
 use core::fmt::Debug;
 use image::ImageReader;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
-use rnote_compose::ext::AabbExt;
+use rnote_compose::Transformable;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::{Rectangle, Shapeable};
-use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 
@@ -78,7 +79,7 @@ pub struct Image {
     pub data: glib::Bytes,
     /// The target rect in the coordinate space of the document.
     #[serde(rename = "rectangle")]
-    pub rect: Rectangle,
+    pub rectangle: Rectangle,
     /// Width of the image data.
     #[serde(rename = "pixel_width")]
     pub pixel_width: u32,
@@ -94,7 +95,7 @@ impl Debug for Image {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Image")
             .field("data", &String::from("{.. no debug impl ..}"))
-            .field("rect", &self.rect)
+            .field("rect", &self.rectangle)
             .field("pixel_width", &self.pixel_width)
             .field("pixel_height", &self.pixel_height)
             .field("memory_format", &self.memory_format)
@@ -106,7 +107,7 @@ impl Default for Image {
     fn default() -> Self {
         Self {
             data: glib::Bytes::from_owned(Vec::new()),
-            rect: Rectangle::default(),
+            rectangle: Rectangle::default(),
             pixel_width: 0,
             pixel_height: 0,
             memory_format: ImageMemoryFormat::default(),
@@ -121,13 +122,13 @@ impl From<image::DynamicImage> for Image {
         let memory_format = ImageMemoryFormat::R8g8b8a8Premultiplied;
         let data = glib::Bytes::from_owned(dynamic_image.into_rgba8().to_vec());
         let bounds = Aabb::new(
-            na::point![0.0, 0.0],
-            na::point![f64::from(pixel_width), f64::from(pixel_height)],
+            Vector2::ZERO,
+            Vector2::new(pixel_width as f64, pixel_height as f64),
         );
 
         Self {
             data,
-            rect: Rectangle::from_p2d_aabb(bounds),
+            rectangle: Rectangle::from_p2d_aabb(bounds),
             pixel_width,
             pixel_height,
             memory_format,
@@ -153,10 +154,10 @@ impl Drawable for Image {
                 piet_image_format,
             )
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        cx.transform(self.rect.transform.to_kurbo());
+        cx.transform(self.rectangle.affine.to_kurbo());
         cx.draw_image(
             &piet_image,
-            self.rect.cuboid.local_aabb().to_kurbo_rect(),
+            self.rectangle.cuboid.local_aabb().to_kurbo_rect(),
             piet::InterpolationMode::Bilinear,
         );
         cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -165,22 +166,22 @@ impl Drawable for Image {
 }
 
 impl Transformable for Image {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
-        self.rect.translate(offset)
+    fn translate(&mut self, offset: Vector2) {
+        self.rectangle.translate(offset)
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        self.rect.rotate(angle, center)
+    fn rotate(&mut self, angle: f64, center: Vector2) {
+        self.rectangle.rotate(angle, center)
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
-        self.rect.scale(scale)
+    fn scale(&mut self, scale: Vector2) {
+        self.rectangle.scale(scale)
     }
 }
 
 impl Image {
     pub fn assert_valid(&self) -> anyhow::Result<()> {
-        self.rect.bounds().assert_valid()?;
+        self.rectangle.bounds().assert_valid()?;
 
         if self.pixel_width == 0
             || self.pixel_height == 0
@@ -209,7 +210,7 @@ impl Image {
 
         Ok(Image {
             data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(width, height, data)),
-            rect: Rectangle::from_p2d_aabb(bounds),
+            rectangle: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width,
             pixel_height: height,
             // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
@@ -295,12 +296,12 @@ impl Image {
         let memtexture = self.to_memtexture()?;
         let texture_node = gsk::TextureNode::new(
             &memtexture,
-            &graphene::Rect::from_p2d_aabb(self.rect.cuboid.local_aabb()),
+            &graphene::Rect::from_p2d_aabb(self.rectangle.cuboid.local_aabb()),
         )
         .upcast();
         let transform_node = gsk::TransformNode::new(
             &texture_node,
-            &crate::utils::transform_to_gsk(&self.rect.transform),
+            &crate::utils::affine_to_gsk(&self.rectangle.affine),
         )
         .upcast();
 
@@ -362,7 +363,7 @@ impl Image {
                 height_scaled,
                 data,
             )),
-            rect: Rectangle::from_p2d_aabb(bounds),
+            rectangle: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
             // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied

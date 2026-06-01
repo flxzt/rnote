@@ -8,6 +8,8 @@
         "compounds": [],
         "configurations": [
             {
+                "name": "debug ui",
+                "program": "${workspaceFolder}/_mesonbuild/rnote",
                 "args": [],
                 "env": {
                     //"G_MESSAGES_DEBUG": "all",
@@ -15,12 +17,37 @@
                     "RUST_BACKTRACE": "1",
                     "RUST_LOG": "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug"
                 },
-                "name": "debug ui",
+                "cwd": "${workspaceFolder}",
                 "preLaunchTask": "build",
-                "program": "${workspaceFolder}/_mesonbuild/rnote",
                 "request": "launch",
                 "type": "lldb"
             },
+            {
+                "name": "debug rnote-cli",
+                "program": "/usr/bin/sh",
+                "args": [
+                    "-c",
+                    "${workspaceFolder}/_mesonbuild/target/debug/rnote-cli ${input:cli_args}"
+                ],
+                "env": {
+                    //"G_MESSAGES_DEBUG": "all",
+                    "LANG": "C",
+                    "RUST_BACKTRACE": "full",
+                    "RUST_LOG": "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug"
+                },
+                "cwd": "${workspaceFolder}",
+                "preLaunchTask": "build",
+                "request": "launch",
+                "type": "lldb"
+            }
+        ],
+        "inputs": [
+            {
+                "id": "cli_args",
+                "description": "Enter arguments for rnote-cli",
+                "default": "--help",
+                "type": "promptString"
+            }
         ],
         "version": "0.2.0"
     },

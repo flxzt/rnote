@@ -1,6 +1,9 @@
 // Imports
 use super::Element;
-use crate::transform::Transformable;
+use crate::Transformable;
+use crate::ext::DPose2Ext;
+use p2d::glamx::prelude::DPose2;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 /// A single segment, usually of a pen path.
@@ -17,9 +20,9 @@ pub enum Segment {
     #[serde(rename = "quadbezto", alias = "quadbez")]
     /// A quadratic-bezier-to segment.
     QuadBezTo {
-        #[serde(rename = "cp", with = "crate::serialize::na_vector2_f64_dp3")]
+        #[serde(rename = "cp", with = "crate::serialize::glam_vector2_dp3")]
         /// The quadratic curve control point.
-        cp: na::Vector2<f64>,
+        cp: Vector2,
         #[serde(rename = "end")]
         /// The quadratic curve end.
         end: Element,
@@ -27,12 +30,12 @@ pub enum Segment {
     #[serde(rename = "cubbezto", alias = "cubbez")]
     /// A cubic-bezier-to segment.
     CubBezTo {
-        #[serde(rename = "cp1", with = "crate::serialize::na_vector2_f64_dp3")]
+        #[serde(rename = "cp1", with = "crate::serialize::glam_vector2_dp3")]
         /// The cubic curve first control point.
-        cp1: na::Vector2<f64>,
-        #[serde(rename = "cp2", with = "crate::serialize::na_vector2_f64_dp3")]
+        cp1: Vector2,
+        #[serde(rename = "cp2", with = "crate::serialize::glam_vector2_dp3")]
         /// The cubic curve second control point.
-        cp2: na::Vector2<f64>,
+        cp2: Vector2,
         #[serde(rename = "end")]
         /// The cubic curve end.
         end: Element,
@@ -40,7 +43,7 @@ pub enum Segment {
 }
 
 impl Transformable for Segment {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         match self {
             Self::LineTo { end } => {
                 end.pos += offset;
@@ -57,39 +60,37 @@ impl Transformable for Segment {
         }
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
-        let mut isometry = na::Isometry2::identity();
-        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
-
+    fn rotate(&mut self, angle: f64, center: Vector2) {
+        let pose = DPose2::from_rotation_wrt_center(angle, center);
         match self {
             Self::LineTo { end } => {
-                end.pos = isometry.transform_point(&end.pos.into()).coords;
+                end.pos = pose.transform_point(end.pos);
             }
             Self::QuadBezTo { cp, end } => {
-                *cp = isometry.transform_point(&(*cp).into()).coords;
-                end.pos = isometry.transform_point(&end.pos.into()).coords;
+                *cp = pose.transform_point(*cp);
+                end.pos = pose.transform_point(end.pos);
             }
             Self::CubBezTo { cp1, cp2, end } => {
-                *cp1 = isometry.transform_point(&(*cp1).into()).coords;
-                *cp2 = isometry.transform_point(&(*cp2).into()).coords;
-                end.pos = isometry.transform_point(&end.pos.into()).coords;
+                *cp1 = pose.transform_point(*cp1);
+                *cp2 = pose.transform_point(*cp2);
+                end.pos = pose.transform_point(end.pos);
             }
         }
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         match self {
             Self::LineTo { end } => {
-                end.pos = end.pos.component_mul(&scale);
+                end.pos *= scale;
             }
             Self::QuadBezTo { cp, end } => {
-                *cp = cp.component_mul(&scale);
-                end.pos = end.pos.component_mul(&scale);
+                *cp *= scale;
+                end.pos *= scale;
             }
             Self::CubBezTo { cp1, cp2, end } => {
-                *cp1 = cp1.component_mul(&scale);
-                *cp2 = cp2.component_mul(&scale);
-                end.pos = end.pos.component_mul(&scale);
+                *cp1 *= scale;
+                *cp2 *= scale;
+                end.pos *= scale;
             }
         }
     }

@@ -12,16 +12,44 @@
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
+        <property name="spacing">3</property>
         <child>
-          <object class="GtkMenuButton" id="brushstyle_menubutton">
-            <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Brush Style</property>
-            <property name="popover">brushstyle_popover</property>
-            <property name="icon-name">pen-brush-style-solid-symbolic</property>
+          <object class="GtkBox" id="brushstyle_togglebox">
+            <property name="orientation">vertical</property>
+            <property name="homogeneous">true</property>
+            <property name="vexpand">false</property>
             <style>
-              <class name="flat" />
-              <class name="sidebar_action_button" />
+              <class name="linked" />
             </style>
+            <child>
+              <object class="GtkToggleButton" id="brushstyle_marker_toggle">
+                <property name="tooltip_text" translatable="yes">Marker</property>
+                <property name="icon-name">pen-brush-style-marker-symbolic</property>
+                <style>
+                  <class name="sidebar_action_button" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="brushstyle_solid_toggle">
+                <property name="group">brushstyle_marker_toggle</property>
+                <property name="tooltip_text" translatable="yes">Solid</property>
+                <property name="icon-name">pen-brush-style-solid-symbolic</property>
+                <style>
+                  <class name="sidebar_action_button" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="brushstyle_textured_toggle">
+                <property name="group">brushstyle_marker_toggle</property>
+                <property name="tooltip_text" translatable="yes">Textured</property>
+                <property name="icon-name">pen-brush-style-textured-symbolic</property>
+                <style>
+                  <class name="sidebar_action_button" />
+                </style>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -48,90 +76,6 @@
       <object class="RnStrokeWidthPicker" id="stroke_width_picker">
       </object>
     </child>
-
-    <!-- Brush style -->
-    <object class="GtkPopover" id="brushstyle_popover">
-      <child>
-        <object class="GtkBox">
-          <property name="orientation">vertical</property>
-          <property name="margin-top">6</property>
-          <property name="margin-bottom">6</property>
-          <property name="margin-start">6</property>
-          <property name="margin-end">6</property>
-          <property name="spacing">12</property>
-          <child>
-            <object class="GtkBox">
-              <child>
-                <object class="GtkLabel">
-                  <property name="label" translatable="yes">Brush Styles</property>
-                  <property name="hexpand">true</property>
-                  <property name="halign">center</property>
-                  <style>
-                    <class name="title-3" />
-                  </style>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton" id="brushstyle_popover_close_button">
-                  <property name="icon-name">window-close-symbolic</property>
-                  <style>
-                    <class name="flat" />
-                    <class name="circular" />
-                  </style>
-                </object>
-              </child>
-            </object>
-          </child>
-          <child>
-            <object class="GtkListBox" id="brushstyle_listbox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">browse</property>
-              <style>
-                <class name="content" />
-                <class name="large" />
-              </style>
-              <child>
-                <object class="AdwActionRow" id="brushstyle_marker_row">
-                  <property name="title" translatable="yes">Marker</property>
-                  <property name="subtitle" translatable="yes">Mark underneath other strokes</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-brush-style-marker-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="brushstyle_solid_row">
-                  <property name="title" translatable="yes">Solid</property>
-                  <property name="subtitle" translatable="yes">Draw solid color strokes</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-brush-style-solid-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow" id="brushstyle_textured_row">
-                  <property name="title" translatable="yes">Textured</property>
-                  <property name="subtitle" translatable="yes">Draw textured strokes</property>
-                  <child type="prefix">
-                    <object class="GtkImage">
-                      <property name="icon-name">pen-brush-style-textured-symbolic</property>
-                      <property name="icon-size">large</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-            </object>
-          </child>
-        </object>
-      </child>
-    </object>
-
     <!-- Brush config -->
     <object class="GtkPopover" id="brushconfig_popover">
       <child>

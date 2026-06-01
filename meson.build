@@ -261,6 +261,12 @@ if build_ui == true
         configuration: inno_script_conf,
     )
 
+    if build_cli and host_machine.system() == 'windows'
+        define_cli_output = '/DMyAppCliExeName=' + cli_name + '.exe'
+    else
+        define_cli_output = ''
+    endif
+
     if host_machine.system() == 'windows'
         # build installer
         custom_target(
@@ -277,6 +283,7 @@ if build_ui == true
                 app_id,
                 ui_output,
                 meson.project_build_root() / '@INPUT@',
+                define_cli_output,
             ],
             build_by_default: false,
             depends: app_cargo_build,

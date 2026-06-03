@@ -3,8 +3,8 @@ use crate::{RnAppWindow, RnCanvas, RnContextMenu, canvas::reject_pointer_input};
 use gtk4::{
     CompositeTemplate, CornerType, EventControllerMotion, EventControllerScroll,
     EventControllerScrollFlags, EventSequenceState, GestureClick, GestureDrag, GestureLongPress,
-    GestureZoom, PropagationPhase, ScrolledWindow, Widget, gdk, glib, glib::clone, graphene,
-    prelude::*, subclass::prelude::*,
+    GestureRotate, GestureZoom, PropagationPhase, ScrolledWindow, Widget, gdk, glib, glib::clone,
+    graphene, prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penevent::ShortcutKey;
@@ -13,6 +13,150 @@ use rnote_engine::ext::GraphenePointExt;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::time::Instant;
+
+/// State recorded at the start of a two-finger ruler gesture. The rotation
+/// pivot (projected centroid) is fixed for the duration of the gesture; the
+/// anchor/angle/centroid at begin let us compute the new state each frame by
+/// (1) rotating around the pivot and (2) translating by the centroid delta.
+/// All position values are in scroller (window-relative) pixel coordinates.
+#[derive(Clone, Copy)]
+struct RulerDragBegin {
+    pivot: na::Vector2<f64>,
+    anchor_begin: na::Vector2<f64>,
+    centroid_begin: na::Vector2<f64>,
+    angle_begin: f64,
+}
+
+/// How long after the last scroll event a session stays "active" (= the pivot
+/// is held). Beyond this, the next scroll begins a fresh session.
+const RULER_SCROLL_SESSION_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(400);
+
+/// Active scroll-rotation session: the pivot is locked for the duration of the
+/// session so the dial doesn't move and the user keeps "grip" even if the
+/// ruler rotates out from under the pointer.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ScrollRotationSession {
+    pivot: na::Vector2<f64>,
+    last_event_time: Instant,
+}
+
+/// Rotate the ruler in response to a scroll event. Returns `true` if the event
+/// was consumed (caller should stop propagation). The rotation pivot is locked
+/// for the duration of a session — set on the first scroll while the pointer
+/// is over the ruler body, kept for subsequent scrolls that arrive within
+/// `RULER_SCROLL_SESSION_TIMEOUT`.
+fn rotate_ruler_with_scroll(canvaswrapper: &RnCanvasWrapper, dy: f64) -> bool {
+    let now = Instant::now();
+    let imp = canvaswrapper.imp();
+
+    let prev_session = imp.ruler_scroll_session.get().filter(|s| {
+        now.duration_since(s.last_event_time) < RULER_SCROLL_SESSION_TIMEOUT
+    });
+
+    let canvas = canvaswrapper.canvas();
+    let config_shared = canvas.engine_ref().engine_config().clone();
+
+    let pivot = {
+        let mut config = config_shared.write();
+        let ruler = &mut config.pens_config.brush_config.ruler_config;
+        if !ruler.visible {
+            return false;
+        }
+
+        let pivot = if let Some(session) = prev_session {
+            // Reuse the locked pivot — keep dial_pos where it was placed.
+            session.pivot
+        } else {
+            // New session: hit-test the pointer against the ruler body.
+            let pointer = match imp.pointer_pos.get() {
+                Some(p) => p,
+                None => return false,
+            };
+            let rel = pointer - ruler.anchor;
+            if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
+                return false;
+            }
+            // Project pointer onto centerline and lock as the session pivot.
+            let along = rel.dot(&ruler.direction());
+            let projected = ruler.anchor + along * ruler.direction();
+            ruler.dial_pos = projected;
+            projected
+        };
+
+        let delta_rad = dy * ruler.scroll_rotation_step_deg.to_radians();
+        let raw_new_angle = ruler.angle + delta_rad;
+        let new_angle = if ruler.angle_snap_enabled {
+            rnote_engine::pens::pensconfig::rulerconfig::RulerConfig::snap_angle(raw_new_angle)
+        } else {
+            raw_new_angle
+        };
+        let effective_delta = new_angle - ruler.angle;
+
+        // Rotate anchor around the locked pivot.
+        let v = ruler.anchor - pivot;
+        let cos_a = effective_delta.cos();
+        let sin_a = effective_delta.sin();
+        let v_rotated = na::vector![v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a];
+
+        ruler.angle = new_angle;
+        ruler.anchor = pivot + v_rotated;
+        // dial_pos was set above (on new session) or stays at the locked pivot.
+        pivot
+    };
+
+    imp.ruler_scroll_session.set(Some(ScrollRotationSession {
+        pivot,
+        last_event_time: now,
+    }));
+    canvas.queue_draw();
+    true
+}
+
+/// Apply the two-finger gesture update to the ruler. The ruler:
+/// - is rotated by `angle_delta` around the fixed `pivot` (set at begin),
+/// - then translated by the current centroid offset from begin.
+///
+/// On placement (`translation = 0`, `angle_delta = 0`) nothing moves except
+/// `dial_pos`, which is `pivot` (set in the begin handler).
+fn apply_two_finger_ruler_update(canvaswrapper: &RnCanvasWrapper, begin: RulerDragBegin) {
+    let canvas = canvaswrapper.canvas();
+    let zoom_gesture = &canvaswrapper.imp().canvas_zoom_gesture;
+    let rotate_gesture = &canvaswrapper.imp().canvas_rotate_gesture;
+
+    let Some((cx, cy)) = zoom_gesture.bounding_box_center() else {
+        return;
+    };
+    let centroid_now = na::vector![cx, cy];
+    let translation = centroid_now - begin.centroid_begin;
+
+    let angle_delta = rotate_gesture.angle_delta();
+    let raw_new_angle = begin.angle_begin + angle_delta;
+    let config_shared = canvas.engine_ref().engine_config().clone();
+    let new_angle = if config_shared.read().pens_config.brush_config.ruler_config.angle_snap_enabled {
+        rnote_engine::pens::pensconfig::rulerconfig::RulerConfig::snap_angle(raw_new_angle)
+    } else {
+        raw_new_angle
+    };
+    // The rotation applied to the anchor's offset-from-pivot uses the EFFECTIVE
+    // angular change (after snap), not the raw gesture delta, so the anchor
+    // tracks the snapped ruler line.
+    let effective_delta = new_angle - begin.angle_begin;
+    let cos_a = effective_delta.cos();
+    let sin_a = effective_delta.sin();
+    let v = begin.anchor_begin - begin.pivot;
+    let v_rotated = na::vector![v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a];
+    let new_anchor = begin.pivot + v_rotated + translation;
+    let new_dial_pos = begin.pivot + translation;
+
+    {
+        let mut c = config_shared.write();
+        let r = &mut c.pens_config.brush_config.ruler_config;
+        r.anchor = new_anchor;
+        r.dial_pos = new_dial_pos;
+        r.angle = new_angle;
+    }
+    canvas.queue_draw();
+}
 
 #[derive(Debug, Default)]
 struct Connections {
@@ -35,10 +179,16 @@ mod imp {
         pub(crate) inertial_scrolling: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
         pub(crate) last_contextmenu_pos: Cell<Option<na::Vector2<f64>>>,
+        /// Active scroll-to-rotate session on the ruler. Set when the first
+        /// scroll-on-ruler event fires; cleared when no scroll event arrives
+        /// within `RULER_SCROLL_SESSION_TIMEOUT`. While active, all scroll
+        /// events rotate around the locked pivot regardless of pointer position.
+        pub(crate) ruler_scroll_session: Cell<Option<ScrollRotationSession>>,
 
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
         pub(crate) canvas_zoom_gesture: GestureZoom,
+        pub(crate) canvas_rotate_gesture: GestureRotate,
         pub(crate) canvas_multi_press_gesture: GestureClick,
         pub(crate) canvas_zoom_scroll_controller: EventControllerScroll,
         pub(crate) canvas_mouse_drag_middle_gesture: GestureDrag,
@@ -73,6 +223,11 @@ mod imp {
 
             let canvas_zoom_gesture = GestureZoom::builder()
                 .name("canvas_zoom_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+
+            let canvas_rotate_gesture = GestureRotate::builder()
+                .name("canvas_rotate_gesture")
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
@@ -134,10 +289,12 @@ mod imp {
                 inertial_scrolling: Cell::new(true),
                 pointer_pos: Cell::new(None),
                 last_contextmenu_pos: Cell::new(None),
+                ruler_scroll_session: Cell::new(None),
 
                 pointer_motion_controller,
                 canvas_drag_gesture,
                 canvas_zoom_gesture,
+                canvas_rotate_gesture,
                 canvas_multi_press_gesture,
                 canvas_zoom_scroll_controller,
                 canvas_mouse_drag_middle_gesture,
@@ -181,6 +338,8 @@ mod imp {
             self.scroller
                 .add_controller(self.canvas_zoom_gesture.clone());
             self.scroller
+                .add_controller(self.canvas_rotate_gesture.clone());
+            self.scroller
                 .add_controller(self.canvas_multi_press_gesture.clone());
             self.scroller
                 .add_controller(self.canvas_zoom_scroll_controller.clone());
@@ -197,6 +356,8 @@ mod imp {
 
             // group
             self.touch_two_finger_long_press_gesture
+                .group_with(&self.canvas_zoom_gesture);
+            self.canvas_rotate_gesture
                 .group_with(&self.canvas_zoom_gesture);
 
             self.setup_input();
@@ -349,7 +510,8 @@ mod imp {
                 ));
             }
 
-            // zoom scrolling with <ctrl> + scroll
+            // zoom scrolling with <ctrl> + scroll, or ruler rotation when scrolling
+            // over the ruler body (mouse wheel / trackpad).
             {
                 self.canvas_zoom_scroll_controller.connect_scroll(clone!(
                     #[weak(rename_to=canvaswrapper)]
@@ -360,6 +522,13 @@ mod imp {
                         let modifiers = controller.current_event_state();
 
                         if !modifiers.contains(gdk::ModifierType::CONTROL_MASK) {
+                            // No Ctrl: if the pointer is over the ruler body, rotate
+                            // the ruler around the pointer (projected onto the
+                            // centerline). Otherwise let the event propagate so the
+                            // scroller can scroll normally.
+                            if rotate_ruler_with_scroll(&canvaswrapper, dy) {
+                                return glib::Propagation::Stop;
+                            }
                             return glib::Propagation::Proceed;
                         }
 
@@ -406,38 +575,90 @@ mod imp {
                 ));
             }
 
-            // Drag canvas gesture
+            // Drag canvas gesture (one-finger touch drag, or mouse drag in the empty area
+            // around the canvas). If the gesture begins on the ruler body, drag the ruler
+            // instead of the canvas.
             {
-                let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                #[derive(Clone, Copy)]
+                enum CanvasDragMode {
+                    Canvas(na::Vector2<f64>),
+                    /// (anchor_begin, dial_pos_begin) — both translated together.
+                    Ruler(na::Vector2<f64>, na::Vector2<f64>),
+                }
+                let drag_mode: Rc<Cell<Option<CanvasDragMode>>> = Rc::new(Cell::new(None));
 
                 self.canvas_drag_gesture.connect_drag_begin(clone!(
                     #[strong]
-                    touch_drag_start,
+                    drag_mode,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
-                    move |_, _, _| {
-                        // We don't claim the sequence, because we we want to allow touch zooming.
+                    move |_, x, y| {
+                        // We don't claim the sequence, because we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
-
-                        touch_drag_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
+                        // The drag gesture coords are already in scroller (window-relative)
+                        // coordinates — same space as ruler.anchor / ruler.dial_pos.
+                        let canvas = canvaswrapper.canvas();
+                        let mode = {
+                            let config = canvas.engine_ref().engine_config().clone();
+                            let config = config.read();
+                            let ruler = &config.pens_config.brush_config.ruler_config;
+                            if ruler.visible {
+                                let p = na::vector![x, y];
+                                let rel = p - ruler.anchor;
+                                let inside_body =
+                                    rel.dot(&ruler.normal()).abs()
+                                        <= ruler.body_half_width;
+                                if inside_body {
+                                    CanvasDragMode::Ruler(ruler.anchor, ruler.dial_pos)
+                                } else {
+                                    CanvasDragMode::Canvas(
+                                        canvas.engine_ref().camera.offset(),
+                                    )
+                                }
+                            } else {
+                                CanvasDragMode::Canvas(canvas.engine_ref().camera.offset())
+                            }
+                        };
+                        drag_mode.set(Some(mode));
                     }
                 ));
                 self.canvas_drag_gesture.connect_drag_update(clone!(
                     #[strong]
-                    touch_drag_start,
+                    drag_mode,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
-                        let new_offset = touch_drag_start.get() - na::vector![x, y];
-                        let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
-                        canvas.emit_handle_widget_flags(widget_flags);
+                        match drag_mode.get() {
+                            Some(CanvasDragMode::Ruler(anchor_begin, dial_pos_begin)) => {
+                                // Drag offset (x, y) is in scroller pixels — apply directly.
+                                let delta = na::vector![x, y];
+                                let config_shared = canvas.engine_ref().engine_config().clone();
+                                {
+                                    let mut c = config_shared.write();
+                                    let r = &mut c.pens_config.brush_config.ruler_config;
+                                    r.anchor = anchor_begin + delta;
+                                    r.dial_pos = dial_pos_begin + delta;
+                                }
+                                canvas.queue_draw();
+                            }
+                            Some(CanvasDragMode::Canvas(offset_begin)) => {
+                                let new_offset = offset_begin - na::vector![x, y];
+                                let widget_flags =
+                                    canvas.engine_mut().camera_set_offset_expand(new_offset);
+                                canvas.emit_handle_widget_flags(widget_flags);
+                            }
+                            None => {}
+                        }
                     }
                 ));
                 self.canvas_drag_gesture.connect_drag_end(clone!(
+                    #[strong]
+                    drag_mode,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, _, _| {
+                        drag_mode.set(None);
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -494,13 +715,19 @@ mod imp {
                     ));
             }
 
-            // Canvas gesture zooming with dragging
+            // Canvas gesture zooming with dragging (or ruler manipulation if the
+            // gesture begins inside the ruler body).
             {
                 let prev_scale = Rc::new(Cell::new(1_f64));
                 let zoom_begin = Rc::new(Cell::new(1_f64));
                 let new_zoom = Rc::new(Cell::new(1.0));
                 let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
                 let offset_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+
+                // Shared ruler-drag state across the zoom + rotate gestures. When `Some`,
+                // the two-finger gesture is manipulating the ruler (pan + rotate around
+                // the centroid) instead of zooming the canvas.
+                let ruler_drag: Rc<Cell<Option<RulerDragBegin>>> = Rc::new(Cell::new(None));
 
                 self.canvas_zoom_gesture.connect_begin(clone!(
                     #[strong]
@@ -513,6 +740,8 @@ mod imp {
                     bbcenter_begin,
                     #[strong]
                     offset_begin,
+                    #[strong]
+                    ruler_drag,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |gesture, _| {
@@ -521,18 +750,68 @@ mod imp {
                         // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
                         canvaswrapper.imp().workaround_disable_kinetic_scrolling();
 
-                        let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
+                        let canvas = canvaswrapper.canvas();
+                        let current_zoom = canvas.engine_ref().camera.total_zoom();
 
                         zoom_begin.set(current_zoom);
                         new_zoom.set(current_zoom);
                         prev_scale.set(1.0);
 
-                        bbcenter_begin.set(
-                            gesture
-                                .bounding_box_center()
-                                .map(|(x, y)| na::vector![x, y]),
-                        );
-                        offset_begin.set(canvaswrapper.canvas().engine_ref().camera.offset());
+                        let bbcenter = gesture
+                            .bounding_box_center()
+                            .map(|(x, y)| na::vector![x, y]);
+                        bbcenter_begin.set(bbcenter);
+                        offset_begin.set(canvas.engine_ref().camera.offset());
+
+                        // Check if this gesture should manipulate the ruler. All math is
+                        // in scroller (window-relative) coordinates — bbcenter is already
+                        // in that space.
+                        ruler_drag.set(None);
+                        if let Some(bbcenter) = bbcenter {
+                            let projected_opt = {
+                                let config = canvas.engine_ref().engine_config().clone();
+                                let config = config.read();
+                                let ruler = &config.pens_config.brush_config.ruler_config;
+                                if !ruler.visible {
+                                    None
+                                } else {
+                                    // Hit-test in scroller coords directly.
+                                    let rel = bbcenter - ruler.anchor;
+                                    let inside_body =
+                                        rel.dot(&ruler.normal()).abs()
+                                            <= ruler.body_half_width;
+                                    if inside_body {
+                                        // Project centroid onto the ruler centerline.
+                                        let along = rel.dot(&ruler.direction());
+                                        let projected =
+                                            ruler.anchor + along * ruler.direction();
+                                        Some((projected, ruler.anchor, ruler.angle))
+                                    } else {
+                                        None
+                                    }
+                                }
+                            };
+                            if let Some((projected_centroid, anchor_at_begin, angle_begin)) =
+                                projected_opt
+                            {
+                                // Move only the dial to the projected centroid (= the
+                                // rotation pivot). The anchor / tick origin stays put.
+                                let config_shared =
+                                    canvas.engine_ref().engine_config().clone();
+                                config_shared
+                                    .write()
+                                    .pens_config
+                                    .brush_config
+                                    .ruler_config
+                                    .dial_pos = projected_centroid;
+                                ruler_drag.set(Some(RulerDragBegin {
+                                    pivot: projected_centroid,
+                                    anchor_begin: anchor_at_begin,
+                                    centroid_begin: bbcenter,
+                                    angle_begin,
+                                }));
+                            }
+                        }
                     }
                 ));
 
@@ -547,10 +826,20 @@ mod imp {
                     bbcenter_begin,
                     #[strong]
                     offset_begin,
+                    #[strong]
+                    ruler_drag,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |gesture, scale| {
                         let canvas = canvaswrapper.canvas();
+
+                        // When a two-finger gesture begins on the ruler, suppress canvas
+                        // zoom and apply the combined translate + rotate around the
+                        // (live) centroid to the ruler.
+                        if let Some(begin) = ruler_drag.get() {
+                            apply_two_finger_ruler_update(&canvaswrapper, begin);
+                            return;
+                        }
 
                         if (Camera::ZOOM_MIN..=Camera::ZOOM_MAX)
                             .contains(&(zoom_begin.get() * scale))
@@ -584,12 +873,28 @@ mod imp {
                     }
                 ));
 
+                self.canvas_rotate_gesture.connect_angle_changed(clone!(
+                    #[strong]
+                    ruler_drag,
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_gesture, _angle, _angle_delta| {
+                        let Some(begin) = ruler_drag.get() else {
+                            return;
+                        };
+                        apply_two_finger_ruler_update(&canvaswrapper, begin);
+                    }
+                ));
+
                 self.canvas_zoom_gesture.connect_end(clone!(
+                    #[strong]
+                    ruler_drag,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_gesture, _event_sequence| {
                         // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
                         canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+                        ruler_drag.set(None);
 
                         let widget_flags = canvaswrapper
                             .canvas()
@@ -602,6 +907,8 @@ mod imp {
                 ));
 
                 self.canvas_zoom_gesture.connect_cancel(clone!(
+                    #[strong]
+                    ruler_drag,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |gesture, _event_sequence| {
@@ -609,6 +916,7 @@ mod imp {
 
                         // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
                         canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+                        ruler_drag.set(None);
 
                         let widget_flags = canvaswrapper
                             .canvas()

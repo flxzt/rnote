@@ -1,6 +1,7 @@
 // Modules
 pub mod brushconfig;
 pub mod eraserconfig;
+pub mod rulerconfig;
 pub mod selectorconfig;
 pub mod shaperconfig;
 pub mod toolsconfig;
@@ -9,6 +10,7 @@ pub mod typewriterconfig;
 // Re-exports
 pub use brushconfig::BrushConfig;
 pub use eraserconfig::EraserConfig;
+pub use rulerconfig::RulerConfig;
 pub use selectorconfig::SelectorConfig;
 pub use shaperconfig::ShaperConfig;
 pub use toolsconfig::ToolsConfig;

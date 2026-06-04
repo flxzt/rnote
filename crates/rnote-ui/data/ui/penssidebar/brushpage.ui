@@ -120,21 +120,6 @@
                 <class name="medium" />
               </style>
               <child>
-                <object class="AdwSpinRow" id="ruler_snap_distance_row">
-                  <property name="title" translatable="yes">Snap Distance (% of ruler width)</property>
-                  <property name="subtitle" translatable="yes">Snap zone beyond the ruler's edge as a percentage of the ruler's width</property>
-                  <property name="adjustment">
-                    <object class="GtkAdjustment">
-                      <property name="lower">0</property>
-                      <property name="upper">200</property>
-                      <property name="step-increment">5</property>
-                      <property name="page-increment">25</property>
-                      <property name="value">25</property>
-                    </object>
-                  </property>
-                </object>
-              </child>
-              <child>
                 <object class="AdwSwitchRow" id="ruler_angle_snap_row">
                   <property name="title" translatable="yes">Snap to Common Angles</property>
                   <property name="subtitle" translatable="yes">When rotating, snap to 0°, ±45° and ±90°</property>
@@ -162,6 +147,21 @@
                 </object>
               </child>
               <child>
+                <object class="AdwSpinRow" id="ruler_body_opacity_row">
+                  <property name="title" translatable="yes">Body Opacity</property>
+                  <property name="subtitle" translatable="yes">Opacity of the ruler band in percent (0 = fully transparent, 100 = fully opaque)</property>
+                  <property name="adjustment">
+                    <object class="GtkAdjustment">
+                      <property name="lower">0</property>
+                      <property name="upper">100</property>
+                      <property name="step-increment">5</property>
+                      <property name="page-increment">10</property>
+                      <property name="value">35</property>
+                    </object>
+                  </property>
+                </object>
+              </child>
+              <child>
                 <object class="AdwSpinRow" id="ruler_tick_spacing_row">
                   <property name="title" translatable="yes">Tick Spacing</property>
                   <property name="subtitle" translatable="yes">Spacing between minor tick marks on screen (px). Lower values = denser markings.</property>
@@ -177,23 +177,23 @@
                 </object>
               </child>
               <child>
-                <object class="AdwSpinRow" id="ruler_body_opacity_row">
-                  <property name="title" translatable="yes">Body Opacity (%)</property>
-                  <property name="subtitle" translatable="yes">How opaque the ruler band is (0 = fully transparent, 100 = fully opaque)</property>
+                <object class="AdwSpinRow" id="ruler_snap_distance_row">
+                  <property name="title" translatable="yes">Snap Distance</property>
+                  <property name="subtitle" translatable="yes">Snap zone beyond the ruler's edge as a percentage of the ruler's width</property>
                   <property name="adjustment">
                     <object class="GtkAdjustment">
                       <property name="lower">0</property>
-                      <property name="upper">100</property>
+                      <property name="upper">200</property>
                       <property name="step-increment">5</property>
-                      <property name="page-increment">10</property>
-                      <property name="value">35</property>
+                      <property name="page-increment">25</property>
+                      <property name="value">25</property>
                     </object>
                   </property>
                 </object>
               </child>
               <child>
                 <object class="AdwSpinRow" id="ruler_scroll_step_row">
-                  <property name="title" translatable="yes">Scroll Rotation Sensitivity (°)</property>
+                  <property name="title" translatable="yes">Scroll Rotation Sensitivity</property>
                   <property name="subtitle" translatable="yes">Degrees of rotation per scroll-wheel click when scrolling over the ruler</property>
                   <property name="digits">1</property>
                   <property name="adjustment">

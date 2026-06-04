@@ -31,6 +31,16 @@ struct RulerDragBegin {
 /// is held). Beyond this, the next scroll begins a fresh session.
 const RULER_SCROLL_SESSION_TIMEOUT: std::time::Duration = std::time::Duration::from_millis(400);
 
+/// Speed-adaptive scaling for mouse-wheel rotation. Mouse-wheel `dy` is always
+/// ±1 per click, so to give the user "precise when slow, fast when fast"
+/// behaviour we look at the time since the last click: short intervals (fast
+/// scrolling) get a multiplier > 1, long intervals (slow scrolling) get one
+/// < 1. Trackpad events already encode speed in `|dy|` per event so they're
+/// not adjusted.
+const WHEEL_SPEED_BASE_DT_MS: f64 = 200.0;
+const WHEEL_SPEED_MIN_MULT: f64 = 0.4;
+const WHEEL_SPEED_MAX_MULT: f64 = 3.0;
+
 /// Active scroll-rotation session: the pivot is locked for the duration of the
 /// session so the dial doesn't move and the user keeps "grip" even if the
 /// ruler rotates out from under the pointer.
@@ -45,16 +55,39 @@ pub(crate) struct ScrollRotationSession {
 /// for the duration of a session — set on the first scroll while the pointer
 /// is over the ruler body, kept for subsequent scrolls that arrive within
 /// `RULER_SCROLL_SESSION_TIMEOUT`.
-fn rotate_ruler_with_scroll(canvaswrapper: &RnCanvasWrapper, dy: f64) -> bool {
+///
+/// No angle snap is applied here — scrolling is purely an absolute rotation
+/// control. Mouse-wheel events get a speed-adaptive multiplier (precise when
+/// slow, faster when scrolled rapidly); trackpad events use `dy` as-is.
+fn rotate_ruler_with_scroll(
+    canvaswrapper: &RnCanvasWrapper,
+    controller: &EventControllerScroll,
+    dy: f64,
+) -> bool {
     let now = Instant::now();
     let imp = canvaswrapper.imp();
 
-    let prev_session = imp.ruler_scroll_session.get().filter(|s| {
+    let prev_session_raw = imp.ruler_scroll_session.get();
+    let prev_session = prev_session_raw.filter(|s| {
         now.duration_since(s.last_event_time) < RULER_SCROLL_SESSION_TIMEOUT
     });
 
     let canvas = canvaswrapper.canvas();
     let config_shared = canvas.engine_ref().engine_config().clone();
+
+    // Speed-adaptive scaling for mouse wheel only. `controller.unit()` is
+    // `Wheel` for mouse, `Surface` for trackpad / precision scrolling.
+    let is_wheel = controller.unit() == gdk::ScrollUnit::Wheel;
+    let speed_mult = if is_wheel {
+        // Time since the previous scroll event from the same session lineage.
+        // First event of a fresh session has no history → assume baseline.
+        let dt_ms = prev_session_raw
+            .map(|s| now.duration_since(s.last_event_time).as_millis().max(1) as f64)
+            .unwrap_or(WHEEL_SPEED_BASE_DT_MS);
+        (WHEEL_SPEED_BASE_DT_MS / dt_ms).clamp(WHEEL_SPEED_MIN_MULT, WHEEL_SPEED_MAX_MULT)
+    } else {
+        1.0
+    };
 
     let pivot = {
         let mut config = config_shared.write();
@@ -64,33 +97,40 @@ fn rotate_ruler_with_scroll(canvaswrapper: &RnCanvasWrapper, dy: f64) -> bool {
         }
 
         let pivot = if let Some(session) = prev_session {
-            // Reuse the locked pivot — keep dial_pos where it was placed.
+            // Within timeout — reuse the locked pivot.
             session.pivot
         } else {
-            // New session: hit-test the pointer against the ruler body.
+            // Session timed out. Before doing a fresh hit-test, check if the
+            // pointer is still close to the previous pivot — if so, revive
+            // the same pivot so the dial doesn't drift along the ruler's
+            // length just because the user paused briefly between scrolls.
             let pointer = match imp.pointer_pos.get() {
                 Some(p) => p,
                 None => return false,
             };
-            let rel = pointer - ruler.anchor;
-            if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
-                return false;
+            let near_prev_pivot = prev_session_raw
+                .map(|s| (pointer - s.pivot).norm() <= ruler.body_half_width)
+                .unwrap_or(false);
+            if near_prev_pivot {
+                // Same gesture, continued — keep the dial put.
+                prev_session_raw.unwrap().pivot
+            } else {
+                // Fresh hit-test: pointer must currently be on the ruler body.
+                let rel = pointer - ruler.anchor;
+                if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
+                    return false;
+                }
+                // Project pointer onto centerline and lock as the new pivot.
+                let along = rel.dot(&ruler.direction());
+                let projected = ruler.anchor + along * ruler.direction();
+                ruler.dial_pos = projected;
+                projected
             }
-            // Project pointer onto centerline and lock as the session pivot.
-            let along = rel.dot(&ruler.direction());
-            let projected = ruler.anchor + along * ruler.direction();
-            ruler.dial_pos = projected;
-            projected
         };
 
-        let delta_rad = dy * ruler.scroll_rotation_step_deg.to_radians();
-        let raw_new_angle = ruler.angle + delta_rad;
-        let new_angle = if ruler.angle_snap_enabled {
-            rnote_engine::pens::pensconfig::rulerconfig::RulerConfig::snap_angle(raw_new_angle)
-        } else {
-            raw_new_angle
-        };
-        let effective_delta = new_angle - ruler.angle;
+        let delta_rad = dy * speed_mult * ruler.scroll_rotation_step_deg.to_radians();
+        let new_angle = ruler.angle + delta_rad;
+        let effective_delta = delta_rad;
 
         // Rotate anchor around the locked pivot.
         let v = ruler.anchor - pivot;
@@ -133,7 +173,12 @@ fn apply_two_finger_ruler_update(canvaswrapper: &RnCanvasWrapper, begin: RulerDr
     let raw_new_angle = begin.angle_begin + angle_delta;
     let config_shared = canvas.engine_ref().engine_config().clone();
     let new_angle = if config_shared.read().pens_config.brush_config.ruler_config.angle_snap_enabled {
-        rnote_engine::pens::pensconfig::rulerconfig::RulerConfig::snap_angle(raw_new_angle)
+        // Use hysteresis against the angle at gesture begin: once the user has
+        // moved into a snap, finger jitter shouldn't keep them locked there.
+        rnote_engine::pens::pensconfig::rulerconfig::RulerConfig::snap_angle_hysteretic(
+            raw_new_angle,
+            begin.angle_begin,
+        )
     } else {
         raw_new_angle
     };
@@ -526,7 +571,7 @@ mod imp {
                             // the ruler around the pointer (projected onto the
                             // centerline). Otherwise let the event propagate so the
                             // scroller can scroll normally.
-                            if rotate_ruler_with_scroll(&canvaswrapper, dy) {
+                            if rotate_ruler_with_scroll(&canvaswrapper, controller, dy) {
                                 return glib::Propagation::Stop;
                             }
                             return glib::Propagation::Proceed;

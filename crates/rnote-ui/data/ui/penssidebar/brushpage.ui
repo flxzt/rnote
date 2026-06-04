@@ -122,7 +122,7 @@
               <child>
                 <object class="AdwSwitchRow" id="ruler_angle_snap_row">
                   <property name="title" translatable="yes">Snap to Common Angles</property>
-                  <property name="subtitle" translatable="yes">When rotating, snap to 0°, ±45° and ±90°</property>
+                  <property name="subtitle" translatable="yes">When rotating with two fingers, snap to 0°, ±45° and ±90°. Scroll rotation is never snapped.</property>
                 </object>
               </child>
               <child>

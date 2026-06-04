@@ -93,10 +93,14 @@ impl RulerConfig {
     pub const TICK_MAJOR_LEN_PX: f64 = 14.0;
     /// Length of minor tick marks in surface pixels.
     pub const TICK_MINOR_LEN_PX: f64 = 7.0;
-    /// Half-width of the snap-to-angle window, in degrees. When an angle is
-    /// within this many degrees of `0`, `±45`, or `±90`, it snaps to that
-    /// target while `angle_snap_enabled` is on.
+    /// Half-width of the snap-to-angle window, in degrees, when *approaching*
+    /// a target. Within this many degrees of `0`, `±45`, or `±90`, the angle
+    /// gets pulled in to the target.
     pub const ANGLE_SNAP_THRESHOLD_DEG: f64 = 3.0;
+    /// Half-width of the snap-to-angle window when the ruler is **already
+    /// locked** to a target, in degrees. Smaller than the enter threshold so
+    /// a single small scroll-wheel click is enough to break out of a snap.
+    pub const ANGLE_SNAP_LEAVE_THRESHOLD_DEG: f64 = 0.5;
 
     /// Unit direction vector along the ruler's long axis.
     pub fn direction(&self) -> na::Vector2<f64> {
@@ -253,15 +257,27 @@ impl RulerConfig {
         -(((angle_rad + half_pi).rem_euclid(pi)) - half_pi)
     }
 
-    /// If `angle_rad` is within `ANGLE_SNAP_THRESHOLD_DEG` of one of the target
-    /// angles (0°, ±45°, ±90°), return the snapped angle in the same
+    /// Whether `angle_rad` is essentially equal to one of the snap targets
+    /// (0°, ±45°, ±90° — modulo π for line symmetry). Used by the
+    /// hysteretic snap to know whether to use the "enter" or "leave" window.
+    pub fn is_at_snap_target(angle_rad: f64) -> bool {
+        const EPS_DEG: f64 = 0.001;
+        const TARGETS_DEG: [f64; 5] = [-90.0, -45.0, 0.0, 45.0, 90.0];
+        let normalized_deg = Self::normalize_angle(angle_rad).to_degrees();
+        TARGETS_DEG
+            .iter()
+            .any(|t| (normalized_deg - t).abs() < EPS_DEG)
+    }
+
+    /// If `angle_rad` is within `threshold_deg` of one of the target angles
+    /// (0°, ±45°, ±90°), return the snapped angle in the same
     /// (screen-radian) convention as the input. Otherwise return the input
     /// unchanged.
-    pub fn snap_angle(angle_rad: f64) -> f64 {
+    pub fn snap_angle_with_threshold(angle_rad: f64, threshold_deg: f64) -> f64 {
         const TARGETS_DEG: [f64; 5] = [-90.0, -45.0, 0.0, 45.0, 90.0];
         let normalized_deg = Self::normalize_angle(angle_rad).to_degrees();
         for t in TARGETS_DEG {
-            if (normalized_deg - t).abs() < Self::ANGLE_SNAP_THRESHOLD_DEG {
+            if (normalized_deg - t).abs() < threshold_deg {
                 // The ruler line is symmetric: `base + k*π` for any integer k
                 // describes the same physical line direction. We pick the k
                 // that keeps the returned value closest to the input — this
@@ -276,6 +292,24 @@ impl RulerConfig {
             }
         }
         angle_rad
+    }
+
+    /// Hysteretic snap: uses a narrow "leave" window if `prev_angle` is
+    /// already at a target, and the normal "enter" window otherwise. This
+    /// makes it easy to escape a locked snap with even a small input step
+    /// while still snapping reliably when approaching a target.
+    pub fn snap_angle_hysteretic(raw_angle: f64, prev_angle: f64) -> f64 {
+        let threshold = if Self::is_at_snap_target(prev_angle) {
+            Self::ANGLE_SNAP_LEAVE_THRESHOLD_DEG
+        } else {
+            Self::ANGLE_SNAP_THRESHOLD_DEG
+        };
+        Self::snap_angle_with_threshold(raw_angle, threshold)
+    }
+
+    /// Back-compat wrapper using the enter-threshold only.
+    pub fn snap_angle(angle_rad: f64) -> f64 {
+        Self::snap_angle_with_threshold(angle_rad, Self::ANGLE_SNAP_THRESHOLD_DEG)
     }
 
     /// Whether `pos_doc` (in document coordinates) lies within the ruler body

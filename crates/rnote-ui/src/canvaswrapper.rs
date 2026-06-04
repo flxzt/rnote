@@ -76,9 +76,6 @@ fn rotate_ruler_with_scroll(
     let imp = canvaswrapper.imp();
 
     let prev_session_raw = imp.ruler_scroll_session.get();
-    let prev_session = prev_session_raw.filter(|s| {
-        now.duration_since(s.last_event_time) < RULER_SCROLL_SESSION_TIMEOUT
-    });
 
     let canvas = canvaswrapper.canvas();
     let config_shared = canvas.engine_ref().engine_config().clone();
@@ -104,9 +101,20 @@ fn rotate_ruler_with_scroll(
             return false;
         }
 
-        // Recent session (within the longer revival window) — pivot can be
-        // reused even if `pointer_pos` is briefly unavailable.
-        let revivable_session = prev_session_raw.filter(|s| {
+        // Validate the cached session pivot is still on the current ruler
+        // centerline. If something else rotated/moved the ruler in between
+        // (e.g. a two-finger gesture), the cached pivot may now be off the
+        // line — using it would rotate around an off-line point and put the
+        // dial outside the band.
+        const ON_LINE_TOLERANCE_PX: f64 = 0.5;
+        let session_on_line = prev_session_raw.filter(|s| {
+            (s.pivot - ruler.anchor).dot(ruler.normal()).abs() <= ON_LINE_TOLERANCE_PX
+        });
+        // Re-derive the windowed sessions from the validated value.
+        let prev_session = session_on_line.filter(|s| {
+            now.duration_since(s.last_event_time) < RULER_SCROLL_SESSION_TIMEOUT
+        });
+        let revivable_session = session_on_line.filter(|s| {
             now.duration_since(s.last_event_time) < RULER_SCROLL_REVIVAL_TIMEOUT
         });
 
@@ -144,14 +152,28 @@ fn rotate_ruler_with_scroll(
                 Some(p) => p,
                 None => return false,
             };
-            let rel = pointer - ruler.anchor;
-            if rel.dot(ruler.normal()).abs() > ruler.body_half_width {
-                return false;
+            // Dead zone: if the cursor is close to the current dial position
+            // (and the dial sits on the current centerline, which it should),
+            // reuse it instead of resetting to a new spot. Same behaviour as
+            // session revival, so the very first scroll after a long pause
+            // doesn't snap the dial to a slightly different place.
+            let dial_on_line =
+                (ruler.dial_pos - ruler.anchor).dot(ruler.normal()).abs() <= ON_LINE_TOLERANCE_PX;
+            if dial_on_line
+                && (pointer - ruler.dial_pos).length() <= ruler.body_half_width * 1.5
+            {
+                ruler.dial_pos
+            } else {
+                // Need a fresh pivot at the cursor position. Hit-test the body.
+                let rel = pointer - ruler.anchor;
+                if rel.dot(ruler.normal()).abs() > ruler.body_half_width {
+                    return false;
+                }
+                let along = rel.dot(ruler.direction());
+                let projected = ruler.anchor + along * ruler.direction();
+                ruler.dial_pos = projected;
+                projected
             }
-            let along = rel.dot(ruler.direction());
-            let projected = ruler.anchor + along * ruler.direction();
-            ruler.dial_pos = projected;
-            projected
         };
 
         let delta_rad = dy * speed_mult * ruler.scroll_rotation_step_deg.to_radians();
@@ -316,7 +338,13 @@ mod imp {
                 // an active ruler-rotation session and the rotation appears to
                 // "slip" into a canvas pan.
                 .propagation_phase(PropagationPhase::Capture)
-                .flags(EventControllerScrollFlags::VERTICAL)
+                // Listen on both axes so we can consume the horizontal component
+                // of a trackpad scroll while we're rotating the ruler (otherwise
+                // the canvas pans sideways from that component).
+                .flags(
+                    EventControllerScrollFlags::VERTICAL
+                        | EventControllerScrollFlags::HORIZONTAL,
+                )
                 .build();
 
             let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
@@ -849,11 +877,18 @@ mod imp {
                         bbcenter_begin.set(bbcenter);
                         offset_begin.set(canvas.engine_ref().camera.offset());
 
-                        // Check if this gesture should manipulate the ruler. All math is
-                        // in scroller (window-relative) coordinates — bbcenter is already
-                        // in that space.
+                        // Check if this gesture should manipulate the ruler. Only
+                        // genuine touchscreen gestures are accepted — trackpad pinch /
+                        // rotate (which GestureZoom/GestureRotate also fire for)
+                        // should NOT enter the touch-style ruler manipulation mode.
+                        // All math is in scroller (window-relative) coordinates —
+                        // bbcenter is already in that space.
                         ruler_drag.set(None);
-                        if let Some(bbcenter) = bbcenter {
+                        let from_touchscreen = gesture
+                            .current_event_device()
+                            .map(|d| d.source() == gdk::InputSource::Touchscreen)
+                            .unwrap_or(false);
+                        if from_touchscreen && let Some(bbcenter) = bbcenter {
                             let projected_opt = {
                                 let config = canvas.engine_ref().engine_config().clone();
                                 let config = config.read();

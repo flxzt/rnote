@@ -317,4 +317,36 @@ impl RnUnitEntry {
         self.set_dpi(dpi);
         self.set_value(value);
     }
+
+    /// sets both dpi and value such that the value property is
+    /// only changed once with the correct self.value_in_px() callback
+    pub(crate) fn set_dpi_and_value_px(&self, dpi: f64, val_px: f64) {
+        if self.unit() == MeasureUnit::Px {
+            // Note : setting value then dpi will work if and only if the unit is is px
+            // Then value_in_px returns self.value() directly
+            // because dpi is not a variable in the convert_measurement call
+
+            self.set_value_in_px(val_px);
+            self.set_dpi(dpi);
+        } else {
+            // NOTE : this is mostly for security
+            // as we default to px for now on startup for the unit
+            // this shouldn't matter too much (at most this will limit duplicated
+            // calls to the engine with erroneous value_px on the first call)
+
+            // silent set on the dpi (because the new dpi value == to the cell one,
+            // does not trigger a calculation on value again)
+            // hence both the property and the cell have the new value
+            self.imp().dpi.replace(dpi);
+            self.set_dpi(dpi);
+
+            self.set_value(MeasureUnit::convert_measurement(
+                val_px,
+                MeasureUnit::Px,
+                dpi,
+                self.unit(),
+                dpi,
+            ));
+        }
+    }
 }

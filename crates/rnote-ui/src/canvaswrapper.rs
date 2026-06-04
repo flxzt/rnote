@@ -41,6 +41,13 @@ const WHEEL_SPEED_BASE_DT_MS: f64 = 200.0;
 const WHEEL_SPEED_MIN_MULT: f64 = 0.4;
 const WHEEL_SPEED_MAX_MULT: f64 = 3.0;
 
+/// How long after the last scroll event a session's pivot can still be reused
+/// — even though the session is no longer "active" for speed adaptation, the
+/// dial position is held so the next scroll continues the same gesture
+/// instead of either snapping the dial elsewhere or slipping into canvas pan.
+const RULER_SCROLL_REVIVAL_TIMEOUT: std::time::Duration =
+    std::time::Duration::from_secs(3);
+
 /// Active scroll-rotation session: the pivot is locked for the duration of the
 /// session so the dial doesn't move and the user keeps "grip" even if the
 /// ruler rotates out from under the pointer.
@@ -96,36 +103,54 @@ fn rotate_ruler_with_scroll(
             return false;
         }
 
+        // Recent session (within the longer revival window) — pivot can be
+        // reused even if `pointer_pos` is briefly unavailable.
+        let revivable_session = prev_session_raw.filter(|s| {
+            now.duration_since(s.last_event_time) < RULER_SCROLL_REVIVAL_TIMEOUT
+        });
+
         let pivot = if let Some(session) = prev_session {
-            // Within timeout — reuse the locked pivot.
+            // Within the short active-session timeout — definitely reuse.
             session.pivot
-        } else {
-            // Session timed out. Before doing a fresh hit-test, check if the
-            // pointer is still close to the previous pivot — if so, revive
-            // the same pivot so the dial doesn't drift along the ruler's
-            // length just because the user paused briefly between scrolls.
-            let pointer = match imp.pointer_pos.get() {
-                Some(p) => p,
-                None => return false,
-            };
-            let near_prev_pivot = prev_session_raw
-                .map(|s| (pointer - s.pivot).norm() <= ruler.body_half_width)
+        } else if let Some(session) = revivable_session {
+            // Session timed out for speed-adaptation purposes, but still recent
+            // enough that we should hold the pivot. Only re-target if the
+            // pointer is clearly somewhere else (and is known).
+            let pointer = imp.pointer_pos.get();
+            let pointer_far = pointer
+                .map(|p| (p - session.pivot).norm() > ruler.body_half_width * 1.5)
                 .unwrap_or(false);
-            if near_prev_pivot {
-                // Same gesture, continued — keep the dial put.
-                prev_session_raw.unwrap().pivot
-            } else {
-                // Fresh hit-test: pointer must currently be on the ruler body.
-                let rel = pointer - ruler.anchor;
+            if pointer_far {
+                // User deliberately moved the pointer to a new spot.
+                let p = pointer.unwrap();
+                let rel = p - ruler.anchor;
                 if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
                     return false;
                 }
-                // Project pointer onto centerline and lock as the new pivot.
                 let along = rel.dot(&ruler.direction());
                 let projected = ruler.anchor + along * ruler.direction();
                 ruler.dial_pos = projected;
                 projected
+            } else {
+                // Either pointer is near the old pivot, or pointer_pos is
+                // currently `None`. Either way, the user is continuing the
+                // same gesture — hold the dial in place.
+                session.pivot
             }
+        } else {
+            // No recent session at all: this is a fresh start. Need pointer.
+            let pointer = match imp.pointer_pos.get() {
+                Some(p) => p,
+                None => return false,
+            };
+            let rel = pointer - ruler.anchor;
+            if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
+                return false;
+            }
+            let along = rel.dot(&ruler.direction());
+            let projected = ruler.anchor + along * ruler.direction();
+            ruler.dial_pos = projected;
+            projected
         };
 
         let delta_rad = dy * speed_mult * ruler.scroll_rotation_step_deg.to_radians();
@@ -285,7 +310,11 @@ mod imp {
 
             let canvas_zoom_scroll_controller = EventControllerScroll::builder()
                 .name("canvas_zoom_scroll_controller")
-                .propagation_phase(PropagationPhase::Bubble)
+                // Capture phase: handle scroll BEFORE the canvas's own scrollable
+                // behaviour. Otherwise the canvas might consume the event during
+                // an active ruler-rotation session and the rotation appears to
+                // "slip" into a canvas pan.
+                .propagation_phase(PropagationPhase::Capture)
                 .flags(EventControllerScrollFlags::VERTICAL)
                 .build();
 
@@ -538,6 +567,14 @@ mod imp {
             let obj = self.obj();
 
             {
+                self.pointer_motion_controller.connect_enter(clone!(
+                    #[weak(rename_to=canvaswrapper)]
+                    obj,
+                    move |_, x, y| {
+                        canvaswrapper.imp().pointer_pos.set(Some(na::vector![x, y]));
+                    }
+                ));
+
                 self.pointer_motion_controller.connect_motion(clone!(
                     #[weak(rename_to=canvaswrapper)]
                     obj,

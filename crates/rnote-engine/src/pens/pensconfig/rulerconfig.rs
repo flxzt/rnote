@@ -294,17 +294,29 @@ impl RulerConfig {
         angle_rad
     }
 
-    /// Hysteretic snap: uses a narrow "leave" window if `prev_angle` is
-    /// already at a target, and the normal "enter" window otherwise. This
-    /// makes it easy to escape a locked snap with even a small input step
-    /// while still snapping reliably when approaching a target.
+    /// Hysteretic snap: the narrow "leave" window applies only to the target
+    /// the ruler is *currently* locked on, so it's easy to escape that one
+    /// without making it hard to engage any of the others.
     pub fn snap_angle_hysteretic(raw_angle: f64, prev_angle: f64) -> f64 {
-        let threshold = if Self::is_at_snap_target(prev_angle) {
-            Self::ANGLE_SNAP_LEAVE_THRESHOLD_DEG
-        } else {
-            Self::ANGLE_SNAP_THRESHOLD_DEG
-        };
-        Self::snap_angle_with_threshold(raw_angle, threshold)
+        const TARGETS_DEG: [f64; 5] = [-90.0, -45.0, 0.0, 45.0, 90.0];
+        const EPS_DEG: f64 = 0.001;
+        let normalized_deg = Self::normalize_angle(raw_angle).to_degrees();
+        let prev_normalized_deg = Self::normalize_angle(prev_angle).to_degrees();
+        for t in TARGETS_DEG {
+            let was_at_this_target = (prev_normalized_deg - t).abs() < EPS_DEG;
+            let threshold = if was_at_this_target {
+                Self::ANGLE_SNAP_LEAVE_THRESHOLD_DEG
+            } else {
+                Self::ANGLE_SNAP_THRESHOLD_DEG
+            };
+            if (normalized_deg - t).abs() < threshold {
+                let base = -t.to_radians();
+                let pi = std::f64::consts::PI;
+                let k = ((raw_angle - base) / pi).round();
+                return base + k * pi;
+            }
+        }
+        raw_angle
     }
 
     /// Back-compat wrapper using the enter-threshold only.

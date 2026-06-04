@@ -230,7 +230,15 @@ fn draw_angle_dial(
     // Round first so `-0.3°` doesn't surface as `-0°`; then canonicalize the
     // sign so `format!` doesn't print the negative zero.
     let rounded = normalized_deg.round();
-    let display_value = if rounded == 0.0 { 0.0 } else { rounded };
+    // Canonicalize: the displayed range is (-90°, 90°], so a rounded -90° is
+    // the same orientation as +90° — show +90°. Also avoid printing "-0°".
+    let display_value = if rounded == -90.0 {
+        90.0
+    } else if rounded == 0.0 {
+        0.0
+    } else {
+        rounded
+    };
     let text = format!("{display_value:.0}°");
     let layout = cx
         .text()

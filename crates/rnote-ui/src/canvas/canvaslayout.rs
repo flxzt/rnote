@@ -4,6 +4,7 @@ use gtk4::{
     LayoutManager, Orientation, SizeRequestMode, Widget, glib, prelude::*, subclass::prelude::*,
 };
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::ext::AabbExt;
 use rnote_engine::image;
 use std::cell::Cell;
@@ -61,7 +62,7 @@ mod imp {
         fn allocate(&self, widget: &Widget, width: i32, height: i32, _baseline: i32) {
             let canvas = widget.downcast_ref::<RnCanvas>().unwrap();
 
-            let new_size = na::vector![width as f64, height as f64];
+            let new_size = Vector2::new(width as f64, height as f64);
             let offset = canvas.engine_ref().camera.offset();
 
             // Configure adjustments using new size

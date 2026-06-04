@@ -22,6 +22,7 @@ use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GraphenePointExt;
@@ -473,8 +474,8 @@ mod imp {
                         parent
                             .compute_point(&*obj, &graphene::Point::zero())
                             .unwrap()
-                            .to_na_point(),
-                        na::point![f64::from(parent.width()), f64::from(parent.height())],
+                            .to_p2d_vec(),
+                        Vector2::new(parent.width() as f64, parent.height() as f64),
                     )
                 } else {
                     obj.bounds()
@@ -600,13 +601,13 @@ mod imp {
                         let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
-                        let new_offset = na::vector![
+                        let new_offset = Vector2::new(
                             super::RnCanvas::adjustment_to_surface(
                                 hadj_signal.value(),
-                                surface_mins.x
+                                surface_mins.x,
                             ),
-                            offset.y
-                        ];
+                            offset.y,
+                        );
 
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
 
@@ -680,13 +681,13 @@ mod imp {
                         let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
-                        let new_offset = na::vector![
+                        let new_offset = Vector2::new(
                             offset.x,
                             super::RnCanvas::adjustment_to_surface(
                                 vadj_signal.value(),
-                                surface_mins.y
-                            )
-                        ];
+                                surface_mins.y,
+                            ),
+                        );
 
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
 
@@ -885,9 +886,9 @@ impl RnCanvas {
 
     pub(crate) fn configure_adjustments(
         &self,
-        widget_size: na::Vector2<f64>,
-        adjustment_upper: na::Vector2<f64>,
-        adjustment_value: na::Vector2<f64>,
+        widget_size: Vector2,
+        adjustment_upper: Vector2,
+        adjustment_value: Vector2,
     ) {
         if let Some(hadj) = self.hadjustment() {
             hadj.configure(
@@ -938,8 +939,8 @@ impl RnCanvas {
         }
     }
 
-    pub(crate) fn widget_size(&self) -> na::Vector2<f64> {
-        na::vector![self.width() as f64, self.height() as f64]
+    pub(crate) fn widget_size(&self) -> Vector2 {
+        Vector2::new(self.width() as f64, self.height() as f64)
     }
 
     /// Immutable borrow of the engine.
@@ -1354,8 +1355,12 @@ impl RnCanvas {
             #[upgrade_or]
             false,
             move |_, value, x, y| {
-                let pos =
-                    (canvas.engine_ref().camera.transform().inverse() * na::point![x, y]).coords;
+                let pos = canvas
+                    .engine_ref()
+                    .camera
+                    .transform()
+                    .inverse()
+                    .transform_point2(Vector2::new(x, y));
                 let mut accept_drop = false;
 
                 if value.is::<gio::File>() {
@@ -1602,8 +1607,8 @@ impl RnCanvas {
 
     pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new_positive(
-            na::point![0.0, 0.0],
-            na::point![f64::from(self.width()), f64::from(self.height())],
+            Vector2::ZERO,
+            Vector2::new(self.width() as f64, self.height() as f64),
         )
     }
 }

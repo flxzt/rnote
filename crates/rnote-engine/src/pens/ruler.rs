@@ -1,6 +1,7 @@
 // Imports
 use crate::pens::pensconfig::rulerconfig::RulerConfig;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::{RenderContext, Text, TextLayout, TextLayoutBuilder};
 use rnote_compose::color;
 use rnote_compose::ext::Vector2Ext;
@@ -31,25 +32,25 @@ const EDGE_TICK_MEDIUM_LEN_PX: f64 = 10.0;
 /// direction so that the segment `anchor_doc + t * direction` covers the full
 /// viewport (with margin). Returns `None` for a degenerate viewport.
 fn viewport_t_range(
-    anchor_doc: na::Vector2<f64>,
-    direction: na::Vector2<f64>,
+    anchor_doc: Vector2,
+    direction: Vector2,
     half_w_doc: f64,
     viewport: Aabb,
 ) -> Option<(f64, f64)> {
-    let extent_along = viewport.extents().norm() + half_w_doc * 2.0;
+    let extent_along = viewport.extents().length() + half_w_doc * 2.0;
     if extent_along < 1e-6 {
         return None;
     }
     let corners = [
-        na::vector![viewport.mins.x, viewport.mins.y],
-        na::vector![viewport.maxs.x, viewport.mins.y],
-        na::vector![viewport.maxs.x, viewport.maxs.y],
-        na::vector![viewport.mins.x, viewport.maxs.y],
+        Vector2::new(viewport.mins.x, viewport.mins.y),
+        Vector2::new(viewport.maxs.x, viewport.mins.y),
+        Vector2::new(viewport.maxs.x, viewport.maxs.y),
+        Vector2::new(viewport.mins.x, viewport.maxs.y),
     ];
     let mut min_t = f64::INFINITY;
     let mut max_t = f64::NEG_INFINITY;
     for c in &corners {
-        let t = (c - anchor_doc).dot(&direction);
+        let t = (*c - anchor_doc).dot(direction);
         min_t = min_t.min(t);
         max_t = max_t.max(t);
     }
@@ -70,8 +71,8 @@ pub fn ruler_bounds_on_doc(
     let tick = RulerConfig::TICK_MAJOR_LEN_PX / total_zoom;
     let pad = half_w + tick + 4.0 / total_zoom;
     Some(Aabb::new(
-        na::point![viewport.mins.x - pad, viewport.mins.y - pad],
-        na::point![viewport.maxs.x + pad, viewport.maxs.y + pad],
+        Vector2::new(viewport.mins.x - pad, viewport.mins.y - pad),
+        Vector2::new(viewport.maxs.x + pad, viewport.maxs.y + pad),
     ))
 }
 
@@ -83,7 +84,7 @@ pub fn draw_ruler_on_doc(
     cx: &mut piet_cairo::CairoRenderContext,
     ruler: &RulerConfig,
     viewport: Aabb,
-    camera_offset: na::Vector2<f64>,
+    camera_offset: Vector2,
     total_zoom: f64,
     background_color: &rnote_compose::Color,
 ) -> anyhow::Result<()> {
@@ -171,7 +172,7 @@ pub fn draw_ruler_on_doc(
 fn draw_angle_dial(
     cx: &mut piet_cairo::CairoRenderContext,
     ruler: &RulerConfig,
-    dial_pos_doc: na::Vector2<f64>,
+    dial_pos_doc: Vector2,
     total_zoom: f64,
     dark_mode: bool,
 ) -> anyhow::Result<()> {

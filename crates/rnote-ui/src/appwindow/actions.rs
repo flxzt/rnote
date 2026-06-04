@@ -8,8 +8,10 @@ use gtk4::{
     prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
+use p2d::math::Vector2;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
@@ -68,6 +70,8 @@ impl RnAppWindow {
         self.add_action(&action_zoom_reset);
         let action_zoom_fit_width = gio::SimpleAction::new("zoom-fit-width", None);
         self.add_action(&action_zoom_fit_width);
+        let action_zoom_real_width = gio::SimpleAction::new("zoom-real-width", None);
+        self.add_action(&action_zoom_real_width);
         let action_zoomin = gio::SimpleAction::new("zoom-in", None);
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
@@ -652,6 +656,34 @@ impl RnAppWindow {
             }
         ));
 
+        // Zoom real to width
+        action_zoom_real_width.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let Some(surface) = appwindow.surface() else {
+                    return;
+                };
+                let Some(monitor) = canvas.display().monitor_at_surface(&surface) else {
+                    return;
+                };
+                let ppi = monitor.geometry().width() as f64 / monitor.width_mm() as f64
+                    * MeasureUnit::AMOUNT_MM_IN_INCH;
+                let new_zoom = ppi / wrapper.canvas().engine_ref().document.config.format.dpi();
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
+
         // Zoom in
         action_zoomin.connect_activate(clone!(
             #[weak(rename_to=appwindow)]
@@ -1061,18 +1093,19 @@ impl RnAppWindow {
 
                 let pointer_pos = wrapper.pointer_pos().and_then(|wrapper_point| {
                     let canvas_point = wrapper
-                        .compute_point(&canvas, &graphene::Point::from_na_vec(wrapper_point));
+                        .compute_point(&canvas, &graphene::Point::from_p2d_vec(wrapper_point));
 
                     if let Some(point) = canvas_point {
                         let x = point.x() as f64;
                         let y = point.y() as f64;
 
                         if canvas.contains(x, y) {
-                            let transformed_point =
-                                (canvas.engine_ref().camera.transform().inverse()
-                                    * na::point![x, y])
-                                .coords;
-
+                            let transformed_point = canvas
+                                .engine_ref()
+                                .camera
+                                .transform()
+                                .inverse()
+                                .transform_point2(Vector2::new(x, y));
                             return Some(transformed_point);
                         }
                     }
@@ -1094,10 +1127,13 @@ impl RnAppWindow {
                 let canvas = wrapper.canvas();
 
                 let last_contextmenu_pos = wrapper.last_contextmenu_pos().map(|vec2| {
-                    let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
-                    (canvas.engine_ref().camera.transform().inverse()
-                        * na::point![p.x() as f64, p.y() as f64])
-                    .coords
+                    let p = graphene::Point::from_p2d_vec(vec2);
+                    canvas
+                        .engine_ref()
+                        .camera
+                        .transform()
+                        .inverse()
+                        .transform_point2(p.to_p2d_vec())
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos);
@@ -1150,7 +1186,7 @@ impl RnAppWindow {
         }
     }
 
-    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>) {
+    fn clipboard_paste(&self, target_pos: Option<Vector2>) {
         let content_formats = self.clipboard().formats();
         let Some(canvas) = self.active_tab_canvas() else {
             return;

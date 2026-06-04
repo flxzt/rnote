@@ -35,11 +35,10 @@ pub fn wrap_svg_root(
     preserve_aspectratio: bool,
 ) -> String {
     let (x, y, width, height) = if let Some(bounds) = bounds {
-        let x = format!("{:.3}", bounds.mins[0]);
-        let y = format!("{:.3}", bounds.mins[1]);
-        let width = format!("{:.3}", bounds.extents()[0]);
-        let height = format!("{:.3}", bounds.extents()[1]);
-
+        let x = format!("{:.3}", bounds.mins.x);
+        let y = format!("{:.3}", bounds.mins.y);
+        let width = format!("{:.3}", bounds.extents().x);
+        let height = format!("{:.3}", bounds.extents().y);
         (x, y, width, height)
     } else {
         (
@@ -53,10 +52,10 @@ pub fn wrap_svg_root(
     let viewbox = if let Some(viewbox) = viewbox {
         format!(
             "{:.3} {:.3} {:.3} {:.3}",
-            viewbox.mins[0],
-            viewbox.mins[1],
-            viewbox.extents()[0],
-            viewbox.extents()[1]
+            viewbox.mins.x,
+            viewbox.mins.y,
+            viewbox.extents().x,
+            viewbox.extents().y
         )
     } else {
         String::from("")

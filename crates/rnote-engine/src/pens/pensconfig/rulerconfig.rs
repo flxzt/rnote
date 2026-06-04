@@ -1,4 +1,5 @@
 // Imports
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 /// Configuration and runtime state for the on-canvas ruler.
@@ -23,13 +24,13 @@ pub struct RulerConfig {
     /// ruler is fixed relative to the window — this does not change as the
     /// canvas is panned or zoomed. In-session only.
     #[serde(skip)]
-    pub anchor: na::Vector2<f64>,
+    pub anchor: Vector2,
     /// Where the angle dial / rotation pivot is rendered, in scroller
     /// coordinates. Always lies on the centerline. Distinct from `anchor` so
     /// the dial can move (e.g., to the finger centroid) without shifting the
     /// tick origin. In-session only.
     #[serde(skip)]
-    pub dial_pos: na::Vector2<f64>,
+    pub dial_pos: Vector2,
     /// Snap distance beyond the ruler's edge, as a percentage of the ruler's
     /// full width (`2 × BODY_HALF_WIDTH_PX`). Stored as a preference, e.g.
     /// `25.0` means 25%, i.e. half a body-width beyond each edge.
@@ -56,8 +57,8 @@ impl Default for RulerConfig {
         Self {
             visible: false,
             angle: 0.0,
-            anchor: na::vector![0.0, 0.0],
-            dial_pos: na::vector![0.0, 0.0],
+            anchor: Vector2::ZERO,
+            dial_pos: Vector2::ZERO,
             snap_distance: Self::SNAP_DISTANCE_DEFAULT,
             angle_snap_enabled: true,
             show_dial: true,
@@ -103,13 +104,13 @@ impl RulerConfig {
     pub const ANGLE_SNAP_LEAVE_THRESHOLD_DEG: f64 = 0.5;
 
     /// Unit direction vector along the ruler's long axis.
-    pub fn direction(&self) -> na::Vector2<f64> {
-        na::vector![self.angle.cos(), self.angle.sin()]
+    pub fn direction(&self) -> Vector2 {
+        Vector2::new(self.angle.cos(), self.angle.sin())
     }
 
     /// Unit normal vector perpendicular to the ruler's long axis (left-hand side).
-    pub fn normal(&self) -> na::Vector2<f64> {
-        na::vector![-self.angle.sin(), self.angle.cos()]
+    pub fn normal(&self) -> Vector2 {
+        Vector2::new(-self.angle.sin(), self.angle.cos())
     }
 
     /// Half-width of the ruler body in document coordinates at the given zoom.
@@ -165,10 +166,10 @@ impl RulerConfig {
 
     /// Convert a position from window-relative surface pixels to document coordinates.
     pub fn pos_to_doc(
-        surface_pos: na::Vector2<f64>,
-        camera_offset: na::Vector2<f64>,
+        surface_pos: Vector2,
+        camera_offset: Vector2,
         total_zoom: f64,
-    ) -> na::Vector2<f64> {
+    ) -> Vector2 {
         // Surface here is the canvas widget's local coord system, which has its
         // origin at the top-left of the visible viewport (the canvas widget
         // implements Scrollable internally — there's no scroll-offset between
@@ -179,28 +180,28 @@ impl RulerConfig {
 
     /// Convert a position from document coordinates to window-relative surface pixels.
     pub fn pos_from_doc(
-        doc_pos: na::Vector2<f64>,
-        camera_offset: na::Vector2<f64>,
+        doc_pos: Vector2,
+        camera_offset: Vector2,
         total_zoom: f64,
-    ) -> na::Vector2<f64> {
+    ) -> Vector2 {
         doc_pos * total_zoom - camera_offset
     }
 
     /// Ruler centerline anchor in document coordinates.
     pub fn anchor_doc(
         &self,
-        camera_offset: na::Vector2<f64>,
+        camera_offset: Vector2,
         total_zoom: f64,
-    ) -> na::Vector2<f64> {
+    ) -> Vector2 {
         Self::pos_to_doc(self.anchor, camera_offset, total_zoom)
     }
 
     /// Dial position in document coordinates.
     pub fn dial_pos_doc(
         &self,
-        camera_offset: na::Vector2<f64>,
+        camera_offset: Vector2,
         total_zoom: f64,
-    ) -> na::Vector2<f64> {
+    ) -> Vector2 {
         Self::pos_to_doc(self.dial_pos, camera_offset, total_zoom)
     }
 
@@ -209,8 +210,8 @@ impl RulerConfig {
     /// identifies that edge. `None` means no snap.
     pub fn snap_side(
         &self,
-        pos_doc: na::Vector2<f64>,
-        camera_offset: na::Vector2<f64>,
+        pos_doc: Vector2,
+        camera_offset: Vector2,
         total_zoom: f64,
     ) -> Option<f64> {
         if !self.visible {
@@ -220,7 +221,7 @@ impl RulerConfig {
         let half_w = self.body_half_width;
         let snap_dist_px = (self.snap_distance / 100.0) * 2.0 * half_w;
         let rel = pos_scroller - self.anchor;
-        let perp = rel.dot(&self.normal());
+        let perp = rel.dot(self.normal());
         if perp.abs() - half_w > snap_dist_px {
             None
         } else {
@@ -233,15 +234,15 @@ impl RulerConfig {
     /// ruler once it has snapped.
     pub fn project_to_edge(
         &self,
-        pos_doc: na::Vector2<f64>,
+        pos_doc: Vector2,
         side: f64,
-        camera_offset: na::Vector2<f64>,
+        camera_offset: Vector2,
         total_zoom: f64,
-    ) -> na::Vector2<f64> {
+    ) -> Vector2 {
         let pos_scroller = Self::pos_from_doc(pos_doc, camera_offset, total_zoom);
         let dir = self.direction();
         let normal = self.normal();
-        let along = (pos_scroller - self.anchor).dot(&dir);
+        let along = (pos_scroller - self.anchor).dot(dir);
         let half_w = self.body_half_width;
         let snapped_scroller = self.anchor + along * dir + side * half_w * normal;
         Self::pos_to_doc(snapped_scroller, camera_offset, total_zoom)
@@ -328,8 +329,8 @@ impl RulerConfig {
     /// strip (infinite along the long axis, finite across).
     pub fn hit_body(
         &self,
-        pos_doc: na::Vector2<f64>,
-        camera_offset: na::Vector2<f64>,
+        pos_doc: Vector2,
+        camera_offset: Vector2,
         total_zoom: f64,
     ) -> bool {
         if !self.visible {
@@ -337,6 +338,6 @@ impl RulerConfig {
         }
         let pos_scroller = Self::pos_from_doc(pos_doc, camera_offset, total_zoom);
         let rel = pos_scroller - self.anchor;
-        rel.dot(&self.normal()).abs() <= self.body_half_width
+        rel.dot(self.normal()).abs() <= self.body_half_width
     }
 }

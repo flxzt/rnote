@@ -12,6 +12,7 @@ use ink_stroke_modeler_rs::{
 };
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 use tracing::{debug, error};
@@ -176,7 +177,7 @@ impl PenPathModeledBuilder {
             Ok(results) => self.buffer.extend(results.into_iter().map(|r| {
                 let (x, y) = r.pos;
                 let pressure = r.pressure;
-                Element::new(na::vector![x, y], pressure)
+                Element::new(Vector2::new(x, y), pressure)
             })),
             Err(e) => {
                 match e {
@@ -226,7 +227,7 @@ impl PenPathModeledBuilder {
                     .map(|r| {
                         let (x, y) = r.pos;
                         let pressure = r.pressure;
-                        Element::new(na::vector![x, y], pressure)
+                        Element::new(Vector2::new(x, y), pressure)
                     })
                     .collect::<Vec<Element>>(),
                 Err(e) => {
@@ -258,7 +259,7 @@ impl PenPathModeledBuilder {
                 self.buffer.extend(results.into_iter().map(|r| {
                     let (x, y) = r.pos;
                     let pressure = r.pressure;
-                    Element::new(na::vector![x, y], pressure)
+                    Element::new(Vector2::new(x, y), pressure)
                 }));
             }
             Err(e) => {

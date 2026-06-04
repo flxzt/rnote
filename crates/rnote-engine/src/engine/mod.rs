@@ -32,6 +32,7 @@ use futures::StreamExt;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
@@ -567,10 +568,7 @@ impl Engine {
 
         if pages_bounds.is_empty() {
             // If no page has content, return the origin page
-            vec![Aabb::new(
-                na::point![0.0, 0.0],
-                self.document.config.format.size().into(),
-            )]
+            vec![Aabb::new(Vector2::ZERO, self.document.config.format.size())]
         } else {
             pages_bounds
         }
@@ -620,22 +618,22 @@ impl Engine {
         let zoom = self.camera.zoom();
         let new_offset = if let Some(parent_width) = parent_width {
             if self.document.config.format.width() * zoom <= parent_width {
-                na::vector![
+                Vector2::new(
                     (self.document.config.format.width() * 0.5 * zoom) - parent_width * 0.5,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
+                    -Document::SHADOW_WIDTH * zoom,
+                )
             } else {
                 // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-                na::vector![
+                Vector2::new(
                     -Document::SHADOW_WIDTH * zoom,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
+                    -Document::SHADOW_WIDTH * zoom,
+                )
             }
         } else {
-            na::vector![
+            Vector2::new(
                 -Document::SHADOW_WIDTH * zoom,
-                -Document::SHADOW_WIDTH * zoom
-            ]
+                -Document::SHADOW_WIDTH * zoom,
+            )
         };
         self.camera_set_offset_expand(new_offset)
     }
@@ -688,7 +686,7 @@ impl Engine {
     /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
     /// Background and content rendering then need to be updated.
-    pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+    pub fn camera_set_offset(&mut self, offset: Vector2) -> WidgetFlags {
         self.camera.set_offset(offset, &self.document)
     }
 
@@ -697,7 +695,7 @@ impl Engine {
     /// Expands the document when in autoexpanding layouts.
     ///
     /// Background and content rendering then need to be updated.
-    pub fn camera_set_offset_expand(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+    pub fn camera_set_offset_expand(&mut self, offset: Vector2) -> WidgetFlags {
         let widget_flags = self.camera.set_offset(offset, &self.document);
         widget_flags | self.doc_expand_autoexpand()
     }
@@ -705,12 +703,12 @@ impl Engine {
     /// Update the viewport size of the camera.
     ///
     /// Background and content rendering then need to be updated.
-    pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+    pub fn camera_set_size(&mut self, size: Vector2) -> WidgetFlags {
         self.camera.set_size(size)
     }
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
-    pub fn camera_surface_mins_maxs(&self) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    pub fn camera_surface_mins_maxs(&self) -> (Vector2, Vector2) {
         self.camera.surface_mins_maxs(&self.document)
     }
 

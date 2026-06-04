@@ -23,6 +23,8 @@ rnote_engine_sources = files(
     'fileformats/rnoteformat/maj0min5patch9.rs',
     'fileformats/rnoteformat/maj0min6.rs',
     'fileformats/rnoteformat/maj0min9.rs',
+    'fileformats/rnoteformat/maj0min13.rs',
+    'fileformats/rnoteformat/maj0min15.rs',
     'fileformats/rnoteformat/mod.rs',
     'fileformats/xoppformat.rs',
     'image.rs',

@@ -459,7 +459,7 @@ impl RnBrushPage {
                     let mut config = appwindow.engine_config().write();
                     let ruler = &mut config.pens_config.brush_config.ruler_config;
                     ruler.visible = visible;
-                    visible && ruler.anchor == na::vector![0.0, 0.0]
+                    visible && ruler.anchor == p2d::math::Vector2::ZERO
                 };
                 if let Some(canvas) = appwindow.active_tab_canvas() {
                     if needs_seed {

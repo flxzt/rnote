@@ -2,8 +2,9 @@
 use super::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
-use crate::transform::Transformable;
+use crate::Transformable;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 /// Shape, storing shape variants.
@@ -43,7 +44,7 @@ impl Default for Shape {
 }
 
 impl Transformable for Shape {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         match self {
             Self::Arrow(arrow) => {
                 arrow.translate(offset);
@@ -72,7 +73,7 @@ impl Transformable for Shape {
         }
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         match self {
             Self::Line(line) => {
                 line.rotate(angle, center);
@@ -101,7 +102,7 @@ impl Transformable for Shape {
         }
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         match self {
             Self::Line(line) => {
                 line.scale(scale);

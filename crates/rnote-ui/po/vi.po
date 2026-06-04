@@ -53,7 +53,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr ""
+msgstr "Mô tả tổng quan"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A selection"
@@ -73,11 +73,11 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:60
 msgid "Adjust document settings"
-msgstr ""
+msgstr "Thay đổi cài đặt cho tài liệu"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:65
 msgid "Configure action shortcuts"
-msgstr ""
+msgstr "Tùy chỉnh các chức năng phím tắt "
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
 #: crates/rnote-ui/data/ui/shortcuts.ui:191
@@ -86,7 +86,7 @@ msgstr "Xoá nội dung tài liệu"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:6
 msgid "This clears the entire document. Please confirm."
-msgstr ""
+msgstr "Việc này sẽ xóa toàn bộ tài liệu. Hãy xác nhận"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:10
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
@@ -105,7 +105,7 @@ msgstr "Huỷ bỏ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:11
 msgid "Clear"
-msgstr ""
+msgstr "Xóa bỏ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
@@ -225,11 +225,11 @@ msgstr "Xuất phần chọn"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
 msgid "Are you sure you want to move this file to the trash?"
-msgstr ""
+msgstr "Bạn có chắc rằng bạn muốn chuyển file này vào thư mục rác?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
 msgid "Trash"
-msgstr ""
+msgstr "Rác"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:5
 #: crates/rnote-ui/src/dialogs/export.rs:349
@@ -254,7 +254,7 @@ msgstr "Xuất tệp tin"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:75
 #: crates/rnote-ui/data/ui/dialogs/export.ui:484
 msgid "Select the export file"
-msgstr ""
+msgstr "Chọn tệp tin cần xuất"
 
 #. force the user to pick another file
 #: crates/rnote-ui/data/ui/dialogs/export.ui:84
@@ -268,7 +268,7 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:928
 #: crates/rnote-ui/src/dialogs/export.rs:1016
 msgid "- no file selected -"
-msgstr ""
+msgstr "Không file nào được chọn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:108
 #: crates/rnote-ui/data/ui/dialogs/export.ui:319
@@ -280,13 +280,13 @@ msgstr "Cài đặt xuất"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:323
 #: crates/rnote-ui/data/ui/dialogs/export.ui:521
 msgid "With Background"
-msgstr ""
+msgstr "Cùng với nền"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:113
 #: crates/rnote-ui/data/ui/dialogs/export.ui:324
 #: crates/rnote-ui/data/ui/dialogs/export.ui:522
 msgid "Set whether the background should be exported"
-msgstr ""
+msgstr "Tùy chỉnh nếu muốn xuất cả background"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:118
 #: crates/rnote-ui/data/ui/dialogs/export.ui:329
@@ -304,13 +304,13 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:335
 #: crates/rnote-ui/data/ui/dialogs/export.ui:533
 msgid "Optimize for Printing"
-msgstr ""
+msgstr "Tối ưu hóa cho việc in ấn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:125
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
 msgid "Set whether the content should be optimized for printing"
-msgstr ""
+msgstr "Tùy chỉnh nếu muốn nội dung được tối ưu hóa cho việc in ấn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:130
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
@@ -323,7 +323,7 @@ msgstr "Xuất tài liệu"
 #: crates/rnote-ui/data/ui/dialogs/export.ui:131
 #: crates/rnote-ui/data/ui/dialogs/export.ui:342
 msgid "The export format"
-msgstr ""
+msgstr "Định dạng xuất"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:135
 #: crates/rnote-ui/data/ui/dialogs/export.ui:346
@@ -332,22 +332,22 @@ msgstr ""
 #: crates/rnote-ui/src/dialogs/export.rs:793
 #: crates/rnote-ui/src/dialogs/export.rs:1186
 msgid "Svg"
-msgstr ""
+msgstr "Svg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:379
 msgid "Pdf"
-msgstr ""
+msgstr "Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:390
 msgid "Xopp"
-msgstr ""
+msgstr "Xopp"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:145
 #: crates/rnote-ui/data/ui/dialogs/export.ui:356
 msgid "Page Order"
-msgstr ""
+msgstr "Thứ tự trang"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:146
 #: crates/rnote-ui/data/ui/dialogs/export.ui:357
@@ -360,12 +360,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:152
 #: crates/rnote-ui/data/ui/dialogs/export.ui:363
 msgid "Horizontal First"
-msgstr ""
+msgstr "Ưu tiên ngang"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:153
 #: crates/rnote-ui/data/ui/dialogs/export.ui:364
 msgid "Vertical First"
-msgstr ""
+msgstr "Ưu tiên dọc"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:174
 #: crates/rnote-ui/src/dialogs/export.rs:773
@@ -386,7 +386,7 @@ msgstr "Xuất phần chọn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:281
 msgid "Select the export directory"
-msgstr ""
+msgstr "Chọn thư mục để xuất"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:312
 #, fuzzy
@@ -401,14 +401,14 @@ msgstr "Xuất trạng thái engine"
 #: crates/rnote-ui/src/dialogs/export.rs:804
 #: crates/rnote-ui/src/dialogs/export.rs:1197
 msgid "Png"
-msgstr ""
+msgstr "Png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
 #: crates/rnote-ui/data/ui/dialogs/export.ui:546
 #: crates/rnote-ui/src/dialogs/export.rs:817
 #: crates/rnote-ui/src/dialogs/export.rs:1210
 msgid "Jpeg"
-msgstr ""
+msgstr "Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -427,12 +427,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr ""
+msgstr "Chất lượng Jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr ""
+msgstr "Tùy chỉnh chất lượng của ảnh Jpeg (1 - 100)"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1165
@@ -443,15 +443,15 @@ msgstr "Xuất phần chọn"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "The export image format"
-msgstr ""
+msgstr "Định dạng của file xuất"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:571
 msgid "Margin"
-msgstr ""
+msgstr "Căn lề"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:572
 msgid "Set the margin around the selected area"
-msgstr ""
+msgstr "Tùy chỉnh căn lề xung quanh vùng được chọn"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 #, fuzzy
@@ -463,11 +463,11 @@ msgstr "Nhập tệp tin"
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
 #: crates/rnote-ui/src/dialogs/import.rs:94
 msgid "Import"
-msgstr ""
+msgstr "Nhập"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:63
 msgid "Info"
-msgstr ""
+msgstr "Thông tin"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
 msgid "Pdf Import Preferences"

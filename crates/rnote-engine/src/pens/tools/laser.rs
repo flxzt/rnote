@@ -4,6 +4,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::bounding_volume::BoundingVolume;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::Constraints;
 use rnote_compose::PenPath;
@@ -224,7 +225,7 @@ impl DrawableOnDoc for LaserTool {
                 }
             })
             .map(|bounds| {
-                bounds.extend_by(na::Vector2::repeat(
+                bounds.extend_by(Vector2::splat(
                     Self::OUTER_STROKE_WIDTH / engine_view.camera.total_zoom(),
                 ))
             })

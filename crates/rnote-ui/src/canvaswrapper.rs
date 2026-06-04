@@ -7,6 +7,7 @@ use gtk4::{
     graphene, prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
+use p2d::math::Vector2;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::Camera;
 use rnote_engine::ext::GraphenePointExt;
@@ -21,9 +22,9 @@ use std::time::Instant;
 /// All position values are in scroller (window-relative) pixel coordinates.
 #[derive(Clone, Copy)]
 struct RulerDragBegin {
-    pivot: na::Vector2<f64>,
-    anchor_begin: na::Vector2<f64>,
-    centroid_begin: na::Vector2<f64>,
+    pivot: Vector2,
+    anchor_begin: Vector2,
+    centroid_begin: Vector2,
     angle_begin: f64,
 }
 
@@ -53,7 +54,7 @@ const RULER_SCROLL_REVIVAL_TIMEOUT: std::time::Duration =
 /// ruler rotates out from under the pointer.
 #[derive(Clone, Copy, Debug)]
 pub(crate) struct ScrollRotationSession {
-    pivot: na::Vector2<f64>,
+    pivot: Vector2,
     last_event_time: Instant,
 }
 
@@ -118,16 +119,16 @@ fn rotate_ruler_with_scroll(
             // pointer is clearly somewhere else (and is known).
             let pointer = imp.pointer_pos.get();
             let pointer_far = pointer
-                .map(|p| (p - session.pivot).norm() > ruler.body_half_width * 1.5)
+                .map(|p| (p - session.pivot).length() > ruler.body_half_width * 1.5)
                 .unwrap_or(false);
             if pointer_far {
                 // User deliberately moved the pointer to a new spot.
                 let p = pointer.unwrap();
                 let rel = p - ruler.anchor;
-                if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
+                if rel.dot(ruler.normal()).abs() > ruler.body_half_width {
                     return false;
                 }
-                let along = rel.dot(&ruler.direction());
+                let along = rel.dot(ruler.direction());
                 let projected = ruler.anchor + along * ruler.direction();
                 ruler.dial_pos = projected;
                 projected
@@ -144,10 +145,10 @@ fn rotate_ruler_with_scroll(
                 None => return false,
             };
             let rel = pointer - ruler.anchor;
-            if rel.dot(&ruler.normal()).abs() > ruler.body_half_width {
+            if rel.dot(ruler.normal()).abs() > ruler.body_half_width {
                 return false;
             }
-            let along = rel.dot(&ruler.direction());
+            let along = rel.dot(ruler.direction());
             let projected = ruler.anchor + along * ruler.direction();
             ruler.dial_pos = projected;
             projected
@@ -161,7 +162,7 @@ fn rotate_ruler_with_scroll(
         let v = ruler.anchor - pivot;
         let cos_a = effective_delta.cos();
         let sin_a = effective_delta.sin();
-        let v_rotated = na::vector![v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a];
+        let v_rotated = Vector2::new(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
 
         ruler.angle = new_angle;
         ruler.anchor = pivot + v_rotated;
@@ -191,7 +192,7 @@ fn apply_two_finger_ruler_update(canvaswrapper: &RnCanvasWrapper, begin: RulerDr
     let Some((cx, cy)) = zoom_gesture.bounding_box_center() else {
         return;
     };
-    let centroid_now = na::vector![cx, cy];
+    let centroid_now = Vector2::new(cx, cy);
     let translation = centroid_now - begin.centroid_begin;
 
     let angle_delta = rotate_gesture.angle_delta();
@@ -214,7 +215,7 @@ fn apply_two_finger_ruler_update(canvaswrapper: &RnCanvasWrapper, begin: RulerDr
     let cos_a = effective_delta.cos();
     let sin_a = effective_delta.sin();
     let v = begin.anchor_begin - begin.pivot;
-    let v_rotated = na::vector![v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a];
+    let v_rotated = Vector2::new(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
     let new_anchor = begin.pivot + v_rotated + translation;
     let new_dial_pos = begin.pivot + translation;
 
@@ -247,8 +248,8 @@ mod imp {
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
-        pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
-        pub(crate) last_contextmenu_pos: Cell<Option<na::Vector2<f64>>>,
+        pub(crate) pointer_pos: Cell<Option<Vector2>>,
+        pub(crate) last_contextmenu_pos: Cell<Option<Vector2>>,
         /// Active scroll-to-rotate session on the ruler. Set when the first
         /// scroll-on-ruler event fires; cleared when no scroll event arrives
         /// within `RULER_SCROLL_SESSION_TIMEOUT`. While active, all scroll
@@ -571,7 +572,7 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
-                        canvaswrapper.imp().pointer_pos.set(Some(na::vector![x, y]));
+                        canvaswrapper.imp().pointer_pos.set(Some(Vector2::new(x, y)));
                     }
                 ));
 
@@ -579,7 +580,10 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
-                        canvaswrapper.imp().pointer_pos.set(Some(na::vector![x, y]));
+                        canvaswrapper
+                            .imp()
+                            .pointer_pos
+                            .set(Some(Vector2::new(x, y)));
                     }
                 ));
 
@@ -636,9 +640,9 @@ mod imp {
                                 .get()
                                 .map(|p| {
                                     let p = canvaswrapper
-                                        .compute_point(&canvas, &graphene::Point::from_na_vec(p))
+                                        .compute_point(&canvas, &graphene::Point::from_p2d_vec(p))
                                         .unwrap();
-                                    p.to_na_vec()
+                                    p.to_p2d_vec()
                                 })
                                 .unwrap_or_else(|| camera_size * 0.5);
                             let new_camera_offset = (((camera_offset + screen_offset) / old_zoom)
@@ -663,9 +667,9 @@ mod imp {
             {
                 #[derive(Clone, Copy)]
                 enum CanvasDragMode {
-                    Canvas(na::Vector2<f64>),
+                    Canvas(Vector2),
                     /// (anchor_begin, dial_pos_begin) — both translated together.
-                    Ruler(na::Vector2<f64>, na::Vector2<f64>),
+                    Ruler(Vector2, Vector2),
                 }
                 let drag_mode: Rc<Cell<Option<CanvasDragMode>>> = Rc::new(Cell::new(None));
 
@@ -685,10 +689,10 @@ mod imp {
                             let config = config.read();
                             let ruler = &config.pens_config.brush_config.ruler_config;
                             if ruler.visible {
-                                let p = na::vector![x, y];
+                                let p = Vector2::new(x, y);
                                 let rel = p - ruler.anchor;
                                 let inside_body =
-                                    rel.dot(&ruler.normal()).abs()
+                                    rel.dot(ruler.normal()).abs()
                                         <= ruler.body_half_width;
                                 if inside_body {
                                     CanvasDragMode::Ruler(ruler.anchor, ruler.dial_pos)
@@ -714,7 +718,7 @@ mod imp {
                         match drag_mode.get() {
                             Some(CanvasDragMode::Ruler(anchor_begin, dial_pos_begin)) => {
                                 // Drag offset (x, y) is in scroller pixels — apply directly.
-                                let delta = na::vector![x, y];
+                                let delta = Vector2::new(x, y);
                                 let config_shared = canvas.engine_ref().engine_config().clone();
                                 {
                                     let mut c = config_shared.write();
@@ -725,7 +729,7 @@ mod imp {
                                 canvas.queue_draw();
                             }
                             Some(CanvasDragMode::Canvas(offset_begin)) => {
-                                let new_offset = offset_begin - na::vector![x, y];
+                                let new_offset = offset_begin - Vector2::new(x, y);
                                 let widget_flags =
                                     canvas.engine_mut().camera_set_offset_expand(new_offset);
                                 canvas.emit_handle_widget_flags(widget_flags);
@@ -754,7 +758,7 @@ mod imp {
 
             // Move Canvas with middle mouse button
             {
-                let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let mouse_drag_start = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_mouse_drag_middle_gesture
                     .connect_drag_begin(clone!(
@@ -775,7 +779,7 @@ mod imp {
                         obj,
                         move |_, x, y| {
                             let canvas = canvaswrapper.canvas();
-                            let new_offset = mouse_drag_start.get() - na::vector![x, y];
+                            let new_offset = mouse_drag_start.get() - Vector2::new(x, y);
                             let widget_flags =
                                 canvas.engine_mut().camera_set_offset_expand(new_offset);
                             canvas.emit_handle_widget_flags(widget_flags);
@@ -803,8 +807,8 @@ mod imp {
                 let prev_scale = Rc::new(Cell::new(1_f64));
                 let zoom_begin = Rc::new(Cell::new(1_f64));
                 let new_zoom = Rc::new(Cell::new(1.0));
-                let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
-                let offset_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let bbcenter_begin: Rc<Cell<Option<Vector2>>> = Rc::new(Cell::new(None));
+                let offset_begin = Rc::new(Cell::new(Vector2::ZERO));
 
                 // Shared ruler-drag state across the zoom + rotate gestures. When `Some`,
                 // the two-finger gesture is manipulating the ruler (pan + rotate around
@@ -841,7 +845,7 @@ mod imp {
 
                         let bbcenter = gesture
                             .bounding_box_center()
-                            .map(|(x, y)| na::vector![x, y]);
+                            .map(|(x, y)| Vector2::new(x, y));
                         bbcenter_begin.set(bbcenter);
                         offset_begin.set(canvas.engine_ref().camera.offset());
 
@@ -860,11 +864,11 @@ mod imp {
                                     // Hit-test in scroller coords directly.
                                     let rel = bbcenter - ruler.anchor;
                                     let inside_body =
-                                        rel.dot(&ruler.normal()).abs()
+                                        rel.dot(ruler.normal()).abs()
                                             <= ruler.body_half_width;
                                     if inside_body {
                                         // Project centroid onto the ruler centerline.
-                                        let along = rel.dot(&ruler.direction());
+                                        let along = rel.dot(ruler.direction());
                                         let projected =
                                             ruler.anchor + along * ruler.direction();
                                         Some((projected, ruler.anchor, ruler.angle))
@@ -934,7 +938,7 @@ mod imp {
 
                         if let Some(bbcenter_current) = gesture
                             .bounding_box_center()
-                            .map(|(x, y)| na::vector![x, y])
+                            .map(|(x, y)| Vector2::new(x, y))
                         {
                             let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get()
                             {
@@ -1013,7 +1017,7 @@ mod imp {
 
             // Pan with alt + drag
             {
-                let offset_start = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+                let offset_start = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_alt_drag_gesture.connect_drag_begin(clone!(
                     #[strong]
@@ -1042,7 +1046,7 @@ mod imp {
                     obj,
                     move |_, offset_x, offset_y| {
                         let canvas = canvaswrapper.canvas();
-                        let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
+                        let new_offset = offset_start.get() - Vector2::new(offset_x, offset_y);
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
@@ -1100,7 +1104,7 @@ mod imp {
             // Zoom with alt + shift + drag
             {
                 let zoom_begin = Rc::new(Cell::new(1_f64));
-                let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+                let prev_offset = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_alt_shift_drag_gesture
                     .connect_drag_begin(clone!(
@@ -1125,7 +1129,7 @@ mod imp {
                                 let current_zoom =
                                     canvaswrapper.canvas().engine_ref().camera.total_zoom();
                                 zoom_begin.set(current_zoom);
-                                prev_offset.set(na::Vector2::<f64>::zeros());
+                                prev_offset.set(Vector2::ZERO);
                             } else {
                                 gesture.set_state(EventSequenceState::Denied);
                             }
@@ -1140,7 +1144,7 @@ mod imp {
                         obj,
                         move |_, offset_x, offset_y| {
                             let canvas = canvaswrapper.canvas();
-                            let new_offset = na::vector![offset_x, offset_y];
+                            let new_offset = Vector2::new(offset_x, offset_y);
                             let current_total_zoom =
                                 canvaswrapper.canvas().engine_ref().camera.total_zoom();
                             // drag down zooms out, drag up zooms in
@@ -1214,7 +1218,7 @@ mod imp {
                         canvaswrapper
                             .imp()
                             .last_contextmenu_pos
-                            .set(Some(na::vector![x, y]));
+                            .set(Some(Vector2::new(x, y)));
                         popover
                             .set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 4, 4)));
                         popover.popup();
@@ -1271,11 +1275,11 @@ impl RnCanvasWrapper {
         self.set_property("inertial-scrolling", inertial_scrolling);
     }
 
-    pub(crate) fn pointer_pos(&self) -> Option<na::Vector2<f64>> {
+    pub(crate) fn pointer_pos(&self) -> Option<Vector2> {
         self.imp().pointer_pos.get()
     }
 
-    pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {
+    pub(crate) fn last_contextmenu_pos(&self) -> Option<Vector2> {
         self.imp().last_contextmenu_pos.get()
     }
 

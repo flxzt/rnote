@@ -8,6 +8,7 @@ use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::Constraints;
 use rnote_compose::Style;
@@ -34,9 +35,9 @@ enum BrushState {
         ruler_snap_side: Option<f64>,
     },
     DraggingRuler {
-        anchor_begin: na::Vector2<f64>,
-        dial_pos_begin: na::Vector2<f64>,
-        start_pos: na::Vector2<f64>,
+        anchor_begin: Vector2,
+        dial_pos_begin: Vector2,
+        start_pos: Vector2,
     },
 }
 

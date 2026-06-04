@@ -128,13 +128,25 @@ impl RulerConfig {
     }
 
     /// Body fill color computed from `body_opacity` and the dark-mode decision.
+    ///
+    /// The body's brightness is interpolated against `body_opacity`: at low
+    /// opacity we want the body to contrast with the canvas background (so the
+    /// ruler is visible at all), and at high opacity we want it to contrast
+    /// with the marking colors (so the ticks / text stay readable).
     pub fn body_fill_color(&self, dark_mode: bool) -> piet::Color {
-        let alpha = (self.body_opacity / 100.0 * 255.0).round().clamp(0.0, 255.0) as u8;
-        if dark_mode {
-            piet::Color::rgba8(220, 220, 220, alpha)
+        let opacity = (self.body_opacity / 100.0).clamp(0.0, 1.0);
+        let alpha = (opacity * 255.0).round() as u8;
+        let (low, high) = if dark_mode {
+            // Dark mode: low opacity ≈ near-white (contrast against dark canvas);
+            // high opacity ≈ dark gray (contrast against white markings/text).
+            (220.0, 60.0)
         } else {
-            piet::Color::rgba8(80, 80, 80, alpha)
-        }
+            // Light mode: low opacity ≈ dark gray (contrast against light canvas);
+            // high opacity ≈ light gray (contrast against black markings/text).
+            (80.0, 200.0)
+        };
+        let brightness = (low + (high - low) * opacity).round().clamp(0.0, 255.0) as u8;
+        piet::Color::rgba8(brightness, brightness, brightness, alpha)
     }
 
     /// Color used for the body outline.

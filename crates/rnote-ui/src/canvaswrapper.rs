@@ -909,13 +909,29 @@ mod imp {
                                 if !ruler.visible {
                                     None
                                 } else {
-                                    // Hit-test in scroller coords directly.
-                                    let rel = bbcenter - ruler.anchor;
-                                    let inside_body =
-                                        rel.dot(ruler.normal()).abs()
-                                            <= ruler.body_half_width;
-                                    if inside_body {
+                                    // Require *every* finger to be inside the body
+                                    // strip, not just the centroid — otherwise two
+                                    // fingers placed on opposite sides of the ruler
+                                    // (neither touching it) would still pass the
+                                    // hit-test because their centroid lands on the
+                                    // centerline.
+                                    let normal = ruler.normal();
+                                    let half_w = ruler.body_half_width;
+                                    let seqs = gesture.sequences();
+                                    let all_on_body = !seqs.is_empty()
+                                        && seqs.iter().all(|seq| {
+                                            gesture
+                                                .point(Some(seq))
+                                                .map(|(x, y)| {
+                                                    let rel = Vector2::new(x, y)
+                                                        - ruler.anchor;
+                                                    rel.dot(normal).abs() <= half_w
+                                                })
+                                                .unwrap_or(false)
+                                        });
+                                    if all_on_body {
                                         // Project centroid onto the ruler centerline.
+                                        let rel = bbcenter - ruler.anchor;
                                         let along = rel.dot(ruler.direction());
                                         let projected =
                                             ruler.anchor + along * ruler.direction();

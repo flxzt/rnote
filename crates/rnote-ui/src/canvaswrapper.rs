@@ -707,10 +707,11 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
-                        // We don't claim the sequence, because we want to allow touch zooming.
-                        // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
-                        // The drag gesture coords are already in scroller (window-relative)
-                        // coordinates — same space as ruler.anchor / ruler.dial_pos.
+                        // We don't claim the sequence — the zoom gesture (Capture phase)
+                        // needs both touch sequences when a second finger lands, so
+                        // claiming here would break two-finger ruler rotation.
+                        // The drag gesture coords are in scroller (window-relative)
+                        // pixels — same space as ruler.anchor / ruler.dial_pos.
                         let canvas = canvaswrapper.canvas();
                         let mode = {
                             let config = canvas.engine_ref().engine_config().clone();
@@ -733,6 +734,14 @@ mod imp {
                                 CanvasDragMode::Canvas(canvas.engine_ref().camera.offset())
                             }
                         };
+                        // For ruler drag, disable kinetic scrolling for the duration
+                        // of the drag — otherwise the scroller's touch-pan can steal
+                        // the sequence once the finger crosses its drag threshold and
+                        // the ruler stops following. Canvas pans intentionally leave
+                        // it alone so normal touch scrolling still works.
+                        if matches!(mode, CanvasDragMode::Ruler(..)) {
+                            canvaswrapper.imp().workaround_disable_kinetic_scrolling();
+                        }
                         drag_mode.set(Some(mode));
                     }
                 ));
@@ -772,7 +781,11 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, _, _| {
+                        let was_ruler = matches!(drag_mode.get(), Some(CanvasDragMode::Ruler(..)));
                         drag_mode.set(None);
+                        if was_ruler {
+                            canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+                        }
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()

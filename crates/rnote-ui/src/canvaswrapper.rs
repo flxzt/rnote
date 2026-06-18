@@ -18,6 +18,7 @@ use std::time::Instant;
 #[derive(Debug, Default)]
 struct Connections {
     appwindow_block_pinch_zoom_bind: Option<glib::Binding>,
+    appwindow_block_touch_bind: Option<glib::Binding>,
     appwindow_show_scrollbars_bind: Option<glib::Binding>,
     appwindow_inertial_scrolling_bind: Option<glib::Binding>,
     appwindow_righthanded_bind: Option<glib::Binding>,
@@ -33,6 +34,7 @@ mod imp {
         pub(crate) canvas_touch_drawing_handler: RefCell<Option<glib::SignalHandlerId>>,
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
+        pub(crate) block_touch: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
         pub(crate) pointer_pos: Cell<Option<Vector2>>,
         pub(crate) last_contextmenu_pos: Cell<Option<Vector2>>,
@@ -132,6 +134,7 @@ mod imp {
                 canvas_touch_drawing_handler: RefCell::new(None),
                 show_scrollbars: Cell::new(false),
                 block_pinch_zoom: Cell::new(false),
+                block_touch: Cell::new(false),
                 inertial_scrolling: Cell::new(true),
                 pointer_pos: Cell::new(None),
                 last_contextmenu_pos: Cell::new(None),
@@ -245,6 +248,9 @@ mod imp {
                     glib::ParamSpecBoolean::builder("block-pinch-zoom")
                         .default_value(false)
                         .build(),
+                    glib::ParamSpecBoolean::builder("block-touch")
+                        .default_value(false)
+                        .build(),
                     glib::ParamSpecBoolean::builder("inertial-scrolling")
                         .default_value(true)
                         .build(),
@@ -257,6 +263,7 @@ mod imp {
             match pspec.name() {
                 "show-scrollbars" => self.show_scrollbars.get().to_value(),
                 "block-pinch-zoom" => self.block_pinch_zoom.get().to_value(),
+                "block-touch" => self.block_pinch_zoom.get().to_value(),
                 "inertial-scrolling" => self.inertial_scrolling.get().to_value(),
                 _ => unimplemented!(),
             }
@@ -280,6 +287,15 @@ mod imp {
                     self.block_pinch_zoom.replace(block_pinch_zoom);
                     self.canvas_zoom_gesture_update();
                 }
+                "block-touch" => {
+                    let block_touch = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`");
+                    self.block_touch.replace(block_touch);
+                    self.canvas_touch_pan_update();
+                    self.canvas_zoom_gesture_update();
+                    self.canvas_kinetic_scrolling_update();
+                }
                 "inertial-scrolling" => {
                     let inertial_scrolling = value
                         .get::<bool>()
@@ -297,7 +313,10 @@ mod imp {
 
     impl RnCanvasWrapper {
         fn canvas_zoom_gesture_update(&self) {
-            if !self.block_pinch_zoom.get() && !self.canvas.touch_drawing() {
+            if !self.block_pinch_zoom.get()
+                && !self.block_touch.get()
+                && !self.canvas.touch_drawing()
+            {
                 self.canvas_zoom_gesture
                     .set_propagation_phase(PropagationPhase::Capture);
             } else {
@@ -306,9 +325,30 @@ mod imp {
             }
         }
 
+        fn canvas_touch_pan_update(&self) {
+            if !self.block_touch.get() && !self.canvas.touch_drawing() {
+                self.canvas_drag_gesture
+                    .set_propagation_phase(PropagationPhase::Bubble);
+                self.touch_two_finger_long_press_gesture
+                    .set_propagation_phase(PropagationPhase::Capture);
+                self.touch_long_press_gesture
+                    .set_propagation_phase(PropagationPhase::Capture);
+            } else {
+                // set everythinbg to `None`
+                self.canvas_drag_gesture
+                    .set_propagation_phase(PropagationPhase::None);
+                self.touch_two_finger_long_press_gesture
+                    .set_propagation_phase(PropagationPhase::None);
+                self.touch_long_press_gesture
+                    .set_propagation_phase(PropagationPhase::None);
+            }
+        }
+
         fn canvas_kinetic_scrolling_update(&self) {
             self.scroller.set_kinetic_scrolling(
-                !self.canvas.touch_drawing() && self.inertial_scrolling.get(),
+                !self.block_touch.get()
+                    && !self.canvas.touch_drawing()
+                    && self.inertial_scrolling.get(),
             );
         }
 
@@ -420,6 +460,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, _, _| {
+                        if canvaswrapper.block_touch() {
+                            return ();
+                        }
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
@@ -432,6 +475,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
+                        if canvaswrapper.block_touch() {
+                            return ();
+                        }
                         let canvas = canvaswrapper.canvas();
                         let new_offset = touch_drag_start.get() - Vector2::new(x, y);
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
@@ -442,6 +488,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, _, _| {
+                        if canvaswrapper.block_touch() {
+                            return ();
+                        }
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -865,6 +914,7 @@ impl RnCanvasWrapper {
     pub(crate) fn set_show_scrollbars(&self, show_scrollbars: bool) {
         self.set_property("show-scrollbars", show_scrollbars.to_value());
     }
+
     #[allow(unused)]
     pub(crate) fn block_pinch_zoom(&self) -> bool {
         self.property::<bool>("block-pinch-zoom")
@@ -873,6 +923,16 @@ impl RnCanvasWrapper {
     #[allow(unused)]
     pub(crate) fn set_block_pinch_zoom(&self, block_pinch_zoom: bool) {
         self.set_property("block-pinch-zoom", block_pinch_zoom);
+    }
+
+    #[allow(unused)]
+    pub(crate) fn block_touch(&self) -> bool {
+        self.property::<bool>("block-touch")
+    }
+
+    #[allow(unused)]
+    pub(crate) fn set_block_touch(&self, block_touch: bool) {
+        self.set_property("block-touch", block_touch);
     }
 
     #[allow(unused)]
@@ -922,6 +982,11 @@ impl RnCanvasWrapper {
             .sync_create()
             .build();
 
+        let appwindow_block_touch_bind = appwindow
+            .bind_property("block-touch", self, "block_touch")
+            .sync_create()
+            .build();
+
         let appwindow_show_scrollbars_bind = appwindow
             .sidebar()
             .settings_panel()
@@ -958,6 +1023,12 @@ impl RnCanvasWrapper {
             old.unbind()
         }
         if let Some(old) = connections
+            .appwindow_block_touch_bind
+            .replace(appwindow_block_touch_bind)
+        {
+            old.unbind()
+        }
+        if let Some(old) = connections
             .appwindow_show_scrollbars_bind
             .replace(appwindow_show_scrollbars_bind)
         {
@@ -986,6 +1057,9 @@ impl RnCanvasWrapper {
 
         let mut connections = self.imp().connections.borrow_mut();
         if let Some(old) = connections.appwindow_block_pinch_zoom_bind.take() {
+            old.unbind();
+        }
+        if let Some(old) = connections.appwindow_block_touch_bind.take() {
             old.unbind();
         }
         if let Some(old) = connections.appwindow_show_scrollbars_bind.take() {

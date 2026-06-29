@@ -146,6 +146,13 @@ Please add a short description outlining the changes and the reasons for them.
 When adding new features and/or changes in the UI some screenshots or screen captures would be nice.
 When it fixes a specific issue, the description should reference the to-be-fixed issue with `fixes #<num>`.
 
+## Disclosure
+
+Always disclose the use of LLM/GenAI tools when creating an issue or
+a merge request. Do not include trailers like “Co-authored-by:” or
+“Assisted-by:” in commit messages, since they serve as free advertising
+for AI companies.
+
 # Build system
 
 For building the application the `cargo` calls are wrapped by meson.

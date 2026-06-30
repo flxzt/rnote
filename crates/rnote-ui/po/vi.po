@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2026-06-30 16:30+0000\n"
-"Last-Translator: Rickey Ho <rickey.ho2020@gmail.com>\n"
+"Last-Translator: thetylernguyen-1 <thaiha.020605@gmail.com>\n"
 "Language-Team: Vietnamese <https://hosted.weblate.org/projects/rnote/repo/"
 "vi/>\n"
 "Language: vi\n"
@@ -53,7 +53,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
-msgstr "Mô tả tổng quan"
+msgstr "tổng quan"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:40
 msgid "A selection"
@@ -61,7 +61,7 @@ msgstr "Vùng chọn"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:45
 msgid "Write text with the typewriter"
-msgstr ""
+msgstr "Viết chữ với máy đánh chữ"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:50
 msgid "Hide toolbars with the focus mode"

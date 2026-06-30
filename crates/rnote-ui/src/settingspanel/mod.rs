@@ -441,10 +441,10 @@ impl RnSettingsPanel {
             self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
             self.set_format_orientation(format.orientation());
             imp.format_dpi_adj.set_value(format.dpi());
-            imp.format_width_unitentry.set_dpi(format.dpi());
-            imp.format_width_unitentry.set_value_in_px(format.width());
-            imp.format_height_unitentry.set_dpi(format.dpi());
-            imp.format_height_unitentry.set_value_in_px(format.height());
+            imp.format_width_unitentry
+                .set_dpi_and_value_px(format.dpi(), format.width());
+            imp.format_height_unitentry
+                .set_dpi_and_value_px(format.dpi(), format.height());
         }
         // TODO: else insensitive  options
     }
@@ -474,13 +474,9 @@ impl RnSettingsPanel {
                 .set_rgba(&gdk::RGBA::from_compose_color(background.color));
             self.set_background_pattern(background.pattern);
             imp.doc_background_pattern_width_unitentry
-                .set_dpi(format.dpi());
-            imp.doc_background_pattern_width_unitentry
-                .set_value_in_px(background.pattern_size[0]);
+                .set_dpi_and_value_px(format.dpi(), background.pattern_size[0]);
             imp.doc_background_pattern_height_unitentry
-                .set_dpi(format.dpi());
-            imp.doc_background_pattern_height_unitentry
-                .set_value_in_px(background.pattern_size[1]);
+                .set_dpi_and_value_px(format.dpi(), background.pattern_size[1]);
             self.set_document_layout(&document_layout);
             imp.doc_show_origin_indicator_row
                 .set_active(show_origin_indicator);

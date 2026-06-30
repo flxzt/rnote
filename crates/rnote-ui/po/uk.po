@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2026-06-30 16:31+0000\n"
-"Last-Translator: Bezruchenko Simon <worcposj44@gmail.com>\n"
+"Last-Translator: Deleted User <volkov@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
 "\n"
 "Language: uk\n"
@@ -24,7 +24,8 @@ msgstr "Малювання та ведення нотаток"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:14
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr "Gnome;GTK;Office;Graphics;Notes;Офіс;Графіка;Примітки;Допис;Малювати;Нотатка;Зошит;"
+msgstr ""
+"Gnome;GTK;Office;Graphics;Notes;Офіс;Графіка;Примітки;Допис;Малювати;Нотатка;Зошит;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:19
 #: crates/rnote-ui/data/ui/shortcuts.ui:20

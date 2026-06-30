@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2026-06-30 16:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Pavel Ovchinnikov <opavel@internet.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/rnote/repo/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -762,8 +762,7 @@ msgstr "Выделение пересечением"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:61
 msgid "Lock Aspect Ratio While Resizing the Selection"
-msgstr ""
-"Фиксировать соотношение сторон при изменении размера выделенной области"
+msgstr "Фиксировать соотношение сторон при изменении размера выделенной области"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:70
 msgid "Select All Strokes"

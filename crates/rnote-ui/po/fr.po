@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2026-06-30 16:32+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: \"Mathieu B.\" <mathieu.bousquet2@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/rnote/repo/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -1861,8 +1861,7 @@ msgstr "Ajouter une page (lorsque la mise en page est de taille fixe)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
-"Supprimer la dernière page (lorsque la mise en page est de taille fixe)"
+msgstr "Supprimer la dernière page (lorsque la mise en page est de taille fixe)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Print Document"

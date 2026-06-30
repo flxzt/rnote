@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
-"PO-Revision-Date: 2024-04-11 08:02+0000\n"
+"PO-Revision-Date: 2026-06-30 16:28+0000\n"
 "Last-Translator: Waris Lappanathiti <waris.lapp@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/rnote/repo/th/>\n"
 "Language: th\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.5-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -39,8 +39,8 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"อาร์โน้ตเป็นแอปวาดรูปแบบเวกเตอร์ สำหรับการร่างเส้น, จดโน้ตด้วยปากกา "
-"และใส่คำอธิบายประกอบเอกสาร และรูปภาพต่าง ๆ"
+"อาร์โน้ตเป็นแอปวาดรูปแบบเวกเตอร์ สำหรับการร่างเส้น, จดโน้ตด้วยปากกา และใส่คำอธิบายประกอบเ"
+"อกสาร และรูปภาพต่าง ๆ"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -493,7 +493,8 @@ msgstr "ความกว้างหน้ากระดาษ (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "กำหนดความกว้างของไฟล์ Pdf ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
+msgstr ""
+"กำหนดความกว้างของไฟล์ Pdf ที่นำเข้ามา เป็นเปอร์เซ็นต์อิงจากความกว้างของหน้ากระดาษ"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
@@ -1992,7 +1993,8 @@ msgstr "ปุ่ม 4"
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr "ไม่ได้ติดตั้งเค้าร่างการตั้งค่าไว้ ไม่สามารถโหลดการตั้งค่าของแอป และไม่สามารถเซฟได้"
+msgstr ""
+"ไม่ได้ติดตั้งเค้าร่างการตั้งค่าไว้ ไม่สามารถโหลดการตั้งค่าของแอป และไม่สามารถเซฟได้"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:576
 msgid "Opening file failed"

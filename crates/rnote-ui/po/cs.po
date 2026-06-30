@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
 "PO-Revision-Date: 2026-06-30 16:32+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: vikdevelop <vikdevelop@proton.me>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -1826,8 +1826,7 @@ msgstr "Přidat stránku (je-li aktivní rozvržení s pevnou velikostí)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr ""
-"Odstranit poslední stránku (je-li aktivní rozvržení s pevnou velikostí)"
+msgstr "Odstranit poslední stránku (je-li aktivní rozvržení s pevnou velikostí)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Print Document"

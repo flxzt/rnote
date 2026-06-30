@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-13 19:46+0200\n"
-"PO-Revision-Date: 2026-01-18 10:01+0000\n"
-"Last-Translator: Yuqi Huang <ctrlhuangyq@gmail.com>\n"
+"PO-Revision-Date: 2026-06-30 16:29+0000\n"
+"Last-Translator: xzlhxc <xzlhxc@foxmail.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
 "projects/rnote/repo/zh_Hans/>\n"
 "Language: zh_Hans\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15.2\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -325,12 +325,12 @@ msgstr "导出的格式"
 #: crates/rnote-ui/src/dialogs/export.rs:793
 #: crates/rnote-ui/src/dialogs/export.rs:1186
 msgid "Svg"
-msgstr "可缩放矢量图（SVG）"
+msgstr "svg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:136
 #: crates/rnote-ui/src/dialogs/export.rs:379
 msgid "Pdf"
-msgstr "便携式文档格式（PDF）"
+msgstr "pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:137
 #: crates/rnote-ui/src/dialogs/export.rs:390
@@ -391,14 +391,14 @@ msgstr "导出文件标题名"
 #: crates/rnote-ui/src/dialogs/export.rs:804
 #: crates/rnote-ui/src/dialogs/export.rs:1197
 msgid "Png"
-msgstr "便携式网络图形（PNG）"
+msgstr "png"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:348
 #: crates/rnote-ui/data/ui/dialogs/export.ui:546
 #: crates/rnote-ui/src/dialogs/export.rs:817
 #: crates/rnote-ui/src/dialogs/export.rs:1210
 msgid "Jpeg"
-msgstr "联合图像标准（JPEG）"
+msgstr "jpeg"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:372
 #: crates/rnote-ui/data/ui/dialogs/export.ui:554
@@ -419,12 +419,12 @@ msgstr ""
 #: crates/rnote-ui/data/ui/dialogs/export.ui:381
 #: crates/rnote-ui/data/ui/dialogs/export.ui:563
 msgid "Jpeg Quality"
-msgstr "JPEG 图像质量"
+msgstr "jpeg图像质量"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:382
 #: crates/rnote-ui/data/ui/dialogs/export.ui:564
 msgid "Set the quality of the Jpeg image (1 - 100)"
-msgstr "设置 JPEG 图像的质量（1-100）"
+msgstr "设置 jpeg 图像的质量（1-100）"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:414
 #: crates/rnote-ui/src/dialogs/export.rs:1165
@@ -445,7 +445,7 @@ msgstr "设置选区周围的边距"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:5
 msgid "Import Pdf"
-msgstr "导入 PDF"
+msgstr "导入 pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
@@ -459,7 +459,7 @@ msgstr "信息"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:81
 msgid "Pdf Import Preferences"
-msgstr "PDF 导入偏好"
+msgstr "pdf 导入偏好"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:85
 msgid "Start Page"
@@ -475,7 +475,7 @@ msgstr "调整文档"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:104
 msgid "Whether the document layout should be adjusted to the Pdf"
-msgstr "文档布局是否应该调整为 PDF"
+msgstr "文档布局是否适应pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:109
 msgid "Page Width (%)"
@@ -483,7 +483,7 @@ msgstr "页面宽度(%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "设置导入 PDF 相对页面的宽度百分比"
+msgstr "设置导入的 pdf 的宽度为格式宽度的百分比"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
@@ -491,7 +491,7 @@ msgstr "页间距"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:118
 msgid "How Pdf pages are spaced"
-msgstr "PDF 页间距大小"
+msgstr "pdf 页间距模式"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:122
 msgid "Continuous"
@@ -507,7 +507,7 @@ msgstr "页面类型"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:132
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
-msgstr "设置导入 PDF 为矢量图或位图"
+msgstr "设置是否将 pdf 导入为矢量图或位图"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:144
 msgid "Vector"
@@ -1299,7 +1299,7 @@ msgstr "画布菜单"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:94
 msgid "App Menu"
-msgstr "APP 目录"
+msgstr "app 菜单"
 
 #: crates/rnote-ui/data/ui/overlays.ui:98
 msgid "Move _Left"
@@ -1500,7 +1500,7 @@ msgstr "分辨率"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr "设置像素密度（DPI），默认值为 96。"
+msgstr "设置像素密度（dpi），默认值为 96。"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
 msgid "Revert"
@@ -1909,10 +1909,8 @@ msgid "Exporting selection failed, nothing selected"
 msgstr "导出选择内容失败，没有选择内容"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:377
-#, fuzzy
-#| msgid "Saves are in progress, waiting before closing.."
 msgid "Saves are in progress, waiting before closing..."
-msgstr "保存正在进行中，请稍候再关闭……"
+msgstr "保存正在进行，请稍候再关闭……"
 
 #: crates/rnote-ui/src/appwindow/imp.rs:447
 msgid "Button 1"
@@ -2047,7 +2045,7 @@ msgstr "导出选择内容成功"
 #: crates/rnote-ui/src/dialogs/export.rs:1243
 #: crates/rnote-ui/src/dialogs/export.rs:1304
 msgid "Json"
-msgstr "JSON"
+msgstr "json"
 
 #: crates/rnote-ui/src/dialogs/export.rs:1255
 msgid "Export Engine State"
@@ -2079,7 +2077,7 @@ msgstr "打开文件"
 
 #: crates/rnote-ui/src/dialogs/import.rs:86
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
-msgstr "JPG, PDF, PNG, SVG, xopp, TXT"
+msgstr "jpg，pdf，png，svg，xopp，txt"
 
 #: crates/rnote-ui/src/dialogs/import.rs:186
 #: crates/rnote-ui/src/dialogs/import.rs:418
@@ -2095,10 +2093,8 @@ msgid "- no author -"
 msgstr "—— 无作者 ——"
 
 #: crates/rnote-ui/src/dialogs/import.rs:437
-#, fuzzy
-#| msgid "Modification date:"
 msgid "- no modification date -"
-msgstr "修改日期："
+msgstr "—— 没有修改日期 ——"
 
 #: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "File name:"

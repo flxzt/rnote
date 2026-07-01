@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="RnPenModeRow" parent="AdwComboRow">
+    <child type="suffix">
+        <object class="GtkBox">
+            <property name="tooltip_text" translatable="yes">Lock the listed tool as the primary tool for the pen/eraser mode</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="valign">fill</property>
+            <property name="orientation">horizontal</property>
+            <property name="margin-top">0</property>
+            <property name="margin-bottom">0</property>
+            <property name="margin-start">0</property>
+            <property name="margin-end">0</property>
+            <property name="limit-events">true</property>
+            <property name="spacing">6</property>
+            <child>
+                <object class="GtkSeparator"></object>
+            </child>
+            <child>
+                <object class="GtkLabel">
+                    <property name="label">Lock</property>
+                </object>
+            </child>
+            <child>
+                <object class="GtkSwitch" id="mode">
+                    <property name="margin-end">2</property>
+                    <property name="halign">end</property>
+                    <property name="valign">center</property>
+                </object>
+            </child>
+        </object>
+    </child>
+  </template>
+</interface>

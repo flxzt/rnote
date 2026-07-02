@@ -265,12 +265,13 @@ impl Document {
         }
 
         if include_content {
-            let keys = store.stroke_keys_as_rendered();
-            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_right_and_bottom_by(padding)
-            } else {
+            let content_bounds = if store.keytree_is_empty() {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(Vector2::ZERO, self.config.format.size())
+                    .extend_right_and_bottom_by(padding)
+            } else {
+                store
+                    .get_bounds_non_trashed()
                     .extend_right_and_bottom_by(padding)
             };
             new_bounds.merge(&content_bounds);
@@ -314,9 +315,10 @@ impl Document {
         }
 
         if include_content {
-            let keys = store.stroke_keys_as_rendered();
-            let content_bounds = if let Some(content_bounds) = store.bounds_for_strokes(&keys) {
-                content_bounds.extend_by(padding)
+            let rendered_bounds = store.get_bounds_non_trashed();
+
+            let content_bounds = if rendered_bounds.volume() > 0.0 {
+                rendered_bounds.extend_right_and_bottom_by(padding)
             } else {
                 // If doc is empty, resize to one page with the format size
                 Aabb::new(Vector2::ZERO, self.config.format.size()).extend_by(padding)

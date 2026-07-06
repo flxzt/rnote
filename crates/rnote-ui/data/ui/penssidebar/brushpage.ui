@@ -212,7 +212,7 @@ Results in the best looking handwriting.</property>
               <child>
                 <object class="AdwSwitchRow" id="shaperecognition_row">
                   <property name="title" translatable="yes">Recognize Shapes</property>
-                  <property name="subtitle" translatable="yes">Automatically replace drawn strokes with recognized geometric shapes</property>
+                  <property name="subtitle" translatable="yes">Hold the pen still at the end of a drawn stroke to replace it with the recognized geometric shape</property>
                 </object>
               </child>
             </object>

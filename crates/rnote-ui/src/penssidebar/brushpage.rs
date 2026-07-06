@@ -595,7 +595,6 @@ impl RnBrushPage {
                     .scroll_rotation_step_deg = row.value();
             }
         ));
-
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {

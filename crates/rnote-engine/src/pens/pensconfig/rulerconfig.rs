@@ -177,11 +177,7 @@ impl RulerConfig {
     }
 
     /// Convert a position from window-relative surface pixels to document coordinates.
-    pub fn pos_to_doc(
-        surface_pos: Vector2,
-        camera_offset: Vector2,
-        total_zoom: f64,
-    ) -> Vector2 {
+    pub fn pos_to_doc(surface_pos: Vector2, camera_offset: Vector2, total_zoom: f64) -> Vector2 {
         // Surface here is the canvas widget's local coord system, which has its
         // origin at the top-left of the visible viewport (the canvas widget
         // implements Scrollable internally — there's no scroll-offset between
@@ -191,29 +187,17 @@ impl RulerConfig {
     }
 
     /// Convert a position from document coordinates to window-relative surface pixels.
-    pub fn pos_from_doc(
-        doc_pos: Vector2,
-        camera_offset: Vector2,
-        total_zoom: f64,
-    ) -> Vector2 {
+    pub fn pos_from_doc(doc_pos: Vector2, camera_offset: Vector2, total_zoom: f64) -> Vector2 {
         doc_pos * total_zoom - camera_offset
     }
 
     /// Ruler centerline anchor in document coordinates.
-    pub fn anchor_doc(
-        &self,
-        camera_offset: Vector2,
-        total_zoom: f64,
-    ) -> Vector2 {
+    pub fn anchor_doc(&self, camera_offset: Vector2, total_zoom: f64) -> Vector2 {
         Self::pos_to_doc(self.anchor, camera_offset, total_zoom)
     }
 
     /// Dial position in document coordinates.
-    pub fn dial_pos_doc(
-        &self,
-        camera_offset: Vector2,
-        total_zoom: f64,
-    ) -> Vector2 {
+    pub fn dial_pos_doc(&self, camera_offset: Vector2, total_zoom: f64) -> Vector2 {
         Self::pos_to_doc(self.dial_pos, camera_offset, total_zoom)
     }
 
@@ -339,12 +323,7 @@ impl RulerConfig {
 
     /// Whether `pos_doc` (in document coordinates) lies within the ruler body
     /// strip (infinite along the long axis, finite across).
-    pub fn hit_body(
-        &self,
-        pos_doc: Vector2,
-        camera_offset: Vector2,
-        total_zoom: f64,
-    ) -> bool {
+    pub fn hit_body(&self, pos_doc: Vector2, camera_offset: Vector2, total_zoom: f64) -> bool {
         if !self.visible {
             return false;
         }

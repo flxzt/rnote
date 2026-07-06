@@ -59,11 +59,7 @@ fn viewport_t_range(
 }
 
 /// Bounds of the ruler band on the document, when visible, including a small margin.
-pub fn ruler_bounds_on_doc(
-    ruler: &RulerConfig,
-    viewport: Aabb,
-    total_zoom: f64,
-) -> Option<Aabb> {
+pub fn ruler_bounds_on_doc(ruler: &RulerConfig, viewport: Aabb, total_zoom: f64) -> Option<Aabb> {
     if !ruler.visible {
         return None;
     }
@@ -117,7 +113,11 @@ pub fn draw_ruler_on_doc(
     body.line_to(edge_b_s.to_kurbo_point());
     body.close_path();
     cx.fill(body.clone(), &ruler.body_fill_color(dark_mode));
-    cx.stroke(body, &RulerConfig::body_stroke_color(dark_mode), 1.0 / total_zoom);
+    cx.stroke(
+        body,
+        &RulerConfig::body_stroke_color(dark_mode),
+        1.0 / total_zoom,
+    );
 
     // Tick marks on the long edges, three-tier (minor / medium / major).
     // Spacing is fixed in surface pixels — the ruler's scale is independent
@@ -195,7 +195,11 @@ fn draw_angle_dial(
         let len = if is_major { major_len } else { minor_len };
         let p_out = kurbo::Point::new(cos * outer_r, sin * outer_r);
         let p_in = kurbo::Point::new(cos * (outer_r - len), sin * (outer_r - len));
-        cx.stroke(kurbo::Line::new(p_out, p_in), &RulerConfig::tick_color(dark_mode), tick_w);
+        cx.stroke(
+            kurbo::Line::new(p_out, p_in),
+            &RulerConfig::tick_color(dark_mode),
+            tick_w,
+        );
     }
 
     cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;

@@ -190,7 +190,11 @@ impl PenBehaviour for Brush {
                 progress: PenProgress::Idle,
             },
             (
-                BrushState::DraggingRuler { anchor_begin, dial_pos_begin, start_pos },
+                BrushState::DraggingRuler {
+                    anchor_begin,
+                    dial_pos_begin,
+                    start_pos,
+                },
                 PenEvent::Down { element, .. },
             ) => {
                 // Drag delta in doc coords -> in scroller pixels (= doc * zoom).

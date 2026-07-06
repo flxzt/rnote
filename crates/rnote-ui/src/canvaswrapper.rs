@@ -46,8 +46,7 @@ const WHEEL_SPEED_MAX_MULT: f64 = 3.0;
 /// — even though the session is no longer "active" for speed adaptation, the
 /// dial position is held so the next scroll continues the same gesture
 /// instead of either snapping the dial elsewhere or slipping into canvas pan.
-const RULER_SCROLL_REVIVAL_TIMEOUT: std::time::Duration =
-    std::time::Duration::from_secs(3);
+const RULER_SCROLL_REVIVAL_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(3);
 
 /// Active scroll-rotation session: the pivot is locked for the duration of the
 /// session so the dial doesn't move and the user keeps "grip" even if the
@@ -107,16 +106,13 @@ fn rotate_ruler_with_scroll(
         // line — using it would rotate around an off-line point and put the
         // dial outside the band.
         const ON_LINE_TOLERANCE_PX: f64 = 0.5;
-        let session_on_line = prev_session_raw.filter(|s| {
-            (s.pivot - ruler.anchor).dot(ruler.normal()).abs() <= ON_LINE_TOLERANCE_PX
-        });
+        let session_on_line = prev_session_raw
+            .filter(|s| (s.pivot - ruler.anchor).dot(ruler.normal()).abs() <= ON_LINE_TOLERANCE_PX);
         // Re-derive the windowed sessions from the validated value.
-        let prev_session = session_on_line.filter(|s| {
-            now.duration_since(s.last_event_time) < RULER_SCROLL_SESSION_TIMEOUT
-        });
-        let revivable_session = session_on_line.filter(|s| {
-            now.duration_since(s.last_event_time) < RULER_SCROLL_REVIVAL_TIMEOUT
-        });
+        let prev_session = session_on_line
+            .filter(|s| now.duration_since(s.last_event_time) < RULER_SCROLL_SESSION_TIMEOUT);
+        let revivable_session = session_on_line
+            .filter(|s| now.duration_since(s.last_event_time) < RULER_SCROLL_REVIVAL_TIMEOUT);
 
         let pivot = if let Some(session) = prev_session {
             // Within the short active-session timeout — definitely reuse.
@@ -159,9 +155,7 @@ fn rotate_ruler_with_scroll(
             // doesn't snap the dial to a slightly different place.
             let dial_on_line =
                 (ruler.dial_pos - ruler.anchor).dot(ruler.normal()).abs() <= ON_LINE_TOLERANCE_PX;
-            if dial_on_line
-                && (pointer - ruler.dial_pos).length() <= ruler.body_half_width * 1.5
-            {
+            if dial_on_line && (pointer - ruler.dial_pos).length() <= ruler.body_half_width * 1.5 {
                 ruler.dial_pos
             } else {
                 // Need a fresh pivot at the cursor position. Hit-test the body.
@@ -220,7 +214,13 @@ fn apply_two_finger_ruler_update(canvaswrapper: &RnCanvasWrapper, begin: RulerDr
     let angle_delta = rotate_gesture.angle_delta();
     let raw_new_angle = begin.angle_begin + angle_delta;
     let config_shared = canvas.engine_ref().engine_config().clone();
-    let new_angle = if config_shared.read().pens_config.brush_config.ruler_config.angle_snap_enabled {
+    let new_angle = if config_shared
+        .read()
+        .pens_config
+        .brush_config
+        .ruler_config
+        .angle_snap_enabled
+    {
         // Use hysteresis against the angle at gesture begin: once the user has
         // moved into a snap, finger jitter shouldn't keep them locked there.
         rnote_engine::pens::pensconfig::rulerconfig::RulerConfig::snap_angle_hysteretic(
@@ -342,8 +342,7 @@ mod imp {
                 // of a trackpad scroll while we're rotating the ruler (otherwise
                 // the canvas pans sideways from that component).
                 .flags(
-                    EventControllerScrollFlags::VERTICAL
-                        | EventControllerScrollFlags::HORIZONTAL,
+                    EventControllerScrollFlags::VERTICAL | EventControllerScrollFlags::HORIZONTAL,
                 )
                 .build();
 
@@ -600,7 +599,10 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
-                        canvaswrapper.imp().pointer_pos.set(Some(Vector2::new(x, y)));
+                        canvaswrapper
+                            .imp()
+                            .pointer_pos
+                            .set(Some(Vector2::new(x, y)));
                     }
                 ));
 
@@ -721,14 +723,11 @@ mod imp {
                                 let p = Vector2::new(x, y);
                                 let rel = p - ruler.anchor;
                                 let inside_body =
-                                    rel.dot(ruler.normal()).abs()
-                                        <= ruler.body_half_width;
+                                    rel.dot(ruler.normal()).abs() <= ruler.body_half_width;
                                 if inside_body {
                                     CanvasDragMode::Ruler(ruler.anchor, ruler.dial_pos)
                                 } else {
-                                    CanvasDragMode::Canvas(
-                                        canvas.engine_ref().camera.offset(),
-                                    )
+                                    CanvasDragMode::Canvas(canvas.engine_ref().camera.offset())
                                 }
                             } else {
                                 CanvasDragMode::Canvas(canvas.engine_ref().camera.offset())
@@ -923,8 +922,7 @@ mod imp {
                                             gesture
                                                 .point(Some(seq))
                                                 .map(|(x, y)| {
-                                                    let rel = Vector2::new(x, y)
-                                                        - ruler.anchor;
+                                                    let rel = Vector2::new(x, y) - ruler.anchor;
                                                     rel.dot(normal).abs() <= half_w
                                                 })
                                                 .unwrap_or(false)
@@ -933,8 +931,7 @@ mod imp {
                                         // Project centroid onto the ruler centerline.
                                         let rel = bbcenter - ruler.anchor;
                                         let along = rel.dot(ruler.direction());
-                                        let projected =
-                                            ruler.anchor + along * ruler.direction();
+                                        let projected = ruler.anchor + along * ruler.direction();
                                         Some((projected, ruler.anchor, ruler.angle))
                                     } else {
                                         None
@@ -946,8 +943,7 @@ mod imp {
                             {
                                 // Move only the dial to the projected centroid (= the
                                 // rotation pivot). The anchor / tick origin stays put.
-                                let config_shared =
-                                    canvas.engine_ref().engine_config().clone();
+                                let config_shared = canvas.engine_ref().engine_config().clone();
                                 config_shared
                                     .write()
                                     .pens_config

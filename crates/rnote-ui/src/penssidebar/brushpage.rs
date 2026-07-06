@@ -47,6 +47,8 @@ mod imp {
         #[template_child]
         pub(crate) brush_buildertype_modeled: TemplateChild<adw::ActionRow>,
         #[template_child]
+        pub(crate) shaperecognition_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(crate) solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) texturedstyle_density_row: TemplateChild<adw::SpinRow>,
@@ -363,6 +365,20 @@ impl RnBrushPage {
             }
         ));
 
+        // Shape recognition
+        imp.shaperecognition_row.connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .shape_recognition_enabled = row.is_active();
+            }
+        ));
+
         // Solid style
         // Pressure curve
         imp.solidstyle_pressure_curves_row
@@ -443,6 +459,8 @@ impl RnBrushPage {
 
         self.set_brush_style(brush_config.style);
         self.set_buildertype(brush_config.builder_type);
+        imp.shaperecognition_row
+            .set_active(brush_config.shape_recognition_enabled);
 
         match brush_config.style {
             BrushStyle::Marker => {

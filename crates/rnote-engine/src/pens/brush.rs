@@ -5,6 +5,7 @@ use super::pensconfig::brushconfig::BrushStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
+use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
@@ -18,6 +19,7 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shaperecognition;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -258,26 +260,75 @@ impl PenBehaviour for Brush {
                             );
                         }
 
-                        if let Some(Stroke::BrushStroke(brushstroke)) =
-                            engine_view.store.get_stroke_mut(*current_stroke_key)
+                        let recognized_shape = if engine_view
+                            .config
+                            .pens_config
+                            .brush_config
+                            .shape_recognition_enabled
                         {
-                            brushstroke.style = engine_view
-                                .config
-                                .pens_config
-                                .brush_config
-                                .style_for_current_options();
-                        }
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_ref(*current_stroke_key)
+                            {
+                                shaperecognition::recognize_shape(&brushstroke.path)
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        };
 
-                        // Finish up the last stroke
-                        engine_view
-                            .store
-                            .update_geometry_for_stroke(*current_stroke_key);
-                        engine_view.store.regenerate_rendering_for_stroke_threaded(
-                            engine_view.tasks_tx.clone(),
-                            *current_stroke_key,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        );
+                        if let Some(shape) = recognized_shape {
+                            // Replace the drawn stroke with the recognized shape
+                            engine_view.store.remove_stroke(*current_stroke_key);
+
+                            let shape_stroke_key = engine_view.store.insert_stroke(
+                                Stroke::ShapeStroke(ShapeStroke::new(
+                                    shape,
+                                    engine_view
+                                        .config
+                                        .pens_config
+                                        .brush_config
+                                        .style_for_recognized_shape(),
+                                )),
+                                Some(
+                                    engine_view
+                                        .config
+                                        .pens_config
+                                        .brush_config
+                                        .layer_for_current_options(),
+                                ),
+                            );
+                            engine_view
+                                .store
+                                .update_geometry_for_stroke(shape_stroke_key);
+                            engine_view.store.regenerate_rendering_for_stroke_threaded(
+                                engine_view.tasks_tx.clone(),
+                                shape_stroke_key,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
+                        } else {
+                            if let Some(Stroke::BrushStroke(brushstroke)) =
+                                engine_view.store.get_stroke_mut(*current_stroke_key)
+                            {
+                                brushstroke.style = engine_view
+                                    .config
+                                    .pens_config
+                                    .brush_config
+                                    .style_for_current_options();
+                            }
+
+                            // Finish up the last stroke
+                            engine_view
+                                .store
+                                .update_geometry_for_stroke(*current_stroke_key);
+                            engine_view.store.regenerate_rendering_for_stroke_threaded(
+                                engine_view.tasks_tx.clone(),
+                                *current_stroke_key,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            );
+                        }
                         widget_flags |= engine_view
                             .document
                             .resize_autoexpand(engine_view.store, engine_view.camera);

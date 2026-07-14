@@ -240,6 +240,10 @@ All changelog entries should be removed as well.')]
 update-translations-template:
     meson compile rnote-pot -C {{ build_folder }}
 
+[doc('Update translations that can be auto-generated.
+That are:
+    - zh_Hans (simplified Chinese) -> zh_Hant (traditional Chinese)
+')]
 update-translations:
     #!/usr/bin/env bash
     set -euxo pipefail

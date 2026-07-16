@@ -136,7 +136,7 @@ mod imp {
             // create a window group for each app window
             // to make modals only impact the current app
             // window.
-            // See issue #1461
+            // See issue: https://github.com/flxzt/rnote/issues/1461
             let window_group = WindowGroup::new();
             window_group.add_window(&appwindow);
 
@@ -161,7 +161,7 @@ mod imp {
             // create a window group for each app window
             // to make modals only impact the current app
             // window.
-            // See issue #1461
+            // See issue: https://github.com/flxzt/rnote/issues/1461
             let window_group = WindowGroup::new();
             window_group.add_window(&appwindow);
 

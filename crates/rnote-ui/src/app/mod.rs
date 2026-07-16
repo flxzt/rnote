@@ -132,11 +132,11 @@ mod imp {
         /// Initializes and shows a new app window
         pub(crate) fn new_appwindow_init_show(&self, input_file: Option<gio::File>) {
             let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
-            appwindow.init();
+            appwindow.init(true);
             // create a window group for each app window
             // to make modals only impact the current app
             // window.
-            // See issue #1461
+            // See issue: https://github.com/flxzt/rnote/issues/1461
             let window_group = WindowGroup::new();
             window_group.add_window(&appwindow);
 
@@ -152,6 +152,21 @@ mod imp {
                     }
                 ));
             }
+        }
+
+        pub(crate) fn new_appwindow_init_return_tab(&self) -> adw::TabView {
+            let appwindow = RnAppWindow::new(self.obj().upcast_ref::<gtk4::Application>());
+            appwindow.init(false);
+
+            // create a window group for each app window
+            // to make modals only impact the current app
+            // window.
+            // See issue: https://github.com/flxzt/rnote/issues/1461
+            let window_group = WindowGroup::new();
+            window_group.add_window(&appwindow);
+
+            appwindow.present();
+            return appwindow.overlays().tabview();
         }
     }
 }
@@ -191,5 +206,9 @@ impl RnApp {
 
     pub(crate) fn new_appwindow_init_show(&self) {
         self.imp().new_appwindow_init_show(None);
+    }
+
+    pub(crate) fn new_appwindow_init_return_tab(&self) -> adw::TabView {
+        self.imp().new_appwindow_init_return_tab()
     }
 }

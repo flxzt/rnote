@@ -80,7 +80,7 @@ prerequisites-dev: prerequisites
     fi
     curl -L --proto '=https' --tlsv1.2 -sSf \
         https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-    cargo binstall -y cargo-nextest cargo-edit cargo-deny
+    cargo binstall -y --locked cargo-nextest cargo-edit cargo-deny
 
 # in MSYS2 shell
 prerequisites-win:

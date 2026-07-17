@@ -37,11 +37,11 @@ const ELLIPSE_MAX_MEAN_RESIDUAL: f64 = 0.10;
 /// The maximum single normalized ellipse fit residual for an ellipse to be accepted.
 const ELLIPSE_MAX_RESIDUAL: f64 = 0.25;
 /// The minimum ratio between the minor and major ellipse radii for the ellipse to be snapped to a circle.
-const CIRCLE_RADII_RATIO: f64 = 0.85;
+const CIRCLE_RADII_RATIO: f64 = 0.75;
 /// The maximum deviation (radians) of a corner angle from a right angle for a quadrilateral to become a rectangle.
-const RECT_MAX_ANGLE_DEV: f64 = 20.0 * std::f64::consts::PI / 180.0;
+const RECT_MAX_ANGLE_DEV: f64 = 30.0 * std::f64::consts::PI / 180.0;
 /// The maximum rotation angle (radians) below which a recognized rectangle is snapped to be axis-aligned.
-const RECT_AXIS_SNAP_ANGLE: f64 = 3.0 * std::f64::consts::PI / 180.0;
+const RECT_AXIS_SNAP_ANGLE: f64 = 5.0 * std::f64::consts::PI / 180.0;
 /// The maximum number of polygon corners that are recognized.
 const POLYGON_MAX_CORNERS: usize = 6;
 
@@ -521,6 +521,27 @@ mod tests {
     }
 
     #[test]
+    fn recognize_imperfect_circle_snaps_to_circle() {
+        // A slightly squashed circle (radii ratio 0.8) should still snap to a circle.
+        let points = (0..=80).map(|i| {
+            let angle = (i as f64 / 80.0) * std::f64::consts::TAU;
+            Vector2::new(100.0 + 50.0 * angle.cos(), 100.0 + 40.0 * angle.sin()) + jitter(i, 1.5)
+        });
+
+        let shape = recognize_shape(&pen_path_from_points(points));
+        match shape {
+            Some(Shape::Ellipse(ellipse)) => {
+                assert!(
+                    (ellipse.radii.x - ellipse.radii.y).abs() < f64::EPSILON,
+                    "expected circle, got radii {:?}",
+                    ellipse.radii
+                );
+            }
+            other => panic!("expected ellipse, got {other:?}"),
+        }
+    }
+
+    #[test]
     fn recognize_flat_ellipse() {
         let points = (0..=80).map(|i| {
             let angle = (i as f64 / 80.0) * std::f64::consts::TAU;
@@ -587,6 +608,33 @@ mod tests {
                 half_extents.sort_by(f64::total_cmp);
                 assert!((half_extents[0] - 50.0).abs() < 8.0);
                 assert!((half_extents[1] - 100.0).abs() < 8.0);
+            }
+            other => panic!("expected rectangle, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn recognize_slightly_rotated_rectangle_snaps_to_axis() {
+        // A rectangle drawn ~4 degrees off-axis should be snapped to be axis-aligned.
+        let rot = DAffine2::from_angle_translation(
+            4.0 * std::f64::consts::PI / 180.0,
+            Vector2::new(150.0, 150.0),
+        );
+        let corners = [
+            rot.transform_point2(Vector2::new(-100.0, -50.0)),
+            rot.transform_point2(Vector2::new(100.0, -50.0)),
+            rot.transform_point2(Vector2::new(100.0, 50.0)),
+            rot.transform_point2(Vector2::new(-100.0, 50.0)),
+        ];
+
+        let shape = recognize_shape(&pen_path_from_points(closed_polygon_points(&corners, 20)));
+        match shape {
+            Some(Shape::Rectangle(rect)) => {
+                let orientation = rect.affine.to_scale_angle_translation().1;
+                assert!(
+                    orientation.abs() < 1e-9,
+                    "expected axis-aligned rectangle, got orientation {orientation}"
+                );
             }
             other => panic!("expected rectangle, got {other:?}"),
         }

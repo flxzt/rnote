@@ -102,14 +102,19 @@ impl PenBehaviour for Pen {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         match self {
-            Pen::Brush(brush) => brush.handle_event(event, now, engine_view),
-            Pen::Shaper(shaper) => shaper.handle_event(event, now, engine_view),
-            Pen::Typewriter(typewriter) => typewriter.handle_event(event, now, engine_view),
-            Pen::Eraser(eraser) => eraser.handle_event(event, now, engine_view),
-            Pen::Selector(selector) => selector.handle_event(event, now, engine_view),
-            Pen::Tools(tools) => tools.handle_event(event, now, engine_view),
+            Pen::Brush(brush) => brush.handle_event(event, now, engine_view, temporary_tool),
+            Pen::Shaper(shaper) => shaper.handle_event(event, now, engine_view, temporary_tool),
+            Pen::Typewriter(typewriter) => {
+                typewriter.handle_event(event, now, engine_view, temporary_tool)
+            }
+            Pen::Eraser(eraser) => eraser.handle_event(event, now, engine_view, temporary_tool),
+            Pen::Selector(selector) => {
+                selector.handle_event(event, now, engine_view, temporary_tool)
+            }
+            Pen::Tools(tools) => tools.handle_event(event, now, engine_view, temporary_tool),
         }
     }
 

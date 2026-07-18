@@ -7,6 +7,7 @@ use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::{DrawableOnDoc, WidgetFlags};
+use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::Constraints;
@@ -18,7 +19,9 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shapes::Shapeable;
 use std::time::Instant;
+use tracing::debug;
 
 #[derive(Debug)]
 enum BrushState {
@@ -43,6 +46,14 @@ impl Default for Brush {
     }
 }
 
+impl Brush {
+    /// Threshold for the stroke length over which we consider
+    /// that strokes  that are left by pressing the pen down
+    /// when cancelling a selection should be kept.
+    /// Smaller ratio are deleted. Zoom ratio is taken into account
+    const LENGTH_PX_THRESHOLD: f64 = 25.0;
+}
+
 impl PenBehaviour for Brush {
     fn init(&mut self, _engine_view: &EngineView) -> WidgetFlags {
         WidgetFlags::default()
@@ -65,6 +76,7 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
@@ -266,6 +278,33 @@ impl PenBehaviour for Brush {
                                 .pens_config
                                 .brush_config
                                 .style_for_current_options();
+                        }
+
+                        // remove strokes that follow a selection cancellation if they are small
+                        // hence we can write after selecting strokes but we won't leave tiny spots
+                        // behind
+                        if engine_view.store.get_cancelled_state() {
+                            let current_stroke_width = engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .get_stroke_width();
+                            let length_px = engine_view
+                                .store
+                                .get_stroke_ref(*current_stroke_key)
+                                .unwrap()
+                                .outline_path()
+                                .perimeter(current_stroke_width);
+                            let threshold = Self::LENGTH_PX_THRESHOLD / engine_view.camera.zoom();
+                            debug!(
+                                "perimeter {:?} threshold {:?}, zoom {:?}",
+                                length_px,
+                                threshold,
+                                engine_view.camera.zoom()
+                            );
+                            if length_px < threshold {
+                                engine_view.store.remove_stroke(*current_stroke_key);
+                            }
                         }
 
                         // Finish up the last stroke

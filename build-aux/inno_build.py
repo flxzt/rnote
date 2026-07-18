@@ -29,7 +29,7 @@ print(f"""
     app_id: {app_id}
     ui_output: {ui_output}
     inno_script: {inno_script}
-    (optional) define cli {cli_name}
+    cli_name: {cli_name} (empty if not packaged)
 """, file=sys.stderr)
 
 def run_command(command, error_message):

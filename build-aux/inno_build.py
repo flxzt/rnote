@@ -5,6 +5,8 @@ import os
 import shutil
 import glob
 import itertools
+import subprocess
+from subprocess import CalledProcessError
 
 source_root = sys.argv[1]
 build_root = sys.argv[2]
@@ -15,6 +17,7 @@ app_name_capitalized = sys.argv[5]
 app_id = sys.argv[6]
 ui_output = sys.argv[7]
 inno_script = sys.argv[8]
+cli_name = sys.argv[9]
 
 print(f"""
 ### executing Inno-Setup installer build script with arguments: ###
@@ -26,12 +29,14 @@ print(f"""
     app_id: {app_id}
     ui_output: {ui_output}
     inno_script: {inno_script}
+    cli_name: {cli_name} (empty if not packaged)
 """, file=sys.stderr)
 
 def run_command(command, error_message):
-    res = os.system(command)
-    if res != 0:
-        print(f"{error_message}, code: {res}", file=sys.stderr)
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except CalledProcessError as e:
+        print(f"{error_message}: {e}", file=sys.stderr)
         print(f"command: {command}", file=sys.stderr)
         sys.exit(1)
 
@@ -137,8 +142,15 @@ for file in os.listdir(app_mo_dir):
 # Build installer
 print("Running ISCC...", file=sys.stderr)
 
+# the inno script will package the cli if the variable MyAppCliExeName
+# is defined. This is done with an additional /DMyAppCliExeName=cli_name.exe
+# argument 
+define_cli_output = ""
+if cli_name:
+    define_cli_output = "/DMyAppCliExeName=" + \
+        cli_name + ".exe"
 run_command(
-    f"iscc {inno_script}",
+    f"iscc {inno_script} {define_cli_output}",
     "Running ISCC failed"
 )
 

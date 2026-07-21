@@ -706,11 +706,6 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .shaper_page()
-                .shapestyling_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
                 .shaperconfig_menubutton()
                 .set_direction(ArrowType::Right);
             obj.overlays()
@@ -825,11 +820,6 @@ impl RnAppWindow {
                 .brush_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Right);
-            obj.overlays()
-                .penssidebar()
-                .shaper_page()
-                .shapestyling_menubutton()
-                .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()
                 .shaper_page()

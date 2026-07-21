@@ -32,12 +32,6 @@ mod imp {
         pub(crate) shapebuildertype_picker: TemplateChild<RnGroupedIconPicker>,
 
         #[template_child]
-        pub(crate) shapestyling_menubutton: TemplateChild<MenuButton>,
-        #[template_child]
-        pub(crate) shapestyling_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) shapestyling_popover_close_button: TemplateChild<Button>,
-        #[template_child]
         pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
         pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
@@ -59,10 +53,6 @@ mod imp {
         #[template_child]
         pub(crate) shaperconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub(crate) shaperconfig_popover: TemplateChild<Popover>,
-        #[template_child]
-        pub(crate) shaperconfig_popover_close_button: TemplateChild<Button>,
-        #[template_child]
         pub(crate) highlight_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
         pub(crate) highlight_opacity_row: TemplateChild<adw::SpinRow>,
@@ -77,6 +67,28 @@ mod imp {
 
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
+
+        // Tabbed shaper popover properties
+        #[template_child]
+        pub(crate) navigationview: TemplateChild<adw::NavigationView>,
+        #[template_child]
+        pub(crate) tabbed_property_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) page1: TemplateChild<adw::NavigationPage>,
+        #[template_child]
+        pub(crate) page2: TemplateChild<adw::NavigationPage>,
+        #[template_child]
+        pub(crate) toolbar_view_page1: TemplateChild<adw::ToolbarView>,
+        #[template_child]
+        pub(crate) toolbar_view_page2: TemplateChild<adw::ToolbarView>,
+        #[template_child]
+        pub(crate) page1_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) page2_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) page1_to_page2_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) page2_to_page1_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -125,10 +137,6 @@ impl Default for RnShaperPage {
 impl RnShaperPage {
     pub(crate) fn new() -> Self {
         glib::Object::new()
-    }
-
-    pub(crate) fn shapestyling_menubutton(&self) -> MenuButton {
-        self.imp().shapestyling_menubutton.get()
     }
 
     pub(crate) fn shaperconfig_menubutton(&self) -> MenuButton {
@@ -194,28 +202,51 @@ impl RnShaperPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let shapestyling_popover = imp.shapestyling_popover.get();
-        let shaperconfig_popover = imp.shaperconfig_popover.get();
         let shapebuildertype_popover = imp.shapebuildertype_popover.get();
+        let tabbedconfig_popover = imp.tabbed_property_popover.get();
+        let navigationview = imp.navigationview.get();
 
-        // Popovers
-        imp.shapestyling_popover_close_button
-            .connect_clicked(clone!(
-                #[weak]
-                shapestyling_popover,
-                move |_| {
-                    shapestyling_popover.popdown();
-                }
-            ));
+        // when closing the popover, reset to the page 1
+        // on the next opening
+        imp.tabbed_property_popover.connect_closed(clone!(
+            #[weak]
+            navigationview,
+            move |_| {
+                navigationview.pop_to_tag("page-1");
+            }
+        ));
 
-        imp.shaperconfig_popover_close_button
-            .connect_clicked(clone!(
-                #[weak]
-                shaperconfig_popover,
-                move |_| {
-                    shaperconfig_popover.popdown();
-                }
-            ));
+        imp.page1_popover_close_button.connect_clicked(clone!(
+            #[weak]
+            tabbedconfig_popover,
+            move |_| {
+                tabbedconfig_popover.popdown();
+            }
+        ));
+
+        imp.page2_popover_close_button.connect_clicked(clone!(
+            #[weak]
+            tabbedconfig_popover,
+            move |_| {
+                tabbedconfig_popover.popdown();
+            }
+        ));
+
+        imp.page1_to_page2_button.connect_clicked(clone!(
+            #[weak]
+            navigationview,
+            move |_| {
+                navigationview.push_by_tag("page-2");
+            }
+        ));
+
+        imp.page2_to_page1_button.connect_clicked(clone!(
+            #[weak]
+            navigationview,
+            move |_| {
+                navigationview.pop_to_tag("page-1");
+            }
+        ));
 
         imp.shapebuildertype_popover_close_button
             .connect_clicked(clone!(
@@ -301,8 +332,6 @@ impl RnShaperPage {
                                 .smooth_options
                                 .stroke_width;
                             let page = shaperpage.imp();
-                            page.shapestyling_menubutton
-                                .set_icon_name("pen-shaper-style-smooth-symbolic");
                             page.roughoptions_group.set_visible(false);
                             page.smoothoptions_group.set_visible(true);
                             page.stroke_width_picker.set_stroke_width(stroke_width);
@@ -316,8 +345,6 @@ impl RnShaperPage {
                                 .rough_options
                                 .stroke_width;
                             let page = shaperpage.imp();
-                            page.shapestyling_menubutton
-                                .set_icon_name("pen-shaper-style-rough-symbolic");
                             page.smoothoptions_group.set_visible(false);
                             page.roughoptions_group.set_visible(true);
                             page.stroke_width_picker.set_stroke_width(stroke_width);

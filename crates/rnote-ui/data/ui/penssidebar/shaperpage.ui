@@ -148,6 +148,32 @@
                         </object>
                       </child>
                       <child>
+                          <object class="GtkBox">
+                              <property name="orientation">horizontal</property>
+                              <property name="hexpand">true</property>
+                              <property name="margin-top">6</property>
+                              <child>
+                                  <object class="GtkButton">
+                                    <property name="sensitive">false</property>
+                                    <property name="icon-name">go-previous-view-symbolic</property>
+                                    <property name="hexpand">true</property>
+                                    <style>
+                                      <class name="raised" />
+                                    </style>
+                                  </object>
+                              </child>
+                              <child>
+                                <object class="GtkButton" id="page1_to_page2_button">
+                                  <property name="icon-name">go-next-view-symbolic</property>
+                                  <property name="hexpand">true</property>
+                                  <style>
+                                    <class name="raised" />
+                                  </style>
+                                </object>
+                              </child>
+                          </object>
+                      </child>
+                      <child>
                         <object class="GtkBox">
                           <property name="orientation">vertical</property>
                           <property name="margin-top">6</property>
@@ -275,14 +301,6 @@
                         </child>
                         </object>
                       </child>
-                      <child>
-                        <object class="GtkButton" id="page1_to_page2_button">
-                          <property name="icon-name">go-next-view-symbolic</property>
-                          <style>
-                            <class name="raised" />
-                          </style>
-                        </object>
-                      </child>
                     </object>
                   </property>
                 </object>
@@ -326,6 +344,32 @@
                             </object>
                           </child>
                         </object>
+                      </child>
+                      <child>
+                          <object class="GtkBox">
+                              <property name="orientation">horizontal</property>
+                              <property name="hexpand">true</property>
+                              <property name="margin-top">6</property>
+                              <child>
+                                  <object class="GtkButton" id="page2_to_page1_button">
+                                    <property name="icon-name">go-previous-view-symbolic</property>
+                                    <property name="hexpand">true</property>
+                                    <style>
+                                      <class name="raised" />
+                                    </style>
+                                  </object>
+                              </child>
+                              <child>
+                                <object class="GtkButton">
+                                  <property name="icon-name">go-next-view-symbolic</property>
+                                  <property name="sensitive">false</property>
+                                  <property name="hexpand">true</property>
+                                  <style>
+                                    <class name="raised" />
+                                  </style>
+                                </object>
+                              </child>
+                          </object>
                       </child>
                       <child>
                         <object class="GtkBox">
@@ -393,14 +437,6 @@
                               </child>
                             </object>
                           </child>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkButton" id="page2_to_page1_button">
-                          <property name="icon-name">go-previous-view-symbolic</property>
-                          <style>
-                            <class name="raised" />
-                          </style>
                         </object>
                       </child>
                     </object>

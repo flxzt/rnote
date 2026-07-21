@@ -57,7 +57,9 @@ impl StrokeStore {
 
     #[allow(unused)]
     pub(crate) fn keys_unordered_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
-        self.key_tree.keys_intersecting_bounds(bounds)
+        let mut keys_collect = self.key_tree.keys_intersecting_bounds(bounds);
+        keys_collect.extend_from_slice(&self.trashed_key_tree.keys_intersecting_bounds(bounds));
+        keys_collect
     }
 
     /// All stroke keys that are not trashed, unordered.
@@ -68,7 +70,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Storke keys in the order that they should be rendered.
+    /// Stroke keys in the order that they should be rendered.
     pub(crate) fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
@@ -83,15 +85,23 @@ impl StrokeStore {
     ) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
-            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect::<Vec<StrokeKey>>()
+    }
+
+    /// Stroke keys + bounds intersecting the given bounds, in the order that they should be rendered
+    pub(crate) fn stroke_keys_and_bounds_as_rendered_intersecting_bounds(
+        &self,
+        bounds: Aabb,
+    ) -> Vec<(StrokeKey, Aabb)> {
+        self.keys_bounds_sorted_chrono_intersecting_bounds(bounds)
+            .into_iter()
+            .collect()
     }
 
     /// Stroke keys contained in the given bounds, in the order that they should be rendered.
     pub(crate) fn stroke_keys_as_rendered_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_in_bounds(bounds)
             .into_iter()
-            .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect::<Vec<StrokeKey>>()
     }
 
@@ -107,12 +117,18 @@ impl StrokeStore {
     ///
     /// The stroke then needs to update its rendering.
     pub(crate) fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
+        let is_trashed = self.trashed(key).is_some_and(|x| x);
+
         if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
             .get_mut(key)
             .map(Arc::make_mut)
         {
             stroke.update_geometry();
-            self.key_tree.update_with_key(key, stroke.bounds());
+            if is_trashed {
+                self.trashed_key_tree.update_with_key(key, stroke.bounds());
+            } else {
+                self.key_tree.update_with_key(key, stroke.bounds());
+            }
             self.set_rendering_dirty(key);
         }
     }
@@ -126,19 +142,14 @@ impl StrokeStore {
         });
     }
 
-    /// Calculate the height needed to fit all strokes.
+    /// Calculate the height needed to fit all (non trashed) strokes.
     pub(crate) fn calc_height(&self) -> f64 {
-        let strokes_iter = self
-            .stroke_keys_unordered()
-            .into_iter()
-            .filter_map(|key| self.stroke_components.get(key));
-
-        let strokes_min_y = strokes_iter
-            .clone()
-            .fold(0.0, |acc, stroke| stroke.bounds().mins[1].min(acc));
-        let strokes_max_y = strokes_iter.fold(0.0, |acc, stroke| stroke.bounds().maxs[1].max(acc));
-
-        strokes_max_y - strokes_min_y
+        if self.keytree_is_empty() {
+            0.0
+        } else {
+            let bounds = self.key_tree.get_bounds();
+            bounds.maxs[1] - bounds.mins[1]
+        }
     }
 
     /// Calculate the width needed to fit all strokes.
@@ -195,6 +206,7 @@ impl StrokeStore {
     /// The strokes then need to update their geometry and rendering.
     pub(crate) fn translate_strokes(&mut self, keys: &[StrokeKey], offset: Vector2) {
         keys.iter().for_each(|&key| {
+            let is_trashed = self.trashed(key).is_some_and(|x| x);
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
                 .map(Arc::make_mut)
@@ -202,7 +214,11 @@ impl StrokeStore {
                 {
                     // translate the stroke geometry
                     stroke.translate(offset);
-                    self.key_tree.update_with_key(key, stroke.bounds());
+                    if is_trashed {
+                        self.trashed_key_tree.update_with_key(key, stroke.bounds());
+                    } else {
+                        self.key_tree.update_with_key(key, stroke.bounds());
+                    }
                 }
             }
         });
@@ -236,6 +252,7 @@ impl StrokeStore {
     /// Strokes then need to update their rendering.
     pub(crate) fn rotate_strokes(&mut self, keys: &[StrokeKey], angle: f64, center: Vector2) {
         keys.iter().for_each(|&key| {
+            let is_trashed = self.trashed(key).is_some_and(|x| x);
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
                 .map(Arc::make_mut)
@@ -243,7 +260,11 @@ impl StrokeStore {
                 {
                     // rotate the stroke geometry
                     stroke.rotate(angle, center);
-                    self.key_tree.update_with_key(key, stroke.bounds());
+                    if is_trashed {
+                        self.trashed_key_tree.update_with_key(key, stroke.bounds());
+                    } else {
+                        self.key_tree.update_with_key(key, stroke.bounds());
+                    }
                 }
             }
         });
@@ -391,6 +412,7 @@ impl StrokeStore {
     /// The strokes then need to update their rendering.
     pub(crate) fn scale_strokes(&mut self, keys: &[StrokeKey], scale: Vector2) {
         keys.iter().for_each(|&key| {
+            let is_trashed = self.trashed(key).is_some_and(|x| x);
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
                 .map(Arc::make_mut)
@@ -398,7 +420,11 @@ impl StrokeStore {
                 {
                     // rotate the stroke geometry
                     stroke.scale(scale);
-                    self.key_tree.update_with_key(key, stroke.bounds());
+                    if is_trashed {
+                        self.trashed_key_tree.update_with_key(key, stroke.bounds());
+                    } else {
+                        self.key_tree.update_with_key(key, stroke.bounds());
+                    }
                 }
             }
         });
@@ -483,11 +509,6 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter_map(|key| {
-                // skip if stroke is trashed
-                if self.trashed(key)? {
-                    return None;
-                }
-
                 let stroke = self.stroke_components.get(key)?;
                 let stroke_bounds = stroke.bounds();
 
@@ -538,11 +559,6 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter_map(|key| {
-                // skip if stroke is trashed
-                if self.trashed(key)? {
-                    return None;
-                }
-
                 let stroke = self.stroke_components.get(key)?;
                 let stroke_bounds = stroke.bounds();
 
@@ -571,11 +587,6 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(viewport.merged(&aabb))
             .into_iter()
             .filter_map(|key| {
-                // skip if stroke is trashed
-                if self.trashed(key)? {
-                    return None;
-                }
-
                 let stroke = self.stroke_components.get(key)?;
                 let stroke_bounds = stroke.bounds();
 
@@ -642,7 +653,7 @@ impl StrokeStore {
         limit_movement_vertical_border: bool,
         limit_movement_horizontal_border: bool,
     ) -> Vec<StrokeKey> {
-        self.key_tree.keys_intersecting_bounds(Aabb::new(
+        let bounds = Aabb::new(
             Vector2::new(
                 if limit_movement_vertical_border {
                     x_lims.0
@@ -663,7 +674,14 @@ impl StrokeStore {
                     f64::INFINITY
                 },
             ),
-        ))
+        );
+        let mut collector = self.key_tree.keys_intersecting_bounds(bounds);
+        collector.extend(
+            self.trashed_key_tree
+                .keys_intersecting_bounds(bounds)
+                .iter(),
+        );
+        collector
     }
 
     pub(crate) fn filter_keys_intersecting_bounds<'a, I: IntoIterator<Item = &'a StrokeKey>>(

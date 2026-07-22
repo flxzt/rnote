@@ -77,6 +77,25 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
 
             //std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug");
         }
+
+        // Windows on ARM has no native desktop OpenGL driver, so WGL is serviced
+        // by Microsoft's OpenGLOn12 mapping layer, which translates OpenGL onto
+        // Direct3D 12. That layer crashes with an access violation (0xc0000005)
+        // after a few minutes of normal use.
+        //
+        // Steering GDK away from WGL makes it pick EGL, and with it the ANGLE
+        // that is already shipped alongside the app, mapping GL ES onto
+        // Direct3D 11 instead. GPU rendering is kept: GSK still ends up on
+        // GskGLRenderer, it just no longer goes through OpenGLOn12.
+        //
+        // Only applied as a default, so GDK_DISABLE from the environment wins.
+        #[cfg(all(target_os = "windows", target_arch = "aarch64"))]
+        if std::env::var_os("GDK_DISABLE").is_none() {
+            // SAFETY: this setup only happens while still being single-threaded
+            unsafe {
+                std::env::set_var("GDK_DISABLE", "wgl");
+            }
+        }
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
 

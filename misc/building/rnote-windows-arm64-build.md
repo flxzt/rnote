@@ -136,3 +136,44 @@ results.
 
 Vulkan remains unavailable on this configuration even with the pinned GTK
 (`Not using Vulkan: platform is not Wayland`); GL is the working path.
+
+## Why WGL is disabled on aarch64
+
+Getting `GskGLRenderer` is necessary but not sufficient: *which* OpenGL
+implementation serves it matters just as much.
+
+Windows on ARM ships no native desktop OpenGL driver. Going through WGL therefore
+lands in Microsoft's `OpenGLOn12.dll` (the `Microsoft.D3DMappingLayers` package,
+installed as the "OpenCL and OpenGL Compatibility Pack"), which translates OpenGL
+onto Direct3D 12. GTK reports this as:
+
+```
+ - Renderer: D3D12 (Qualcomm(R) Adreno(TM) X1-85 GPU)
+Using OpenGL backend Windows WGL
+```
+
+That layer crashes. After a few minutes of ordinary drawing and changing settings,
+the process dies with an access violation, and the Windows event log names the
+faulting module:
+
+```
+Faulting application name: rnote.exe
+Faulting module name: OpenGLOn12.dll
+Exception code: 0xc0000005
+```
+
+`crates/rnote-ui/src/env.rs` therefore defaults `GDK_DISABLE=wgl` on
+`target_arch = "aarch64"`, which makes GDK pick EGL and with it the ANGLE that is
+already shipped with the app. ANGLE maps GL ES onto Direct3D 11:
+
+```
+ - Vendor: Google Inc. (Qualcomm)
+ - Version: 1.5 (ANGLE 2.1.25748)
+Using renderer 'GskGLRenderer'
+```
+
+GPU rendering is fully preserved, and the crashes are gone (verified over ten
+minutes of normal use where the WGL path died after about two). It is set only as
+a default, so `GDK_DISABLE` from the environment still takes precedence, and it is
+scoped to aarch64 because x86_64 has real OpenGL drivers where ANGLE would be a
+detour rather than a fix.

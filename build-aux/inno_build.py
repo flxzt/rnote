@@ -41,6 +41,11 @@ def run_command(command, error_message):
         sys.exit(1)
 
 
+# Name of the MSYS2 environment ("mingw64", "clangarm64", ...). `ldd` reports
+# dependencies under that mount point, so it is what the filters below match on.
+build_environment_name = os.path.basename(build_environment_path.replace("\\", "/").rstrip("/"))
+ldd_filter = f"\\/{build_environment_name}\\/.*\\.dll"
+
 # Collect DLLs
 print("Collecting DLLs...", file=sys.stderr)
 dlls_dir = os.path.join(build_root, "dlls")
@@ -52,13 +57,13 @@ os.mkdir(dlls_dir)
 
 # Don't use os.path.join here, because that uses the wrong separators which breaks wildcard expansion.
 run_command(
-    f"ldd {build_root}/{ui_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+    f"ldd {build_root}/{ui_output} | grep '{ldd_filter}' -o | xargs -i cp {{}} {dlls_dir}",
     "Collecting app DLLs failed"
 )
 
 for loader in glob.glob(f"{build_environment_path}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll"):
     run_command(
-        f"ldd {loader} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"ldd {loader} | grep '{ldd_filter}' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
     )
 
@@ -71,19 +76,22 @@ for angle_dll in itertools.chain(
         f"Collecting angle ({angle_dll}) DLLs failed",
     )
     run_command(
-        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"ldd {angle_dll} | grep '{ldd_filter}' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting angle dependency ({angle_dll}) DLLs failed",
     )
 
-# add libcrypto-3-x64.dll and libssl-3-x64.dll
-run_command(
-    f"cp {build_environment_path}/bin/libcrypto-3-x64.dll {dlls_dir}",
-    "Collecting libcrypto-3-x64.dll failed",
-)
-run_command(
-    f"cp {build_environment_path}/bin/libssl-3-x64.dll {dlls_dir}",
-    "Collecting libssl-3-x64.dll failed",
-)
+# add the openssl runtime. The file name carries the architecture
+# (libcrypto-3-x64.dll on x86_64, libcrypto-3-arm64.dll on aarch64), so glob it.
+for openssl_pattern in ("libcrypto-3-*.dll", "libssl-3-*.dll"):
+    matches = glob.glob(f"{build_environment_path}/bin/{openssl_pattern}")
+    if not matches:
+        print(f"Could not find any openssl dll matching {openssl_pattern}", file=sys.stderr)
+        sys.exit(1)
+    for openssl_dll in matches:
+        run_command(
+            f"cp {openssl_dll} {dlls_dir}",
+            f"Collecting openssl ({openssl_dll}) failed",
+        )
 
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)

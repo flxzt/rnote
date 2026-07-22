@@ -177,3 +177,69 @@ minutes of normal use where the WGL path died after about two). It is set only a
 a default, so `GDK_DISABLE` from the environment still takes precedence, and it is
 scoped to aarch64 because x86_64 has real OpenGL drivers where ANGLE would be a
 detour rather than a fix.
+
+## Why the pangocairo font backend is switched on aarch64
+
+Text rendering has the same shape of problem as OpenGL did: the Windows-native
+path is the broken one.
+
+pangocairo draws glyphs through cairo's win32 font backend, which uses DirectWrite
+and Direct2D. On Windows on ARM that path does not work. Pango logs
+
+```
+(rnote.exe:33916): Pango-WARNING **: All font fallbacks failed!!!!
+```
+
+once per layout — 219 times during a single startup here — and rendering text
+then dies with an access violation in `d2d1.dll`:
+
+```
+Faulting application name: rnote.exe
+Faulting module name: d2d1.dll
+Exception code: 0xc0000005
+```
+
+This is not a missing-font problem: fontconfig sees 724 fonts in the same
+environment and `fc-match sans` resolves correctly. Only the DirectWrite path
+fails. It is also not specific to one font family — patching a document's
+`font_family` from `serif` to `Noto Serif` changes nothing.
+
+`crates/rnote-ui/src/env.rs` therefore defaults `PANGOCAIRO_BACKEND` to `fc`,
+selecting the fontconfig/freetype backend that the Linux builds use anyway.
+
+Measured on a Surface Pro 11, opening `misc/file-tests/v0-15-0-test.rnote`
+(which contains a text stroke):
+
+| Backend | Runs | Result | Pango font warnings |
+| --- | --- | --- | --- |
+| win32/DirectWrite (default) | 3 | 3 crashes | 219 |
+| `fc` (fontconfig) | 5 | 5 clean | 0 |
+
+Text still renders correctly with `fc` — verified by exporting the document to
+PNG and comparing; the text stroke, the embedded SVG and the bitmaps are all
+present, and the exports differ by 165 bytes of glyph rasterization.
+
+### It has to be set via the C runtime, not `set_var`
+
+`std::env::set_var` is **not** sufficient here, and this is easy to get wrong
+because the `GDK_DISABLE` default above does work that way. On Windows, Rust's
+`set_var` only calls `SetEnvironmentVariableW`, which updates the Win32
+environment block. GDK reads its variables with `g_getenv`, which consults that
+block, so it sees the value.
+
+pangocairo instead reads `PANGOCAIRO_BACKEND` with plain `getenv`, which returns
+the copy the C runtime builds at process startup and which
+`SetEnvironmentVariableW` does not touch:
+
+```console
+$ objdump -p /clangarm64/bin/libpangocairo-1.0-0.dll | grep -iE 'getenv|g_getenv'
+             0  getenv
+```
+
+Setting it with `set_var` therefore has no effect at all — verified, the crash
+rate was unchanged. `_putenv_s` updates the CRT table that `getenv` reads;
+`libpangocairo` and the app resolve to the same UCRT
+(`api-ms-win-crt-environment-l1-1-0.dll`), so a single call covers both.
+
+Whether the DirectWrite path is equally broken on x86_64 Windows was not tested —
+no hardware available — so the default is scoped to aarch64.

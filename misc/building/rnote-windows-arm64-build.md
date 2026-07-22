@@ -66,6 +66,22 @@ just build
 just build-win-installer
 ```
 
+## Why the installer no longer uses `ldd`
+
+`inno_build.py` used to collect the DLLs to package by running `ldd` on the app,
+the gdk-pixbuf loaders and the ANGLE libraries. MSYS2's `ldd` resolves imports by
+*loading* the binary, and ANGLE's `libGLESv2.dll` blocks while doing so: the
+installer build hangs there indefinitely, with no error and no CPU usage, which
+looks like a very slow build rather than a deadlock.
+
+Dependencies are now read from the PE import table with `objdump -p` and walked
+transitively, which executes nothing. DLLs that do not exist in the build
+environment are Windows system DLLs and are deliberately not packaged. This also
+made the collection step noticeably faster.
+
+Whether the old code hangs on x86_64 depends only on how that ANGLE build behaves
+at load time, so this is not an ARM-specific fix.
+
 ## GPU acceleration requires pinned packages
 
 **This is the part that matters most on ARM.** Without the pinning below the app

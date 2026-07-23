@@ -2,8 +2,8 @@
 use crate::{RnAppWindow, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
-    Button, CompositeTemplate, ListBox, MenuButton, Popover, Widget, glib, glib::clone,
-    subclass::prelude::*,
+    Button, CompositeTemplate, ListBox, MenuButton, Popover, ToggleButton, Widget, glib,
+    glib::clone, subclass::prelude::*,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
@@ -54,6 +54,28 @@ mod imp {
         pub(crate) texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
+        #[template_child]
+        pub(crate) ruler_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) ruler_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub(crate) ruler_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub(crate) ruler_popover_close_button: TemplateChild<Button>,
+        #[template_child]
+        pub(crate) ruler_snap_distance_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub(crate) ruler_angle_snap_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) ruler_show_dial_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) ruler_width_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub(crate) ruler_tick_spacing_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub(crate) ruler_body_opacity_row: TemplateChild<adw::SpinRow>,
+        #[template_child]
+        pub(crate) ruler_scroll_step_row: TemplateChild<adw::SpinRow>,
     }
 
     #[glib::object_subclass]
@@ -425,6 +447,154 @@ impl RnBrushPage {
                         .distribution = brushpage.texturedstyle_dots_distribution();
                 }
             ));
+
+        // Ruler toggle: enables/disables the on-canvas ruler. The first time the
+        // user enables it, seed the ruler position to the current viewport center.
+        imp.ruler_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |toggle| {
+                let visible = toggle.is_active();
+                let needs_seed = {
+                    let mut config = appwindow.engine_config().write();
+                    let ruler = &mut config.pens_config.brush_config.ruler_config;
+                    ruler.visible = visible;
+                    visible && ruler.anchor == p2d::math::Vector2::ZERO
+                };
+                if let Some(canvas) = appwindow.active_tab_canvas() {
+                    if needs_seed {
+                        // The ruler position is in scroller (window-relative) pixels —
+                        // seed it to the center of the visible viewport.
+                        let center_scroller = canvas.engine_ref().camera.size() * 0.5;
+                        let mut c = appwindow.engine_config().write();
+                        let r = &mut c.pens_config.brush_config.ruler_config;
+                        r.anchor = center_scroller;
+                        r.dial_pos = center_scroller;
+                    }
+                    canvas.queue_draw();
+                }
+            }
+        ));
+
+        let ruler_popover = imp.ruler_popover.get();
+        imp.ruler_popover_close_button.connect_clicked(clone!(
+            #[weak]
+            ruler_popover,
+            move |_| {
+                ruler_popover.popdown();
+            }
+        ));
+
+        imp.ruler_snap_distance_row.get().connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .snap_distance = row.value();
+            }
+        ));
+
+        imp.ruler_angle_snap_row.get().connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .angle_snap_enabled = row.is_active();
+            }
+        ));
+
+        imp.ruler_show_dial_row.get().connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .show_dial = row.is_active();
+                if let Some(canvas) = appwindow.active_tab_canvas() {
+                    canvas.queue_draw();
+                }
+            }
+        ));
+
+        // Ruler width: the UI exposes the full width; storage uses the half-width.
+        imp.ruler_width_row.get().connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .body_half_width = row.value() * 0.5;
+                if let Some(canvas) = appwindow.active_tab_canvas() {
+                    canvas.queue_draw();
+                }
+            }
+        ));
+
+        imp.ruler_tick_spacing_row.get().connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .tick_spacing = row.value();
+                if let Some(canvas) = appwindow.active_tab_canvas() {
+                    canvas.queue_draw();
+                }
+            }
+        ));
+
+        imp.ruler_body_opacity_row.get().connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .body_opacity = row.value();
+                if let Some(canvas) = appwindow.active_tab_canvas() {
+                    canvas.queue_draw();
+                }
+            }
+        ));
+
+        imp.ruler_scroll_step_row.get().connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .ruler_config
+                    .scroll_rotation_step_deg = row.value();
+            }
+        ));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
@@ -458,5 +628,22 @@ impl RnBrushPage {
                     .set_stroke_width(brush_config.textured_options.stroke_width);
             }
         }
+
+        imp.ruler_toggle
+            .set_active(brush_config.ruler_config.visible);
+        imp.ruler_snap_distance_row
+            .set_value(brush_config.ruler_config.snap_distance);
+        imp.ruler_angle_snap_row
+            .set_active(brush_config.ruler_config.angle_snap_enabled);
+        imp.ruler_show_dial_row
+            .set_active(brush_config.ruler_config.show_dial);
+        imp.ruler_width_row
+            .set_value(brush_config.ruler_config.body_half_width * 2.0);
+        imp.ruler_tick_spacing_row
+            .set_value(brush_config.ruler_config.tick_spacing);
+        imp.ruler_body_opacity_row
+            .set_value(brush_config.ruler_config.body_opacity);
+        imp.ruler_scroll_step_row
+            .set_value(brush_config.ruler_config.scroll_rotation_step_deg);
     }
 }

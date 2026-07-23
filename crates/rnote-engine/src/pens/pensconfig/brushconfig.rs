@@ -1,4 +1,5 @@
 // Imports
+use crate::pens::pensconfig::rulerconfig::RulerConfig;
 use crate::store::chrono_comp::StrokeLayer;
 use rand::{RngExt, SeedableRng};
 use rnote_compose::Style;
@@ -110,6 +111,8 @@ pub struct BrushConfig {
     pub solid_options: SolidOptions,
     #[serde(rename = "textured_options")]
     pub textured_options: TexturedOptions,
+    #[serde(rename = "ruler_config")]
+    pub ruler_config: RulerConfig,
 }
 
 impl BrushConfig {

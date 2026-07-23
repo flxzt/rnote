@@ -245,6 +245,11 @@ impl Default for Engine {
 impl Engine {
     pub(crate) const STROKE_BOUNDS_INTERSECTION_TOLERANCE: f64 = 1e-3;
 
+    /// Returns the engine's shared config handle (cheap to clone).
+    pub fn engine_config(&self) -> &EngineConfigShared {
+        &self.config
+    }
+
     pub fn install_config(
         &mut self,
         config: &EngineConfigShared,

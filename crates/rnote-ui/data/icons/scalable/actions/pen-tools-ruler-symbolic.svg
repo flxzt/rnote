@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   width="16px"
+   height="16px"
+   viewBox="0 0 16 16"
+   version="1.1">
+  <g fill="#222222">
+    <!-- Ruler outline (hollow rectangle, vertical) -->
+    <path fill-rule="evenodd"
+          d="M5 0 H11 V16 H5 Z M5.7 0.7 H10.3 V15.3 H5.7 Z"/>
+    <!-- Left edge tick marks (point inward) -->
+    <rect x="5.7" y="1.5"  width="2"   height="0.5"/>
+    <rect x="5.7" y="2.5"  width="1"   height="0.5"/>
+    <rect x="5.7" y="3.5"  width="1.5" height="0.5"/>
+    <rect x="5.7" y="4.5"  width="1"   height="0.5"/>
+    <rect x="5.7" y="5.5"  width="2"   height="0.5"/>
+    <rect x="5.7" y="6.5"  width="1"   height="0.5"/>
+    <rect x="5.7" y="7.5"  width="1.5" height="0.5"/>
+    <rect x="5.7" y="8.5"  width="1"   height="0.5"/>
+    <rect x="5.7" y="9.5"  width="2"   height="0.5"/>
+    <rect x="5.7" y="10.5" width="1"   height="0.5"/>
+    <rect x="5.7" y="11.5" width="1.5" height="0.5"/>
+    <rect x="5.7" y="12.5" width="1"   height="0.5"/>
+    <rect x="5.7" y="13.5" width="2"   height="0.5"/>
+    <rect x="5.7" y="14.5" width="1"   height="0.5"/>
+    <!-- Right edge tick marks (mirror) -->
+    <rect x="8.3"  y="1.5"  width="2"   height="0.5"/>
+    <rect x="9.3"  y="2.5"  width="1"   height="0.5"/>
+    <rect x="8.8"  y="3.5"  width="1.5" height="0.5"/>
+    <rect x="9.3"  y="4.5"  width="1"   height="0.5"/>
+    <rect x="8.3"  y="5.5"  width="2"   height="0.5"/>
+    <rect x="9.3"  y="6.5"  width="1"   height="0.5"/>
+    <rect x="8.8"  y="7.5"  width="1.5" height="0.5"/>
+    <rect x="9.3"  y="8.5"  width="1"   height="0.5"/>
+    <rect x="8.3"  y="9.5"  width="2"   height="0.5"/>
+    <rect x="9.3"  y="10.5" width="1"   height="0.5"/>
+    <rect x="8.8"  y="11.5" width="1.5" height="0.5"/>
+    <rect x="9.3"  y="12.5" width="1"   height="0.5"/>
+    <rect x="8.3"  y="13.5" width="2"   height="0.5"/>
+    <rect x="9.3"  y="14.5" width="1"   height="0.5"/>
+  </g>
+</svg>

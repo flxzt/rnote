@@ -10,7 +10,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
 use futures::channel::oneshot;
-use p2d::bounding_volume::Aabb;
+use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
@@ -477,7 +477,17 @@ impl PenHolder {
 
 impl DrawableOnDoc for PenHolder {
     fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
-        self.current_pen.bounds_on_doc(engine_view)
+        let pen_bounds = self.current_pen.bounds_on_doc(engine_view);
+        let ruler_bounds = super::ruler::ruler_bounds_on_doc(
+            &engine_view.config.pens_config.brush_config.ruler_config,
+            engine_view.camera.viewport(),
+            engine_view.camera.total_zoom(),
+        );
+        match (pen_bounds, ruler_bounds) {
+            (Some(a), Some(b)) => Some(a.merged(&b)),
+            (a, None) => a,
+            (None, b) => b,
+        }
     }
     fn draw_on_doc(
         &self,
@@ -485,6 +495,15 @@ impl DrawableOnDoc for PenHolder {
         engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+
+        super::ruler::draw_ruler_on_doc(
+            cx,
+            &engine_view.config.pens_config.brush_config.ruler_config,
+            engine_view.camera.viewport(),
+            engine_view.camera.offset(),
+            engine_view.camera.total_zoom(),
+            &engine_view.document.config.background.color,
+        )?;
 
         self.current_pen.draw_on_doc(cx, engine_view)?;
 

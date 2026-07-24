@@ -24,3 +24,5 @@ allow = [
     "ISC",
     "CC0-1.0",
 ]
+[advisories]
+unmaintained = 'workspace'

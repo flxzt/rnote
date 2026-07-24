@@ -9,7 +9,7 @@ flatpak_repo_folder := "_flatpak_repo"
 mingw64_prefix_path := "C:/msys64/mingw64"
 
 [private]
-linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
+linux_distr := `grep -o -E '^ID=([a-zA-Z0-9_]*)$' -r /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]'`
 [private]
 sudo_cmd := "sudo"
 

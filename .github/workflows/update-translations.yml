@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo dnf install -y just lsb_release git opencc-tools
+          sudo dnf install -y just git opencc-tools
 
       - name: Setup repository
         run: |

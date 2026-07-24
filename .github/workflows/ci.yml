@@ -33,7 +33,7 @@ jobs:
 
       - name: Prerequisites
         run: |
-          dnf install -y just lsb_release
+          dnf install -y just
           just ci=true prerequisites-dev
 
       - name: Cache

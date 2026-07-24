@@ -110,6 +110,10 @@ pub struct BrushConfig {
     pub solid_options: SolidOptions,
     #[serde(rename = "textured_options")]
     pub textured_options: TexturedOptions,
+    /// Whether drawn strokes that resemble geometric shapes
+    /// are automatically replaced with the recognized shape.
+    #[serde(rename = "shape_recognition_enabled")]
+    pub shape_recognition_enabled: bool,
 }
 
 impl BrushConfig {
@@ -145,6 +149,32 @@ impl BrushConfig {
                 let options = self.textured_options.clone();
 
                 Style::Textured(options)
+            }
+        }
+    }
+
+    /// The style that recognized shapes are drawn with.
+    ///
+    /// Always a smooth style, because shapes can't be composed with a textured style.
+    pub(crate) fn style_for_recognized_shape(&self) -> Style {
+        match &self.style {
+            BrushStyle::Marker => {
+                let MarkerOptions(options) = self.marker_options.clone();
+
+                Style::Smooth(options)
+            }
+            BrushStyle::Solid => {
+                let SolidOptions(options) = self.solid_options.clone();
+
+                Style::Smooth(options)
+            }
+            BrushStyle::Textured => {
+                let mut options = SmoothOptions::default();
+                options.stroke_width = self.textured_options.stroke_width;
+                options.stroke_color = self.textured_options.stroke_color;
+                options.pressure_curve = PressureCurve::Const;
+
+                Style::Smooth(options)
             }
         }
     }

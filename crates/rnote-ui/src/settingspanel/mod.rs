@@ -1,8 +1,10 @@
 // Modules
+mod penmoderow;
 mod penshortcutmodels;
 mod penshortcutrow;
 
 // Re-exports
+pub(crate) use penmoderow::RnPenModeRow;
 pub(crate) use penshortcutrow::RnPenShortcutRow;
 use rnote_compose::ext::Vector2Ext;
 
@@ -128,6 +130,10 @@ mod imp {
         pub(crate) penshortcut_drawing_pad_button_2: TemplateChild<RnPenShortcutRow>,
         #[template_child]
         pub(crate) penshortcut_drawing_pad_button_3: TemplateChild<RnPenShortcutRow>,
+        #[template_child]
+        pub(crate) lock_pen_mode: TemplateChild<RnPenModeRow>,
+        #[template_child]
+        pub(crate) lock_eraser_mode: TemplateChild<RnPenModeRow>,
     }
 
     #[glib::object_subclass]

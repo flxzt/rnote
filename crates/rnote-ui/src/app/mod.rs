@@ -164,9 +164,9 @@ mod imp {
             // See issue: https://github.com/flxzt/rnote/issues/1461
             let window_group = WindowGroup::new();
             window_group.add_window(&appwindow);
-
             appwindow.present();
-            return appwindow.overlays().tabview();
+
+            appwindow.overlays().tabview()
         }
     }
 }

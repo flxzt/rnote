@@ -1,4 +1,5 @@
 // Imports
+use crate::RnApp;
 use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
@@ -394,13 +395,12 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                use crate::RnApp;
-                if let Some(active_tab_page) = appwindow.active_tab_page() {
-                    if let Some(rn_app_out) = appwindow.application() {
-                        let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
-                        let tab_view = rnapp.new_appwindow_init_return_tab();
-                        appwindow.transfer_page(&active_tab_page, &tab_view, 0);
-                    }
+                if let Some(active_tab_page) = appwindow.active_tab_page()
+                    && let Some(rn_app_out) = appwindow.application()
+                {
+                    let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
+                    let tab_view = rnapp.new_appwindow_init_return_tab();
+                    appwindow.transfer_page(&active_tab_page, &tab_view, 0);
                 }
             }
         ));

@@ -441,11 +441,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     // pdf info
     pdf_info_label.set_label(
             &format!("<b>{}  </b>{file_name}\n<b>{}  </b>{title}\n<b>{}  </b>{author}\n<b>{}  </b>{mod_date}\n<b>{}  </b>{n_pages}\n",
-                &gettext("File name:"),
-                &gettext("Title:"),
-                &gettext("Author:"),
-                &gettext("Modification date:"),
-                &gettext("Pages:"))
+                gettext("File name:"),
+                gettext("Title:"),
+                gettext("Author:"),
+                gettext("Modification date:"),
+                gettext("Pages:"))
         );
 
     // Configure pages spinners

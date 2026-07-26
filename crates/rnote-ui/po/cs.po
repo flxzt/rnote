@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-13 19:46+0200\n"
+"POT-Creation-Date: 2026-06-01 17:10+0200\n"
 "PO-Revision-Date: 2026-06-30 16:32+0000\n"
 "Last-Translator: Fjuro <fjuro@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
@@ -108,7 +108,7 @@ msgstr "Vyčistit"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:656
+#: crates/rnote-ui/src/canvas/mod.rs:730
 msgid "New Document"
 msgstr "Nový dokument"
 
@@ -449,7 +449,7 @@ msgstr "Importovat PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
-#: crates/rnote-ui/src/dialogs/import.rs:94
+#: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "Importovat"
 
@@ -1213,7 +1213,13 @@ msgstr "Přiblížit"
 msgid "Zoom to Page Width"
 msgstr "Přiblížení na šířku stránky"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:128
+#: crates/rnote-ui/data/ui/canvasmenu.ui:121
+#, fuzzy
+#| msgid "Zoom to Page Width"
+msgid "Zoom to Real Size"
+msgstr "Přiblížení na šířku stránky"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:136
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1221,7 +1227,7 @@ msgstr ""
 "Odstranit stránku.\n"
 "K dispozici v dokumentu s pevnou velikostí rozvržení."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:137
+#: crates/rnote-ui/data/ui/canvasmenu.ui:145
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1229,7 +1235,7 @@ msgstr ""
 "Přidat stránku.\n"
 "K dispozici v dokumentu s pevnou velikostí rozvržení."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:146
+#: crates/rnote-ui/data/ui/canvasmenu.ui:154
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1246,7 +1252,7 @@ msgid "Fill Color"
 msgstr "Barva výplně"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:38
+#: crates/rnote-ui/src/dialogs/import.rs:39
 msgid "Open"
 msgstr "Otevřít"
 
@@ -1268,7 +1274,7 @@ msgid "Duplicate"
 msgstr "Duplikovat"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:658
+#: crates/rnote-ui/src/canvas/mod.rs:732
 msgid "Draft"
 msgstr "Koncept"
 
@@ -1826,14 +1832,15 @@ msgstr "Přidat stránku (je-li aktivní rozvržení s pevnou velikostí)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Remove Last Page (When in Fixed-Size Layout)"
-msgstr "Odstranit poslední stránku (je-li aktivní rozvržení s pevnou velikostí)"
+msgstr ""
+"Odstranit poslední stránku (je-li aktivní rozvržení s pevnou velikostí)"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Print Document"
 msgstr "Vytisknout dokument"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:92
+#: crates/rnote-ui/src/dialogs/import.rs:93
 msgid "Import File"
 msgstr "Importovat soubor"
 
@@ -1893,7 +1900,7 @@ msgstr "Vytvořit novou složku"
 msgid "Open Workspace Folder"
 msgstr "Otevřít složku plochy"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:794
+#: crates/rnote-ui/src/appwindow/actions.rs:845
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1902,11 +1909,11 @@ msgstr "Otevřít složku plochy"
 msgid "Saving document failed"
 msgstr "Uložení dokumentu selhalo"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:885
+#: crates/rnote-ui/src/appwindow/actions.rs:936
 msgid "Printing document failed"
 msgstr "Tisk dokumentu selhal"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:962
+#: crates/rnote-ui/src/appwindow/actions.rs:1013
 msgid "Exporting selection failed, nothing selected"
 msgstr "Export vybraného selhal, nic nebylo vybráno"
 
@@ -1930,7 +1937,7 @@ msgstr "Tlačítko 3"
 msgid "Button 4"
 msgstr "Tlačítko 4"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:223
+#: crates/rnote-ui/src/appwindow/mod.rs:224
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
@@ -1938,49 +1945,50 @@ msgstr ""
 "Schéma s nastavením není nainstalováno. Nastavení aplikace by se měla "
 "načíst, ale nebudou uloženy."
 
-#: crates/rnote-ui/src/appwindow/mod.rs:576
+#: crates/rnote-ui/src/appwindow/mod.rs:572
 msgid "Opening file failed"
 msgstr "Otevření souboru selhalo"
 
-#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:1005
+#: crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid file name -"
 msgstr "- nesprávný název souboru -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:908
+#: crates/rnote-ui/src/canvas/mod.rs:1018
 msgid "- invalid folder path -"
 msgstr "- nesprávná cesta ke složce -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:932
+#: crates/rnote-ui/src/canvas/mod.rs:1042
 msgid "Opened file was modified on disk"
 msgstr "Otevřený soubor byl upraven na disk"
 
-#: crates/rnote-ui/src/canvas/mod.rs:933
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 msgid "Reload"
 msgstr "Načíst znovu"
 
-#: crates/rnote-ui/src/canvas/mod.rs:949
+#: crates/rnote-ui/src/canvas/mod.rs:1059
 msgid "Reloading .rnote file from disk failed"
 msgstr "Načtení souboru .rnote z disku selhalo"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1024
+#: crates/rnote-ui/src/canvas/mod.rs:1134
 msgid "Opened file was renamed or moved."
 msgstr "Otevřeny soubor byl odstraněn nebo přesunut."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1153
 msgid "Opened file was removed."
 msgstr "Otevřeny soubor byl odstraněn."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1269
+#: crates/rnote-ui/src/canvas/mod.rs:1383
 msgid "Inserting file failed"
 msgstr "Vložení souboru selhalo"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1281
+#: crates/rnote-ui/src/canvas/mod.rs:1395
 msgid "Inserting text failed"
 msgstr "Vložení textu selhalo"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:30
+#: crates/rnote-ui/src/dialogs/import.rs:31
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2075,48 +2083,48 @@ msgstr "Export konfigurace motoru selhal"
 msgid "Exported engine config successfully"
 msgstr "Export konfigurace motoru byl úspěšný"
 
-#: crates/rnote-ui/src/dialogs/import.rs:36
+#: crates/rnote-ui/src/dialogs/import.rs:37
 msgid "Open File"
 msgstr "Otevřít soubor"
 
-#: crates/rnote-ui/src/dialogs/import.rs:86
+#: crates/rnote-ui/src/dialogs/import.rs:87
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, Xopp, TXT"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
-#: crates/rnote-ui/src/dialogs/import.rs:418
+#: crates/rnote-ui/src/dialogs/import.rs:187
+#: crates/rnote-ui/src/dialogs/import.rs:419
 msgid "- no file name -"
 msgstr "- žádný název souboru -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:425
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no title -"
 msgstr "- žádný nadpis -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:431
 msgid "- no author -"
 msgstr "- žádný autor -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:437
+#: crates/rnote-ui/src/dialogs/import.rs:438
 msgid "- no modification date -"
 msgstr "- žádné datum změny -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:443
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "File name:"
 msgstr "Název souboru:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Title:"
 msgstr "Nadpis:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Author:"
 msgstr "Autor:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Modification date:"
 msgstr "Datum změny:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:448
 msgid "Pages:"
 msgstr "Stránky:"
 

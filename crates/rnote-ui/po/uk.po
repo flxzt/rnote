@@ -2,11 +2,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-13 19:46+0200\n"
+"POT-Creation-Date: 2026-06-01 17:10+0200\n"
 "PO-Revision-Date: 2026-06-30 16:31+0000\n"
 "Last-Translator: Deleted User <volkov@users.noreply.hosted.weblate.org>\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/>"
-"\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/rnote/repo/uk/"
+">\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,8 +24,7 @@ msgstr "Малювання та ведення нотаток"
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: crates/rnote-ui/data/app.desktop.in.in:14
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
-"Gnome;GTK;Office;Graphics;Notes;Офіс;Графіка;Примітки;Допис;Малювати;Нотатка;Зошит;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;Офіс;Графіка;Примітки;Допис;Малювати;Нотатка;Зошит;"
 
 #: crates/rnote-ui/data/app.desktop.in.in:19
 #: crates/rnote-ui/data/ui/shortcuts.ui:20
@@ -106,7 +105,7 @@ msgstr "Очистити"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:656
+#: crates/rnote-ui/src/canvas/mod.rs:730
 msgid "New Document"
 msgstr "Новий документ"
 
@@ -447,7 +446,7 @@ msgstr "Імпортувати Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
-#: crates/rnote-ui/src/dialogs/import.rs:94
+#: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "Імпортувати"
 
@@ -481,7 +480,8 @@ msgstr "Ширина сторінки (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "Встановити ширину імпортованих Pdf-файлів у відсотках від ширини аркуша"
+msgstr ""
+"Встановити ширину імпортованих Pdf-файлів у відсотках від ширини аркуша"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
@@ -1210,7 +1210,13 @@ msgstr "Збільшити"
 msgid "Zoom to Page Width"
 msgstr "Масштабувати до ширини сторінки"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:128
+#: crates/rnote-ui/data/ui/canvasmenu.ui:121
+#, fuzzy
+#| msgid "Zoom to Page Width"
+msgid "Zoom to Real Size"
+msgstr "Масштабувати до ширини сторінки"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:136
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1218,7 +1224,7 @@ msgstr ""
 "Видалити сторінку.\n"
 "Доступно в форматі документа фіксованого розміру."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:137
+#: crates/rnote-ui/data/ui/canvasmenu.ui:145
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1226,7 +1232,7 @@ msgstr ""
 "Додати сторінку.\n"
 "Доступно в форматі документа фіксованого розміру."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:146
+#: crates/rnote-ui/data/ui/canvasmenu.ui:154
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1243,7 +1249,7 @@ msgid "Fill Color"
 msgstr "Колір заливки"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:38
+#: crates/rnote-ui/src/dialogs/import.rs:39
 msgid "Open"
 msgstr "Відкрити"
 
@@ -1265,7 +1271,7 @@ msgid "Duplicate"
 msgstr "Дублювати"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:658
+#: crates/rnote-ui/src/canvas/mod.rs:732
 msgid "Draft"
 msgstr "Чернетка"
 
@@ -1830,7 +1836,7 @@ msgid "Print Document"
 msgstr "Друкувати документ"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:92
+#: crates/rnote-ui/src/dialogs/import.rs:93
 msgid "Import File"
 msgstr "Імпортувати файл"
 
@@ -1890,7 +1896,7 @@ msgstr "Створити нову папку"
 msgid "Open Workspace Folder"
 msgstr "Відкрити робочу теку"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:794
+#: crates/rnote-ui/src/appwindow/actions.rs:845
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1899,11 +1905,11 @@ msgstr "Відкрити робочу теку"
 msgid "Saving document failed"
 msgstr "Не вдалося зберегти документ"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:885
+#: crates/rnote-ui/src/appwindow/actions.rs:936
 msgid "Printing document failed"
 msgstr "Не вдалося надрукувати документ"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:962
+#: crates/rnote-ui/src/appwindow/actions.rs:1013
 msgid "Exporting selection failed, nothing selected"
 msgstr "Не вдалося експортувати вибране, нічого не вибрано"
 
@@ -1927,7 +1933,7 @@ msgstr "Кнопка 3"
 msgid "Button 4"
 msgstr "Кнопка 4"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:223
+#: crates/rnote-ui/src/appwindow/mod.rs:224
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
@@ -1935,49 +1941,50 @@ msgstr ""
 "Схема налаштувань не встановлена. Збереження та завантаження налаштувань не "
 "можливе."
 
-#: crates/rnote-ui/src/appwindow/mod.rs:576
+#: crates/rnote-ui/src/appwindow/mod.rs:572
 msgid "Opening file failed"
 msgstr "Не вдалося відкрити файл"
 
-#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:1005
+#: crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid file name -"
 msgstr "- недійсна назва файлу -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:908
+#: crates/rnote-ui/src/canvas/mod.rs:1018
 msgid "- invalid folder path -"
 msgstr "- недійсний шлях до теки -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:932
+#: crates/rnote-ui/src/canvas/mod.rs:1042
 msgid "Opened file was modified on disk"
 msgstr "Відкритий файл змінено на диску"
 
-#: crates/rnote-ui/src/canvas/mod.rs:933
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 msgid "Reload"
 msgstr "Перезавантажити"
 
-#: crates/rnote-ui/src/canvas/mod.rs:949
+#: crates/rnote-ui/src/canvas/mod.rs:1059
 msgid "Reloading .rnote file from disk failed"
 msgstr "Не вдалося перезавантажити файл .rnote з диска"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1024
+#: crates/rnote-ui/src/canvas/mod.rs:1134
 msgid "Opened file was renamed or moved."
 msgstr "Відкритий файл було перейменовано або переміщено."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1153
 msgid "Opened file was removed."
 msgstr "Відкритий файл було видалено."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1269
+#: crates/rnote-ui/src/canvas/mod.rs:1383
 msgid "Inserting file failed"
 msgstr "Не вдалося вставити файл"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1281
+#: crates/rnote-ui/src/canvas/mod.rs:1395
 msgid "Inserting text failed"
 msgstr "Не вдалося вставити текст"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:30
+#: crates/rnote-ui/src/dialogs/import.rs:31
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2072,48 +2079,48 @@ msgstr "Не вдалося експортувати конфігурацію р
 msgid "Exported engine config successfully"
 msgstr "Конфігурацію рушія успішно експортовано"
 
-#: crates/rnote-ui/src/dialogs/import.rs:36
+#: crates/rnote-ui/src/dialogs/import.rs:37
 msgid "Open File"
 msgstr "Відкрити файл"
 
-#: crates/rnote-ui/src/dialogs/import.rs:86
+#: crates/rnote-ui/src/dialogs/import.rs:87
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
-#: crates/rnote-ui/src/dialogs/import.rs:418
+#: crates/rnote-ui/src/dialogs/import.rs:187
+#: crates/rnote-ui/src/dialogs/import.rs:419
 msgid "- no file name -"
 msgstr "- немає імені файлу -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:425
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no title -"
 msgstr "- без назви -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:431
 msgid "- no author -"
 msgstr "- немає автора -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:437
+#: crates/rnote-ui/src/dialogs/import.rs:438
 msgid "- no modification date -"
 msgstr "- немає дати змінення -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:443
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "File name:"
 msgstr "Ім'я файлу:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Title:"
 msgstr "Назва:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Author:"
 msgstr "Автор:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Modification date:"
 msgstr "Дата змінення:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:448
 msgid "Pages:"
 msgstr "Сторінок:"
 

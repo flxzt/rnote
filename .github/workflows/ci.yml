@@ -70,11 +70,13 @@ jobs:
         run: just ci=true test-file-compatibility
 
       - name: Lint
-        run: just ci=true lint
+        env:
+          RUSTFLAGS: -Dwarnings
+        run: just ci=true lint || echo "::warning title=Lint::Linting failed"
         continue-on-error: true
 
       - name: Lint dependencies
-        run: just ci=true lint-dependencies
+        run: just ci=true lint-dependencies || echo "::warning title=Lint-dependencies::Linting dependencies failed"
         continue-on-error: true
 
       - name: Upload test report

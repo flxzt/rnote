@@ -1,0 +1,39 @@
+---
+name: Check for Outdated Translations
+
+"on":
+  push:
+    branches:
+      - "main"
+    paths:
+      - "crates/rnote-ui/po/LINGUAS"
+      - "crates/rnote-ui/po/zh_Hans.po"
+      - "crates/rnote-ui/po/zh_Hant.po"
+
+jobs:
+  check-translations:
+    name: zh_Hans -> zh_Hant
+    runs-on: ubuntu-24.04
+    container: fedora:44
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo dnf install -y just git opencc-tools
+
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set safe git directory
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+
+      - name: Update translations
+        run: |
+          just update-translations
+
+      - name: Check file changes
+        run: |
+          git diff-index --quiet HEAD -- || \
+            { echo "::error title=Check Translations::Translations can be updated. Run 'just update-translations' and commit the changes." \
+            && exit 1; }

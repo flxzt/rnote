@@ -206,7 +206,7 @@ if build_ui == true
             cargo_build_script,
             meson.project_build_root(),
             meson.project_source_root(),
-            cargo_env,
+            ' '.join(cargo_env),
             cargo,
             ' '.join(ui_cargo_options),
             cargo_target_dir / rust_target_folder / app_name,

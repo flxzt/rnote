@@ -12,7 +12,7 @@ flatpak_repo_folder := "_flatpak_repo"
 msys_prefix_path := ""
 
 [private]
-linux_distr := `lsb_release -ds | tr '[:upper:]' '[:lower:]'`
+linux_distr := `grep -o -E '^ID=([a-zA-Z0-9_]*)$' -r /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]'`
 [private]
 sudo_cmd := "sudo"
 
@@ -321,6 +321,10 @@ All changelog entries should be removed as well.')]
 update-translations-template:
     meson compile rnote-pot -C {{ build_folder }}
 
+[doc('Update translations that can be auto-generated.
+That are:
+    - zh_Hans (simplified Chinese) -> zh_Hant (traditional Chinese)
+')]
 update-translations:
     #!/usr/bin/env bash
     set -euxo pipefail

@@ -1,4 +1,5 @@
 // Imports
+use crate::RnApp;
 use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
@@ -138,6 +139,24 @@ impl RnAppWindow {
         let action_active_tab_move_window =
             gio::SimpleAction::new("active-tab-move-to-new-window", None);
         self.add_action(&action_active_tab_move_window);
+
+        let color_setters = {
+            let p = self.overlays().colorpicker();
+            [
+                [p.setter_1(), p.setter_2(), p.setter_3()],
+                [p.setter_4(), p.setter_5(), p.setter_6()],
+                [p.setter_7(), p.setter_8(), p.setter_9()],
+            ]
+            .concat()
+        };
+        for (i, setter) in color_setters.into_iter().enumerate() {
+            let action = gio::SimpleAction::new(&format!("set-color-{}", i + 1), None);
+            self.add_action(&action);
+            action.connect_activate(clone!(move |_, _| {
+                setter.set_active(true);
+            }));
+        }
+
         let action_drawing_pad_pressed_button_0 =
             gio::SimpleAction::new("drawing-pad-pressed-button-0", None);
         self.add_action(&action_drawing_pad_pressed_button_0);
@@ -394,13 +413,12 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                use crate::RnApp;
-                if let Some(active_tab_page) = appwindow.active_tab_page() {
-                    if let Some(rn_app_out) = appwindow.application() {
-                        let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
-                        let tab_view = rnapp.new_appwindow_init_return_tab();
-                        appwindow.transfer_page(&active_tab_page, &tab_view, 0);
-                    }
+                if let Some(active_tab_page) = appwindow.active_tab_page()
+                    && let Some(rn_app_out) = appwindow.application()
+                {
+                    let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
+                    let tab_view = rnapp.new_appwindow_init_return_tab();
+                    appwindow.transfer_page(&active_tab_page, &tab_view, 0);
                 }
             }
         ));
@@ -1198,6 +1216,13 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
+        (1..=9).for_each(|i| {
+            app.set_accels_for_action(
+                &format!("win.set-color-{i}"),
+                &[&format!("{i}"), &format!("<Ctrl>KP_{i}")],
+            )
+        });
+
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
             app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);

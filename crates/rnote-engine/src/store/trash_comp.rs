@@ -81,6 +81,7 @@ impl StrokeStore {
     pub(crate) fn trash_colliding_strokes(
         &mut self,
         eraser_bounds: Aabb,
+        previous_eraser_bounds: Option<Aabb>,
         viewport: Aabb,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
@@ -129,6 +130,7 @@ impl StrokeStore {
     pub(crate) fn split_colliding_strokes(
         &mut self,
         eraser_bounds: Aabb,
+        previous_eraser_bounds: Option<Aabb>,
         viewport: Aabb,
     ) -> (Vec<StrokeKey>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();

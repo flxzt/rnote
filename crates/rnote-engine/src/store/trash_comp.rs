@@ -3,8 +3,11 @@ use super::chrono_comp::StrokeLayer;
 use super::{StrokeKey, StrokeStore};
 use crate::WidgetFlags;
 use crate::strokes::{BrushStroke, Stroke};
+use geo::ConvexHull;
+use geo::intersects::Intersects;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::PenPath;
+use rnote_compose::Style::Textured;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -86,6 +89,18 @@ impl StrokeStore {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
+        let sliding_polygon = if let Some(previous_bounds) = previous_eraser_bounds {
+            Some(
+                geo::MultiPolygon::new(vec![
+                    crate::utils::p2d_aabb_to_geo_polygon(previous_bounds),
+                    crate::utils::p2d_aabb_to_geo_polygon(eraser_bounds),
+                ])
+                .convex_hull(),
+            )
+        } else {
+            None
+        };
+
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
@@ -94,13 +109,31 @@ impl StrokeStore {
                 if let Some(stroke) = self.stroke_components.get(key) {
                     match stroke.as_ref() {
                         Stroke::BrushStroke(_) | Stroke::ShapeStroke(_) => {
-                            // First check if eraser even intersects stroke bounds, avoiding unnecessary work
-                            if eraser_bounds.intersects(&stroke.bounds()) {
-                                for hitbox in stroke.hitboxes().into_iter() {
-                                    if eraser_bounds.intersects(&hitbox) {
-                                        trash_current_stroke = true;
+                            let stroke_bounds = stroke.bounds();
 
-                                        break;
+                            // First check if eraser even intersects stroke bounds, avoiding unnecessary work
+                            if let Some(polygon) = &sliding_polygon {
+                                if polygon.intersects(&crate::utils::p2d_aabb_to_geo_polygon(
+                                    stroke_bounds,
+                                )) {
+                                    for hitbox in stroke.hitboxes().into_iter() {
+                                        if polygon.intersects(
+                                            &crate::utils::p2d_aabb_to_geo_polygon(hitbox),
+                                        ) {
+                                            trash_current_stroke = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                // First check if eraser even intersects stroke bounds, avoiding unnecessary work
+                                if eraser_bounds.intersects(&stroke_bounds) {
+                                    for hitbox in stroke.hitboxes().into_iter() {
+                                        if eraser_bounds.intersects(&hitbox) {
+                                            trash_current_stroke = true;
+
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -136,6 +169,18 @@ impl StrokeStore {
         let mut widget_flags = WidgetFlags::default();
         let mut modified_keys = vec![];
 
+        let sliding_polygon = if let Some(previous_bounds) = previous_eraser_bounds {
+            Some(
+                geo::MultiPolygon::new(vec![
+                    crate::utils::p2d_aabb_to_geo_polygon(previous_bounds),
+                    crate::utils::p2d_aabb_to_geo_polygon(eraser_bounds),
+                ])
+                .convex_hull(),
+            )
+        } else {
+            None
+        };
+
         let new_strokes = self
             .stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
@@ -157,13 +202,43 @@ impl StrokeStore {
 
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
-                        if eraser_bounds.intersects(&stroke_bounds) {
+                        let intersection_test = if let Some(polygon) = &sliding_polygon {
+                            polygon
+                                .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                        } else {
+                            eraser_bounds.intersects(&stroke_bounds)
+                        };
+
+                        if intersection_test {
                             let mut split = Vec::new();
 
-                            let mut hits = brushstroke
-                                .path
-                                .hittest(&eraser_bounds, brushstroke.style.stroke_width() * 0.5)
-                                .into_iter();
+                            let mut hits = if let Some(polygon) = &sliding_polygon {
+                                brushstroke
+                                    .path
+                                    .hitboxes_w_segs_indices()
+                                    .into_iter()
+                                    .filter_map(|(i, seg_hitboxes)| {
+                                        seg_hitboxes
+                                            .into_iter()
+                                            .any(|hitbox| {
+                                                polygon.intersects(
+                                                    &crate::utils::p2d_aabb_to_geo_polygon(
+                                                        hitbox.loosened(
+                                                            brushstroke.style.stroke_width() * 0.5,
+                                                        ),
+                                                    ),
+                                                )
+                                            })
+                                            .then_some(i?)
+                                    })
+                                    .collect::<Vec<usize>>()
+                                    .into_iter()
+                            } else {
+                                brushstroke
+                                    .path
+                                    .hittest(&eraser_bounds, brushstroke.style.stroke_width() * 0.5)
+                                    .into_iter()
+                            };
 
                             if let Some(first_hit) = hits.next() {
                                 let mut prev = first_hit;

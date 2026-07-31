@@ -170,7 +170,7 @@ impl StrokeStore {
 
                                     // skip splits that don't have at least two segments (one's end as path start, one additional)
                                     if split_slice.len() > 1 {
-                                        split.push(split_slice.to_vec());
+                                        split.push((split_slice.to_vec(), prev));
                                     }
 
                                     prev = hit;
@@ -179,17 +179,26 @@ impl StrokeStore {
                                 // Catch the last
                                 let last_split = &brushstroke.path.segments[prev..];
                                 if last_split.len() > 1 {
-                                    split.push(last_split.to_vec());
+                                    split.push((last_split.to_vec(), prev));
                                 }
 
-                                for next_split in split {
+                                for (next_split, prev) in split {
                                     let mut next_split_iter = next_split.into_iter();
                                     let next_start = next_split_iter.next().unwrap().end();
+
+                                    let mut new_style = brushstroke.style.clone();
+                                    if let Textured(_) = new_style {
+                                        // advance the seed for the cut portion to keep the same
+                                        // visual appearance
+                                        for _ in 0..=prev {
+                                            new_style.advance_seed();
+                                        }
+                                    }
 
                                     new_strokes.push((
                                         Stroke::BrushStroke(BrushStroke::from_penpath(
                                             PenPath::new_w_segments(next_start, next_split_iter),
-                                            brushstroke.style.clone(),
+                                            new_style,
                                         )),
                                         chrono_comp.layer,
                                     ));

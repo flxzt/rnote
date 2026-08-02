@@ -44,5 +44,4 @@ pub use svg::Svg;
 pub use widgetflags::WidgetFlags;
 
 // Renames
-extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;

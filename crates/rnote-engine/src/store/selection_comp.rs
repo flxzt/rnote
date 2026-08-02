@@ -4,6 +4,7 @@ use super::{StrokeKey, StrokeStore};
 use crate::strokes::Stroke;
 use crate::strokes::content::GeneratedContentImages;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -137,7 +138,7 @@ impl StrokeStore {
     /// Keys that would be too small to be visible in the thumbnail are skipped to speed-up thumbnail generation
     pub(crate) fn thumbnail_keys_as_rendered(
         &self,
-        size: na::Vector2<f64>,
+        size: Vector2,
     ) -> (Vec<StrokeKey>, Option<Aabb>) {
         const MIN_SIZE: f64 = 2.0;
 
@@ -152,7 +153,7 @@ impl StrokeStore {
         let bounds = keys
             .iter()
             .fold(Aabb::new_invalid(), |acc, e| acc.merged(&e.1));
-        let scale = size.component_div(&bounds.extents());
+        let scale = size / bounds.extents();
         let mut keys = keys
             .into_iter()
             .filter_map(|(key, _)| {

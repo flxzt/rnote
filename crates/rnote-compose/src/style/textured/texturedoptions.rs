@@ -2,6 +2,7 @@
 use super::textureddotsdistribution::TexturedDotsDistribution;
 use crate::Color;
 use crate::style::PressureCurve;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 
 /// Options for shapes that can be drawn in a textured style.
@@ -43,7 +44,7 @@ impl Default for TexturedOptions {
 
 impl TexturedOptions {
     /// Dots dadii default, without width weight.
-    pub(super) const DOTS_RADII_DEFAULT: na::Vector2<f64> = na::vector![1.2, 0.3];
+    pub(super) const DOTS_RADII_DEFAULT: Vector2 = Vector2::new(1.2, 0.3);
     /// Weight factor the stroke width has to the radii of the dots.
     pub(super) const STROKE_WIDTH_RADII_WEIGHT: f64 = 0.1;
     /// Minimum dots density.

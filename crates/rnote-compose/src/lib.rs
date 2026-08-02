@@ -27,8 +27,8 @@ pub mod shapes;
 pub mod splitorder;
 /// module for styles, that can be applied onto shapes
 pub mod style;
-/// module for transformation
-pub mod transform;
+/// module for transformationable trait
+pub mod transformable;
 /// other misc utilities
 pub mod utils;
 
@@ -41,8 +41,7 @@ pub use penpath::PenPath;
 pub use shapes::Shape;
 pub use splitorder::SplitOrder;
 pub use style::Style;
-pub use transform::Transform;
+pub use transformable::Transformable;
 
 // Renames
-extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;

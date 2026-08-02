@@ -1,6 +1,7 @@
 // Imports
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rstar::primitives::GeomWithData;
 
 /// The rtree object that holds the bounds and [StrokeKey].
@@ -64,8 +65,8 @@ impl KeyTree {
             (
                 geom.data,
                 Aabb::new(
-                    na::point![lower[0], lower[1]],
-                    na::point![upper[0], upper[1]],
+                    Vector2::new(lower[0], lower[1]),
+                    Vector2::new(upper[0], upper[1]),
                 ),
             )
         })

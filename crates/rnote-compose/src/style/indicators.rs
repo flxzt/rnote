@@ -3,6 +3,7 @@ use crate::color;
 use crate::ext::{AabbExt, Vector2Ext};
 use crate::penevent::PenState;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 
 // Pos indicator
@@ -13,11 +14,7 @@ pub const POS_INDICATOR_RADIUS: f64 = 3.0;
 pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 1.5;
 
 /// Position indicator shape.
-pub fn pos_indicator_shape(
-    _node_state: PenState,
-    pos: na::Vector2<f64>,
-    zoom: f64,
-) -> kurbo::Circle {
+pub fn pos_indicator_shape(_node_state: PenState, pos: Vector2, zoom: f64) -> kurbo::Circle {
     kurbo::Circle::new(
         pos.to_kurbo_point(),
         (POS_INDICATOR_RADIUS - POS_INDICATOR_OUTLINE_WIDTH * 0.5) / zoom,
@@ -28,7 +25,7 @@ pub fn pos_indicator_shape(
 pub fn draw_pos_indicator(
     cx: &mut impl RenderContext,
     node_state: PenState,
-    pos: na::Vector2<f64>,
+    pos: Vector2,
     zoom: f64,
 ) {
     const FILL_COLOR: piet::Color = color::GNOME_REDS[3].with_a8(176);
@@ -58,8 +55,8 @@ pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.5;
 /// Vector indicator shape.
 pub fn vec_indicator_shape(
     _node_state: PenState,
-    start: na::Vector2<f64>,
-    end: na::Vector2<f64>,
+    start: Vector2,
+    end: Vector2,
     _zoom: f64,
 ) -> kurbo::Line {
     kurbo::Line::new(start.to_kurbo_point(), end.to_kurbo_point())
@@ -69,8 +66,8 @@ pub fn vec_indicator_shape(
 pub fn draw_vec_indicator(
     cx: &mut impl RenderContext,
     node_state: PenState,
-    start: na::Vector2<f64>,
-    end: na::Vector2<f64>,
+    start: Vector2,
+    end: Vector2,
     zoom: f64,
 ) {
     let vec_indicator = vec_indicator_shape(node_state, start, end, zoom);
@@ -92,11 +89,7 @@ pub const FINISH_INDICATOR_RADIUS: f64 = 5.0;
 pub const FINISH_INDICATOR_OUTLINE_WIDTH: f64 = 5.0;
 
 /// A finish indicator shape.
-pub fn finish_indicator_shape(
-    _node_state: PenState,
-    pos: na::Vector2<f64>,
-    zoom: f64,
-) -> kurbo::Circle {
+pub fn finish_indicator_shape(_node_state: PenState, pos: Vector2, zoom: f64) -> kurbo::Circle {
     kurbo::Circle::new(
         pos.to_kurbo_point(),
         (FINISH_INDICATOR_RADIUS - FINISH_INDICATOR_OUTLINE_WIDTH * 0.5) / zoom,
@@ -107,7 +100,7 @@ pub fn finish_indicator_shape(
 pub fn draw_finish_indicator(
     cx: &mut impl RenderContext,
     node_state: PenState,
-    pos: na::Vector2<f64>,
+    pos: Vector2,
     zoom: f64,
 ) {
     const FILL_COLOR: piet::Color = color::GNOME_GREENS[3].with_a8(176);
@@ -194,7 +187,7 @@ pub fn circular_node_shape(
     bounding_sphere.tighten(CIRCULAR_NODE_OUTLINE_WIDTH * 0.5 / zoom);
 
     kurbo::Circle::new(
-        bounding_sphere.center.coords.to_kurbo_point(),
+        bounding_sphere.center.to_kurbo_point(),
         bounding_sphere.radius,
     )
 }
@@ -237,8 +230,8 @@ pub const TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH: f64 = 1.5;
 /// Triangular node shape.
 pub fn triangular_down_node_shape(
     _node_state: PenState,
-    center: na::Vector2<f64>,
-    size: na::Vector2<f64>,
+    center: Vector2,
+    size: Vector2,
     zoom: f64,
 ) -> kurbo::BezPath {
     let outline_half_width = TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH * 0.5 / zoom;
@@ -263,8 +256,8 @@ pub fn triangular_down_node_shape(
 pub fn draw_triangular_node(
     cx: &mut impl RenderContext,
     node_state: PenState,
-    center: na::Vector2<f64>,
-    size: na::Vector2<f64>,
+    center: Vector2,
+    size: Vector2,
     zoom: f64,
 ) {
     const OUTLINE_COLOR: piet::Color = color::GNOME_ORANGES[4];

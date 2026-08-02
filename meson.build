@@ -1,4 +1,4 @@
-project('rnote', ['rust', 'cpp'], version: '0.14.2', meson_version: '>= 1.0')
+project('rnote', ['rust', 'cpp'], version: '0.15.0', meson_version: '>= 1.0')
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
 patch = ''
 
@@ -206,7 +206,7 @@ if build_ui == true
             cargo_build_script,
             meson.project_build_root(),
             meson.project_source_root(),
-            cargo_env,
+            ' '.join(cargo_env),
             cargo,
             ' '.join(ui_cargo_options),
             cargo_target_dir / rust_target_folder / app_name,
@@ -261,7 +261,22 @@ if build_ui == true
         configuration: inno_script_conf,
     )
 
+    if build_cli and host_machine.system() == 'windows'
+        define_cli_output = '/DMyAppCliExeName=' + cli_name + '.exe'
+    else
+        define_cli_output = ''
+    endif
+
     if host_machine.system() == 'windows'
+        # the inno_build_script build script will
+        # package the cli if its name is provided
+        # so only give the name if the cli is
+        # actually built
+        if build_cli
+            package_cli_name = cli_name
+        else
+            package_cli_name = ''
+        endif
         # build installer
         custom_target(
             'build-installer',
@@ -277,6 +292,7 @@ if build_ui == true
                 app_id,
                 ui_output,
                 meson.project_build_root() / '@INPUT@',
+                package_cli_name,
             ],
             build_by_default: false,
             depends: app_cargo_build,

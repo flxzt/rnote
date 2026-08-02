@@ -1,3 +1,12 @@
+# Manual Maintenance Jobs
+
+Every once in a while, make sure to:
+- Update the translation template `rnote.pot` file with updated strings with `just update-translations-template`.
+    Make sure to remove the changelog and any strings starting and ending with `@..@` afterwards as they are templates
+    and will be replaced automatically.
+    To ease with that edit the file in a diff view.
+- Update auto-generatable translation `.po` files with `just update-translations`
+
 # Create a Release
 
 - Update PO template with `just update-translations-template` and wait for Weblate to apply it

@@ -5,6 +5,8 @@ use crate::engine::{EngineTask, EngineTaskSender};
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
 use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
+use p2d::math::Vector2;
 use rnote_compose::ext::AabbExt;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
@@ -27,10 +29,10 @@ pub enum NudgeDirection {
 pub struct Camera {
     /// The offset in surface coordinates.
     #[serde(rename = "offset")]
-    offset: na::Vector2<f64>,
+    offset: Vector2,
     /// The dimensions in surface coordinates.
     #[serde(rename = "size")]
-    size: na::Vector2<f64>,
+    size: Vector2,
     /// The camera zoom, origin at (0.0, 0.0).
     #[serde(rename = "zoom")]
     zoom: f64,
@@ -51,8 +53,8 @@ pub struct Camera {
 impl Default for Camera {
     fn default() -> Self {
         Self {
-            offset: na::vector![-Self::OVERSHOOT_HORIZONTAL, -Self::OVERSHOOT_VERTICAL],
-            size: na::vector![800.0, 600.0],
+            offset: Vector2::new(-Self::OVERSHOOT_HORIZONTAL, -Self::OVERSHOOT_VERTICAL),
+            size: Vector2::new(800.0, 600.0),
             zoom: 1.0,
             temporary_zoom: 1.0,
             scale_factor: 1.0,
@@ -88,40 +90,40 @@ impl Camera {
         self
     }
 
-    pub fn with_offset(mut self, offset: na::Vector2<f64>) -> Self {
+    pub fn with_offset(mut self, offset: Vector2) -> Self {
         self.offset = offset;
         self
     }
-    pub fn with_size(mut self, size: na::Vector2<f64>) -> Self {
+    pub fn with_size(mut self, size: Vector2) -> Self {
         self.size = size;
         self
     }
 
     /// The current viewport offset in surface coordinate space.
-    pub fn offset(&self) -> na::Vector2<f64> {
+    pub fn offset(&self) -> Vector2 {
         self.offset
     }
 
-    pub fn set_offset(&mut self, offset: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
+    pub fn set_offset(&mut self, offset: Vector2, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         let (mins, maxs) = self.surface_mins_maxs(doc);
-        let offset_maxs = na::vector![
+        let offset_maxs = Vector2::new(
             (maxs.x - self.size.x).max(mins.x),
-            (maxs.y - self.size.y).max(mins.y)
-        ];
+            (maxs.y - self.size.y).max(mins.y),
+        );
 
-        self.offset = na::vector![
+        self.offset = Vector2::new(
             offset.x.clamp(mins.x, offset_maxs.x),
-            offset.y.clamp(mins.y, offset_maxs.y)
-        ];
+            offset.y.clamp(mins.y, offset_maxs.y),
+        );
 
         widget_flags.view_modified = true;
         widget_flags
     }
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
-    pub fn surface_mins_maxs(&self, doc: &Document) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    pub fn surface_mins_maxs(&self, doc: &Document) -> (Vector2, Vector2) {
         let total_zoom = self.total_zoom();
 
         let (h_lower, h_upper) = match doc.config.layout {
@@ -147,15 +149,18 @@ impl Camera {
             Layout::Infinite => (doc.y * total_zoom, (doc.y + doc.height) * total_zoom),
         };
 
-        (na::vector![h_lower, v_lower], na::vector![h_upper, v_upper])
+        (
+            Vector2::new(h_lower, v_lower),
+            Vector2::new(h_upper, v_upper),
+        )
     }
 
     /// The current viewport size in surface coordinate space.
-    pub fn size(&self) -> na::Vector2<f64> {
+    pub fn size(&self) -> Vector2 {
         self.size
     }
 
-    pub fn set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+    pub fn set_size(&mut self, size: Vector2) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.size = size;
 
@@ -258,20 +263,20 @@ impl Camera {
         let total_zoom = self.total_zoom();
 
         Aabb::new_positive(
-            (self.offset / total_zoom).into(),
-            ((self.offset + self.size) / total_zoom).into(),
+            self.offset / total_zoom,
+            (self.offset + self.size) / total_zoom,
         )
     }
 
     /// The current viewport center in document coordinate space.
-    pub fn viewport_center(&self) -> na::Vector2<f64> {
+    pub fn viewport_center(&self) -> Vector2 {
         (self.offset + self.size * 0.5) / self.total_zoom()
     }
 
     /// Set the viewport center.
     ///
     /// `center` must be in document coordinate space.
-    pub fn set_viewport_center(&mut self, center: na::Vector2<f64>) -> WidgetFlags {
+    pub fn set_viewport_center(&mut self, center: Vector2) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.offset = center * self.total_zoom() - self.size * 0.5;
         widget_flags.view_modified = true;
@@ -291,15 +296,10 @@ impl Camera {
     /// The transform from document coords to surface coords.
     ///
     /// To get the inverse, call `.inverse()`.
-    pub fn transform(&self) -> na::Affine2<f64> {
-        let total_zoom = self.total_zoom();
-
-        na::try_convert(
-            // LHS is applied onto RHS, so the order is scaling by zoom -> Translation by offset
-            na::Translation2::from(-self.offset).to_homogeneous()
-                * na::Scale2::from(na::Vector2::from_element(total_zoom)).to_homogeneous(),
-        )
-        .unwrap()
+    pub fn transform(&self) -> DAffine2 {
+        // LHS is applied onto RHS, so the order is scaling by zoom -> Translation by offset
+        DAffine2::from_translation(-self.offset)
+            * DAffine2::from_scale(Vector2::splat(self.total_zoom()))
     }
 
     /// The gsk transform for the GTK snapshot function.
@@ -320,7 +320,7 @@ impl Camera {
     }
 
     /// Detects if a nudge is needed, meaning: the position is close to an edge of the current viewport.
-    pub fn detect_nudge_needed(&self, pos: na::Vector2<f64>) -> Option<NudgeDirection> {
+    pub fn detect_nudge_needed(&self, pos: Vector2) -> Option<NudgeDirection> {
         const NUDGE_VIEWPORT_DIST: f64 = 10.0;
         let viewport = self.viewport();
         let nudge_north = pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST;
@@ -348,14 +348,14 @@ impl Camera {
         doc: &Document,
     ) -> WidgetFlags {
         let nudge_offset = match direction {
-            NudgeDirection::North => na::vector![0., -amount],
-            NudgeDirection::NorthEast => na::vector![amount, -amount],
-            NudgeDirection::East => na::vector![amount, 0.],
-            NudgeDirection::SouthEast => na::vector![amount, amount],
-            NudgeDirection::South => na::vector![0., amount],
-            NudgeDirection::SouthWest => na::vector![-amount, amount],
-            NudgeDirection::West => na::vector![-amount, 0.],
-            NudgeDirection::NorthWest => na::vector![-amount, -amount],
+            NudgeDirection::North => Vector2::new(0., -amount),
+            NudgeDirection::NorthEast => Vector2::new(amount, -amount),
+            NudgeDirection::East => Vector2::new(amount, 0.),
+            NudgeDirection::SouthEast => Vector2::new(amount, amount),
+            NudgeDirection::South => Vector2::new(0., amount),
+            NudgeDirection::SouthWest => Vector2::new(-amount, amount),
+            NudgeDirection::West => Vector2::new(-amount, 0.),
+            NudgeDirection::NorthWest => Vector2::new(-amount, -amount),
         };
         self.set_offset(self.offset() + nudge_offset, doc)
     }
@@ -365,7 +365,7 @@ impl Camera {
         self.nudge_by(NUDGE_AMOUNT, direction, doc)
     }
 
-    pub fn nudge_w_pos(&mut self, pos: na::Vector2<f64>, doc: &Document) -> WidgetFlags {
+    pub fn nudge_w_pos(&mut self, pos: Vector2, doc: &Document) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         if let Some(nudge_direction) = self.detect_nudge_needed(pos) {
             widget_flags |= self.nudge(nudge_direction, doc);
@@ -376,38 +376,38 @@ impl Camera {
 
 #[cfg(test)]
 mod tests {
-    use crate::Camera;
+    use super::*;
     use approx::assert_relative_eq;
 
     #[test]
     fn transform_vec() {
-        let offset = na::vector![4.0, 2.0];
+        let offset = Vector2::new(4.0, 2.0);
         let zoom = 1.5;
         let camera = Camera::default().with_zoom(zoom).with_offset(offset);
 
         // Point in document coordinates
-        let p0 = na::point![10.0, 2.0];
+        let p0 = Vector2::new(10.0, 2.0);
 
         // first zoom, then scale
         assert_relative_eq!(
-            camera.transform().transform_point(&p0).coords,
-            (p0.coords * zoom) - offset
+            camera.transform().transform_point2(p0),
+            (p0 * zoom) - offset
         );
     }
 
     #[test]
     fn viewport() {
         let zoom = 2.0;
-        let offset = na::vector![10.0, 10.0];
-        let size = na::vector![20.0, 30.0];
+        let offset = Vector2::splat(10.0);
+        let size = Vector2::new(20.0, 30.0);
+
         let camera = Camera::default()
             .with_zoom(zoom)
             .with_offset(offset)
             .with_size(size);
 
-        let mins = na::Point2::from(offset / zoom);
-        let maxs = na::Point2::from((offset + size) / zoom);
-
+        let mins = offset / zoom;
+        let maxs = (offset + size) / zoom;
         let viewport = camera.viewport();
 
         assert_relative_eq!(viewport.mins, mins);

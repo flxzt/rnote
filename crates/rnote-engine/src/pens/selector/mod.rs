@@ -14,6 +14,7 @@ use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
 use futures::channel::oneshot;
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
+use p2d::math::Vector2;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::EventResult;
@@ -37,19 +38,19 @@ pub(super) enum ResizeCorner {
 pub(super) enum ModifyState {
     Idle,
     Translate {
-        start_pos: na::Vector2<f64>,
-        current_pos: na::Vector2<f64>,
+        start_pos: Vector2,
+        current_pos: Vector2,
         snap_corner: SnapCorner,
     },
     Rotate {
-        rotation_center: na::Point2<f64>,
+        rotation_center: Vector2,
         start_rotation_angle: f64,
         current_rotation_angle: f64,
     },
     Resize {
         from_corner: ResizeCorner,
         start_bounds: Aabb,
-        start_pos: na::Vector2<f64>,
+        start_pos: Vector2,
         last_rendered_bounds: Aabb,
     },
 }
@@ -82,7 +83,7 @@ impl Default for SelectorState {
 #[derive(Clone, Debug)]
 pub struct Selector {
     pub(super) state: SelectorState,
-    pos: Option<na::Vector2<f64>>,
+    pos: Option<Vector2>,
 }
 
 impl Default for Selector {
@@ -283,14 +284,14 @@ impl DrawableOnDoc for Selector {
                 let mut path_iter = path.iter();
                 if let Some(first) = path_iter.next() {
                     let mut new_bounds = Aabb::from_half_extents(
-                        first.pos.into(),
-                        na::Vector2::repeat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
+                        first.pos,
+                        Vector2::splat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
                     );
 
                     path_iter.for_each(|element| {
                         let pos_bounds = Aabb::from_half_extents(
-                            element.pos.into(),
-                            na::Vector2::repeat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
+                            element.pos,
+                            Vector2::splat(Self::OUTLINE_STROKE_WIDTH / total_zoom),
                         );
                         new_bounds.merge(&pos_bounds);
                     });
@@ -472,7 +473,7 @@ impl Selector {
     /// The radius of the circle when selecting in single mode.
     const SELECTING_SINGLE_CIRCLE_RADIUS: f64 = 4.0;
     /// Resize node size, in surface coordinates.
-    const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
+    const RESIZE_NODE_SIZE: Vector2 = Vector2::splat(18.0);
     /// Rotate node diameter, in surface coordinates.
     const ROTATE_NODE_DIAMETER: f64 = 18.0;
     /// The outline color when drawing a selection
@@ -500,31 +501,31 @@ impl Selector {
         let total_zoom = camera.total_zoom();
         match position {
             ResizeCorner::TopLeft => Aabb::from_half_extents(
-                na::point![
+                Vector2::new(
                     selection_bounds.mins[0] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
-                    selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
-                ],
+                    selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                ),
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::TopRight => Aabb::from_half_extents(
-                na::point![
+                Vector2::new(
                     selection_bounds.maxs[0] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
-                    selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
-                ],
+                    selection_bounds.mins[1] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                ),
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::BottomLeft => Aabb::from_half_extents(
-                na::point![
+                Vector2::new(
                     selection_bounds.mins[0] - Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
-                    selection_bounds.maxs[1] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
-                ],
+                    selection_bounds.maxs[1] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                ),
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::BottomRight => Aabb::from_half_extents(
-                na::point![
+                Vector2::new(
                     selection_bounds.maxs[0] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
-                    selection_bounds.maxs[1] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom
-                ],
+                    selection_bounds.maxs[1] + Self::RESIZE_NODE_SIZE[0] * 0.5 / total_zoom,
+                ),
                 Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
         }
@@ -532,10 +533,10 @@ impl Selector {
 
     fn rotate_node_sphere(selection_bounds: Aabb, camera: &Camera) -> BoundingSphere {
         let total_zoom = camera.total_zoom();
-        let pos = na::point![
+        let pos = Vector2::new(
             selection_bounds.maxs[0] + Self::RESIZE_NODE_SIZE[0] / (2.0 * total_zoom),
-            (selection_bounds.maxs[1] + selection_bounds.mins[1]) * 0.5
-        ];
+            (selection_bounds.maxs[1] + selection_bounds.mins[1]) * 0.5,
+        );
         BoundingSphere::new(pos, Self::ROTATE_NODE_DIAMETER * 0.5 / total_zoom)
     }
 
@@ -543,7 +544,7 @@ impl Selector {
         piet_cx: &mut impl RenderContext,
         selection_bounds: Aabb,
         modify_state: &ModifyState,
-        pos: Option<na::Vector2<f64>>,
+        pos: Option<Vector2>,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -553,7 +554,7 @@ impl Selector {
         let rotate_node_state = if matches!(modify_state, ModifyState::Rotate { .. }) {
             PenState::Down
         } else if let Some(pos) = pos {
-            if rotate_node_sphere.contains_local_point(&pos.into()) {
+            if rotate_node_sphere.contains_local_point(pos) {
                 PenState::Proximity
             } else {
                 PenState::Up
@@ -573,7 +574,7 @@ impl Selector {
         ) {
             PenState::Down
         } else if let Some(pos) = pos {
-            if resize_tl_node_bounds.contains_local_point(&pos.into()) {
+            if resize_tl_node_bounds.contains_local_point(pos) {
                 PenState::Proximity
             } else {
                 PenState::Up
@@ -593,7 +594,7 @@ impl Selector {
         ) {
             PenState::Down
         } else if let Some(pos) = pos {
-            if resize_tr_node_bounds.contains_local_point(&pos.into()) {
+            if resize_tr_node_bounds.contains_local_point(pos) {
                 PenState::Proximity
             } else {
                 PenState::Up
@@ -613,7 +614,7 @@ impl Selector {
         ) {
             PenState::Down
         } else if let Some(pos) = pos {
-            if resize_bl_node_bounds.contains_local_point(&pos.into()) {
+            if resize_bl_node_bounds.contains_local_point(pos) {
                 PenState::Proximity
             } else {
                 PenState::Up
@@ -633,7 +634,7 @@ impl Selector {
         ) {
             PenState::Down
         } else if let Some(pos) = pos {
-            if resize_br_node_bounds.contains_local_point(&pos.into()) {
+            if resize_br_node_bounds.contains_local_point(pos) {
                 PenState::Proximity
             } else {
                 PenState::Up
@@ -743,7 +744,7 @@ impl Selector {
 
     fn draw_rotation_indicator(
         piet_cx: &mut impl RenderContext,
-        rotation_center: na::Point2<f64>,
+        rotation_center: Vector2,
         start_rotation_angle: f64,
         current_rotation_angle: f64,
         camera: &Camera,
@@ -761,24 +762,22 @@ impl Selector {
 
         let mut center_cross = kurbo::BezPath::new();
         center_cross.move_to(
-            (rotation_center.coords + na::vector![-center_cross_half_extents, 0.0])
-                .to_kurbo_point(),
+            (rotation_center + Vector2::new(-center_cross_half_extents, 0.0)).to_kurbo_point(),
         );
         center_cross.line_to(
-            (rotation_center.coords + na::vector![center_cross_half_extents, 0.0]).to_kurbo_point(),
+            (rotation_center + Vector2::new(center_cross_half_extents, 0.0)).to_kurbo_point(),
         );
         center_cross.move_to(
-            (rotation_center.coords + na::vector![0.0, -center_cross_half_extents])
-                .to_kurbo_point(),
+            (rotation_center + Vector2::new(0.0, -center_cross_half_extents)).to_kurbo_point(),
         );
         center_cross.line_to(
-            (rotation_center.coords + na::vector![0.0, center_cross_half_extents]).to_kurbo_point(),
+            (rotation_center + Vector2::new(0.0, center_cross_half_extents)).to_kurbo_point(),
         );
 
         piet_cx.transform(
-            kurbo::Affine::translate(rotation_center.coords.to_kurbo_vec())
+            kurbo::Affine::translate(rotation_center.to_kurbo_vec())
                 * kurbo::Affine::rotate(current_rotation_angle - start_rotation_angle)
-                * kurbo::Affine::translate(-rotation_center.coords.to_kurbo_vec()),
+                * kurbo::Affine::translate(-rotation_center.to_kurbo_vec()),
         );
 
         piet_cx.stroke(

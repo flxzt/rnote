@@ -5,11 +5,12 @@ use crate::Drawable;
 use crate::Image;
 use crate::strokes::content;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
+use rnote_compose::Transformable;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
-use rnote_compose::transform::Transformable;
 use rnote_compose::{PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -242,13 +243,13 @@ impl Shapeable for BrushStroke {
 }
 
 impl Transformable for BrushStroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.path.translate(offset);
     }
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         self.path.rotate(angle, center);
     }
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.path.scale(scale);
         // Using the geometric mean behaves the best when scaling non-uniformly.
         let scale_scalar = (scale[0] * scale[1]).sqrt();

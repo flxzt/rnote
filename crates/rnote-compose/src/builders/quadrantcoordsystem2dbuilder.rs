@@ -8,6 +8,7 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -15,9 +16,9 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct QuadrantCoordSystem2DBuilder {
     /// Tip of the y axis.
-    tip_y: na::Vector2<f64>,
+    tip_y: Vector2,
     /// Tip of the x axis.
-    tip_x: na::Vector2<f64>,
+    tip_x: Vector2,
 }
 
 impl BuilderCreator for QuadrantCoordSystem2DBuilder {
@@ -85,7 +86,7 @@ impl Buildable for QuadrantCoordSystem2DBuilder {
 impl QuadrantCoordSystem2DBuilder {
     /// The current state as two individual lines.
     pub fn state_as_lines(&self) -> Vec<Line> {
-        let center = na::vector!(self.tip_y.x, self.tip_x.y);
+        let center = Vector2::new(self.tip_y.x, self.tip_x.y);
 
         let up_axis = Line {
             start: center,

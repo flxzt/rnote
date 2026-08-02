@@ -3,30 +3,23 @@ use super::penshortcutmodels::{
     ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
 };
 use adw::{prelude::*, subclass::prelude::*};
+use glib::subclass::Signal;
 use gtk4::{CompositeTemplate, glib};
 use num_traits::ToPrimitive;
 use rnote_engine::pens::PenStyle;
 
 mod imp {
+    use once_cell::sync::Lazy;
+
     use super::*;
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Debug, CompositeTemplate, Default)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penmoderow.ui")]
     pub(crate) struct RnPenModeRow {
         pub(crate) changepenstyle_model: ChangePenStyleListModel,
 
         #[template_child]
         pub(crate) mode: TemplateChild<gtk4::Switch>,
-    }
-
-    impl Default for RnPenModeRow {
-        fn default() -> Self {
-            Self {
-                changepenstyle_model: ChangePenStyleListModel::default(),
-                mode: TemplateChild::default(),
-                // will probably be more featured later
-            }
-        }
     }
 
     #[glib::object_subclass]
@@ -56,6 +49,10 @@ mod imp {
             obj.set_model(Some(&*self.changepenstyle_model));
             obj.set_list_factory(Some(&*list_factory));
             obj.set_factory(Some(&*icon_factory));
+
+            obj.connect_selected_item_notify(move |row| {
+                row.emit_by_name::<()>("action-changed", &[]);
+            });
         }
 
         fn dispose(&self) {
@@ -63,6 +60,12 @@ mod imp {
             while let Some(child) = self.obj().first_child() {
                 child.unparent();
             }
+        }
+
+        fn signals() -> &'static [Signal] {
+            static SIGNALS: Lazy<Vec<Signal>> =
+                Lazy::new(|| vec![Signal::builder("action-changed").build()]);
+            SIGNALS.as_ref()
         }
     }
 

@@ -23,6 +23,7 @@ use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
 use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::pens::PenMode;
 use std::cell::RefCell;
 
 mod imp {
@@ -419,6 +420,7 @@ impl RnSettingsPanel {
         self.refresh_format_ui(appwindow);
         self.refresh_doc_ui(appwindow);
         self.refresh_shortcuts_ui(appwindow);
+        self.refresh_lock_ui(appwindow);
     }
 
     fn refresh_general_ui(&self, appwindow: &RnAppWindow) {
@@ -535,6 +537,26 @@ impl RnSettingsPanel {
                     imp.penshortcut_drawing_pad_button_3.set_action(action);
                 }
             });
+    }
+
+    fn refresh_lock_ui(&self, appwindow: &RnAppWindow) {
+        let imp = self.imp();
+
+        imp.lock_pen_mode.set_pen_style(
+            appwindow
+                .engine_config()
+                .read()
+                .pens_config
+                .pen_mode_pen_style,
+        );
+
+        imp.lock_eraser_mode.set_pen_style(
+            appwindow
+                .engine_config()
+                .read()
+                .pens_config
+                .pen_mode_eraser_style,
+        );
     }
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
@@ -1202,6 +1224,8 @@ impl RnSettingsPanel {
         let penshortcut_drawing_pad_button_1 = imp.penshortcut_drawing_pad_button_1.get();
         let penshortcut_drawing_pad_button_2 = imp.penshortcut_drawing_pad_button_2.get();
         let penshortcut_drawing_pad_button_3 = imp.penshortcut_drawing_pad_button_3.get();
+        let lock_pen_row = imp.lock_pen_mode.get();
+        let lock_eraser_row = imp.lock_eraser_mode.get();
 
         imp.penshortcut_stylus_button_primary_row.connect_local(
             "action-changed",
@@ -1397,6 +1421,90 @@ impl RnSettingsPanel {
                         .write()
                         .pens_config
                         .register_shortcut(ShortcutKey::DrawingPadButton3, action);
+                    None
+                }
+            ),
+        );
+
+        imp.lock_pen_mode.connect_local(
+            "action-changed",
+            false,
+            clone!(
+                #[weak]
+                lock_pen_row,
+                #[weak]
+                appwindow,
+                #[upgrade_or]
+                None,
+                move |_values| {
+                    let pen_style = lock_pen_row.pen_style();
+
+                    if pen_style
+                        != appwindow
+                            .engine_config()
+                            .read()
+                            .pens_config
+                            .pen_mode_pen_style
+                    {
+                        let canvas = appwindow.active_tab_canvas()?;
+                        let current_pen = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+
+                        if PenMode::Pen == current_pen {
+                            // Note : this resets the internal toggle mode/internal states
+                            let widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                            canvas.emit_handle_widget_flags(widget_flags);
+                        } else {
+                            // change the config only, this will
+                            // be read on a pen mode switch
+                            appwindow
+                                .engine_config()
+                                .write()
+                                .pens_config
+                                .pen_mode_pen_style = pen_style;
+                        }
+                    }
+                    None
+                }
+            ),
+        );
+
+        imp.lock_eraser_mode.connect_local(
+            "action-changed",
+            false,
+            clone!(
+                #[weak]
+                lock_eraser_row,
+                #[weak]
+                appwindow,
+                #[upgrade_or]
+                None,
+                move |_values| {
+                    let pen_style = lock_eraser_row.pen_style();
+
+                    if pen_style
+                        != appwindow
+                            .engine_config()
+                            .read()
+                            .pens_config
+                            .pen_mode_eraser_style
+                    {
+                        let canvas = appwindow.active_tab_canvas()?;
+                        let current_pen = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+
+                        if PenMode::Eraser == current_pen {
+                            // Note : this resets the internal toggle mode/internal states
+                            let widget_flags = canvas.engine_mut().change_pen_style(pen_style);
+                            canvas.emit_handle_widget_flags(widget_flags);
+                        } else {
+                            // change the config only, this will
+                            // be read on a pen mode switch
+                            appwindow
+                                .engine_config()
+                                .write()
+                                .pens_config
+                                .pen_mode_eraser_style = pen_style;
+                        }
+                    }
                     None
                 }
             ),

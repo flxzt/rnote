@@ -152,7 +152,7 @@ impl RnPenPicker {
             appwindow,
             move |brush_toggle| {
                 if brush_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Brush);
+                    appwindow.set_pen_style_with_lock(PenStyle::Brush);
                 }
             }
         ));
@@ -162,7 +162,7 @@ impl RnPenPicker {
             appwindow,
             move |shaper_toggle| {
                 if shaper_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Shaper);
+                    appwindow.set_pen_style_with_lock(PenStyle::Shaper);
                 }
             }
         ));
@@ -172,7 +172,7 @@ impl RnPenPicker {
             appwindow,
             move |typewriter_toggle| {
                 if typewriter_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Typewriter);
+                    appwindow.set_pen_style_with_lock(PenStyle::Typewriter);
                 }
             }
         ));
@@ -182,7 +182,7 @@ impl RnPenPicker {
             appwindow,
             move |eraser_toggle| {
                 if eraser_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Eraser);
+                    appwindow.set_pen_style_with_lock(PenStyle::Eraser);
                 }
             }
         ));
@@ -192,7 +192,7 @@ impl RnPenPicker {
             appwindow,
             move |selector_toggle| {
                 if selector_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Selector);
+                    appwindow.set_pen_style_with_lock(PenStyle::Selector);
                 }
             }
         ));
@@ -202,7 +202,7 @@ impl RnPenPicker {
             appwindow,
             move |tools_toggle| {
                 if tools_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Tools);
+                    appwindow.set_pen_style_with_lock(PenStyle::Tools);
                 }
             }
         ));

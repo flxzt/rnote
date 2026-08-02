@@ -11,16 +11,18 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
-use gtk4::{Application, IconTheme, Widget, gdk, gio, glib};
+use gtk4::{Application, IconTheme, Widget, gdk, gio, glib, glib::clone};
 use rnote_compose::Color;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
 use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::pens::PenMode;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::{WidgetFlags, engine::EngineTask};
 use std::path::Path;
+use std::time::Duration;
 use tracing::{debug, error};
 
 glib::wrapper! {
@@ -78,6 +80,42 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn set_pen_style(&self, pen_style: PenStyle) {
         self.set_property("pen-style", pen_style.to_variant().to_value());
+    }
+
+    /// sets the pen style on the appwindow only if the penmode does
+    /// not hold a lock
+    pub(crate) fn set_pen_style_with_lock(&self, pen_style: PenStyle) {
+        if let Some(canvas) = self.active_tab_canvas() {
+            let current_penstyle = canvas.engine_ref().current_pen_style_w_override();
+            let current_penmode = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+
+            let locked = self.lock_pen_state(current_penmode);
+            if current_penstyle != pen_style {
+                if locked {
+                    self.overlays().dispatch_toast_w_button_singleton(
+                        &gettext("Tool Locked"),
+                        &gettext("Unlock"),
+                        clone!(
+                            #[weak(rename_to=appwindow)]
+                            self,
+                            #[weak]
+                            canvas,
+                            move |_reload_toast| {
+                                let current_penmode =
+                                    canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+                                appwindow.set_lock_pen_state(current_penmode, false);
+                                appwindow.refresh_ui();
+                            }
+                        ),
+                        Some(Duration::from_secs(2)),
+                        &canvas.imp().locked_tool_toast_singleton,
+                    );
+                    self.refresh_ui();
+                } else {
+                    self.set_pen_style(pen_style);
+                }
+            }
+        }
     }
 
     #[allow(unused)]
@@ -178,6 +216,20 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn set_save_in_progress(&self, save_in_progress: bool) {
         self.set_property("save-in-progress", save_in_progress.to_value());
+    }
+
+    pub(crate) fn lock_pen_state(&self, pen_mode: PenMode) -> bool {
+        match pen_mode {
+            PenMode::Pen => self.property::<bool>("lock-pen"),
+            PenMode::Eraser => self.property::<bool>("lock-eraser"),
+        }
+    }
+
+    pub(crate) fn set_lock_pen_state(&self, pen_mode: PenMode, lock: bool) {
+        match pen_mode {
+            PenMode::Pen => self.set_property("lock-pen", lock.to_value()),
+            PenMode::Eraser => self.set_property("lock-eraser", lock.to_value()),
+        }
     }
 
     pub(crate) fn app(&self) -> RnApp {

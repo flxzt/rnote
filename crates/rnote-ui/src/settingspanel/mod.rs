@@ -692,6 +692,22 @@ impl RnSettingsPanel {
                     }
                 }
             ));
+
+        imp.lock_pen_mode
+            .imp()
+            .mode
+            .bind_property("active", appwindow, "lock-pen")
+            .sync_create()
+            .bidirectional()
+            .build();
+
+        imp.lock_eraser_mode
+            .imp()
+            .mode
+            .bind_property("active", appwindow, "lock-eraser")
+            .sync_create()
+            .bidirectional()
+            .build();
     }
 
     fn setup_format(&self, appwindow: &RnAppWindow) {

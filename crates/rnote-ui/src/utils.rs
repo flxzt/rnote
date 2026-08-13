@@ -10,6 +10,43 @@ use std::cell::Ref;
 use std::path::{Path, PathBuf};
 use std::slice::Iter;
 
+/// Placeholder for the platform's primary modifier in accelerator strings.
+pub(crate) const PRIMARY_MODIFIER_PLACEHOLDER: &str = "<Primary>";
+
+/// The platform's primary modifier for application shortcuts,
+/// in the format expected by [`gtk4::accelerator_parse()`].
+///
+/// Gtk4 has no platform-dependent primary modifier - `<Primary>` is merely an alias for `<Ctrl>` -
+/// so it has to be substituted explicitly. On MacOS the native modifier for application
+/// shortcuts is the Command key, which Gdk reports as `<Meta>`.
+const PRIMARY_MODIFIER: &str = if cfg!(target_os = "macos") {
+    "<Meta>"
+} else {
+    "<Ctrl>"
+};
+
+/// Substitute [`PRIMARY_MODIFIER_PLACEHOLDER`] in an accelerator string
+/// with the platform's primary modifier.
+pub(crate) fn substitute_primary_modifier(accel: &str) -> String {
+    accel.replace(PRIMARY_MODIFIER_PLACEHOLDER, PRIMARY_MODIFIER)
+}
+
+/// Set the accelerators for the given action,
+/// substituting [`PRIMARY_MODIFIER_PLACEHOLDER`] with the platform's primary modifier.
+pub(crate) fn set_accels_for_action(
+    app: &impl IsA<gtk4::Application>,
+    detailed_action_name: &str,
+    accels: &[&str],
+) {
+    let accels = accels
+        .iter()
+        .map(|accel| substitute_primary_modifier(accel))
+        .collect::<Vec<String>>();
+    let accels = accels.iter().map(String::as_str).collect::<Vec<&str>>();
+    app.as_ref()
+        .set_accels_for_action(detailed_action_name, &accels);
+}
+
 /// The suffix delimiter when duplicating/renaming already existing files
 pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";
 /// The suffix delimiter when duplicating/renaming already existing files for usage in a regular expression
@@ -264,4 +301,29 @@ pub(crate) fn path_walk_up_until_exists(path: impl AsRef<Path>) -> anyhow::Resul
             .ok_or_else(|| anyhow::anyhow!("Path {} has no parent", path.display()))?;
     }
     Ok(path)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn substitute_primary_modifier_uses_platform_modifier() {
+        let expected = if cfg!(target_os = "macos") {
+            "<Meta><Shift>z"
+        } else {
+            "<Ctrl><Shift>z"
+        };
+        assert_eq!(substitute_primary_modifier("<Primary><Shift>z"), expected);
+    }
+
+    #[test]
+    fn substitute_primary_modifier_keeps_other_accels_intact() {
+        // accelerators without the placeholder must stay untouched on every platform
+        assert_eq!(substitute_primary_modifier("F11"), "F11");
+        assert_eq!(
+            substitute_primary_modifier("<Ctrl>ScrollUp"),
+            "<Ctrl>ScrollUp"
+        );
+    }
 }

@@ -6,7 +6,9 @@ use gtk4::{gio, prelude::*};
 use p2d::math::Vector2;
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::WidgetFlags;
-use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
+use rnote_engine::engine::export::{
+    DocExportFormat, DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs,
+};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
 use rnote_engine::strokes::resize::ImageSizeOption;
@@ -258,6 +260,18 @@ impl RnCanvas {
             // because we can't know for sure if the output-file watcher will be able to.
             self.set_output_file_expect_write(false);
             return Err(e);
+        }
+
+        if self.engine_ref().document.config.auto_export_svg {
+            self.export_doc(
+                &gio::File::for_path(filepath.with_added_extension("svg")),
+                crate::utils::default_file_title_for_export(Some(file.clone()), None, None),
+                Some(DocExportPrefs {
+                    export_format: DocExportFormat::Svg,
+                    ..Default::default()
+                }),
+            )
+            .await?;
         }
 
         debug!("Saving file has finished successfully");

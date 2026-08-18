@@ -251,7 +251,21 @@ impl RnCanvas {
             let bytes = rnote_bytes_receiver.await??;
             // The `output_file_expect_write` should theoretically be reset to `false` by the file watcher later.
             self.set_output_file_expect_write(true);
-            crate::utils::atomic_save_to_file_future(&filepath, bytes).await
+            crate::utils::atomic_save_to_file_future(&filepath, bytes).await?;
+
+            if self.engine_ref().document.config.auto_export_svg {
+                self.export_doc(
+                    &gio::File::for_path(filepath.with_extension("svg")),
+                    crate::utils::default_file_title_for_export(Some(file.clone()), None, None),
+                    Some(DocExportPrefs {
+                        export_format: DocExportFormat::Svg,
+                        ..Default::default()
+                    }),
+                )
+                .await?
+            }
+
+            Ok(())
         };
 
         if let Err(e) = file_write_operation.await {
@@ -260,18 +274,6 @@ impl RnCanvas {
             // because we can't know for sure if the output-file watcher will be able to.
             self.set_output_file_expect_write(false);
             return Err(e);
-        }
-
-        if self.engine_ref().document.config.auto_export_svg {
-            self.export_doc(
-                &gio::File::for_path(filepath.with_extension("svg")),
-                crate::utils::default_file_title_for_export(Some(file.clone()), None, None),
-                Some(DocExportPrefs {
-                    export_format: DocExportFormat::Svg,
-                    ..Default::default()
-                }),
-            )
-            .await?;
         }
 
         debug!("Saving file has finished successfully");

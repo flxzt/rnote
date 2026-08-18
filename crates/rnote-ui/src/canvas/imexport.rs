@@ -264,7 +264,7 @@ impl RnCanvas {
 
         if self.engine_ref().document.config.auto_export_svg {
             self.export_doc(
-                &gio::File::for_path(filepath.with_added_extension("svg")),
+                &gio::File::for_path(filepath.with_extension("svg")),
                 crate::utils::default_file_title_for_export(Some(file.clone()), None, None),
                 Some(DocExportPrefs {
                     export_format: DocExportFormat::Svg,

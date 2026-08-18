@@ -262,7 +262,7 @@ impl RnCanvas {
                         ..Default::default()
                     }),
                 )
-                .await?
+                .await?;
             }
 
             Ok(())

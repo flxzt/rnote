@@ -2,13 +2,24 @@
 use anyhow::Context;
 use futures::AsyncWriteExt;
 use gettextrs::pgettext;
-use gtk4::{gdk, gio, prelude::*};
+use gtk4::{Widget, gdk, gio, prelude::*};
 use palette::convert::IntoColor;
 use path_absolutize::Absolutize;
 use rnote_compose::Color;
 use std::cell::Ref;
 use std::path::{Path, PathBuf};
 use std::slice::Iter;
+
+/// Append the given accelerator label to the widget's tooltip, so that the keyboard shortcut for it
+/// is discoverable by hovering the widget.
+pub(crate) fn append_accel_to_tooltip(widget: &impl IsA<Widget>, accel_label: &str) {
+    let widget = widget.as_ref();
+    let tooltip = match widget.tooltip_text() {
+        Some(tooltip) if !tooltip.is_empty() => format!("{tooltip} ({accel_label})"),
+        _ => accel_label.to_string(),
+    };
+    widget.set_tooltip_text(Some(&tooltip));
+}
 
 /// The suffix delimiter when duplicating/renaming already existing files
 pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";

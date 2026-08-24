@@ -132,17 +132,19 @@ flatpak run --command=rnote-cli com.github.flxzt.rnote help
 
 ### The app does not work properly on X11
 
-X11 is unsupported: stylus and touch input support is known to be sometimes spotty, and upstream support (GTK4 UI
-toolkit and desktop environments) will decrease over time (from lower maintenance, deprecation to removal)
+X11 is unsupported. Stylus and touch input support is known to be unreliable, and upstream support of X11
+(GTK4 UI toolkit and desktop environments) will decrease over time (from lower maintenance, deprecation to removal)
 so successfully fixing X11-related issues for users isn't feasible anymore.
 
 ### Drag & Drop is not working
 
-Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+Ensure that Rnote has permission to access the locations from which you are dragging files.
+These can be granted in Flatseal, a Flatpak permissions manager.
 
 ### Odd location for current file
 
-When the directory displayed in the header title is something like `/run/user/1000/../`, Rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
+If the directory displayed in the header title is similar to `/run/user/1000/../`, Rnote does not have permissions
+to access the directory. Again, granting them in Flatseal fixes this issue.
 
 ### The stylus buttons or moving the canvas with a stylus do not work
 

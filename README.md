@@ -130,29 +130,36 @@ flatpak run --command=rnote-cli com.github.flxzt.rnote help
 
 ## Pitfalls & Known Issues
 
-* The app does not work properly on X11 -  
-    X11 is unsupported: stylus and touch input support is known to be sometimes spotty, and upstream support (GTK4 UI
-    toolkit and desktop environments) will decrease over time (from lower maintenance, depreciation to removal)
-    so successfully fixing X11-related issues for users isn't feasible anymore.
+### The app does not work properly on X11
 
-* Drag & Drop not working -  
-    Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+X11 is unsupported: stylus and touch input support is known to be sometimes spotty, and upstream support (GTK4 UI
+toolkit and desktop environments) will decrease over time (from lower maintenance, deprecation to removal)
+so successfully fixing X11-related issues for users isn't feasible anymore.
 
-* Odd location for current file -  
-    When the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
+### Drag & Drop is not working
 
-* Stylus buttons move canvas / are not functional -  
-    Make sure that `libinput` and `libwacom` are installed and loaded.
+Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 
-* While hovering with the stylus, other input events are blocked in some regions of the screen -  
-    Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
+### Odd location for current file
 
-* One of the stylus buttons shortcut mapping does not work as intended -  
-On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:  
-    * Hover over the canvas, and press and hold the button that is suspected to be mapped to the "Eraser" mode
-    * Switch to the desired pen style while keeping the button pressed
-    * When releasing the pressed button, it should switch back to the previous pen style
-    * The pen style in the "Eraser" mode should now be remembered
+When the directory displayed in the header title is something like `/run/user/1000/../`, Rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
+
+### The stylus buttons or moving the canvas with a stylus do not work
+
+Make sure that `libinput` and `libwacom` are installed and loaded.
+
+### Stylus buttons move canvas / are not functional
+
+Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
+
+### One of the stylus buttons shortcut mapping does not work as intended
+
+On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:
+
+- Hover over the canvas, and press and hold the button that is suspected to be mapped to the "Eraser" mode
+- Switch to the desired pen style while keeping the button pressed
+- When releasing the pressed button, it should switch back to the previous pen style
+- The pen style in the "Eraser" mode should now be remembered
 
 ## Translations
 

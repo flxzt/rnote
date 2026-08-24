@@ -150,13 +150,12 @@ to access the directory. Again, granting them in Flatseal fixes this issue.
 
 Make sure that `libinput` and `libwacom` are installed and loaded.
 
-### Stylus buttons move canvas / are not functional
+### While hovering over the screen with the stylus, other input events are blocked in some regions of the screen
 
-Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
-
-### One of the stylus buttons shortcut mapping does not work as intended
-
-On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:
+Some devices apply palm rejection, so your hand does not trigger any action on the screen while using a
+stylus/drawing tablet. However, this might not be desirable. If your device has a left/right handed setting for
+your stylus/drawing tablet, make sure it is set correctly. Rnote can't disable this unfortunately
+(discussed in issue [#329](https://github.com/flxzt/rnote/issues/329)).
 
 - Hover over the canvas, and press and hold the button that is suspected to be mapped to the "Eraser" mode
 - Switch to the desired pen style while keeping the button pressed

@@ -34,11 +34,13 @@ try:
     subprocess.run(cargo_call, shell=True, check=True)
 except CalledProcessError as e:
     print(f"cargo call failed: {e}", file=sys.stderr)
+    sys.exit(1)
 
 print(cp_call, file=sys.stderr)
 try:
     subprocess.run(cp_call, shell=True, check=True)
 except CalledProcessError as e:
     print(f"cp call failed: {e}", file=sys.stderr)
+    sys.exit(1)
 
 print("### cargo build script finished ###", file=sys.stderr)

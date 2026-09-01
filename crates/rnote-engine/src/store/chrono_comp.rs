@@ -96,61 +96,28 @@ impl StrokeStore {
 
     /// Returns the keys in chronological order, as in first: gets drawn first, last: gets drawn last.
     pub(crate) fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
-        let chrono_components = &self.chrono_components;
-
         let mut keys = self.stroke_components.keys().collect::<Vec<StrokeKey>>();
-
-        keys.par_sort_unstable_by(|&first, &second| {
-            if let (Some(first_chrono), Some(second_chrono)) =
-                (chrono_components.get(first), chrono_components.get(second))
-            {
-                let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
-
-                if layer_order != std::cmp::Ordering::Equal {
-                    layer_order
-                } else {
-                    first_chrono.t.cmp(&second_chrono.t)
-                }
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        });
-
+        self.sort_keys_chrono(&mut keys);
         keys
     }
 
     pub(crate) fn keys_sorted_chrono_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
-        let chrono_components = &self.chrono_components;
-
         let mut keys = self.key_tree.keys_intersecting_bounds(bounds);
-
-        keys.par_sort_unstable_by(|&first, &second| {
-            if let (Some(first_chrono), Some(second_chrono)) =
-                (chrono_components.get(first), chrono_components.get(second))
-            {
-                let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
-
-                if layer_order != std::cmp::Ordering::Equal {
-                    layer_order
-                } else {
-                    first_chrono.t.cmp(&second_chrono.t)
-                }
-            } else {
-                std::cmp::Ordering::Equal
-            }
-        });
-
+        self.sort_keys_chrono(&mut keys);
         keys
     }
 
     pub(crate) fn keys_sorted_chrono_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
-        let chrono_components = &self.chrono_components;
-
         let mut keys = self.key_tree.keys_in_bounds(bounds);
+        self.sort_keys_chrono(&mut keys);
+        keys
+    }
 
+    pub(super) fn sort_keys_chrono(&self, keys: &mut [StrokeKey]) {
+        let chrono_components = &self.chrono_components;
         keys.par_sort_unstable_by(|&first, &second| {
-            if let (Some(first_chrono), Some(second_chrono)) =
-                (chrono_components.get(first), chrono_components.get(second))
+            if let Some(first_chrono) = chrono_components.get(first)
+                && let Some(second_chrono) = chrono_components.get(second)
             {
                 let layer_order = first_chrono.layer.cmp(&second_chrono.layer);
 
@@ -163,7 +130,5 @@ impl StrokeStore {
                 std::cmp::Ordering::Equal
             }
         });
-
-        keys
     }
 }

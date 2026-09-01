@@ -2,16 +2,15 @@
 use super::Content;
 use super::content::GeneratedContentImages;
 use crate::Drawable;
-use crate::{
-    render::{self},
-    strokes::content,
-};
+use crate::Image;
+use crate::strokes::content;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
+use rnote_compose::Transformable;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
-use rnote_compose::transform::Transformable;
 use rnote_compose::{PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -58,12 +57,14 @@ impl Content for BrushStroke {
             > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[0]
             || self.style.stroke_width() > IMAGES_STROKE_WIDTH_BOUNDS_THRESHOLD * bounds_extents[1];
 
+        let stroke_opacity_condition = self.style.stroke_color().is_some_and(|color| color.a < 1.0);
+
         // if these conditions evaluate true the stroke is rendered as a single image
-        let images = if image_size_condition || stroke_width_condition {
+        let images = if image_size_condition || stroke_width_condition || stroke_opacity_condition {
             // generate a single image when bounds are smaller than threshold
             match &self.style {
                 Style::Smooth(options) => {
-                    let image = render::Image::gen_with_piet(
+                    let image = Image::gen_with_piet(
                         |piet_cx| {
                             self.path.draw_composed(piet_cx, options);
                             Ok(())
@@ -85,7 +86,7 @@ impl Content for BrushStroke {
                     vec![]
                 }
                 Style::Textured(options) => {
-                    let image = render::Image::gen_with_piet(
+                    let image = Image::gen_with_piet(
                         |piet_cx| {
                             self.path.draw_composed(piet_cx, options);
                             Ok(())
@@ -111,7 +112,7 @@ impl Content for BrushStroke {
                     let mut prev = self.path.start;
                     for seg in self.path.segments.iter() {
                         let seg_path = PenPath::new_w_segments(prev, [*seg]);
-                        let image = render::Image::gen_with_piet(
+                        let image = Image::gen_with_piet(
                             |piet_cx| {
                                 seg_path.draw_composed(piet_cx, options);
                                 Ok(())
@@ -142,7 +143,7 @@ impl Content for BrushStroke {
                     let mut prev = self.path.start;
                     for seg in self.path.segments.iter() {
                         let seg_path = PenPath::new_w_segments(prev, [*seg]);
-                        let image = render::Image::gen_with_piet(
+                        let image = Image::gen_with_piet(
                             |piet_cx| {
                                 seg_path.draw_composed(piet_cx, &options);
                                 Ok(())
@@ -242,13 +243,13 @@ impl Shapeable for BrushStroke {
 }
 
 impl Transformable for BrushStroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.path.translate(offset);
     }
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         self.path.rotate(angle, center);
     }
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.path.scale(scale);
         // Using the geometric mean behaves the best when scaling non-uniformly.
         let scale_scalar = (scale[0] * scale[1]).sqrt();
@@ -305,7 +306,7 @@ impl BrushStroke {
         &self,
         n_last_segments: usize,
         image_scale: f64,
-    ) -> Result<Option<render::Image>, anyhow::Error> {
+    ) -> Result<Option<Image>, anyhow::Error> {
         let image = match &self.style {
             Style::Smooth(options) => {
                 let path_len = self.path.segments.len();
@@ -324,7 +325,7 @@ impl BrushStroke {
                         .copied(),
                 );
 
-                let image = render::Image::gen_with_piet(
+                let image = Image::gen_with_piet(
                     |piet_cx| {
                         range_path.draw_composed(piet_cx, options);
                         Ok(())
@@ -358,7 +359,7 @@ impl BrushStroke {
                         .copied(),
                 );
 
-                let image = render::Image::gen_with_piet(
+                let image = Image::gen_with_piet(
                     |piet_cx| {
                         range_path.draw_composed(piet_cx, &options);
                         Ok(())

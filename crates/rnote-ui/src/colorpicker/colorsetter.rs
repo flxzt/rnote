@@ -135,7 +135,7 @@ mod imp {
 glib::wrapper! {
     pub(crate) struct RnColorSetter(ObjectSubclass<imp::RnColorSetter>)
         @extends ToggleButton, Button, Widget,
-        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Actionable;
 }
 
 impl Default for RnColorSetter {

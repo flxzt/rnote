@@ -88,7 +88,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnPensSideBar(ObjectSubclass<imp::RnPensSideBar>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnPensSideBar {

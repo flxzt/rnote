@@ -1,8 +1,8 @@
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    Button, CompositeTemplate, MenuButton, Popover, ToggleButton, glib, glib::clone, prelude::*,
-    subclass::prelude::*,
+    Button, CompositeTemplate, MenuButton, Popover, ToggleButton, Widget, glib, glib::clone,
+    prelude::*, subclass::prelude::*,
 };
 use rnote_engine::pens::pensconfig::toolsconfig::ToolStyle;
 
@@ -37,7 +37,7 @@ mod imp {
     impl ObjectSubclass for RnToolsPage {
         const NAME: &'static str = "RnToolsPage";
         type Type = super::RnToolsPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -66,7 +66,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnToolsPage(ObjectSubclass<imp::RnToolsPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnToolsPage {

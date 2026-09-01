@@ -89,7 +89,8 @@ pub(crate) const TEXT_TOAST_TIMEOUT_DEFAULT: Option<Duration> = Some(Duration::f
 
 glib::wrapper! {
     pub(crate) struct RnOverlays(ObjectSubclass<imp::RnOverlays>)
-    @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnOverlays {
@@ -318,6 +319,11 @@ impl RnOverlays {
                         .unwrap()
                         .downcast::<gio::SimpleAction>()
                         .unwrap();
+                    let action_active_tab_move_window = appwindow
+                        .lookup_action("active-tab-move-to-new-window")
+                        .unwrap()
+                        .downcast::<gio::SimpleAction>()
+                        .unwrap();
 
                     tabview.set_selected_page(page);
 
@@ -326,6 +332,22 @@ impl RnOverlays {
                     action_active_tab_move_left.set_enabled(pos > 0);
                     action_active_tab_move_right.set_enabled(pos + 1 < n_pages);
                     action_active_tab_close.set_enabled(n_pages > 1);
+                    action_active_tab_move_window.set_enabled(n_pages > 1);
+                }
+            }
+        ));
+
+        imp.tabview.connect_create_window(clone!(
+            #[weak]
+            appwindow,
+            #[upgrade_or_default]
+            move |_tab| {
+                use crate::RnApp;
+                if let Some(rn_app_out) = appwindow.application() {
+                    let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
+                    Some(rnapp.new_appwindow_init_return_tab())
+                } else {
+                    None
                 }
             }
         ));

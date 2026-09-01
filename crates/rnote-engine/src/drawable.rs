@@ -7,7 +7,7 @@ use piet::RenderContext;
 pub trait Drawable {
     /// Draw itself.
     ///
-    /// The implementors are expected to save/restore the drawing context.
+    /// The implementers are expected to save/restore the drawing context.
     ///
     /// `image_scale` is the scale-factor of generated images within the type.
     /// The content should not be zoomed by it!
@@ -30,7 +30,7 @@ pub trait DrawableOnDoc {
 
     /// Draw itself on the document.
     ///
-    /// The implementors are expected to save/restore the drawing context.
+    /// The implementers are expected to save/restore the drawing context.
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
@@ -59,7 +59,7 @@ pub trait DrawableOnDoc {
     ) -> anyhow::Result<()> {
         use crate::ext::GrapheneRectExt;
         use gtk4::{graphene, prelude::*};
-        use rnote_compose::ext::{AabbExt, Affine2Ext};
+        use rnote_compose::ext::{AabbExt, DAffine2Ext};
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             let viewport = engine_view.camera.viewport();

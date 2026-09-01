@@ -1,7 +1,9 @@
 // Imports
-use crate::render;
+use crate::Image;
+use crate::Svg;
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rnote_compose::Color;
 use serde::{Deserialize, Serialize};
 use svg::Node;
@@ -340,9 +342,9 @@ pub struct Background {
     pub pattern: PatternStyle,
     #[serde(
         rename = "pattern_size",
-        with = "rnote_compose::serialize::na_vector2_f64_dp3"
+        with = "rnote_compose::serialize::glam_vector2_dp3"
     )]
-    pub pattern_size: na::Vector2<f64>,
+    pub pattern_size: Vector2,
     #[serde(rename = "pattern_color")]
     pub pattern_color: Color,
 }
@@ -365,7 +367,7 @@ impl Background {
 
     const TILE_MAX_SIZE: f64 = 128.0;
     const COLOR_DEFAULT: Color = Color::WHITE;
-    const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
+    const PATTERN_SIZE_DEFAULT: Vector2 = Vector2::new(32.0, 32.0);
     const PATTERN_COLOR_DEFAULT: Color = Color {
         r: 0.8,
         g: 0.9,
@@ -374,26 +376,17 @@ impl Background {
     };
 
     /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
-    pub(crate) fn tile_size(&self) -> na::Vector2<f64> {
+    pub(crate) fn tile_size(&self) -> Vector2 {
         let pattern_size = match self.pattern {
-            PatternStyle::None => {
-                na::vector![Self::TILE_MAX_SIZE, Self::TILE_MAX_SIZE]
-            }
-            PatternStyle::Lines => {
-                na::vector![Self::TILE_MAX_SIZE, self.pattern_size[1]]
-            }
-            PatternStyle::IsometricGrid | PatternStyle::IsometricDots => {
-                na::vector![
-                    calc_width_iso_pattern(self.pattern_size[1]),
-                    self.pattern_size[1]
-                ]
-            }
+            PatternStyle::None => Vector2::new(Self::TILE_MAX_SIZE, Self::TILE_MAX_SIZE),
+            PatternStyle::Lines => Vector2::new(Self::TILE_MAX_SIZE, self.pattern_size[1]),
+            PatternStyle::IsometricGrid | PatternStyle::IsometricDots => Vector2::new(
+                calc_width_iso_pattern(self.pattern_size[1]),
+                self.pattern_size[1],
+            ),
             _ => self.pattern_size,
         };
-
-        let tile_factor =
-            na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&pattern_size);
-
+        let tile_factor = Vector2::splat(Self::TILE_MAX_SIZE) / pattern_size;
         let tile_width = if tile_factor[0] > 1.0 {
             tile_factor[0].floor() * pattern_size[0]
         } else {
@@ -405,7 +398,7 @@ impl Background {
             pattern_size[1]
         };
 
-        na::vector![tile_width, tile_height]
+        Vector2::new(tile_width, tile_height)
     }
 
     /// Generate the background svg, without Xml header or Svg root.
@@ -414,7 +407,7 @@ impl Background {
         bounds: Aabb,
         with_pattern: bool,
         optimize_printing: bool,
-    ) -> Result<render::Svg, anyhow::Error> {
+    ) -> Result<Svg, anyhow::Error> {
         let (color, pattern_color) = if optimize_printing {
             if self.color.luma() > 0.5 {
                 // original background color is bright, don't invert pattern color
@@ -491,11 +484,11 @@ impl Background {
         let svg_data = rnote_compose::utils::svg_node_to_string(&svg_group)
             .context("Converting Svg group node to String failed.")?;
 
-        Ok(render::Svg { svg_data, bounds })
+        Ok(Svg { svg_data, bounds })
     }
 
-    pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<render::Image, anyhow::Error> {
-        let tile_bounds = Aabb::new(na::point![0.0, 0.0], self.tile_size().into());
+    pub(crate) fn gen_tile_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
+        let tile_bounds = Aabb::new(Vector2::ZERO, self.tile_size());
         self.gen_svg(tile_bounds, true, false)?
             .gen_image(image_scale)
     }

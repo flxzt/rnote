@@ -27,6 +27,8 @@ mod imp {
         #[template_child]
         pub(crate) zoom_fit_width_button: TemplateChild<Button>,
         #[template_child]
+        pub(crate) zoom_real_width_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) fixedsize_quickactions_box: TemplateChild<gtk4::Box>,
     }
 
@@ -34,7 +36,7 @@ mod imp {
     impl ObjectSubclass for RnCanvasMenu {
         const NAME: &'static str = "RnCanvasMenu";
         type Type = super::RnCanvasMenu;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -72,7 +74,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnCanvasMenu(ObjectSubclass<imp::RnCanvasMenu>)
-    @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnCanvasMenu {

@@ -11,7 +11,8 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
-use gtk4::{Application, IconTheme, gdk, gio, glib};
+use gtk4::{Application, IconTheme, Widget, gdk, gio, glib};
+use p2d::math::Vector2;
 use rnote_compose::Color;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
@@ -25,7 +26,7 @@ use tracing::{debug, error};
 
 glib::wrapper! {
     pub(crate) struct RnAppWindow(ObjectSubclass<imp::RnAppWindow>)
-        @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
+        @extends Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
         @implements gio::ActionGroup, gio::ActionMap, gtk4::Accessible, gtk4::Buildable,
                     gtk4::ConstraintTarget, gtk4::Native, gtk4::Root, gtk4::ShortcutManager;
 }
@@ -205,7 +206,7 @@ impl RnAppWindow {
     }
 
     /// Must be called after application is associated with the window else the init will panic
-    pub(crate) fn init(&self) {
+    pub(crate) fn init(&self, add_initial_tab: bool) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
@@ -235,7 +236,9 @@ impl RnAppWindow {
         }
 
         // An initial tab (canvas).
-        self.add_initial_tab();
+        if add_initial_tab {
+            self.add_initial_tab();
+        }
 
         // Anything that needs to be done right before showing the appwindow
 
@@ -292,12 +295,7 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.view_modified {
-            let widget_size = canvas.widget_size();
-            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
-            let offset = canvas.engine_ref().camera.offset();
-            // Keep the adjustments configuration in sync
-            canvas.configure_adjustments(widget_size, offset_mins_maxs, offset);
-            canvas.queue_resize();
+            canvas.queue_allocate();
         }
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
@@ -340,6 +338,18 @@ impl RnAppWindow {
     /// Get the active (selected) tab page.
     pub(crate) fn active_tab_page(&self) -> Option<adw::TabPage> {
         self.imp().overlays.tabview().selected_page()
+    }
+
+    pub(crate) fn transfer_page(
+        &self,
+        page: &adw::TabPage,
+        other_view: &adw::TabView,
+        position: i32,
+    ) {
+        self.imp()
+            .overlays
+            .tabview()
+            .transfer_page(page, other_view, position);
     }
 
     pub(crate) fn n_tabs_open(&self) -> usize {
@@ -555,7 +565,7 @@ impl RnAppWindow {
     pub(crate) async fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
     ) {
         self.overlays().progressbar_start_pulsing();
@@ -585,7 +595,7 @@ impl RnAppWindow {
     async fn try_open_file(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
     ) -> anyhow::Result<bool> {
         let file_imported = match FileType::lookup_file_type(&input_file) {
@@ -611,7 +621,7 @@ impl RnAppWindow {
                             {
                                 (true, self.new_canvas_wrapper())
                             }
-                            // Re-use the existing empty tab otherwise
+                            // Reuse the existing empty tab otherwise
                             (true, Some(active_wrapper)) => (false, active_wrapper),
                             (false, None) => (true, self.new_canvas_wrapper()),
                             (false, Some(active_wrapper)) => (false, active_wrapper),

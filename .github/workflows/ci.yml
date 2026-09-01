@@ -18,25 +18,26 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
-    container: fedora:42
+    container: fedora:44
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install rust toolchain
         id: toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
         with:
+          toolchain: 1.95
           components: rustfmt, clippy
 
       - name: Prerequisites
         run: |
-          dnf install -y just lsb_release
+          dnf install -y just
           just ci=true prerequisites-dev
 
       - name: Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 10
         with:
@@ -69,11 +70,17 @@ jobs:
         run: just ci=true test-file-compatibility
 
       - name: Lint
-        run: just ci=true lint
+        env:
+          RUSTFLAGS: -Dwarnings
+        run: just ci=true lint || echo "::warning title=Lint::Linting failed"
+        continue-on-error: true
+
+      - name: Lint dependencies
+        run: just ci=true lint-dependencies || echo "::warning title=Lint-dependencies::Linting dependencies failed"
         continue-on-error: true
 
       - name: Upload test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: success() || failure()
         with:
           name: test-results

@@ -324,7 +324,7 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
                             return;
                     };
 
-                    if let Err(e) = open::that(&folder_path_string) {
+                    if let Err(e) = open::that_detached(&folder_path_string) {
                         error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
                         appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
                     }
@@ -333,6 +333,9 @@ pub(crate) async fn dialog_export_doc_w_prefs(appwindow: &RnAppWindow, canvas: &
             appwindow.overlays().progressbar_finish();
         }));
     }));
+
+    // set file dialog as initial focus
+    dialog.set_focus(Some(&export_file_button));
 
     dialog.present(appwindow.root().as_ref());
 }
@@ -654,7 +657,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    bitmap_scalefactor_row.connect_changed(clone!(
+    bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |bitmap_scalefactor_row| {
@@ -667,7 +670,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    jpeg_quality_row.connect_changed(clone!(
+    jpeg_quality_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |jpeg_quality_row| {
@@ -747,7 +750,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
                         return;
                     };
 
-                    if let Err(e) = open::that(&folder_path_string) {
+                    if let Err(e) = open::that_detached(&folder_path_string) {
                         error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
                         appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
                     }
@@ -757,6 +760,7 @@ pub(crate) async fn dialog_export_doc_pages_w_prefs(appwindow: &RnAppWindow, can
         }));
     }));
 
+    dialog.set_focus(Some(&export_dir_button));
     dialog.present(appwindow.root().as_ref());
 }
 
@@ -1023,7 +1027,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    bitmap_scalefactor_row.connect_changed(clone!(
+    bitmap_scalefactor_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |bitmap_scalefactor_row| {
@@ -1036,7 +1040,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    jpeg_quality_row.connect_changed(clone!(
+    jpeg_quality_row.connect_value_notify(clone!(
         #[weak]
         appwindow,
         move |jpeg_quality_row| {
@@ -1049,7 +1053,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }
     ));
 
-    margin_row.connect_changed(clone!(
+    margin_row.connect_value_notify(clone!(
         #[weak]
         preview,
         #[weak]
@@ -1112,7 +1116,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
                             return;
                     };
 
-                    if let Err(e) = open::that(&folder_path_string) {
+                    if let Err(e) = open::that_detached(&folder_path_string) {
                         error!("Opening the parent folder '{folder_path_string}' in the file manager failed, Err: {e:?}");
                         appwindow.overlays().dispatch_toast_error(&gettext("Failed to view the file in the file manager"));
                     }
@@ -1123,6 +1127,7 @@ pub(crate) async fn dialog_export_selection_w_prefs(appwindow: &RnAppWindow, can
         }));
     }));
 
+    dialog.set_focus(Some(&export_file_button));
     dialog.present(appwindow.root().as_ref());
 }
 

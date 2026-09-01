@@ -8,7 +8,7 @@ pub use roughoptions::RoughOptions;
 // Imports
 use super::Composer;
 use crate::Color;
-use crate::ext::Vector2Ext;
+use crate::ext::{DAffine2Ext, Vector2Ext};
 use crate::shapes::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
@@ -31,12 +31,12 @@ fn generate_roughr_options(options: &RoughOptions) -> roughr::core::Options {
         roughr_options.stroke(stroke_color.into());
     }
 
-    if let Some(fill_color) = options.fill_color {
-        if fill_color != Color::TRANSPARENT {
-            roughr_options
-                .fill(fill_color.into())
-                .fill_style(options.fill_style.into());
-        }
+    if let Some(fill_color) = options.fill_color
+        && fill_color != Color::TRANSPARENT
+    {
+        roughr_options
+            .fill(fill_color.into())
+            .fill_style(options.fill_style.into());
     }
 
     roughr_options.build().unwrap()
@@ -128,7 +128,7 @@ impl Composer<RoughOptions> for Rectangle {
             size[1],
         );
 
-        cx.transform(self.transform.to_kurbo());
+        cx.transform(self.affine.to_kurbo());
         drawable.draw(cx);
 
         cx.restore().unwrap();
@@ -149,7 +149,7 @@ impl Composer<RoughOptions> for Ellipse {
         let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
             .ellipse(0.0, 0.0, size[0], size[1]);
 
-        cx.transform(self.transform.to_kurbo());
+        cx.transform(self.affine.to_kurbo());
         drawable.draw(cx);
 
         cx.restore().unwrap();

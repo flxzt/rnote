@@ -40,6 +40,7 @@ Written in Rust and GTK4.
 - Save and load the documents in the native `.rnote` file format
 - Tabs to work on multiple documents at the same time
 - Autosave, printing
+- CLI for automation
 
 **Disclaimer**
 
@@ -61,7 +62,7 @@ Download the official flatpak on Flathub [here](https://flathub.org/apps/details
 
 ### MacOS
 
-Thanks to @dehesselle the app is available on MacOS as an app bundle.  
+Thanks to [dehesselle](https://gitlab.com/dehesselle) the app is available on MacOS as an app bundle.  
 Check out the [repository](https://gitlab.com/dehesselle/rnote_macos), the latest release can be downloaded [here](https://gitlab.com/dehesselle/rnote_macos/-/releases/permalink/latest).
 
 <div align="start">
@@ -107,6 +108,16 @@ $ flatpak mask --remove com.github.flxzt.rnote
 
 To update to the latest version again, unpin and run `flatpak update`.
 
+## CLI
+
+In addition to the UI, a CLI tool is available, providing basic handling of .rnote files for automation.
+It is included in the flatpak.
+To execute it, run:
+
+```bash
+flatpak run --command=rnote-cli com.github.flxzt.rnote help
+```
+
 ## Screenshots
 
 ![overview](./crates/rnote-ui/data/screenshots/overview.png)  
@@ -119,6 +130,11 @@ To update to the latest version again, unpin and run `flatpak update`.
 
 ## Pitfalls & Known Issues
 
+* The app does not work properly on X11 -  
+    X11 is unsupported: stylus and touch input support is known to be sometimes spotty, and upstream support (GTK4 UI
+    toolkit and desktop environments) will decrease over time (from lower maintenance, depreciation to removal)
+    so successfully fixing X11-related issues for users isn't feasible anymore.
+
 * Drag & Drop not working -  
     Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 
@@ -126,7 +142,7 @@ To update to the latest version again, unpin and run `flatpak update`.
     When the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
 
 * Stylus buttons move canvas / are not functional -  
-    Make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+    Make sure that `libinput` and `libwacom` are installed and loaded.
 
 * While hovering with the stylus, other input events are blocked in some regions of the screen -  
     Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
@@ -215,6 +231,7 @@ If you have drawn something cool in Rnote and want to share it, submit a PR to a
         <img alt="Love" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/love.png" height="400">
         <img alt="Suits" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/suits.png" height="400">
         <img alt="Nature's cat" src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/drawings/natureza_gato.png" height="400">
+        <img alt="Donald Duck" src="./misc/drawings/donald.png" height="400">
 </div><br>
 
 ## Building

@@ -1,6 +1,7 @@
 // Imports
 use super::RnCanvas;
 use gtk4::{Native, gdk, glib, graphene, prelude::*};
+use p2d::math::Vector2;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_engine::WidgetFlags;
@@ -341,16 +342,21 @@ fn retrieve_pointer_elements(
     let mut elements = Vec::with_capacity(1);
 
     // Transforms the pos given in surface coordinate space to the canvas document coordinate space
-    let transform_pos = |pos: na::Vector2<f64>| -> na::Vector2<f64> {
+    let transform_pos = |pos: Vector2| -> Vector2 {
         event_native
             .compute_point(
                 canvas,
-                &graphene::Point::from_na_vec(pos - na::vector![surface_trans_x, surface_trans_y]),
+                &graphene::Point::from_p2d_vec(
+                    pos - Vector2::new(surface_trans_x, surface_trans_y),
+                ),
             )
             .map(|p| {
-                (canvas.engine_ref().camera.transform().inverse()
-                    * na::point![p.x() as f64, p.y() as f64])
-                .coords
+                canvas
+                    .engine_ref()
+                    .camera
+                    .transform()
+                    .inverse()
+                    .transform_point2(p.to_p2d_vec())
             })
             .unwrap()
     };
@@ -385,10 +391,10 @@ fn retrieve_pointer_elements(
             prev_delta = entry_delta;
 
             let axes = entry.axes();
-            let pos = transform_pos(na::vector![
+            let pos = transform_pos(Vector2::new(
                 axes[crate::utils::axis_use_idx(gdk::AxisUse::X)],
-                axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)]
-            ]);
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)],
+            ));
             let pressure = if is_stylus {
                 axes[crate::utils::axis_use_idx(gdk::AxisUse::Pressure)]
             } else {
@@ -403,7 +409,7 @@ fn retrieve_pointer_elements(
 
     let pos = event
         .position()
-        .map(|(x, y)| transform_pos(na::vector![x, y]))?;
+        .map(|(x, y)| transform_pos(Vector2::new(x, y)))?;
 
     let pressure = if is_stylus {
         event.axis(gdk::AxisUse::Pressure).unwrap()

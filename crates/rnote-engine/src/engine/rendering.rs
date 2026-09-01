@@ -1,7 +1,8 @@
 // Imports
-use crate::render::Image;
+use crate::Image;
 use crate::{Engine, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::color;
 use tracing::error;
@@ -75,8 +76,7 @@ impl Engine {
                     gsk::TextureNode::new(
                         &new_texture,
                         &graphene::Rect::from_p2d_aabb(
-                            origin_indicator_bounds()
-                                .scaled(&na::Vector2::repeat(1.0 / total_zoom)),
+                            origin_indicator_bounds().scaled(Vector2::splat(1.0 / total_zoom)),
                         ),
                     )
                     .upcast(),
@@ -328,10 +328,10 @@ impl Engine {
     ) -> anyhow::Result<()> {
         use gtk4::prelude::*;
 
-        if self.document.config.format.show_origin_indicator {
-            if let Some(r) = &self.origin_indicator_rendernode {
-                snapshot.append_node(r);
-            }
+        if self.document.config.format.show_origin_indicator
+            && let Some(r) = &self.origin_indicator_rendernode
+        {
+            snapshot.append_node(r);
         }
 
         Ok(())
@@ -340,8 +340,8 @@ impl Engine {
 
 /// Origin indicator bounds in document coordinate space.
 fn origin_indicator_bounds() -> Aabb {
-    const SIZE: na::Vector2<f64> = na::vector![17., 17.];
-    Aabb::from_half_extents(na::Vector2::zeros().into(), SIZE * 0.5)
+    const SIZE: Vector2 = Vector2::splat(17.);
+    Aabb::from_half_extents(Vector2::ZERO, SIZE * 0.5)
 }
 
 fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {

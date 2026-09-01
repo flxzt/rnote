@@ -225,7 +225,7 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnStrokeContentPreview(ObjectSubclass<imp::RnStrokeContentPreview>)
-        @extends gtk4::Widget,
+        @extends Widget,
         @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 

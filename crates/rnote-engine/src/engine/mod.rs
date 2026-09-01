@@ -18,6 +18,7 @@ pub use snapshot::EngineSnapshot;
 pub use strokecontent::StrokeContent;
 
 // Imports
+use crate::Image;
 use crate::document::Layout;
 use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
@@ -25,12 +26,13 @@ use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;
 use crate::strokes::textstroke::{TextAttribute, TextStyle};
-use crate::{AudioPlayer, SelectionCollision, WidgetFlags, render};
 use crate::{Camera, Document, PenHolder, StrokeStore};
+use crate::{SelectionCollision, WidgetFlags};
 use futures::StreamExt;
 use futures::channel::mpsc::UnboundedReceiver;
 use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, ShortcutKey};
@@ -50,7 +52,8 @@ pub struct EngineView<'a> {
     pub document: &'a Document,
     pub store: &'a StrokeStore,
     pub camera: &'a Camera,
-    pub audioplayer: &'a Option<AudioPlayer>,
+    #[cfg(feature = "ui")]
+    pub audioplayer: &'a Option<crate::AudioPlayer>,
     pub animation: &'a Animation,
 }
 
@@ -64,6 +67,7 @@ macro_rules! engine_view {
             document: &$engine.document,
             store: &$engine.store,
             camera: &$engine.camera,
+            #[cfg(feature = "ui")]
             audioplayer: &$engine.audioplayer,
             animation: &$engine.animation,
         }
@@ -78,7 +82,8 @@ pub struct EngineViewMut<'a> {
     pub document: &'a mut Document,
     pub store: &'a mut StrokeStore,
     pub camera: &'a mut Camera,
-    pub audioplayer: &'a mut Option<AudioPlayer>,
+    #[cfg(feature = "ui")]
+    pub audioplayer: &'a mut Option<crate::AudioPlayer>,
     pub animation: &'a mut Animation,
 }
 
@@ -92,6 +97,7 @@ macro_rules! engine_view_mut {
             document: &mut $engine.document,
             store: &mut $engine.store,
             camera: &mut $engine.camera,
+            #[cfg(feature = "ui")]
             audioplayer: &mut $engine.audioplayer,
             animation: &mut $engine.animation,
         }
@@ -107,6 +113,7 @@ impl EngineViewMut<'_> {
             document: self.document,
             store: self.store,
             camera: self.camera,
+            #[cfg(feature = "ui")]
             audioplayer: self.audioplayer,
             animation: self.animation,
         }
@@ -185,8 +192,9 @@ pub struct Engine {
     #[serde(rename = "penholder")]
     pub penholder: PenHolder,
 
+    #[cfg(feature = "ui")]
     #[serde(skip)]
-    audioplayer: Option<AudioPlayer>,
+    audioplayer: Option<crate::AudioPlayer>,
     #[serde(skip)]
     pub animation: Animation,
     // the task sender. Must not be modified, only cloned.
@@ -196,13 +204,13 @@ pub struct Engine {
     tasks_rx: Option<EngineTaskReceiver>,
     // Background rendering
     #[serde(skip)]
-    background_tile_image: Option<render::Image>,
+    background_tile_image: Option<Image>,
     #[cfg(feature = "ui")]
     #[serde(skip)]
     background_rendernodes: Vec<gtk4::gsk::RenderNode>,
     // Origin indicator rendering
     #[serde(skip)]
-    origin_indicator_image: Option<render::Image>,
+    origin_indicator_image: Option<Image>,
     #[cfg(feature = "ui")]
     #[serde(skip)]
     origin_indicator_rendernode: Option<gtk4::gsk::RenderNode>,
@@ -219,6 +227,7 @@ impl Default for Engine {
             camera: Camera::default(),
             penholder: PenHolder::default(),
 
+            #[cfg(feature = "ui")]
             audioplayer: None,
             animation: Animation::default(),
             tasks_tx: EngineTaskSender(tasks_tx),
@@ -276,23 +285,30 @@ impl Engine {
     pub fn set_pen_sounds(&mut self, pen_sounds: bool, pkg_data_dir: Option<PathBuf>) {
         self.config.write().pen_sounds = pen_sounds;
 
-        if pen_sounds {
-            if let Some(pkg_data_dir) = pkg_data_dir {
-                // Only create and init a new audioplayer if it does not already exist
-                if self.audioplayer.is_none() {
-                    self.audioplayer = match AudioPlayer::new_init(pkg_data_dir) {
-                        Ok(audioplayer) => Some(audioplayer),
-                        Err(e) => {
-                            error!(
-                                "Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}"
-                            );
-                            None
+        #[cfg(feature = "ui")]
+        {
+            if pen_sounds {
+                if let Some(pkg_data_dir) = pkg_data_dir {
+                    // Only create and init a new audioplayer if it does not already exist
+                    if self.audioplayer.is_none() {
+                        self.audioplayer = match crate::AudioPlayer::new_init(pkg_data_dir) {
+                            Ok(audioplayer) => Some(audioplayer),
+                            Err(e) => {
+                                error!(
+                                    "Creating a new audioplayer failed while enabling pen sounds, Err: {e:?}"
+                                );
+                                None
+                            }
                         }
                     }
                 }
+            } else {
+                self.audioplayer.take();
             }
-        } else {
-            self.audioplayer.take();
+        }
+        #[cfg(not(feature = "ui"))]
+        {
+            let _ = pkg_data_dir;
         }
     }
 
@@ -547,10 +563,7 @@ impl Engine {
 
         if pages_bounds.is_empty() {
             // If no page has content, return the origin page
-            vec![Aabb::new(
-                na::point![0.0, 0.0],
-                self.document.config.format.size().into(),
-            )]
+            vec![Aabb::new(Vector2::ZERO, self.document.config.format.size())]
         } else {
             pages_bounds
         }
@@ -600,22 +613,22 @@ impl Engine {
         let zoom = self.camera.zoom();
         let new_offset = if let Some(parent_width) = parent_width {
             if self.document.config.format.width() * zoom <= parent_width {
-                na::vector![
+                Vector2::new(
                     (self.document.config.format.width() * 0.5 * zoom) - parent_width * 0.5,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
+                    -Document::SHADOW_WIDTH * zoom,
+                )
             } else {
                 // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-                na::vector![
+                Vector2::new(
                     -Document::SHADOW_WIDTH * zoom,
-                    -Document::SHADOW_WIDTH * zoom
-                ]
+                    -Document::SHADOW_WIDTH * zoom,
+                )
             }
         } else {
-            na::vector![
+            Vector2::new(
                 -Document::SHADOW_WIDTH * zoom,
-                -Document::SHADOW_WIDTH * zoom
-            ]
+                -Document::SHADOW_WIDTH * zoom,
+            )
         };
         self.camera_set_offset_expand(new_offset)
     }
@@ -668,7 +681,7 @@ impl Engine {
     /// Update the viewport offset of the camera, clamped to mins and maxs values depending on the document layout.
     ///
     /// Background and content rendering then need to be updated.
-    pub fn camera_set_offset(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+    pub fn camera_set_offset(&mut self, offset: Vector2) -> WidgetFlags {
         self.camera.set_offset(offset, &self.document)
     }
 
@@ -677,7 +690,7 @@ impl Engine {
     /// Expands the document when in autoexpanding layouts.
     ///
     /// Background and content rendering then need to be updated.
-    pub fn camera_set_offset_expand(&mut self, offset: na::Vector2<f64>) -> WidgetFlags {
+    pub fn camera_set_offset_expand(&mut self, offset: Vector2) -> WidgetFlags {
         let widget_flags = self.camera.set_offset(offset, &self.document);
         widget_flags | self.doc_expand_autoexpand()
     }
@@ -685,15 +698,13 @@ impl Engine {
     /// Update the viewport size of the camera.
     ///
     /// Background and content rendering then need to be updated.
-    pub fn camera_set_size(&mut self, size: na::Vector2<f64>) -> WidgetFlags {
+    pub fn camera_set_size(&mut self, size: Vector2) -> WidgetFlags {
         self.camera.set_size(size)
     }
 
-    /// Update the viewport size of the camera.
-    ///
-    /// Background and content rendering then need to be updated.
-    pub fn camera_offset_mins_maxs(&self) -> (na::Vector2<f64>, na::Vector2<f64>) {
-        self.camera.offset_lower_upper(&self.document)
+    /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
+    pub fn camera_surface_mins_maxs(&self) -> (Vector2, Vector2) {
+        self.camera.surface_mins_maxs(&self.document)
     }
 
     /// Update the current pen with the current engine state.

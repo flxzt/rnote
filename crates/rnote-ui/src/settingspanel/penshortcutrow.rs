@@ -3,7 +3,7 @@ use super::penshortcutmodels::{
     ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
 };
 use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{CompositeTemplate, DropDown, glib, glib::clone, glib::subclass::*};
+use gtk4::{CompositeTemplate, DropDown, ListBoxRow, Widget, glib, glib::clone, glib::subclass::*};
 use num_traits::ToPrimitive;
 use once_cell::sync::Lazy;
 use rnote_engine::pens::PenStyle;
@@ -128,7 +128,7 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnPenShortcutRow(ObjectSubclass<imp::RnPenShortcutRow>)
-        @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, gtk4::ListBoxRow, gtk4::Widget,
+        @extends adw::ComboRow, adw::ActionRow, adw::PreferencesRow, ListBoxRow, Widget,
         @implements gtk4::Accessible, gtk4::Actionable, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 

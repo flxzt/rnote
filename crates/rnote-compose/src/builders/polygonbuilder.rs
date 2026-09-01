@@ -9,6 +9,7 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -16,15 +17,15 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct PolygonBuilder {
     /// Start position.
-    start: na::Vector2<f64>,
+    start: Vector2,
     /// Position of the next/current path segment.
-    current: na::Vector2<f64>,
+    current: Vector2,
     /// Path.
-    path: Vec<na::Vector2<f64>>,
+    path: Vec<Vector2>,
     /// Pen state.
     pen_state: PenState,
     /// Pen position.
-    pen_pos: na::Vector2<f64>,
+    pen_pos: Vector2,
     /// Finish the polygon on the next `PenEvent::Up`.
     finish: bool,
 }
@@ -153,8 +154,8 @@ impl PolygonBuilder {
         }
     }
 
-    fn pos_in_finish(&self, pos: na::Vector2<f64>) -> bool {
-        (pos - self.path.last().copied().unwrap_or(self.start)).magnitude()
+    fn pos_in_finish(&self, pos: Vector2) -> bool {
+        (pos - self.path.last().copied().unwrap_or(self.start)).length()
             < Self::FINISH_THRESHOLD_DIST
     }
 }

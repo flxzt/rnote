@@ -1,9 +1,14 @@
 // Imports
 use crate::fileformats::xoppformat;
+use anyhow::Context;
 use geo::line_string;
+use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
+#[cfg(feature = "ui")]
+use p2d::glamx::DAffine2;
+use p2d::math::Vector2;
 use rnote_compose::Color;
-use std::ops::Range;
+use std::{io::Write, ops::Range};
 
 pub const fn crate_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
@@ -27,6 +32,27 @@ pub fn xoppcolor_from_color(color: Color) -> xoppformat::XoppColor {
     }
 }
 
+pub fn chrono_dt_from_hayro(
+    raw: hayro_syntax::object::DateTime,
+) -> Option<chrono::DateTime<chrono::FixedOffset>> {
+    let date = chrono::NaiveDate::from_ymd_opt(raw.year as i32, raw.month as u32, raw.day as u32)?;
+    let time =
+        chrono::NaiveTime::from_hms_opt(raw.hour as u32, raw.minute as u32, raw.second as u32)?;
+    let offset = if raw.utc_offset_hour < 0 {
+        chrono::FixedOffset::west_opt(
+            -raw.utc_offset_hour as i32 * 60 * 60 + raw.utc_offset_minute as i32 * 60,
+        )?
+    } else {
+        chrono::FixedOffset::east_opt(
+            raw.utc_offset_hour as i32 * 60 * 60 + raw.utc_offset_minute as i32 * 60,
+        )?
+    };
+    Some(chrono::DateTime::from_naive_utc_and_offset(
+        chrono::NaiveDateTime::new(date, time),
+        offset,
+    ))
+}
+
 pub fn now_formatted_string() -> String {
     chrono::Local::now().format("%Y-%m-%d_%H:%M:%S").to_string()
 }
@@ -39,23 +65,20 @@ pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {
     (value / current_dpi) * target_dpi
 }
 
-pub fn convert_coord_dpi(
-    coord: na::Vector2<f64>,
-    current_dpi: f64,
-    target_dpi: f64,
-) -> na::Vector2<f64> {
+pub fn convert_coord_dpi(coord: Vector2, current_dpi: f64, target_dpi: f64) -> Vector2 {
     (coord / current_dpi) * target_dpi
 }
 
 #[cfg(feature = "ui")]
-pub fn transform_to_gsk(transform: &rnote_compose::Transform) -> gtk4::gsk::Transform {
+pub fn affine_to_gsk(affine: &DAffine2) -> gtk4::gsk::Transform {
+    let array = affine.to_cols_array_2d();
     gtk4::gsk::Transform::new().matrix(&gtk4::graphene::Matrix::from_2d(
-        transform.affine[(0, 0)],
-        transform.affine[(1, 0)],
-        transform.affine[(0, 1)],
-        transform.affine[(1, 1)],
-        transform.affine[(0, 2)],
-        transform.affine[(1, 2)],
+        array[0][0],
+        array[0][1],
+        array[1][0],
+        array[1][1],
+        array[2][0],
+        array[2][1],
     ))
 }
 
@@ -95,4 +118,53 @@ pub mod glib_bytes_base64 {
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<glib::Bytes, D::Error> {
         rnote_compose::serialize::sliceu8_base64::deserialize(d).map(glib::Bytes::from_owned)
     }
+}
+
+/// Attempts to atomically save data to a file.
+/// Not asynchronous, wrap with `blocking::unblock()` or equivalent to avoid blocking.
+pub fn atomic_save_to_file<Q, B>(filepath: Q, bytes: B) -> anyhow::Result<()>
+where
+    Q: AsRef<std::path::Path>,
+    B: AsRef<[u8]>,
+{
+    let filepath = filepath.as_ref();
+    let bytes = bytes.as_ref();
+
+    let parent_directory = filepath
+        .parent()
+        .ok_or_else(|| anyhow::anyhow!("The filepath does not have a parent directory"))?;
+
+    // We first create the named temporary file, specifically in the parent
+    // directory of the target filepath, as `.persist()` will not work
+    // if the temporary file is in a different filesystem than the target.
+    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory)
+        .with_context(|| "Failed to create a temporary file")?;
+
+    // We then write all of our bytes to the temporary file before syncing its contents.
+    temp_file
+        .write_all(bytes)
+        .with_context(|| "Failed to write to the temporary file")?;
+    temp_file
+        .as_file()
+        .sync_all()
+        .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
+
+    // Finally, we persist the temporary file to the target filepath, if a file
+    // preexists at this location, it will be atomically replaced by our new file.
+    let _ = temp_file
+        .persist(filepath)
+        .with_context(|| "Failed to persist the temporary file to the target filepath")?;
+
+    #[cfg(unix)]
+    {
+        // On UNIX systems, we also sync the parent directory after the persist operation.
+        // Not required for Windows systems, not possible either (you can't open directories as files in the first place).
+        // Note that this might not even be enough, file management on UNIX seems to be a bit of a nightmare.
+        std::fs::File::open(parent_directory)
+            .with_context(|| "Failed to open the parent directory")?
+            .sync_all()
+            .with_context(|| "Failed to sync the contents and metadata of the parent directory")?;
+    }
+
+    Ok(())
 }

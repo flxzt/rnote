@@ -65,7 +65,7 @@ pub(crate) fn create_folder(
                                 .overlays()
                                 .dispatch_toast_error("Can't create folder that already exists.");
                             debug!(
-                                "Couldn't create new folder wit name `{}`, it already exists.",
+                                "Couldn't create new folder with name `{}`, it already exists.",
                                 folder_name_entry.text().as_str()
                             );
                         } else {

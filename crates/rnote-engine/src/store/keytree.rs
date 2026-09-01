@@ -1,6 +1,7 @@
 // Imports
 use super::StrokeKey;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rstar::primitives::GeomWithData;
 
 /// The rtree object that holds the bounds and [StrokeKey].
@@ -53,6 +54,22 @@ impl KeyTree {
             ))
             .map(|object| object.data)
             .collect()
+    }
+
+    /// Get containing bounds for the supplied keys.
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (StrokeKey, Aabb)> {
+        self.0.iter().map(|geom| {
+            let bounds = geom.geom();
+            let lower = bounds.lower();
+            let upper = bounds.upper();
+            (
+                geom.data,
+                Aabb::new(
+                    Vector2::new(lower[0], lower[1]),
+                    Vector2::new(upper[0], upper[1]),
+                ),
+            )
+        })
     }
 
     /// Rebuild the entire rtree from the given Vec of (key, bounds).

@@ -2,7 +2,7 @@
 use crate::RnAppWindow;
 use crate::RnStrokeWidthPicker;
 use adw::prelude::*;
-use gtk4::{CompositeTemplate, ToggleButton, glib, glib::clone, subclass::prelude::*};
+use gtk4::{CompositeTemplate, ToggleButton, Widget, glib, glib::clone, subclass::prelude::*};
 use rnote_engine::pens::pensconfig::EraserConfig;
 use rnote_engine::pens::pensconfig::eraserconfig::EraserStyle;
 
@@ -24,7 +24,7 @@ mod imp {
     impl ObjectSubclass for RnEraserPage {
         const NAME: &'static str = "RnEraserPage";
         type Type = super::RnEraserPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -53,7 +53,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnEraserPage(ObjectSubclass<imp::RnEraserPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnEraserPage {

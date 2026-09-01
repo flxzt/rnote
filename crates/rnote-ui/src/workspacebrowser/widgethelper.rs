@@ -57,5 +57,14 @@ pub(crate) fn create_entry_dialog(entry: &Entry, label: &Label) -> (Button, Popo
         }
     ));
 
+    // listen for enter key on entry
+    entry.connect_activate(clone!(
+        #[weak]
+        apply_button,
+        move |_| {
+            apply_button.emit_clicked();
+        }
+    ));
+
     (apply_button, popover)
 }

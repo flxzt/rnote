@@ -10,6 +10,7 @@ use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::strokes::{Resize, resize::ImageSizeOption, resize::calculate_resize_ratio};
 use crate::{Engine, WidgetFlags};
 use futures::channel::oneshot;
+use p2d::math::Vector2;
 use rnote_compose::ext::Vector2Ext;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
@@ -93,9 +94,6 @@ pub struct PdfImportPrefs {
     /// The scalefactor when importing as bitmap image
     #[serde(rename = "bitmap_scalefactor")]
     pub bitmap_scalefactor: f64,
-    /// Whether the imported Pdf pages have drawn borders
-    #[serde(rename = "page_borders")]
-    pub page_borders: bool,
     /// Whether the document layout should be adjusted to the Pdf
     #[serde(rename = "adjust_document")]
     pub adjust_document: bool,
@@ -108,7 +106,6 @@ impl Default for PdfImportPrefs {
             page_width_perc: 50.0,
             page_spacing: PdfImportPageSpacing::default(),
             bitmap_scalefactor: 1.8,
-            page_borders: true,
             adjust_document: false,
         }
     }
@@ -147,7 +144,7 @@ impl Engine {
     /// The bytes are expected to be from a valid UTF-8 encoded Svg string.
     pub fn generate_vectorimage_from_bytes(
         &self,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         bytes: Vec<u8>,
         respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
@@ -187,7 +184,7 @@ impl Engine {
     /// The bytes are expected to be from a valid bitmap image (Png/Jpeg).
     pub fn generate_bitmapimage_from_bytes(
         &self,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         bytes: Vec<u8>,
         respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
@@ -229,8 +226,8 @@ impl Engine {
     pub fn generate_pdf_pages_from_bytes(
         &self,
         bytes: Vec<u8>,
-        insert_pos: na::Vector2<f64>,
-        page_range: Option<Range<u32>>,
+        insert_pos: Vector2,
+        page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
         let (oneshot_sender, oneshot_receiver) =
@@ -244,7 +241,7 @@ impl Engine {
             .pdf_import_prefs
             .adjust_document
         {
-            na::Vector2::<f64>::zeros()
+            Vector2::ZERO
         } else {
             insert_pos
         };
@@ -318,7 +315,7 @@ impl Engine {
             let max_size = strokes
                 .iter()
                 .map(|(stroke, _)| stroke.bounds().extents())
-                .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
+                .fold(Vector2::ZERO, |acc, x| acc.maxs(&x));
             self.document.config.format.set_width(max_size[0]);
             self.document.config.format.set_height(max_size[1]);
             widget_flags |= self.set_doc_layout(Layout::FixedSize) | self.doc_resize_autoexpand()
@@ -344,7 +341,7 @@ impl Engine {
     }
 
     /// Insert text.
-    pub fn insert_text(&mut self, text: String, pos: Option<na::Vector2<f64>>) -> WidgetFlags {
+    pub fn insert_text(&mut self, text: String, pos: Option<Vector2>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
@@ -368,7 +365,7 @@ impl Engine {
     pub fn insert_stroke_content(
         &mut self,
         content: StrokeContent,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         resize: ImageSizeOption,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();

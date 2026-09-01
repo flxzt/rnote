@@ -19,7 +19,7 @@ jobs:
     steps:
 
       - name: Report test results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@29672c52a8220c09bd9f79b5b6cf6315f1763996
         with:
           artifact: test-results
           name: Tests

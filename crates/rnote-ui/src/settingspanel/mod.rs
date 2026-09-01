@@ -134,7 +134,7 @@ mod imp {
     impl ObjectSubclass for RnSettingsPanel {
         const NAME: &'static str = "RnSettingsPanel";
         type Type = super::RnSettingsPanel;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -308,7 +308,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnSettingsPanel(ObjectSubclass<imp::RnSettingsPanel>)
-    @extends Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnSettingsPanel {

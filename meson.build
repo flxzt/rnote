@@ -1,4 +1,4 @@
-project('rnote', ['rust', 'cpp'], version: '0.13.0', meson_version: '>= 1.0')
+project('rnote', ['rust', 'cpp'], version: '0.15.0', meson_version: '>= 1.0')
 # add a patch suffix for alpha or beta versions in format '-<alpha|beta>.<x>'.
 patch = ''
 
@@ -25,6 +25,7 @@ app_name_capitalized = 'Rnote'
 cli_name = 'rnote-cli'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://rnote.flxzt.net'
+app_repo_url = 'https://github.com/flxzt/rnote'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
 app_support_url = 'https://github.com/flxzt/rnote/discussions'
 app_donate_url = 'https://rnote.flxzt.net/donate/'
@@ -60,7 +61,6 @@ endif
 dependency('glib-2.0', version: '>= 2.76')
 dependency('gio-2.0', version: '>= 2.76')
 dependency('cairo', version: '>= 1.18')
-dependency('poppler', version: '>= 20.09')
 # UI/CLI specific dependencies are declared below
 
 cargo = find_program('cargo', required: true)
@@ -137,7 +137,6 @@ run_target(
 if build_ui == true
     # ui dependencies
     dependency('appstream')
-    dependency('poppler-glib', version: '>= 20.09')
     dependency('gtk4', version: '>= 4.18')
     dependency('libadwaita-1', version: '>= 1.7')
 
@@ -207,7 +206,7 @@ if build_ui == true
             cargo_build_script,
             meson.project_build_root(),
             meson.project_source_root(),
-            cargo_env,
+            ' '.join(cargo_env),
             cargo,
             ' '.join(ui_cargo_options),
             cargo_target_dir / rust_target_folder / app_name,
@@ -249,6 +248,7 @@ if build_ui == true
     inno_script_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
     inno_script_conf.set_quoted('APP_AUTHORS', app_authors)
     inno_script_conf.set_quoted('APP_WEBSITE', app_website)
+    inno_script_conf.set_quoted('APP_REPO_URL', app_repo_url)
     inno_script_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
     inno_script_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
     inno_script_conf.set_quoted('APP_DONATE_URL', app_donate_url)
@@ -261,7 +261,22 @@ if build_ui == true
         configuration: inno_script_conf,
     )
 
+    if build_cli and host_machine.system() == 'windows'
+        define_cli_output = '/DMyAppCliExeName=' + cli_name + '.exe'
+    else
+        define_cli_output = ''
+    endif
+
     if host_machine.system() == 'windows'
+        # the inno_build_script build script will
+        # package the cli if its name is provided
+        # so only give the name if the cli is
+        # actually built
+        if build_cli
+            package_cli_name = cli_name
+        else
+            package_cli_name = ''
+        endif
         # build installer
         custom_target(
             'build-installer',
@@ -277,6 +292,7 @@ if build_ui == true
                 app_id,
                 ui_output,
                 meson.project_build_root() / '@INPUT@',
+                package_cli_name,
             ],
             build_by_default: false,
             depends: app_cargo_build,

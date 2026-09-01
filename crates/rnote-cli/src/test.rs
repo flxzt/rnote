@@ -9,13 +9,13 @@ pub(crate) async fn run_test(rnote_files: &[PathBuf]) -> anyhow::Result<()> {
         let file_disp = rnote_file.display().to_string();
         let progressbar = cli::new_progressbar(format!("Testing file \"{file_disp}\""));
 
-        if let Err(e) = test_file(rnote_file).await {
-            let abandon_msg = format!("Test failed, Err: {e:?}");
+        if let Err(err) = test_file(rnote_file).await {
+            let abandon_msg = format!("Test failed, Err: {err:?}");
             if progressbar.is_hidden() {
                 println!("{abandon_msg}");
             }
             progressbar.abandon_with_message(abandon_msg);
-            return Err(e);
+            return Err(err);
         } else {
             let finish_msg = format!("Test succeeded for file \"{file_disp}\"");
             if progressbar.is_hidden() {

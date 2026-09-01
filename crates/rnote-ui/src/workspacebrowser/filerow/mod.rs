@@ -163,7 +163,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnFileRow(ObjectSubclass<imp::RnFileRow>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnFileRow {

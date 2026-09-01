@@ -7,8 +7,9 @@ use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
 use anyhow::Context;
 use futures::channel::oneshot;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
-use slotmap::{HopSlotMap, SecondaryMap};
+use slotmap::{SecondaryMap, SlotMap};
 use std::sync::Arc;
 use tracing::error;
 
@@ -26,7 +27,7 @@ pub struct EngineSnapshot {
     #[serde(rename = "camera")]
     pub camera: Camera,
     #[serde(rename = "stroke_components")]
-    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    pub stroke_components: Arc<SlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "chrono_components")]
     pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
     #[serde(rename = "chrono_counter")]
@@ -38,7 +39,7 @@ impl Default for EngineSnapshot {
         Self {
             document: Document::default(),
             camera: Camera::default(),
-            stroke_components: Arc::new(HopSlotMap::with_key()),
+            stroke_components: Arc::new(SlotMap::with_key()),
             chrono_components: Arc::new(SecondaryMap::new()),
             chrono_counter: 0,
         }
@@ -132,19 +133,18 @@ impl EngineSnapshot {
                         xopp_import_prefs.dpi,
                     ));
 
-                if let Some(first_page) = xopp_file.xopp_root.pages.first() {
-                    if let xoppformat::XoppBackgroundType::Solid {
+                if let Some(first_page) = xopp_file.xopp_root.pages.first()
+                    && let xoppformat::XoppBackgroundType::Solid {
                         color: _color,
                         style: _style,
                     } = &first_page.background.bg_type
-                    {
-                        // Xopp background styles are not compatible with Rnotes, so everything is plain for now
-                        engine.document.config.background.pattern = background::PatternStyle::None;
-                    }
+                {
+                    // Xopp background styles are not compatible with Rnotes, so everything is plain for now
+                    engine.document.config.background.pattern = background::PatternStyle::None;
                 }
 
                 // Offsetting as rnote has one global coordinate space
-                let mut offset = na::Vector2::<f64>::zeros();
+                let mut offset = Vector2::ZERO;
 
                 for page in xopp_file.xopp_root.pages.into_iter() {
                     for layers in page.layers.into_iter() {
@@ -179,6 +179,20 @@ impl EngineSnapshot {
                                 Err(e) => {
                                     error!(
                                         "Creating Stroke from XoppImage failed while loading Xopp bytes, Err: {e:?}",
+                                    );
+                                }
+                            }
+                        }
+
+                        for new_xopptext in layers.texts.into_iter() {
+                            match Stroke::from_xopptext(new_xopptext, offset, xopp_import_prefs.dpi)
+                            {
+                                Ok(new_text) => {
+                                    engine.store.insert_stroke(new_text, None);
+                                }
+                                Err(e) => {
+                                    error!(
+                                        "Creating Stroke from XoppText failed while loading Xopp bytes, Err: {e:?}",
                                     );
                                 }
                             }

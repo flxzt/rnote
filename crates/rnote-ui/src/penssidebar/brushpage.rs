@@ -2,7 +2,7 @@
 use crate::{RnAppWindow, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
-    Button, CompositeTemplate, ListBox, MenuButton, Popover, glib, glib::clone,
+    Button, CompositeTemplate, ListBox, MenuButton, Popover, Widget, glib, glib::clone,
     subclass::prelude::*,
 };
 use num_traits::cast::ToPrimitive;
@@ -60,7 +60,7 @@ mod imp {
     impl ObjectSubclass for RnBrushPage {
         const NAME: &'static str = "RnBrushPage";
         type Type = super::RnBrushPage;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -89,7 +89,8 @@ mod imp {
 
 glib::wrapper! {
     pub(crate) struct RnBrushPage(ObjectSubclass<imp::RnBrushPage>)
-        @extends gtk4::Widget;
+        @extends Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for RnBrushPage {

@@ -5,17 +5,21 @@ use super::content::GeneratedContentImages;
 use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
 use super::{Content, TextStroke};
+use crate::Engine;
+use crate::Image;
+use crate::Svg;
 use crate::fileformats::xoppformat::{self, XoppColor};
 use crate::store::chrono_comp::StrokeLayer;
+use crate::strokes::textstroke::TextStyle;
 use crate::{Drawable, utils};
-use crate::{Engine, render};
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
+use p2d::math::Vector2;
+use rnote_compose::Transformable;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::Transformable;
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
@@ -36,7 +40,7 @@ pub enum Stroke {
 }
 
 impl Content for Stroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg(&self) -> Result<Svg, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_svg(),
             Stroke::ShapeStroke(shapestroke) => shapestroke.gen_svg(),
@@ -140,7 +144,7 @@ impl Shapeable for Stroke {
 }
 
 impl Transformable for Stroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         match self {
             Self::BrushStroke(brushstroke) => {
                 brushstroke.translate(offset);
@@ -160,7 +164,7 @@ impl Transformable for Stroke {
         }
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         match self {
             Self::BrushStroke(brushstroke) => {
                 brushstroke.rotate(angle, center);
@@ -180,7 +184,7 @@ impl Transformable for Stroke {
         }
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         match self {
             Self::BrushStroke(brushstroke) => {
                 brushstroke.scale(scale);
@@ -203,7 +207,7 @@ impl Transformable for Stroke {
 
 impl Stroke {
     /// The default offset in surface coords when importing a stroke.
-    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
+    pub const IMPORT_OFFSET_DEFAULT: Vector2 = Vector2::splat(32.);
 
     pub fn extract_default_layer(&self) -> StrokeLayer {
         match self {
@@ -303,7 +307,7 @@ impl Stroke {
 
     pub fn from_xoppstroke(
         stroke: xoppformat::XoppStroke,
-        offset: na::Vector2<f64>,
+        offset: Vector2,
         target_dpi: f64,
     ) -> Result<(Self, StrokeLayer), anyhow::Error> {
         let mut widths: Vec<f64> = stroke
@@ -312,14 +316,14 @@ impl Stroke {
             .map(|w| crate::utils::convert_value_dpi(w, xoppformat::XoppFile::DPI, target_dpi))
             .collect();
 
-        let coords: Vec<na::Vector2<f64>> = stroke
+        let coords: Vec<Vector2> = stroke
             .coords
             .into_iter()
             .map(|c| {
-                na::vector![
+                Vector2::new(
                     crate::utils::convert_value_dpi(c[0], xoppformat::XoppFile::DPI, target_dpi),
-                    crate::utils::convert_value_dpi(c[1], xoppformat::XoppFile::DPI, target_dpi)
-                ]
+                    crate::utils::convert_value_dpi(c[1], xoppformat::XoppFile::DPI, target_dpi),
+                )
             })
             .collect();
 
@@ -372,7 +376,7 @@ impl Stroke {
         let penpath = PenPath::try_from_elements(
             coords
                 .into_iter()
-                .zip(widths.into_iter())
+                .zip(widths)
                 .map(|(pos, pressure)| Element::new(pos + offset, pressure)),
         )
         .ok_or_else(|| anyhow::anyhow!("Could not generate pen path from coordinates vector"))?;
@@ -384,34 +388,34 @@ impl Stroke {
 
     pub fn from_xoppimage(
         xopp_image: xoppformat::XoppImage,
-        offset: na::Vector2<f64>,
+        offset: Vector2,
         target_dpi: f64,
     ) -> Result<Self, anyhow::Error> {
         let bounds = Aabb::new(
-            na::point![
+            Vector2::new(
                 crate::utils::convert_value_dpi(
                     xopp_image.left,
                     xoppformat::XoppFile::DPI,
-                    target_dpi
+                    target_dpi,
                 ),
                 crate::utils::convert_value_dpi(
                     xopp_image.top,
                     xoppformat::XoppFile::DPI,
-                    target_dpi
-                )
-            ],
-            na::point![
+                    target_dpi,
+                ),
+            ),
+            Vector2::new(
                 crate::utils::convert_value_dpi(
                     xopp_image.right,
                     xoppformat::XoppFile::DPI,
-                    target_dpi
+                    target_dpi,
                 ),
                 crate::utils::convert_value_dpi(
                     xopp_image.bottom,
                     xoppformat::XoppFile::DPI,
-                    target_dpi
-                )
-            ],
+                    target_dpi,
+                ),
+            ),
         )
         .translate(offset);
 
@@ -420,11 +424,33 @@ impl Stroke {
 
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
-            transform: Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0)),
+            affine: DAffine2::from_translation(bounds.center()),
         };
-        let image = render::Image::try_from_encoded_bytes(&bytes)?;
+        let image = Image::try_from_encoded_bytes(&bytes)?;
 
         Ok(Stroke::BitmapImage(BitmapImage { image, rectangle }))
+    }
+
+    pub fn from_xopptext(
+        xopp_text: xoppformat::XoppText,
+        offset: Vector2,
+        target_dpi: f64,
+    ) -> Result<Self, anyhow::Error> {
+        let pos: Vector2 = Vector2::new(
+            crate::utils::convert_value_dpi(xopp_text.x, xoppformat::XoppFile::DPI, target_dpi),
+            crate::utils::convert_value_dpi(xopp_text.y, xoppformat::XoppFile::DPI, target_dpi),
+        );
+        let mut textstyle = TextStyle::default();
+        textstyle.color = crate::utils::color_from_xopp(xopp_text.color);
+        textstyle.font_size =
+            crate::utils::convert_value_dpi(xopp_text.size, xoppformat::XoppFile::DPI, target_dpi);
+        textstyle.font_family = xopp_text.font;
+
+        Ok(Stroke::TextStroke(TextStroke::new(
+            xopp_text.text,
+            pos + offset,
+            textstyle,
+        )))
     }
 
     pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {
@@ -481,7 +507,7 @@ impl Stroke {
                             xoppformat::XoppFile::DPI,
                         )
                     })
-                    .collect::<Vec<na::Vector2<f64>>>();
+                    .collect::<Vec<Vector2>>();
 
                 Some(xoppformat::XoppStrokeType::XoppStroke(
                     xoppformat::XoppStroke {
@@ -496,6 +522,12 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
+                // Remark
+                // We can transform shapes to a xopp brushstroke
+                // under the following conditions
+                // - if the stroke color is not none
+                // - if the fill color is transparent
+                // - if the style is not rough
                 let png_data = match shapestroke.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
@@ -540,6 +572,14 @@ impl Stroke {
             Stroke::TextStroke(textstroke) => {
                 // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here.
                 // The best solution for now seems to be to export them as a bitmap image.
+                //
+                // We _could_ try to retain the text more but
+                // the hard part is a xopp text element is
+                // - a single font
+                // - a single emphasis mode (bold,italic ...) on all text
+                // - a single color
+                // So we'd have to cut the text into smaller xopp text elements
+                // to retain it ...
                 let png_data = match textstroke.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,
@@ -582,6 +622,7 @@ impl Stroke {
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
+                // no svg support in xournalpp
                 let png_data = match vectorimage.export_to_bitmap_image_bytes(
                     image::ImageFormat::Png,
                     Engine::STROKE_EXPORT_IMAGE_SCALE,

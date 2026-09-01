@@ -4,11 +4,10 @@ id: com.github.flxzt.rnote.Devel
 tags:
     - development
 runtime: org.gnome.Platform
-runtime-version: "48"
+runtime-version: "50"
 sdk: org.gnome.Sdk
 sdk-extensions:
     - org.freedesktop.Sdk.Extension.rust-stable
-    - org.freedesktop.Sdk.Extension.llvm19
 command: rnote
 finish-args:
     - "--socket=wayland"
@@ -26,49 +25,19 @@ finish-args:
     # - "--env=G_MESSAGES_DEBUG=all"
     - "--env=GTK_PATH=/app/lib/gtk-4.0"
 build-options:
-    append-path: "/usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/llvm19/bin"
-    env:
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
-        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: clang
-        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUSTFLAGS: "-C link-arg=-fuse-ld=/usr/lib/sdk/rust-stable/bin/mold"
+    append-path: "/usr/lib/sdk/rust-stable/bin"
     build-args:
         - "--share=network"
     test-args:
         - "--socket=x11"
         - "--share=network"
-    prepend-ld-library-path: /usr/lib/sdk/llvm19/lib
 modules:
-    - name: poppler
-      buildsystem: cmake-ninja
-      config-opts:
-          - "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
-          - "-DCMAKE_INSTALL_LIBDIR=/app/lib"
-          - "-DCMAKE_INSTALL_INCLUDEDIR=/app/include"
-          - "-DENABLE_BOOST=OFF"
-          - "-DENABLE_LIBOPENJPEG=none"
-          - "-DENABLE_QT5=OFF"
-          - "-DENABLE_QT6=OFF"
-          - "-DENABLE_CPP=OFF"
-          - "-DENABLE_UTILS=OFF"
-      sources:
-          - type: archive
-            url: "https://poppler.freedesktop.org/poppler-24.07.0.tar.xz"
-            sha256: 19eb4f49198e4ae3fd9e5a6cf24d0fc7e674e8802046a7de14baab1e40cc2f1d
-    - name: poppler-data
-      buildsystem: cmake-ninja
-      config-opts:
-          - "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
-      sources:
-          - type: archive
-            url: "https://poppler.freedesktop.org/poppler-data-0.4.12.tar.gz"
-            sha256: c835b640a40ce357e1b83666aabd95edffa24ddddd49b8daff63adb851cdab74
     - name: rnote
       buildsystem: meson
       run-tests: true
       config-opts:
           - "-Dprofile=devel"
-          - "-Dcli=false"
+          - "-Dcli=true"
       sources:
           - type: dir
             path: ../

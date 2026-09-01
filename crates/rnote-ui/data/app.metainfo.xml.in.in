@@ -77,6 +77,7 @@
   <url type="homepage">@APP_WEBSITE@</url>
   <url type="bugtracker">@APP_ISSUES_URL@</url>
   <url type="donation">@APP_DONATE_URL@</url>
+  <url type="vcs-browser">@APP_REPO_URL@</url>
   <developer_name translatable="no">@APP_AUTHOR_NAME@</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />
@@ -87,6 +88,78 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.14.2" date="2026-05-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: transparent stroke rendering (@Kneemund)</li>
+          <li>fix: document not staying centered after zooming (@Kneemund)</li>
+          <li>fix: pinch zooming on touchscreen (@Kneemund)</li>
+          <li>fix: jumping view while zooming in (@Kneemund)</li>
+          <li>fix: zooming with "alt+shift+drag" (@Kneemund)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.14.1" date="2026-04-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: fixed icon appearance and update to new, more consistent style (@flxzt)</li>
+          <li>fix: file erroneously detected as removed after saving (@turicfr)</li>
+          <li>fix: pinch-to-zoom causing scroll by applying workaround for GTK issue (@RayJW)</li>
+          <li>fix: zooming with Ctrl+Scroll while Capslock is turned on (@Kneemund)</li>
+          <li>fix: grid snapping for all pattern styles (@Kneemund)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.14.0" date="2026-03-25">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: apply workspace entry dialog by pressing Enter (@ternison)</li>
+          <li>feat: add text formatting keyboard shortcuts (@ Keschler)</li>
+          <li>feat: Xournal++ text import (@Doublonmousse)</li>
+          <li>fix: PDF rendering issues by replace underlying library (from poppler to hayro) (@flxzt)</li>
+          <li>feat: CLI create command (@DarshPareek)</li>
+          <li>feat: CLI thumbnail generation timeout (@flxzt)</li>
+          <li>feat: bundle CLI in flatpak (@flxzt)</li>
+          <li>feat: atomic file saving (@anesthetice)</li>
+          <li>improv: pen eraser default (@DorianRudolph)</li>
+          <li>improv: improve initial focus for import/export dialogs (@Doublonmousse)</li>
+          <li>fix: file picker stealing focus from all opened windows (@Doublonmousse)</li>
+          <li>fix: pen sounds on Windows (@Doublonmousse)</li>
+          <li>fix: prevent crash when sorting files with non UTF-8 names (@Doublonmousse)</li>
+          <li>fix: rnote thumbnailer execution (@flxzt)</li>
+          <li>fix: workspace directory default (@flxzt)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.1" date="2025-09-09">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: occasional PDF import failure (thanks to @Doublonmousse)</li>
+          <li>fix: add back accidentally removed 'Pen Style' keyboard shortcuts (thanks to @Doublonmousse)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.0" date="2025-09-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feat: save/restore engine configuration with preset</li>
+          <li>feat: respect snap-positions option when building shapes</li>
+          <li>feat: shape styling options and shape highlight-mode (thanks to @anesthetice)</li>
+          <li>improv: application window always focused when opening a file (thanks to @Nugfle)</li>
+          <li>fix: selected part when renaming files in the application file browser (thanks to @Kneemund)</li>
+          <li>fix: cancelling import dialogs not stopping progress bar (thanks to @Doublonmousse)</li>
+          <li>fix: missing translation for a string (thanks to @Doublonmousse)</li>
+          <li>fix: save file logic when encountering corner cases (thanks to @Doublonmousse)</li>
+          <li>fix: filename sorting in integrated files list</li>
+          <li>fix: prevent occasional xopp import failure</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.12.0" date="2025-04-12">
       <description>
         <p>this release changes:</p>

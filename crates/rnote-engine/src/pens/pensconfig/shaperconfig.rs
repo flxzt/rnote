@@ -1,5 +1,5 @@
 // Imports
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rnote_compose::Constraints;
 use rnote_compose::Style;
 use rnote_compose::builders::ShapeBuilderType;
@@ -46,6 +46,13 @@ pub struct ShaperConfig {
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
+    #[serde(rename = "highlight_mode")]
+    pub highlight_mode: bool,
+    #[serde(
+        rename = "highlight_opacity",
+        with = "rnote_compose::serialize::f64_dp3"
+    )]
+    pub highlight_opacity: f64,
     #[serde(rename = "constraints")]
     pub constraints: Constraints,
 }
@@ -62,6 +69,8 @@ impl Default for ShaperConfig {
             style: ShaperStyle::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
+            highlight_mode: false,
+            highlight_opacity: 0.45,
             constraints,
         }
     }
@@ -73,20 +82,38 @@ impl ShaperConfig {
 
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {
-        let seed = Some(rand_pcg::Pcg64::from_os_rng().random());
+        let seed = Some(rand_pcg::Pcg64::from_rng(&mut rand::rng()).random());
         self.rough_options.seed = seed;
     }
 
     pub(crate) fn gen_style_for_current_options(&self) -> Style {
         match &self.style {
             ShaperStyle::Smooth => {
-                let options = self.smooth_options.clone();
-
+                let mut options = self.smooth_options.clone();
+                if self.highlight_mode {
+                    if let Some(ref mut color) = options.stroke_color {
+                        color.a = self.highlight_opacity;
+                    }
+                    if let Some(ref mut color) = options.fill_color
+                        && color.a > 0.0
+                    {
+                        color.a = self.highlight_opacity;
+                    }
+                }
                 Style::Smooth(options)
             }
             ShaperStyle::Rough => {
-                let options = self.rough_options.clone();
-
+                let mut options = self.rough_options.clone();
+                if self.highlight_mode {
+                    if let Some(ref mut color) = options.stroke_color {
+                        color.a = self.highlight_opacity;
+                    }
+                    if let Some(ref mut color) = options.fill_color
+                        && color.a > 0.0
+                    {
+                        color.a = self.highlight_opacity;
+                    }
+                }
                 Style::Rough(options)
             }
         }

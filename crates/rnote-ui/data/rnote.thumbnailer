@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
-TryExec=rnote-cli thumbnail
+TryExec=rnote-cli
 Exec=rnote-cli thumbnail %i %o -s %s
 MimeType=application/rnote

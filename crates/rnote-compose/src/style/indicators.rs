@@ -157,7 +157,7 @@ pub fn draw_rectangular_node(
 
     let rectangular_node = rectangular_node_shape(node_state, bounds, zoom);
 
-    cx.fill(rectangular_node, &background_color); // and maybe force it to alpha 1 ?
+    cx.fill(rectangular_node, &background_color);
 
     match node_state {
         PenState::Up => {}

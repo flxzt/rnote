@@ -130,34 +130,34 @@ flatpak run --command=rnote-cli com.github.flxzt.rnote help
 
 ## Pitfalls & Known Issues
 
-### The app does not work properly on X11
+**The app does not work properly on X11**
 
 X11 is unsupported. Stylus and touch input support is known to be unreliable, and upstream support of X11
 (GTK4 UI toolkit and desktop environments) will decrease over time (from lower maintenance, deprecation to removal)
 so successfully fixing X11-related issues for users isn't feasible anymore.
 
-### Drag & Drop is not working
+**Drag & Drop is not working**
 
 Ensure that Rnote has permission to access the locations from which you are dragging files.
 These can be granted in Flatseal, a Flatpak permissions manager.
 
-### Odd location for current file
+**Odd location for current file**
 
 If the directory displayed in the header title is similar to `/run/user/1000/../`, Rnote does not have permissions
 to access the directory. Again, granting them in Flatseal fixes this issue.
 
-### The stylus buttons or moving the canvas with a stylus do not work
+**The stylus buttons or moving the canvas with a stylus do not work**
 
 Make sure that `libinput` and `libwacom` are installed and loaded.
 
-### While hovering over the screen with the stylus, other input events are blocked in some regions of the screen
+**While hovering over the screen with the stylus, other input events are blocked in some regions of the screen**
 
 Some devices apply palm rejection, so your hand does not trigger any action on the screen while using a
 stylus/drawing tablet. However, this might not be desirable. If your device has a left/right handed setting for
 your stylus/drawing tablet, make sure it is set correctly. Rnote can't disable this unfortunately
 (discussed in issue [#329](https://github.com/flxzt/rnote/issues/329)).
 
-### Changing the stylus button action in the settings does not work
+**Changing the stylus button action in the settings does not work**
 
 Some stylus models have a button that sends out an "Erazer Tool" event instead of a "Primary button" or
 "Secondary button" event. Examples for such buttons are the lower button of the HP MPP2.0 Tilt pen or when the
@@ -233,12 +233,12 @@ Rnote is available under GPL-3.0-or-later. See the LICENSE file for more info.
 - [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
 - [Pizarra](https://pizarra.categulario.xyz/en/) is an innovative drawing app with advanced shaping and featuring an infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
-
 ## Community
 
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.
 
 There are also two Matrix chat rooms:
+
 - for users: [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org)
 - for developers: [#rnote-dev:matrix.org](https://matrix.to/#/#rnote-dev:matrix.org)
 

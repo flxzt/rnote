@@ -153,15 +153,15 @@ flatpak run --command=rnote-cli com.github.flxzt.rnote help
     (discussed in issue [#329](https://github.com/flxzt/rnote/issues/329)).
 
 - **Changing the stylus button action in the settings does not work**
-    Some stylus models have a button that sends out an "Erazer Tool" event instead of a "Primary button" or
+    Some stylus models have a button that sends out an "Eraser Tool" event instead of a "Primary button" or
     "Secondary button" event. Examples for such buttons are the lower button of the HP MPP2.0 Tilt pen or when the
     back of the Microsoft Surface Pen hovers over the screen. This could result in inconsistent button settings in the
     shortcuts menu (e.g. the secondary/upper button is actually the primary/lower button, or vice versa).
 
-    Rnote doesn't natively support handling "Erazer Tool" events, nor enable remapping an eraze button to a
-    Primary/Secondary button. However, a workaround can be used to permanently map a tool to an erazer button
+    Rnote doesn't natively support handling "Eraser Tool" events, nor enable remapping an erase button to a
+    Primary/Secondary button. However, a workaround can be used to permanently map a tool to an eraser button
 
-  1. Hover over the canvas, and press and hold the erazer button on the pen
+  1. Hover over the canvas, and press and hold the eraser button on the pen
   1. Switch to the desired pen style while keeping the button pressed
   1. When releasing the pressed button, it should switch back to the previous pen style
   1. The pen style in the "Eraser" mode should now be remembered

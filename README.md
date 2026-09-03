@@ -130,29 +130,43 @@ flatpak run --command=rnote-cli com.github.flxzt.rnote help
 
 ## Pitfalls & Known Issues
 
-* The app does not work properly on X11 -  
-    X11 is unsupported: stylus and touch input support is known to be sometimes spotty, and upstream support (GTK4 UI
-    toolkit and desktop environments) will decrease over time (from lower maintenance, depreciation to removal)
+- **The app does not work properly on X11**\
+    X11 is unsupported. Stylus and touch input support is known to be unreliable, and upstream support of X11
+    (GTK4 UI toolkit and desktop environments) will decrease over time (from lower maintenance, deprecation to removal)
     so successfully fixing X11-related issues for users isn't feasible anymore.
 
-* Drag & Drop not working -  
-    Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+- **Drag & Drop is not working**\
+    Ensure that Rnote has permission to access the locations from which you are dragging files.
+    These can be granted in Flatseal, a Flatpak permissions manager.
 
-* Odd location for current file -  
-    When the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory. Again, granting them in Flatseal fixes this issue.
+- **Odd location for current file**\
+    If the directory displayed in the header title is similar to `/run/user/1000/../`, Rnote does not have permissions
+    to access the directory. Again, granting them in Flatseal fixes this issue.
 
-* Stylus buttons move canvas / are not functional -  
+- **The stylus buttons or moving the canvas with a stylus do not work**\
     Make sure that `libinput` and `libwacom` are installed and loaded.
 
-* While hovering with the stylus, other input events are blocked in some regions of the screen -  
-    Supposed to be palm rejection, but might be undesirable. If there is a left- / righthanded system tablet setting, make sure it is set correctly. Rnote can't disable this unfortunately. ( discussed in issue [#329](https://github.com/flxzt/rnote/issues/329) )
+- **While hovering over the screen with the stylus, other input events are blocked in some regions of the screen**\
+    Some devices apply palm rejection, so your hand does not trigger any action on the screen while using a
+    stylus/drawing tablet. However, this might not be desirable. If your device has a left/right handed setting for
+    your stylus/drawing tablet, make sure it is set correctly. Rnote can't disable this unfortunately
+    (discussed in issue [#329](https://github.com/flxzt/rnote/issues/329)).
 
-* One of the stylus buttons shortcut mapping does not work as intended -  
-On some devices one stylus button is mapped to a dedicated "Eraser" mode (which is the back-side on other styli). The buttons in the shortcuts settings could then be inconsistent ( the secondary / upper button is actually the primary / lower button , or reverse ). To change the tool that is mapped to this "Eraser" mode, do the following:  
-    * Hover over the canvas, and press and hold the button that is suspected to be mapped to the "Eraser" mode
-    * Switch to the desired pen style while keeping the button pressed
-    * When releasing the pressed button, it should switch back to the previous pen style
-    * The pen style in the "Eraser" mode should now be remembered
+- **Changing the stylus button action in the settings does not work**
+    Some stylus models have a button that sends out an "Eraser Tool" event instead of a "Primary button" or
+    "Secondary button" event. Examples for such buttons are the lower button of the HP MPP2.0 Tilt pen or when the
+    back of the Microsoft Surface Pen hovers over the screen. This could result in inconsistent button settings in the
+    shortcuts menu (e.g. the secondary/upper button is actually the primary/lower button, or vice versa).
+
+    Rnote doesn't natively support handling "Eraser Tool" events, nor enable remapping an erase button to a
+    Primary/Secondary button. However, a workaround can be used to permanently map a tool to an eraser button
+
+  1. Hover over the canvas, and press and hold the eraser button on the pen
+  1. Switch to the desired pen style while keeping the button pressed
+  1. When releasing the pressed button, it should switch back to the previous pen style
+  1. The pen style in the "Eraser" mode should now be remembered
+
+    To verify what event each pen button sends, you can use `evtest` on Linux.
 
 ## Translations
 
@@ -213,12 +227,12 @@ Rnote is available under GPL-3.0-or-later. See the LICENSE file for more info.
 - [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
 - [Pizarra](https://pizarra.categulario.xyz/en/) is an innovative drawing app with advanced shaping and featuring an infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
-
 ## Community
 
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.
 
 There are also two Matrix chat rooms:
+
 - for users: [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org)
 - for developers: [#rnote-dev:matrix.org](https://matrix.to/#/#rnote-dev:matrix.org)
 

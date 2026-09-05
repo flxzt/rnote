@@ -4,15 +4,26 @@ use crate::store::text_comp::TextLine;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::store::StrokeKey;
 use crate::tasks::{OneOffTaskError, OneOffTaskHandle};
-use ort::{
-    session::{Session, builder::GraphOptimizationLevel},
-    value::Tensor,
-};
+// 1. Bring the BoundingVolume trait into scope to allow calling `.merged()`
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use tracing::{error, info};
+use tracing::error;
+
+// Import Burn components
+use burn::backend::NdArray;
+use burn::tensor::{Tensor, TensorData};
+
+// Use the pure-Rust NdArray backend (f32 element type)
+pub type Backend = NdArray<f32>;
+
+// Include the generated model directly in this module to fix the import error
+pub mod my_model {
+    // If your file was named student_model.onnx, the output will be student_model.rs
+    include!(concat!(env!("OUT_DIR"), "/model/student_model.rs"));
+}
+use my_model::Model;
 
 #[cfg(debug_assertions)]
 pub mod debug_export;
@@ -20,15 +31,6 @@ pub mod debug_export;
 // Expose the new segmentation module
 pub mod segmentation;
 use segmentation::segment_into_lines;
-
-pub fn load_model_session(path: &str) -> Result<Session, Box<dyn std::error::Error>> {
-    let session = Session::builder()?
-        .with_optimization_level(GraphOptimizationLevel::Level3)?
-        .with_intra_threads(4)?
-        .commit_from_file(path)?;
-
-    Ok(session)
-}
 
 #[derive(Debug, Clone)]
 pub struct RecognitionPoint {
@@ -304,19 +306,31 @@ fn draw_line(
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct HandwritingRecognizer {
     task_handle: Arc<Mutex<Option<OneOffTaskHandle>>>,
     tasks_tx: EngineTaskSender,
-    model_session: Arc<Mutex<Session>>,
+    model: Arc<Model<Backend>>,
+}
+
+// Manually implement Debug to satisfy the Engine struct deriving Debug
+// without depending on the inner traits.
+impl std::fmt::Debug for HandwritingRecognizer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("HandwritingRecognizer")
+            .finish_non_exhaustive()
+    }
 }
 
 impl HandwritingRecognizer {
-    pub fn new(tasks_tx: EngineTaskSender, model_session: Session) -> Self {
+    pub fn new(tasks_tx: EngineTaskSender) -> Self {
+        // Initialize the built-in model
+        let model: Model<Backend> = Model::default();
+
         Self {
             task_handle: Arc::new(Mutex::new(None)),
             tasks_tx,
-            model_session: Arc::new(Mutex::new(model_session)),
+            model: Arc::new(model),
         }
     }
 
@@ -328,8 +342,9 @@ impl HandwritingRecognizer {
     ) {
         let timeout = Duration::from_millis(u64::from(handwriting_debounce_ms));
         let mut reinstall_task = false;
+
         let tasks_tx = self.tasks_tx.clone();
-        let model_session = self.model_session.clone();
+        let model = self.model.clone();
 
         let recognition_task = move || {
             if raw_stroke_data.is_empty() {
@@ -337,23 +352,13 @@ impl HandwritingRecognizer {
             }
 
             let lines = segment_into_lines(&raw_stroke_data, 0.0);
-            #[cfg(debug_assertions)]
-            {
-                // crate::recognition::debug_export::export_debug_svg(
-                //     &lines,
-                //     "debug_segmentation.svg",
-                // );
-
-                // let _ = crate::recognition::debug_export::export_for_annotation(
-                //     &lines,
-                //     "debug_annotations.json",
-                // );
-            }
             let mut recognized_lines: Vec<TextLine> = Vec::new();
-            // let mut deskew_debug_infos: Vec<crate::engine::DeskewDebugData> = Vec::new();
 
             let max_w = 512;
             let max_h = 32;
+
+            // Reconstruct NdArray backend device directly here in the worker thread
+            let device = Default::default();
 
             for (line_index, line_strokes) in lines.into_iter().enumerate() {
                 if line_strokes.is_empty() {
@@ -375,70 +380,33 @@ impl HandwritingRecognizer {
 
                 let original_bounds =
                     get_strokes_bounds(&line_strokes).unwrap_or_else(|| Aabb::new_invalid());
-                // let angle_rad = calculate_skew_angle(&line_strokes);
-                // let center = get_global_center(&line_strokes);
-                // let deskewed_line = deskew_strokes(&line_strokes);
-                // let deskewed_bounds =
-                // get_strokes_bounds(&deskewed_line).unwrap_or_else(|| Aabb::new_invalid());
-
-                // deskew_debug_infos.push(crate::engine::DeskewDebugData {
-                //     center,
-                //     aabb_deskewed: deskewed_bounds,
-                //     angle_rad,
-                // });
 
                 let buffer = process_strokes_to_tensor(&line_strokes, max_w, max_h, 2.0);
 
-                let input_array = match ndarray::Array::from_shape_vec((1, 3, max_h, max_w), buffer)
-                {
-                    Ok(arr) => arr,
-                    Err(e) => {
-                        error!(
-                            "Failed to build input tensor array for line {}: {}",
-                            line_index, e
-                        );
-                        continue;
-                    }
-                };
+                // Build pure-Rust Burn tensor
+                let tensor_data = TensorData::new(buffer, [1, 3, max_h, max_w]);
+                let input_tensor = Tensor::<Backend, 4>::from_data(tensor_data, &device);
 
-                let input_tensor = match Tensor::from_array(input_array) {
-                    Ok(tensor) => tensor,
+                // Run forward pass
+                let output_tensor = model.forward(input_tensor);
+
+                // Extract Burn tensor data
+                let output_data = output_tensor.into_data();
+
+                // 2. Add an explicit type mapping matching the 3-dimensional tensor extraction
+                let dims: [usize; 3] = output_data.shape.dims();
+                let data = match output_data.to_vec::<f32>() {
+                    Ok(d) => d,
                     Err(e) => {
-                        error!("Failed to create ORT tensor for line {}: {}", line_index, e);
+                        error!("Failed to extract tensor for line {}: {}", line_index, e);
                         continue;
                     }
                 };
 
                 let recognized_text: Option<String> = {
-                    let mut session = match model_session.lock() {
-                        Ok(guard) => guard,
-                        Err(e) => {
-                            error!("Mutex poisoned: {}", e);
-                            return;
-                        }
-                    };
-
-                    let outputs = match session.run(ort::inputs![input_tensor]) {
-                        Ok(res) => res,
-                        Err(e) => {
-                            error!("Inference failed for line {}: {}", line_index, e);
-                            continue;
-                        }
-                    };
-
-                    let output_tensor = match outputs[0].try_extract_tensor::<f32>() {
-                        Ok(tensor) => tensor,
-                        Err(e) => {
-                            error!("Failed to extract tensor for line {}: {}", line_index, e);
-                            continue;
-                        }
-                    };
-
-                    let (shape, data) = output_tensor;
-
-                    if shape.len() >= 3 {
-                        let time_steps = shape[1] as usize;
-                        let vocab_size = shape[2] as usize;
+                    if dims.len() >= 3 {
+                        let time_steps = dims[1];
+                        let vocab_size = dims[2];
 
                         let vocab: &[char] = &[
                             '\0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
@@ -450,6 +418,7 @@ impl HandwritingRecognizer {
                             '/', '\\', '=', '<', '>', '^', '_', '%', '°', '$', '€', '@', '#', '&',
                             '§', ' ',
                         ];
+
                         let mut decoded_chars = Vec::new();
                         let mut last_token = None;
 
@@ -490,11 +459,6 @@ impl HandwritingRecognizer {
             }
 
             if !recognized_lines.is_empty() {
-                // if !deskew_debug_infos.is_empty() {
-                //     tasks_tx.send(EngineTask::DeskewDebugInfo {
-                //         data: deskew_debug_infos,
-                //     });
-                // }
                 tasks_tx.send(EngineTask::HandwritingRecognitionResult {
                     lines: recognized_lines,
                 });

@@ -250,10 +250,10 @@ impl Default for Engine {
     fn default() -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
         let task_sender = EngineTaskSender(tasks_tx);
-        let model_session = crate::recognition::load_model_session("./models/student_model.onnx")
-            .unwrap_or_else(|e| {
-                panic!("Failed to load handwriting recognition ONNX model: {e}");
-            });
+
+        // Note: We no longer load the model session via ONNX Runtime C bindings here.
+        // It is compiled directly via the burn-onnx build script.
+
         Self {
             config: EngineConfigShared(Arc::new(RwLock::new(EngineConfig::default()))),
             document: Document::default(),
@@ -262,7 +262,6 @@ impl Default for Engine {
             penholder: PenHolder::default(),
             handwriting_recognizer: crate::recognition::HandwritingRecognizer::new(
                 task_sender.clone(),
-                model_session,
             ),
             active_search_results: Vec::new(),
             current_search_index: 0,

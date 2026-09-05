@@ -325,7 +325,8 @@ impl std::fmt::Debug for HandwritingRecognizer {
 impl HandwritingRecognizer {
     pub fn new(tasks_tx: EngineTaskSender) -> Self {
         // Initialize the built-in model
-        let model: Model<Backend> = Model::default();
+        let device = Default::default();
+        let model: Model<Backend> = Model::new(&device);
 
         Self {
             task_handle: Arc::new(Mutex::new(None)),

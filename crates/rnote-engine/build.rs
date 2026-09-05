@@ -1,6 +1,5 @@
-use burn_onnx::ModelGen;
+use burn_onnx::{LoadStrategy, ModelGen};
 use std::env;
-
 fn main() {
     // Tell Cargo to re-run the build script only if the model file changes
     println!("cargo:rerun-if-changed=../../models/student_model.onnx");
@@ -13,5 +12,6 @@ fn main() {
         // (relative to the crates/rnote-engine/ directory)
         .input("../../models/student_model.onnx")
         .out_dir(&model_dir)
+        .load_strategy(LoadStrategy::Bytes)
         .run_from_script();
 }

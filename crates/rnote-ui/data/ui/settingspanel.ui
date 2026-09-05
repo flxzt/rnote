@@ -127,6 +127,21 @@ gets disabled.</property>
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwComboRow" id="general_background_invert_mode_row">
+                        <property name="title" translatable="yes">Invert Background Brightness</property>
+                        <property name="subtitle" translatable="yes">Invert the brightness of the background and pattern colors</property>
+                        <property name="model">
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">Disabled</item>
+                              <item translatable="yes">Enabled</item>
+                              <item translatable="yes">Follow system</item>
+                            </items>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Format Group -->
@@ -438,18 +453,6 @@ gets disabled.</property>
                       <object class="AdwSwitchRow" id="doc_show_origin_indicator_row">
                         <property name="title" translatable="yes">Show Origin Indicator</property>
                         <property name="subtitle" translatable="yes">Set whether the document origin indicator is shown</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow" id="background_pattern_invert_color_row">
-                        <property name="title" translatable="yes">Invert Color Brightness</property>
-                        <property name="subtitle" translatable="yes">Invert the brightness of the background and pattern colors</property>
-                        <child type="suffix">
-                          <object class="GtkButton" id="background_pattern_invert_color_button">
-                            <property name="valign">center</property>
-                            <property name="label" translatable="yes">Invert</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>

@@ -178,7 +178,11 @@ impl RnOverlays {
                                 .change_selection_stroke_colors(stroke_color);
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
-                        PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Tools => {
+                        PenStyle::Brush
+                        | PenStyle::Handwriting
+                        | PenStyle::Shaper
+                        | PenStyle::Eraser
+                        | PenStyle::Tools => {
                         }
                     }
 
@@ -212,6 +216,7 @@ impl RnOverlays {
                         }
                         PenStyle::Typewriter
                         | PenStyle::Brush
+                        | PenStyle::Handwriting
                         | PenStyle::Shaper
                         | PenStyle::Eraser
                         | PenStyle::Tools => {}

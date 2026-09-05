@@ -4,6 +4,10 @@ use crate::pens::PensConfig;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 
+fn default_handwriting_debounce() -> u32 {
+    1000
+}
+
 /// Shared engine configuration.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "engine_config")]
@@ -22,6 +26,8 @@ pub struct EngineConfig {
     pub snap_positions: bool,
     #[serde(rename = "index_handwriting")]
     pub index_handwriting: bool,
+    #[serde(rename = "handwriting_debounce", default = "default_handwriting_debounce")]
+    pub handwriting_debounce: u32,
     #[serde(skip)]
     pub visual_debug: bool,
 }
@@ -59,6 +65,7 @@ impl EngineConfigShared {
         write.optimize_epd = config.optimize_epd;
         write.snap_positions = config.snap_positions;
         write.index_handwriting = config.index_handwriting;
+        write.handwriting_debounce = config.handwriting_debounce;
         write.visual_debug = config.visual_debug;
     }
 }

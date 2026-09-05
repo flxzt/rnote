@@ -5,6 +5,7 @@ use gtk4::{
 };
 use rnote_engine::pens::pensconfig::selectorconfig::SelectorStyle;
 
+use tracing::{error, info};
 mod imp {
     use super::*;
 
@@ -21,6 +22,8 @@ mod imp {
         pub(crate) selectorstyle_intersectingpath_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) selection_convert_togglebutton: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -180,6 +183,28 @@ impl RnSelectorPage {
                         .resize_lock_aspectratio = toggle.is_active();
                 }
             ));
+
+        imp.selection_convert_togglebutton.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |toggle| {
+                if !toggle.is_sensitive() {
+                    return;
+                }
+
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                let widget_flags = if toggle.is_active() {
+                    canvas.engine_mut().change_selection_to_layerId(1) // handwriting
+                } else {
+                    canvas.engine_mut().change_selection_to_layerId(0) // pen
+                };
+
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
     }
 
     pub(crate) fn refresh_ui(&self, appwindow: &RnAppWindow) {
@@ -196,5 +221,29 @@ impl RnSelectorPage {
 
         imp.resize_lock_aspectratio_togglebutton
             .set_active(selector_config.resize_lock_aspectratio);
+
+        let Some(canvas) = appwindow.active_tab_canvas() else {
+            imp.selection_convert_togglebutton.set_sensitive(false);
+            // imp.selection_convert_togglebutton.set_label("Pen");
+            imp.selection_convert_togglebutton
+                .set_icon_name("document-text-symbolic");
+            imp.selection_convert_togglebutton.set_active(false);
+            return;
+        };
+
+        let selection_is_handwriting = canvas.engine_ref().selection_is_handwriting();
+        let selection_is_pen = canvas.engine_ref().selection_is_pen();
+        let nothing_selected = canvas.engine_ref().nothing_selected();
+        info!("selection is handwriting {selection_is_handwriting}");
+        info!("selection is pen {selection_is_pen}");
+        info!("nothing selected {nothing_selected}");
+        imp.selection_convert_togglebutton
+            .set_sensitive(!nothing_selected);
+
+        if (!nothing_selected && !selection_is_pen && selection_is_handwriting) {
+            imp.selection_convert_togglebutton.set_active(true);
+            imp.selection_convert_togglebutton
+                .set_icon_name("document-text-symbolic");
+        }
     }
 }

@@ -32,12 +32,23 @@ enum BrushState {
 
 #[derive(Debug)]
 pub struct Brush {
+    style: PenStyle,
     state: BrushState,
 }
 
 impl Default for Brush {
     fn default() -> Self {
         Self {
+            style: PenStyle::Brush,
+            state: BrushState::Idle,
+        }
+    }
+}
+
+impl Brush {
+    pub(crate) fn new(style: PenStyle) -> Self {
+        Self {
+            style,
             state: BrushState::Idle,
         }
     }
@@ -53,7 +64,7 @@ impl PenBehaviour for Brush {
     }
 
     fn style(&self) -> PenStyle {
-        PenStyle::Brush
+        self.style
     }
 
     fn update_state(&mut self, _engine_view: &mut EngineViewMut) -> WidgetFlags {
@@ -102,7 +113,7 @@ impl PenBehaviour for Brush {
                                 .config
                                 .pens_config
                                 .brush_config
-                                .layer_for_current_options(),
+                                .layer_for_current_options(self.style),
                         ),
                     );
 
@@ -286,9 +297,11 @@ impl PenBehaviour for Brush {
 
                         widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
-                        engine_view
-                            .tasks_tx
-                            .send(crate::engine::EngineTask::TriggerHandwritingRecognition);
+                        if self.style == PenStyle::Handwriting {
+                            engine_view
+                                .tasks_tx
+                                .send(crate::engine::EngineTask::TriggerHandwritingRecognition);
+                        }
 
                         PenProgress::Finished
                     }

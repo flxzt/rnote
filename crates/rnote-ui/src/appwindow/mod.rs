@@ -845,6 +845,81 @@ impl RnAppWindow {
                         }
                     }
                 }
+                PenStyle::Handwriting => {
+                    self.overlays()
+                        .penpicker()
+                        .handwriting_toggle()
+                        .set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("brush_page");
+
+                    let style = self.engine_config().read().pens_config.brush_config.style;
+                    match style {
+                        BrushStyle::Marker => {
+                            let stroke_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .marker_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .marker_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        BrushStyle::Solid => {
+                            let stroke_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .solid_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            let fill_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .solid_options
+                                .fill_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                            self.overlays()
+                                .colorpicker()
+                                .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                        }
+                        BrushStyle::Textured => {
+                            let stroke_color = self
+                                .engine_config()
+                                .read()
+                                .pens_config
+                                .brush_config
+                                .textured_options
+                                .stroke_color
+                                .unwrap_or(Color::TRANSPARENT);
+                            self.overlays()
+                                .colorpicker()
+                                .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                        }
+                    }
+                }
                 PenStyle::Shaper => {
                     self.overlays().penpicker().shaper_toggle().set_active(true);
                     self.overlays()

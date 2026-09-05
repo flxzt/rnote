@@ -24,6 +24,7 @@ use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
 use crate::store::SearchResult;
 use crate::store::StrokeKey;
+use crate::store::chrono_comp::StrokeLayer;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::store::text_comp::TextLine;
 use crate::strokes::content::GeneratedContentImages;
@@ -872,6 +873,16 @@ impl Engine {
         self.store.selection_keys_unordered().is_empty()
     }
 
+    pub fn selection_is_handwriting(&self) -> bool {
+        self.store
+            .selection_strokes_all_in_layer(StrokeLayer::UserLayer(1))
+    }
+
+    pub fn selection_is_pen(&self) -> bool {
+        self.store
+            .selection_strokes_all_in_layer(StrokeLayer::UserLayer(0))
+    }
+
     pub fn change_selection_stroke_colors(&mut self, stroke_color: Color) -> WidgetFlags {
         self.store
             .change_stroke_colors(&self.store.selection_keys_as_rendered(), stroke_color)
@@ -884,6 +895,26 @@ impl Engine {
             .change_fill_colors(&self.store.selection_keys_as_rendered(), fill_color)
             | self.record(Instant::now())
             | self.update_content_rendering_current_viewport()
+    }
+
+    pub fn change_selection_to_layerId(&mut self, id: u32) -> WidgetFlags {
+        let keys = self.store.selection_keys_as_rendered();
+
+        // Debug option: change color based on the target layer ID
+        // Note: Replace `Color::BLUE` and `Color::BLACK` with your actual enum/struct variants
+        let debug_color = if id == 1 { Color::BLUE } else { Color::BLACK };
+
+        // Apply the color change alongside the layer change
+        let color_flags = self.store.change_stroke_colors(&keys, debug_color);
+
+        let layer_flags = self
+            .store
+            .change_stroke_layers(&keys, StrokeLayer::UserLayer(id));
+
+        color_flags
+            | layer_flags
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
     }
 
     pub fn invert_selection_colors(&mut self) -> WidgetFlags {
@@ -979,14 +1010,18 @@ impl Engine {
         self.penholder
             .current_pen_style_w_override(&engine_view!(self))
     }
-    /// Triggers background handwriting recognition using all currently rendered strokes.
+    /// Triggers background handwriting recognition using the strokes selected for recognition.
     pub fn trigger_handwriting_recognition(&mut self) {
         let keys = self.store.stroke_keys_as_rendered();
         let raw_stroke_data = self.store.extract_recognition_data(&keys);
         let existing_text = self.store.recognized_text.clone();
+        let handwriting_debounce = self.config.read().handwriting_debounce;
 
-        self.handwriting_recognizer
-            .trigger_recognition_debounced(raw_stroke_data, existing_text);
+        self.handwriting_recognizer.trigger_recognition_debounced(
+            raw_stroke_data,
+            existing_text,
+            handwriting_debounce,
+        );
     }
 
     pub(crate) const STROKE_BOUNDS_INTERSECTION_TOLERANCE: f64 = 1e-3;

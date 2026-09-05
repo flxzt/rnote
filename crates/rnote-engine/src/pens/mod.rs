@@ -200,6 +200,8 @@ impl DrawableOnDoc for Pen {
 pub enum PenStyle {
     #[serde(rename = "brush")]
     Brush,
+    #[serde(rename = "handwriting")]
+    Handwriting,
     #[serde(rename = "shaper")]
     Shaper,
     #[serde(rename = "typewriter")]
@@ -233,6 +235,7 @@ impl std::str::FromStr for PenStyle {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "brush" => Ok(Self::Brush),
+            "handwriting" => Ok(Self::Handwriting),
             "shaper" => Ok(Self::Shaper),
             "typewriter" => Ok(Self::Typewriter),
             "eraser" => Ok(Self::Eraser),
@@ -249,6 +252,7 @@ impl Display for PenStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             PenStyle::Brush => write!(f, "brush"),
+            PenStyle::Handwriting => write!(f, "handwriting"),
             PenStyle::Shaper => write!(f, "shaper"),
             PenStyle::Typewriter => write!(f, "typewriter"),
             PenStyle::Eraser => write!(f, "eraser"),
@@ -262,6 +266,7 @@ impl PenStyle {
     pub fn icon_name(self) -> String {
         match self {
             Self::Brush => String::from("pen-brush-symbolic"),
+            Self::Handwriting => String::from("pen-brush-symbolic"),
             Self::Shaper => String::from("pen-shaper-symbolic"),
             Self::Typewriter => String::from("pen-typewriter-symbolic"),
             Self::Eraser => String::from("pen-eraser-symbolic"),

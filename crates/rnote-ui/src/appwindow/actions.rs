@@ -22,7 +22,7 @@ use rnote_engine::{Camera, Engine};
 use std::path::PathBuf;
 use std::str::FromStr;
 use std::time::Instant;
-use tracing::{debug, error};
+use tracing::{debug, error, info};
 
 const CLIPBOARD_INPUT_STREAM_BUFSIZE: usize = 4096;
 
@@ -130,6 +130,9 @@ impl RnAppWindow {
         let action_clipboard_paste_contextmenu =
             gio::SimpleAction::new("clipboard-paste-contextmenu", None);
         self.add_action(&action_clipboard_paste_contextmenu);
+        let action_selection_toggle_handwriting =
+            gio::SimpleAction::new("selection-toggle-handwriting", None);
+        self.add_action(&action_selection_toggle_handwriting);
         let action_active_tab_move_left = gio::SimpleAction::new("active-tab-move-left", None);
         self.add_action(&action_active_tab_move_left);
         let action_active_tab_move_right = gio::SimpleAction::new("active-tab-move-right", None);
@@ -1178,6 +1181,31 @@ impl RnAppWindow {
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos);
+            }
+        ));
+
+        action_selection_toggle_handwriting.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                if canvas.engine_ref().nothing_selected() {
+                    return;
+                }
+                let layer_id = if canvas.engine_ref().selection_is_handwriting() {
+                    info!("selection turned into pen");
+                    0
+                } else {
+                    info!("selection turned into handwriting");
+                    1
+                };
+
+                let widget_flags = canvas.engine_mut().change_selection_to_layerId(layer_id);
+
+                appwindow.handle_widget_flags(widget_flags, &canvas);
             }
         ));
 

@@ -16,6 +16,7 @@ impl Default for ChangePenStyleListModel {
     fn default() -> Self {
         Self(StringList::new(&[
             &PenStyle::Brush.to_string(),
+            &PenStyle::Handwriting.to_string(),
             &PenStyle::Shaper.to_string(),
             &PenStyle::Typewriter.to_string(),
             &PenStyle::Eraser.to_string(),
@@ -79,6 +80,7 @@ impl Default for ChangePenStyleListFactory {
                 if next_child.type_() == Label::static_type() {
                     let label = match pen_style {
                         PenStyle::Brush => gettext("Brush"),
+                        PenStyle::Handwriting => gettext("Handwriting"),
                         PenStyle::Shaper => gettext("Shaper"),
                         PenStyle::Typewriter => gettext("Typewriter"),
                         PenStyle::Eraser => gettext("Eraser"),

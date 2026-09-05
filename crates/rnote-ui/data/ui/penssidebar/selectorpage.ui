@@ -15,7 +15,7 @@
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
         <style>
-          <class name="linked" />
+          <class name="linked"/>
         </style>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_polygon_toggle">
@@ -55,13 +55,12 @@
       <object class="GtkBox" id="selection_actionbox">
         <property name="orientation">vertical</property>
         <property name="spacing">6</property>
-
         <child>
           <object class="GtkToggleButton" id="resize_lock_aspectratio_togglebutton">
             <property name="tooltip_text" translatable="yes">Lock Aspect Ratio While Resizing the Selection</property>
             <property name="icon-name">selection-resize-lock-aspectratio-symbolic</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -71,7 +70,7 @@
             <property name="action-name">win.selection-select-all</property>
             <property name="icon-name">selection-select-all-symbolic</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -81,7 +80,7 @@
             <property name="action-name">win.selection-deselect-all</property>
             <property name="icon-name">selection-deselect-all-symbolic</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -91,7 +90,17 @@
             <property name="action-name">win.selection-invert-color</property>
             <property name="icon-name">selection-invert-color-symbolic</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="selection_convert_togglebutton">
+            <property name="tooltip_text" translatable="yes">Toggle Selected Strokes Between Pen and Handwriting</property>
+            <!-- <property name="label" translatable="yes">Pen</property> -->
+            <property name="icon-name">document-text-symbolic</property>
+            <style>
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -101,7 +110,7 @@
             <property name="action-name">win.selection-duplicate</property>
             <property name="icon-name">selection-duplicate-symbolic</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -111,8 +120,8 @@
             <property name="action-name">win.selection-trash</property>
             <property name="icon-name">selection-trash-symbolic</property>
             <style>
-              <class name="flat" />
-              <class name="flat-destructive-action" />
+              <class name="flat"/>
+              <class name="flat-destructive-action"/>
             </style>
           </object>
         </child>

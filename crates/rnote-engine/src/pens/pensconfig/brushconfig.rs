@@ -1,5 +1,6 @@
 // Imports
 use crate::store::chrono_comp::StrokeLayer;
+use crate::pens::PenStyle;
 use rand::{RngExt, SeedableRng};
 use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
@@ -116,7 +117,11 @@ impl BrushConfig {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
 
-    pub(crate) fn layer_for_current_options(&self) -> StrokeLayer {
+    pub(crate) fn layer_for_current_options(&self, pen_style: PenStyle) -> StrokeLayer {
+        if pen_style == PenStyle::Handwriting {
+            return StrokeLayer::UserLayer(1);
+        }
+
         match &self.style {
             BrushStyle::Marker => StrokeLayer::Highlighter,
             BrushStyle::Solid | BrushStyle::Textured => StrokeLayer::UserLayer(0),

@@ -324,8 +324,9 @@ impl HandwritingRecognizer {
         &self,
         raw_stroke_data: Vec<RecognitionStroke>,
         existing_text: Vec<TextLine>,
+        handwriting_debounce_ms: u32,
     ) {
-        const TIMEOUT: Duration = Duration::from_millis(1200);
+        let timeout = Duration::from_millis(u64::from(handwriting_debounce_ms));
         let mut reinstall_task = false;
         let tasks_tx = self.tasks_tx.clone();
         let model_session = self.model_session.clone();
@@ -349,7 +350,7 @@ impl HandwritingRecognizer {
                 // );
             }
             let mut recognized_lines: Vec<TextLine> = Vec::new();
-            let mut deskew_debug_infos: Vec<crate::engine::DeskewDebugData> = Vec::new();
+            // let mut deskew_debug_infos: Vec<crate::engine::DeskewDebugData> = Vec::new();
 
             let max_w = 512;
             let max_h = 32;
@@ -374,19 +375,19 @@ impl HandwritingRecognizer {
 
                 let original_bounds =
                     get_strokes_bounds(&line_strokes).unwrap_or_else(|| Aabb::new_invalid());
-                let angle_rad = calculate_skew_angle(&line_strokes);
-                let center = get_global_center(&line_strokes);
-                let deskewed_line = deskew_strokes(&line_strokes);
-                let deskewed_bounds =
-                    get_strokes_bounds(&deskewed_line).unwrap_or_else(|| Aabb::new_invalid());
+                // let angle_rad = calculate_skew_angle(&line_strokes);
+                // let center = get_global_center(&line_strokes);
+                // let deskewed_line = deskew_strokes(&line_strokes);
+                // let deskewed_bounds =
+                // get_strokes_bounds(&deskewed_line).unwrap_or_else(|| Aabb::new_invalid());
 
-                deskew_debug_infos.push(crate::engine::DeskewDebugData {
-                    center,
-                    aabb_deskewed: deskewed_bounds,
-                    angle_rad,
-                });
+                // deskew_debug_infos.push(crate::engine::DeskewDebugData {
+                //     center,
+                //     aabb_deskewed: deskewed_bounds,
+                //     angle_rad,
+                // });
 
-                let buffer = process_strokes_to_tensor(&deskewed_line, max_w, max_h, 2.0);
+                let buffer = process_strokes_to_tensor(&line_strokes, max_w, max_h, 2.0);
 
                 let input_array = match ndarray::Array::from_shape_vec((1, 3, max_h, max_w), buffer)
                 {
@@ -489,11 +490,11 @@ impl HandwritingRecognizer {
             }
 
             if !recognized_lines.is_empty() {
-                if !deskew_debug_infos.is_empty() {
-                    tasks_tx.send(EngineTask::DeskewDebugInfo {
-                        data: deskew_debug_infos,
-                    });
-                }
+                // if !deskew_debug_infos.is_empty() {
+                //     tasks_tx.send(EngineTask::DeskewDebugInfo {
+                //         data: deskew_debug_infos,
+                //     });
+                // }
                 tasks_tx.send(EngineTask::HandwritingRecognitionResult {
                     lines: recognized_lines,
                 });
@@ -515,7 +516,7 @@ impl HandwritingRecognizer {
         }
 
         if reinstall_task {
-            *handle_lock = Some(OneOffTaskHandle::new(recognition_task, TIMEOUT));
+            *handle_lock = Some(OneOffTaskHandle::new(recognition_task, timeout));
         }
     }
 }

@@ -9,9 +9,11 @@ use gtk4::{
 use once_cell::sync::Lazy;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::EngineConfigShared;
+use rnote_engine::engine::EngineTask;
 use rnote_engine::pens::PenStyle;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
+use std::time::Duration;
 use tracing::{debug, error, trace};
 
 #[derive(Debug, CompositeTemplate)]
@@ -288,14 +290,38 @@ impl ObjectImpl for RnAppWindow {
                 let index_handwriting = value
                     .get::<bool>()
                     .expect("The value needs to be of type `bool`");
+                let previous_index_handwriting = self.index_handwriting.replace(index_handwriting);
 
                 // update the UIs internal state
-                self.index_handwriting.replace(index_handwriting);
                 // update engine config state
                 self.engine_config.write().index_handwriting = index_handwriting;
+
+                if previous_index_handwriting != index_handwriting {
+                    if index_handwriting {
+                        self.update_index_handwriting_handler();
+                    } else if let Some(index_handwriting_source_id) =
+                        self.index_handwriting_source_id.borrow_mut().take()
+                    {
+                        index_handwriting_source_id.remove();
+                    }
+                }
             }
-            "index-handwriting-debounce" =>{
-               //impl
+            "index-handwriting-debounce" => {
+                let index_handwriting_debounce = value
+                    .get::<u32>()
+                    .expect("The value needs to be of type `u32`");
+                let previous_index_handwriting_debounce = self.index_handwriting_debounce.replace(
+                    index_handwriting_debounce,
+                );
+
+                self.engine_config.write().handwriting_debounce = index_handwriting_debounce;
+
+                if previous_index_handwriting_debounce != index_handwriting_debounce
+                    && self.index_handwriting.get()
+                    && self.index_handwriting_source_id.borrow().is_some()
+                {
+                    self.update_index_handwriting_handler();
+                }
             }
             "righthanded" => {
                 let righthanded = value
@@ -460,6 +486,31 @@ impl RnAppWindow {
                     }
 
                     glib::ControlFlow::Continue
+                }),
+            ),
+        ) {
+            removed_id.remove();
+        }
+    }
+
+    fn update_index_handwriting_handler(&self) {
+        let obj = self.obj();
+
+        if let Some(removed_id) = self.index_handwriting_source_id.borrow_mut().replace(
+            glib::source::timeout_add_local(
+                Duration::from_millis(u64::from(self.index_handwriting_debounce.get())),
+                clone!(#[weak(rename_to=appwindow)] obj, #[upgrade_or] glib::ControlFlow::Break, move || {
+                    appwindow.imp().index_handwriting_source_id.borrow_mut().take();
+
+                    for tab in appwindow.get_all_tabs() {
+                        let _ = tab
+                            .canvas()
+                            .engine_ref()
+                            .engine_tasks_tx()
+                            .send(EngineTask::TriggerHandwritingRecognition);
+                    }
+
+                    glib::ControlFlow::Break
                 }),
             ),
         ) {

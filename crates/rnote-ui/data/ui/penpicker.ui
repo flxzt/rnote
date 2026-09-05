@@ -23,6 +23,17 @@
           </object>
         </child>
         <child>
+          <object class="GtkToggleButton" id="handwriting_toggle">
+            <property name="icon_name">editor-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Handwriting</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat" />
+            </style>
+          </object>
+        </child>
+        <child>
           <object class="GtkToggleButton" id="shaper_toggle">
             <property name="icon_name">pen-shaper-symbolic</property>
             <property name="tooltip_text" translatable="yes">Shaper</property>

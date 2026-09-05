@@ -341,6 +341,8 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/apps/rnote.svg',
     'icons/scalable/mimetypes/application-rnote.svg',
     'icons/symbolic/apps/rnote-symbolic.svg',
+    'icons/scalable/actions/editor-symbolic.svg',
+    'icons/scalable/actions/document-text-symbolic.svg',
 )
 
 rnote_ui_gresources_ui_files = files(

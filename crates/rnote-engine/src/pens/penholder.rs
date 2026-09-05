@@ -460,6 +460,7 @@ impl PenHolder {
 
         self.backlog_policy = match current_style {
             PenStyle::Brush => BacklogPolicy::Limit(Duration::from_millis(4)),
+            PenStyle::Handwriting => BacklogPolicy::Limit(Duration::from_millis(4)),
             PenStyle::Shaper => BacklogPolicy::Limit(Duration::from_millis(8)),
             PenStyle::Typewriter => BacklogPolicy::Limit(Duration::from_millis(33)),
             PenStyle::Eraser => BacklogPolicy::Limit(Duration::from_millis(33)),
@@ -495,7 +496,8 @@ impl DrawableOnDoc for PenHolder {
 
 fn new_pen(pen_style: PenStyle) -> Pen {
     match pen_style {
-        PenStyle::Brush => Pen::Brush(Brush::default()),
+        PenStyle::Brush => Pen::Brush(Brush::new(PenStyle::Brush)),
+        PenStyle::Handwriting => Pen::Brush(Brush::new(PenStyle::Handwriting)),
         PenStyle::Shaper => Pen::Shaper(Shaper::default()),
         PenStyle::Typewriter => Pen::Typewriter(Typewriter::default()),
         PenStyle::Eraser => Pen::Eraser(Eraser::default()),

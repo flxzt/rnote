@@ -214,5 +214,7 @@
     <file compressed="true">icons/scalable/apps/rnote.svg</file>
     <file compressed="true">icons/scalable/mimetypes/application-rnote.svg</file>
     <file compressed="true">icons/symbolic/apps/rnote-symbolic.svg</file>
+    <file compressed="true">icons/scalable/actions/editor-symbolic.svg</file>
+    <file compressed="true">icons/scalable/actions/document-text-symbolic.svg</file>
   </gresource>
 </gresources>

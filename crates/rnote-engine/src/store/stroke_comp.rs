@@ -1,5 +1,6 @@
 // Imports
 use super::StrokeKey;
+use super::chrono_comp::StrokeLayer;
 use super::render_comp::RenderCompState;
 use crate::engine::StrokeContent;
 use crate::recognition::{RecognitionPoint, RecognitionStroke};
@@ -747,6 +748,10 @@ impl StrokeStore {
         keys.iter()
             .filter_map(|&key| {
                 let stroke = self.stroke_components.get(key)?;
+                let chrono = self.chrono_components.get(key)?;
+                if chrono.layer != StrokeLayer::UserLayer(1) {
+                    return None;
+                }
                 let Stroke::BrushStroke(brush_stroke) = &**stroke else {
                     return None;
                 };
@@ -765,5 +770,79 @@ impl StrokeStore {
                 Some(RecognitionStroke { id: key, points })
             })
             .collect()
+    }
+
+    pub(crate) fn selection_strokes_all_in_layer(&self, layer: StrokeLayer) -> bool {
+        let selected_keys = self.selection_keys_as_rendered();
+
+        if selected_keys.is_empty() {
+            return false;
+        }
+
+        selected_keys.iter().all(|&key| {
+            self.chrono_components
+                .get(key)
+                .is_some_and(|chrono| chrono.layer == layer)
+        })
+    }
+
+    pub(crate) fn change_stroke_layers(
+        &mut self,
+        keys: &[StrokeKey],
+        layer: StrokeLayer,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if keys.is_empty() {
+            return widget_flags;
+        }
+
+        keys.iter().for_each(|&key| {
+            if self
+                .stroke_components
+                .get(key)
+                .is_some_and(|stroke| matches!(&**stroke, Stroke::BrushStroke(_)))
+            {
+                if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
+                    .get_mut(key)
+                    .map(Arc::make_mut)
+                {
+                    chrono_comp.layer = layer;
+                    self.update_chrono_to_last(key);
+                }
+                self.set_rendering_dirty(key);
+            }
+        });
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::strokes::BrushStroke;
+    use rnote_compose::{Style, penpath::Element};
+
+    #[test]
+    fn selection_strokes_change_layer() {
+        let mut store = StrokeStore::default();
+        let element = Element::new(Vector2::new(0.0, 0.0), 0.5);
+        let stroke = Stroke::BrushStroke(BrushStroke::new(element, Style::Smooth(Default::default())));
+        let key = store.insert_stroke(stroke, Some(StrokeLayer::UserLayer(0)));
+        store.set_selected(key, true);
+
+        let _ = store.change_stroke_layers(&[key], StrokeLayer::UserLayer(1));
+
+        assert_eq!(
+            store
+                .chrono_components
+                .get(key)
+                .map(|chrono| chrono.layer),
+            Some(StrokeLayer::UserLayer(1))
+        );
     }
 }

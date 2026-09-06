@@ -325,9 +325,9 @@ impl std::fmt::Debug for HandwritingRecognizer {
 impl HandwritingRecognizer {
     pub fn new(tasks_tx: EngineTaskSender) -> Self {
         // Initialize the built-in model
-        let device = Default::default();
-        let model: Model<Backend> = Model::new(&device);
-
+        // let device = Default::default();
+        // let model: Model<Backend> = Model::init(&device).valid();
+        let model = Model::<Backend>::default();
         Self {
             task_handle: Arc::new(Mutex::new(None)),
             tasks_tx,
@@ -353,6 +353,18 @@ impl HandwritingRecognizer {
             }
 
             let lines = segment_into_lines(&raw_stroke_data, 0.0);
+            #[cfg(debug_assertions)]
+            {
+                crate::recognition::debug_export::export_debug_svg(
+                    &lines,
+                    "debug_segmentation.svg",
+                );
+
+                let _ = crate::recognition::debug_export::export_for_annotation(
+                    &lines,
+                    "debug_annotations.json",
+                );
+            }
             let mut recognized_lines: Vec<TextLine> = Vec::new();
 
             let max_w = 512;
@@ -364,6 +376,11 @@ impl HandwritingRecognizer {
             for (line_index, line_strokes) in lines.into_iter().enumerate() {
                 if line_strokes.is_empty() {
                     continue;
+                }
+
+                let total_points: usize = line_strokes.iter().map(|s| s.points.len()).sum();
+                if total_points < 2 {
+                    continue; // Skip lines that would generate an empty tensor
                 }
 
                 let mut current_stroke_ids: Vec<StrokeKey> =

@@ -322,7 +322,7 @@ impl RnUnitEntry {
         self.set_value(value);
     }
 
-    /// Sets both dpi and value such that no intermittent wrong "value" 
+    /// Sets both dpi and value such that no intermittent wrong "value"
     /// change signals are emitted by the Widget.
     pub(crate) fn set_dpi_and_value_px(&self, dpi: f64, val_px: f64) {
         if self.unit() == MeasureUnit::Px {

@@ -288,6 +288,8 @@ impl RnUnitEntry {
     }
 
     #[allow(unused)]
+    /// **Note**: if both "value" and "dpi" should be changed at the same time, use [Self::set_dpi_and_value_px()] instead.
+    /// It ensures that no intermittent wrong "value" change signals are emitted by the Widget.
     pub(crate) fn set_dpi(&self, dpi: f64) {
         self.set_property("dpi", dpi.to_value());
     }
@@ -302,6 +304,8 @@ impl RnUnitEntry {
         )
     }
 
+    /// **Note**: if both "value" and "dpi" should be changed at the same time, use [Self::set_dpi_and_value_px()] instead.
+    /// It ensures that no intermittent wrong "value" change signals are emitted by the Widget.
     pub(crate) fn set_value_in_px(&self, val_px: f64) {
         self.set_value(MeasureUnit::convert_measurement(
             val_px,
@@ -318,8 +322,8 @@ impl RnUnitEntry {
         self.set_value(value);
     }
 
-    /// sets both dpi and value such that the value property is
-    /// only changed once with the correct self.value_in_px() callback
+    /// Sets both dpi and value such that no intermittent wrong "value" 
+    /// change signals are emitted by the Widget.
     pub(crate) fn set_dpi_and_value_px(&self, dpi: f64, val_px: f64) {
         if self.unit() == MeasureUnit::Px {
             // Note : setting value then dpi will work if and only if the unit is is px

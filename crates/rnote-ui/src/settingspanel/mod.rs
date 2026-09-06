@@ -1403,12 +1403,8 @@ impl RnSettingsPanel {
 
         self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         imp.format_dpi_adj.set_value(revert_format.dpi());
-        imp.format_width_unitentry.set_dpi(revert_format.dpi());
-        imp.format_width_unitentry
-            .set_value_in_px(revert_format.width());
-        imp.format_height_unitentry.set_dpi(revert_format.dpi());
-        imp.format_height_unitentry
-            .set_value_in_px(revert_format.height());
+        imp.format_width_unitentry.set_dpi_and_value_px(revert_format.dpi(), revert_format.width());
+        imp.format_height_unitentry.set_dpi_and_value_px(revert_format.dpi(), revert_format.height());
     }
 
     fn apply_format(&self, appwindow: &RnAppWindow) {

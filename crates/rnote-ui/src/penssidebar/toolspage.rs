@@ -270,13 +270,13 @@ impl RnToolsPage {
             .set_active(
                 tools_config
                     .verticalspace_tool_config
-                    .limit_movement_horizontal_borders,
+                    .limit_movement_vertical_borders,
             );
         imp.verticalspace_limit_movement_horizontal_bordersrow
             .set_active(
                 tools_config
                     .verticalspace_tool_config
-                    .limit_movement_vertical_borders,
+                    .limit_movement_horizontal_borders,
             );
     }
 }

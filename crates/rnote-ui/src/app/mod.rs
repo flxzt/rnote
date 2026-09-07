@@ -14,7 +14,8 @@ use crate::{
     workspacebrowser::RnWorkspacesBar, workspacebrowser::workspacesbar::RnWorkspaceRow,
 };
 use adw::subclass::prelude::AdwApplicationImpl;
-use gtk4::{WindowGroup, gio, glib, glib::clone, prelude::*, subclass::prelude::*};
+use adw::prelude::*;
+use gtk4::{WindowGroup, gio, glib, glib::clone, subclass::prelude::*};
 
 mod imp {
     use super::*;
@@ -141,6 +142,75 @@ mod imp {
             window_group.add_window(&appwindow);
 
             appwindow.present();
+
+            // --- AUTOSAVE RECOVERY CHECK ---
+            let input_file_clone = input_file.clone();
+            glib::spawn_future_local(clone!(#[weak] appwindow, async move {
+                let cache_dir = glib::user_cache_dir();
+                let backup_dir = cache_dir.join("rnote").join("autosaves");
+
+                let mut found_backups = Vec::new();
+                if let Ok(entries) = std::fs::read_dir(&backup_dir) {
+                    for entry in entries.flatten() {
+                        if let Some(filename) = entry.file_name().to_str() {
+                            if filename.ends_with(".rnote") {
+                                found_backups.push(entry.path());
+                            }
+                        }
+                    }
+                }
+
+                if !found_backups.is_empty() && input_file_clone.is_none() {
+                    let dialog = adw::AlertDialog::builder()
+                        .heading(&gettextrs::gettext("Recover Unsaved Drafts"))
+                        .body(&gettextrs::gettext("Found unsaved drafts from a previous session. What would you like to do?"))
+                        .build();
+
+                    dialog.add_response("ignore", &gettextrs::gettext("Ignore"));
+                    dialog.add_response("delete", &gettextrs::gettext("Delete"));
+                    dialog.add_response("open", &gettextrs::gettext("Open Drafts"));
+                    dialog.set_default_response(Some("open"));
+                    dialog.set_close_response("ignore");
+                    dialog.set_response_appearance("delete", adw::ResponseAppearance::Destructive);
+                    dialog.set_response_appearance("open", adw::ResponseAppearance::Suggested);
+
+                    // adw::AlertDialog is shown on a transient parent window using .choose_future()
+                    let response = dialog.choose_future(Some(&appwindow)).await;
+                    
+                    match response.as_str() {
+                        "open" => {
+                            for backup_path in found_backups {
+                                let file = gio::File::for_path(&backup_path);
+                                
+                                // Open the autosave. 
+                                appwindow.open_file_w_dialogs(file, None, true).await;
+                                
+                                // Find the tab we just opened and "detach" it from the cache file
+                                for tab in appwindow.tabs_snapshot() {
+                                    if let Ok(wrapper) = tab.child().downcast::<RnCanvasWrapper>() {
+                                        let canvas = wrapper.canvas();
+                                        
+                                        if let Some(out_file) = canvas.output_file() {
+                                            if out_file.path() == Some(backup_path.clone()) {
+                                                // Trick Rnote into thinking this is a brand new draft!
+                                                canvas.set_output_file(None);
+                                                canvas.set_unsaved_changes(true);
+                                                canvas.set_draft_needs_backup(true);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        "delete" => {
+                            for path in found_backups {
+                                let _ = std::fs::remove_file(path);
+                            }
+                        }
+                        _ => { /* Ignore */ }
+                    }
+                }
+            }));
 
             // Loading in input file in the first tab, if Some
             if let Some(input_file) = input_file {

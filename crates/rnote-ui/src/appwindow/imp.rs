@@ -407,16 +407,19 @@ impl RnAppWindow {
             glib::source::timeout_add_seconds_local(
                 self.autosave_interval_secs.get(),
                 clone!(#[weak(rename_to=appwindow)] obj, #[upgrade_or] glib::ControlFlow::Break, move || {
-                    // save for all tabs opened in the current window that have unsaved changes
                     let tabs = appwindow.get_all_tabs();
 
                     for (i, tab) in tabs.iter().enumerate() {
                         let canvas = tab.canvas();
-                        if canvas.unsaved_changes() && let Some(output_file) = canvas.output_file() {
+                        if !canvas.unsaved_changes() {
+                            continue;
+                        }
+
+                        if let Some(output_file) = canvas.output_file() {
                             trace!(
-                                "there are unsaved changes on the tab {:?} with a file on disk, saving",i
+                                "there are unsaved changes on the tab {:?} with a file on disk, saving", i
                             );
-                            glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow ,async move {
+                            glib::spawn_future_local(clone!(#[weak] canvas, #[weak] appwindow, async move {
                                 if let Err(e) = canvas.save_document_to_file(&output_file).await {
                                     error!("Saving document failed, Err: `{e:?}`");
                                     canvas.set_output_file(None);
@@ -424,6 +427,40 @@ impl RnAppWindow {
                                         .overlays()
                                         .dispatch_toast_error(&gettext("Saving document failed"));
                                 };
+                            }));
+                        } else {
+                            // It's an unsaved draft! Check to see if it actually needs a new write.
+                            if !canvas.draft_needs_backup() {
+                                continue;
+                            }
+                            
+                            trace!(
+                                "there are unsaved changes on the draft tab {:?}, saving backup copy", i
+                            );
+                            
+                            // Retrieve the static date-based title (e.g., "20260714-160530")
+                            let draft_title = canvas.doc_title_display();
+                            
+                            glib::spawn_future_local(clone!(#[weak] canvas, async move {
+                                let cache_dir = glib::user_cache_dir();
+                                let backup_dir = cache_dir.join("rnote").join("autosaves");
+                                
+                                if let Err(e) = std::fs::create_dir_all(&backup_dir) {
+                                    error!("Failed to create backup directory: `{e:?}`");
+                                    return;
+                                }
+
+                                // Format: "20260714-160530-draft-0.rnote"
+                                let backup_filename = format!("{}-draft-{}.rnote", draft_title, i);
+                                let backup_path = backup_dir.join(backup_filename);
+
+                                if let Err(e) = canvas.save_backup_to_file(&backup_path).await {
+                                    error!("Saving backup draft failed, Err: `{e:?}`");
+                                } else {
+                                    trace!("Successfully wrote backup draft to {:?}", backup_path);
+                                    // Reset our backup flag so we don't write again until the user draws more!
+                                    canvas.set_draft_needs_backup(false);
+                                }
                             }));
                         }
                     }

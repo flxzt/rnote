@@ -86,6 +86,8 @@ mod imp {
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
+        pub(crate) draft_needs_backup: Cell<bool>,
+        pub(crate) draft_title: RefCell<Option<String>>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
@@ -182,6 +184,8 @@ mod imp {
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
+                draft_needs_backup: Cell::new(false),
+                draft_title: RefCell::new(None),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
@@ -727,7 +731,7 @@ impl Default for RnCanvas {
 }
 
 pub(crate) static OUTPUT_FILE_NEW_TITLE: once_cell::sync::Lazy<String> =
-    once_cell::sync::Lazy::new(|| gettext("New Document"));
+    once_cell::sync::Lazy::new(|| String::from("%Y%m%d-%H%M%S"));
 pub(crate) static OUTPUT_FILE_NEW_SUBTITLE: once_cell::sync::Lazy<String> =
     once_cell::sync::Lazy::new(|| gettext("Draft"));
 
@@ -994,9 +998,17 @@ impl RnCanvas {
         }
     }
 
+    pub(crate) fn draft_needs_backup(&self) -> bool {
+        self.imp().draft_needs_backup.get()
+    }
+
+    pub(crate) fn set_draft_needs_backup(&self, needs_backup: bool) {
+        self.imp().draft_needs_backup.replace(needs_backup);
+    }
+
     /// The document title for display. Can be used to get a string as the basename of the existing / a new save file.
     ///
-    /// When there is no output-file, falls back to the "New document" string
+    /// When there is no output-file, falls back to the current date and time string
     pub(crate) fn doc_title_display(&self) -> String {
         self.output_file()
             .map(|f| {
@@ -1004,7 +1016,38 @@ impl RnCanvas {
                     .and_then(|t| Some(t.file_stem()?.to_string_lossy().to_string()))
                     .unwrap_or_else(|| gettext("- invalid file name -"))
             })
-            .unwrap_or_else(|| OUTPUT_FILE_NEW_TITLE.to_string())
+            .unwrap_or_else(|| {
+                // Return cached title or generate a static one for the lifetime of this draft
+                let mut title_cache = self.imp().draft_title.borrow_mut();
+                if let Some(title) = &*title_cache {
+                    title.clone()
+                } else {
+                    let new_title = chrono::Local::now().format(&OUTPUT_FILE_NEW_TITLE).to_string();
+                    *title_cache = Some(new_title.clone());
+                    new_title
+                }
+            })
+    }
+
+    /// Cleans up any autosave files associated with this specific canvas's draft title.
+    pub(crate) fn cleanup_autosaves(&self) {
+        let title_cache = self.imp().draft_title.borrow();
+        if let Some(draft_title) = &*title_cache {
+            let cache_dir = glib::user_cache_dir();
+            let backup_dir = cache_dir.join("rnote").join("autosaves");
+
+            if let Ok(entries) = std::fs::read_dir(backup_dir) {
+                for entry in entries.flatten() {
+                    if let Some(filename) = entry.file_name().to_str() {
+                        if filename.starts_with(draft_title) && filename.contains("-draft-") {
+                            let path = entry.path();
+                            tracing::trace!("Cleaning up backup draft file: {:?}", path);
+                            let _ = std::fs::remove_file(path);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /// The document folder path for display. To get the actual path, use output-file

@@ -293,6 +293,7 @@ impl RnAppWindow {
         if widget_flags.store_modified {
             canvas.set_unsaved_changes(true);
             canvas.set_empty(false);
+            canvas.set_draft_needs_backup(true);
         }
         if widget_flags.view_modified {
             canvas.queue_allocate();
@@ -527,6 +528,13 @@ impl RnAppWindow {
     ///
     /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be called again.
     pub(crate) fn close_tab_finish(&self, tab_page: &adw::TabPage, confirm: bool) {
+        if confirm {
+            if let Ok(tab_wrapper) = tab_page.child().downcast::<RnCanvasWrapper>() {
+                let canvas = tab_wrapper.canvas();
+                canvas.cleanup_autosaves();
+            }
+        }
+
         self.overlays()
             .tabview()
             .close_page_finish(tab_page, confirm);

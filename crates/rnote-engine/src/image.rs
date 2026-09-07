@@ -120,7 +120,11 @@ impl From<image::DynamicImage> for Image {
         let pixel_width = dynamic_image.width();
         let pixel_height = dynamic_image.height();
         let memory_format = ImageMemoryFormat::R8g8b8a8Premultiplied;
-        let data = glib::Bytes::from_owned(dynamic_image.into_rgba8().to_vec());
+        // the image crate decodes to straight alpha, so it needs to be premultiplied
+        // to match the memory format.
+        let data = glib::Bytes::from_owned(convert_image_straight_to_premultiplied(
+            dynamic_image.into_rgba8().into_vec(),
+        ));
         let bounds = Aabb::new(
             Vector2::ZERO,
             Vector2::new(pixel_width as f64, pixel_height as f64),
@@ -224,10 +228,11 @@ impl Image {
         self.assert_valid()?;
 
         match self.memory_format {
+            // the image crate expects straight alpha, so the premultiplication needs to be undone.
             ImageMemoryFormat::R8g8b8a8Premultiplied => image::RgbaImage::from_vec(
                 self.pixel_width,
                 self.pixel_height,
-                self.data.to_vec(),
+                convert_image_premultiplied_to_straight(self.data.to_vec()),
             )
             .ok_or_else(|| {
                 anyhow::anyhow!(
@@ -399,4 +404,89 @@ pub(super) fn convert_image_bgra_to_rgba(_width: u32, _height: u32, mut bytes: V
         src[3] = alpha;
     }
     bytes
+}
+
+/// Convert rgba8 with straight alpha to rgba8 with premultiplied alpha.
+///
+/// Color that is stored underneath fully transparent pixels is discarded, which is the entire point:
+/// with premultiplied alpha it must not contribute to the composited result.
+fn convert_image_straight_to_premultiplied(mut bytes: Vec<u8>) -> Vec<u8> {
+    for src in bytes.as_chunks_mut::<4>().0 {
+        let alpha = src[3] as u16;
+        for channel in &mut src[..3] {
+            *channel = ((*channel as u16 * alpha + 127) / 255) as u8;
+        }
+    }
+    bytes
+}
+
+/// Convert rgba8 with premultiplied alpha to rgba8 with straight alpha.
+///
+/// The conversion is lossy for low alpha values, because the premultiplication has already
+/// quantized the color channels.
+fn convert_image_premultiplied_to_straight(mut bytes: Vec<u8>) -> Vec<u8> {
+    for src in bytes.as_chunks_mut::<4>().0 {
+        let alpha = src[3] as u16;
+        if alpha == 0 {
+            // a fully transparent pixel carries no color information.
+            src[..3].fill(0);
+            continue;
+        }
+        for channel in &mut src[..3] {
+            // clamped, because the input might not be valid premultiplied data,
+            // where a color channel can exceed the alpha value.
+            *channel = ((*channel as u16 * 255 + alpha / 2) / alpha).min(255) as u8;
+        }
+    }
+    bytes
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{convert_image_premultiplied_to_straight, convert_image_straight_to_premultiplied};
+
+    #[test]
+    fn premultiply_discards_color_of_transparent_pixels() {
+        // color underneath a fully transparent pixel, as produced by background-removal tools.
+        let straight = vec![198, 198, 198, 0];
+        assert_eq!(
+            convert_image_straight_to_premultiplied(straight),
+            vec![0, 0, 0, 0]
+        );
+    }
+
+    #[test]
+    fn opaque_pixels_are_unchanged() {
+        let straight = vec![12, 34, 56, 255];
+        let premultiplied = convert_image_straight_to_premultiplied(straight.clone());
+        assert_eq!(premultiplied, straight);
+        assert_eq!(
+            convert_image_premultiplied_to_straight(premultiplied),
+            straight
+        );
+    }
+
+    #[test]
+    fn semi_transparent_pixels_survive_a_roundtrip() {
+        let straight = vec![200, 100, 50, 128, 255, 0, 13, 200];
+        let roundtrip = convert_image_premultiplied_to_straight(
+            convert_image_straight_to_premultiplied(straight.clone()),
+        );
+
+        for (i, (result, expected)) in roundtrip.iter().zip(straight.iter()).enumerate() {
+            assert!(
+                result.abs_diff(*expected) <= 2,
+                "channel {i} differs too much: {result} vs {expected}"
+            );
+        }
+    }
+
+    #[test]
+    fn unpremultiply_clamps_invalid_data() {
+        // a color channel exceeding the alpha value is not valid premultiplied data.
+        assert_eq!(
+            convert_image_premultiplied_to_straight(vec![200, 150, 100, 100]),
+            vec![255, 255, 255, 100]
+        );
+    }
 }

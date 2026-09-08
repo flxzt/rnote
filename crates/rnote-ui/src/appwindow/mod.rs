@@ -318,6 +318,9 @@ impl RnAppWindow {
         if widget_flags.deselect_color_setters {
             self.overlays().colorpicker().deselect_setters();
         }
+        if widget_flags.toggle_focus_mode {
+            self.set_focus_mode(!self.focus_mode());
+        }
         if let Some(hide_undo) = widget_flags.hide_undo {
             self.overlays()
                 .penpicker()

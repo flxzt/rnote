@@ -13,12 +13,13 @@ use std::collections::HashSet;
 use std::time::{Duration, Instant};
 use tracing::trace;
 
-// Returns whether the event should be inhibited from propagating, and the new pen state
+// Returns whether the event should be inhibited from propagating, the new pen state and whether a stylus is in proximity
 pub(crate) fn handle_pointer_controller_event(
     canvas: &RnCanvas,
     event: &gdk::Event,
     mut pen_state: PenState,
-) -> (glib::Propagation, PenState) {
+    mut stylus_in_proximity: bool,
+) -> (glib::Propagation, PenState, bool) {
     let now = Instant::now();
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
@@ -26,13 +27,47 @@ pub(crate) fn handle_pointer_controller_event(
     let gdk_modifiers = event.modifier_state();
     let _gdk_device = event.device().unwrap();
     let backlog_policy = canvas.engine_ref().penholder.backlog_policy();
-    let is_stylus = event_is_stylus(event);
+    let is_stylus = event_is_stylus(event)
+        || matches!(
+            gdk_event_type,
+            gdk::EventType::ProximityIn | gdk::EventType::ProximityOut
+        );
 
     //std::thread::sleep(std::time::Duration::from_millis(100));
     //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
-        return (glib::Propagation::Proceed, pen_state);
+        return (glib::Propagation::Proceed, pen_state, stylus_in_proximity);
+    }
+
+    // Track stylus proximity independently of `pen_state`, so that events from other
+    // pointer devices can be filtered out while a stylus is in use.
+    if is_stylus {
+        match gdk_event_type {
+            gdk::EventType::ProximityIn => stylus_in_proximity = true,
+            gdk::EventType::ProximityOut => stylus_in_proximity = false,
+            _ => stylus_in_proximity = true,
+        }
+    } else if stylus_in_proximity {
+        match gdk_event_type {
+            // A deliberate mouse click hands control back to the mouse, in case the
+            // compositor never reports the stylus leaving proximity.
+            gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease => {
+                stylus_in_proximity = false;
+            }
+            // All other non-stylus events must not reach the canvas or the pan gestures
+            // while the stylus is in proximity. Otherwise mouse motion events (or a
+            // tablet's emulated core pointer) are fed into the current pen with the
+            // mouse position, making the eraser/pen flicker between the two positions
+            // or draw stray straight lines (e.g. on Wayland where the compositor keeps
+            // the mouse position in sync with the pen). Stopping them also prevents a
+            // buttonless mouse motion from resetting the scroller's pan gesture mid-drag
+            // (gtkgesturesingle.c:208-213), which would freeze pen panning in the margin.
+            gdk::EventType::MotionNotify => {
+                return (glib::Propagation::Stop, pen_state, stylus_in_proximity);
+            }
+            _ => {}
+        }
     }
 
     let mut handle_pen_event = false;
@@ -159,7 +194,7 @@ pub(crate) fn handle_pointer_controller_event(
 
     if handle_pen_event {
         let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
-            return (glib::Propagation::Proceed, pen_state);
+            return (glib::Propagation::Proceed, pen_state, stylus_in_proximity);
         };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
@@ -228,7 +263,7 @@ pub(crate) fn handle_pointer_controller_event(
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
-    (propagation, pen_state)
+    (propagation, pen_state, stylus_in_proximity)
 }
 
 pub(crate) fn handle_key_controller_key_pressed(

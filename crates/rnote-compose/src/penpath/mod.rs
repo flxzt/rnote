@@ -158,7 +158,8 @@ impl PenPath {
             .collect()
     }
 
-    fn hitboxes_w_segs_indices(&self) -> Vec<(Option<usize>, Vec<Aabb>)> {
+    /// Returns a vector of hitboxes corresponding to each segment with their corresponding indices
+    pub fn hitboxes_w_segs_indices(&self) -> Vec<(Option<usize>, Vec<Aabb>)> {
         let mut hitboxes = Vec::with_capacity(self.segments.len());
         if self.segments.is_empty() {
             return vec![(

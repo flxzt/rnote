@@ -1,6 +1,8 @@
 // Imports
 use crate::RnAppWindow;
 use crate::RnStrokeWidthPicker;
+use crate::globals::sub_style_accel_label;
+use crate::utils::append_accel_to_tooltip;
 use adw::prelude::*;
 use gtk4::{CompositeTemplate, ToggleButton, Widget, glib, glib::clone, subclass::prelude::*};
 use rnote_engine::pens::pensconfig::EraserConfig;
@@ -107,6 +109,16 @@ impl RnEraserPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+
+        for (i, toggle) in [
+            imp.eraserstyle_trash_colliding_strokes_toggle.get(),
+            imp.eraserstyle_split_colliding_strokes_toggle.get(),
+        ]
+        .iter()
+        .enumerate()
+        {
+            append_accel_to_tooltip(toggle, &sub_style_accel_label(i));
+        }
 
         imp.eraserstyle_trash_colliding_strokes_toggle
             .connect_toggled(clone!(

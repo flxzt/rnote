@@ -1,4 +1,5 @@
 // Imports
+use crate::globals::{SUB_STYLES_SHAPER, sub_style_accel_label};
 use crate::{
     RnAppWindow, RnGroupedIconPicker, RnStrokeWidthPicker,
     groupediconpicker::GroupedIconPickerGroupData,
@@ -668,9 +669,20 @@ fn shape_builder_type_icons_get_groups() -> Vec<GroupedIconPickerGroupData> {
 }
 
 fn shape_builder_type_icons_to_display_name(icon_name: &str) -> String {
-    match ShapeBuilderType::from_icon_name(icon_name)
-        .expect("ShapeBuilderTypePicker failed, display name of unknown icon name requested")
-    {
+    let builder_type = ShapeBuilderType::from_icon_name(icon_name)
+        .expect("ShapeBuilderTypePicker failed, display name of unknown icon name requested");
+    let display_name = shape_builder_type_to_display_name(builder_type);
+
+    // Shapes that are reachable through the `sub-style` action get their shortcut appended, so that
+    // it is discoverable from the picker.
+    match SUB_STYLES_SHAPER.iter().position(|t| *t == builder_type) {
+        Some(i) => format!("{display_name} ({})", sub_style_accel_label(i)),
+        None => display_name,
+    }
+}
+
+fn shape_builder_type_to_display_name(builder_type: ShapeBuilderType) -> String {
+    match builder_type {
         ShapeBuilderType::Arrow => gettext("Arrow"),
         ShapeBuilderType::Line => gettext("Line"),
         ShapeBuilderType::Rectangle => gettext("Rectangle"),

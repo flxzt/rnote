@@ -1,4 +1,6 @@
 // Imports
+use crate::globals::sub_style_accel_label;
+use crate::utils::append_accel_to_tooltip;
 use crate::{RnAppWindow, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
@@ -195,6 +197,17 @@ impl RnBrushPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+
+        for (i, row) in [
+            imp.brushstyle_marker_row.get(),
+            imp.brushstyle_solid_row.get(),
+            imp.brushstyle_textured_row.get(),
+        ]
+        .iter()
+        .enumerate()
+        {
+            append_accel_to_tooltip(row, &sub_style_accel_label(i));
+        }
         let brushstyle_popover = imp.brushstyle_popover.get();
         let brushconfig_popover = imp.brushconfig_popover.get();
 

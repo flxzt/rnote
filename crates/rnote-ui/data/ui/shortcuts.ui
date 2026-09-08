@@ -114,6 +114,59 @@
         </child>
         <child>
           <object class="GtkShortcutsGroup">
+            <property name="title" translatable="yes">Pen Sub-Styles</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Select the Sub-Style of the Active Pen</property>
+                <property name="accelerator">&lt;alt&gt;1 &lt;alt&gt;9</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">'Brush': Marker, Solid, Textured</property>
+                <property name="accelerator">&lt;alt&gt;1 &lt;alt&gt;3</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">'Shaper': Line, Arrow, Rectangle, Ellipse, Polyline, Polygon, Grid, Quadratic Bezier, Cubic Bezier</property>
+                <property name="accelerator">&lt;alt&gt;1 &lt;alt&gt;9</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">'Eraser': Trash Colliding Strokes, Split Colliding Strokes</property>
+                <property name="accelerator">&lt;alt&gt;1 &lt;alt&gt;2</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">'Selector': Polygon, Rectangle, Single, Intersecting Path</property>
+                <property name="accelerator">&lt;alt&gt;1 &lt;alt&gt;4</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">'Tools': Vertical Space, Offset Camera, Zoom, Laser</property>
+                <property name="accelerator">&lt;alt&gt;1 &lt;alt&gt;4</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Increase the Stroke Width by One</property>
+                <property name="accelerator">bracketright</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes">Decrease the Stroke Width by One</property>
+                <property name="accelerator">bracketleft</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
             <property name="title" translatable="yes">View</property>
             <child>
               <object class="GtkShortcutsShortcut">

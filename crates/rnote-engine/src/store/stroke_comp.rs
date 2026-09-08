@@ -831,17 +831,15 @@ mod tests {
     fn selection_strokes_change_layer() {
         let mut store = StrokeStore::default();
         let element = Element::new(Vector2::new(0.0, 0.0), 0.5);
-        let stroke = Stroke::BrushStroke(BrushStroke::new(element, Style::Smooth(Default::default())));
+        let stroke =
+            Stroke::BrushStroke(BrushStroke::new(element, Style::Smooth(Default::default())));
         let key = store.insert_stroke(stroke, Some(StrokeLayer::UserLayer(0)));
         store.set_selected(key, true);
 
         let _ = store.change_stroke_layers(&[key], StrokeLayer::UserLayer(1));
 
         assert_eq!(
-            store
-                .chrono_components
-                .get(key)
-                .map(|chrono| chrono.layer),
+            store.chrono_components.get(key).map(|chrono| chrono.layer),
             Some(StrokeLayer::UserLayer(1))
         );
     }

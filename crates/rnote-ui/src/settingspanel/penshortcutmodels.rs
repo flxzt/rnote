@@ -81,6 +81,7 @@ impl Default for ChangePenStyleListFactory {
                     let label = match pen_style {
                         PenStyle::Brush => gettext("Brush"),
                         PenStyle::Handwriting => gettext("Handwriting"),
+                        PenStyle::Highlighter => gettext("Highlighter"),
                         PenStyle::Shaper => gettext("Shaper"),
                         PenStyle::Typewriter => gettext("Typewriter"),
                         PenStyle::Eraser => gettext("Eraser"),

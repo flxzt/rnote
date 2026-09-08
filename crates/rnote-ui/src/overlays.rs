@@ -167,6 +167,7 @@ impl RnOverlays {
                     let stroke_color = colorpicker.stroke_color().into_compose_color();
                     let current_pen_style = canvas.engine_ref().current_pen_style_w_override();
 
+                    // 1. Update the canvas if necessary TODO Doesnt work
                     match current_pen_style {
                         PenStyle::Typewriter => {
                             let widget_flags = canvas.engine_mut().text_change_color(stroke_color);
@@ -178,20 +179,61 @@ impl RnOverlays {
                                 .change_selection_stroke_colors(stroke_color);
                             appwindow.handle_widget_flags(widget_flags, &canvas);
                         }
-                        PenStyle::Brush
-                        | PenStyle::Handwriting
-                        | PenStyle::Shaper
-                        | PenStyle::Eraser
-                        | PenStyle::Tools => {
-                        }
+                        _ => {}
                     }
 
-                    // We have a global colorpicker, so we apply it to all styles
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .set_all_stroke_colors(stroke_color);
+                    // Defer the config update to prevent UI deadlocks
+                    glib::source::idle_add_local_once(clone!(
+                        #[weak]
+                        appwindow,
+                        move || {
+                            let mut engine_config = appwindow.engine_config().write();
+                            match current_pen_style {
+                                PenStyle::Highlighter => {
+                                    engine_config
+                                        .pens_config
+                                        .highlighter_config
+                                        .marker_options
+                                        .0
+                                        .stroke_color = Some(stroke_color);
+                                }
+                                PenStyle::Brush | PenStyle::Handwriting => {
+                                    engine_config
+                                        .pens_config
+                                        .brush_config
+                                        .marker_options
+                                        .stroke_color = Some(stroke_color);
+                                    engine_config
+                                        .pens_config
+                                        .brush_config
+                                        .solid_options
+                                        .stroke_color = Some(stroke_color);
+                                    engine_config
+                                        .pens_config
+                                        .brush_config
+                                        .textured_options
+                                        .stroke_color = Some(stroke_color);
+                                }
+                                PenStyle::Shaper => {
+                                    engine_config
+                                        .pens_config
+                                        .shaper_config
+                                        .smooth_options
+                                        .stroke_color = Some(stroke_color);
+                                    engine_config
+                                        .pens_config
+                                        .shaper_config
+                                        .rough_options
+                                        .stroke_color = Some(stroke_color);
+                                }
+                                PenStyle::Typewriter => {
+                                    engine_config.pens_config.typewriter_config.text_style.color =
+                                        stroke_color;
+                                }
+                                _ => {}
+                            }
+                        }
+                    ));
                 }
             ),
         );
@@ -208,26 +250,55 @@ impl RnOverlays {
                     let fill_color = colorpicker.fill_color().into_compose_color();
                     let stroke_style = canvas.engine_ref().current_pen_style_w_override();
 
-                    match stroke_style {
-                        PenStyle::Selector => {
-                            let widget_flags =
-                                canvas.engine_mut().change_selection_fill_colors(fill_color);
-                            appwindow.handle_widget_flags(widget_flags, &canvas);
-                        }
-                        PenStyle::Typewriter
-                        | PenStyle::Brush
-                        | PenStyle::Handwriting
-                        | PenStyle::Shaper
-                        | PenStyle::Eraser
-                        | PenStyle::Tools => {}
+                    if stroke_style == PenStyle::Selector {
+                        let widget_flags =
+                            canvas.engine_mut().change_selection_fill_colors(fill_color);
+                        appwindow.handle_widget_flags(widget_flags, &canvas);
                     }
 
-                    // We have a global colorpicker, so we apply it to all styles
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .set_all_fill_colors(fill_color);
+                    // Defer the config update
+                    glib::source::idle_add_local_once(clone!(
+                        #[weak]
+                        appwindow,
+                        move || {
+                            let mut engine_config = appwindow.engine_config().write();
+                            match stroke_style {
+                                PenStyle::Highlighter => {
+                                    engine_config
+                                        .pens_config
+                                        .highlighter_config
+                                        .marker_options
+                                        .0
+                                        .fill_color = Some(fill_color);
+                                }
+                                PenStyle::Brush | PenStyle::Handwriting => {
+                                    engine_config
+                                        .pens_config
+                                        .brush_config
+                                        .marker_options
+                                        .fill_color = Some(fill_color);
+                                    engine_config
+                                        .pens_config
+                                        .brush_config
+                                        .solid_options
+                                        .fill_color = Some(fill_color);
+                                }
+                                PenStyle::Shaper => {
+                                    engine_config
+                                        .pens_config
+                                        .shaper_config
+                                        .smooth_options
+                                        .fill_color = Some(fill_color);
+                                    engine_config
+                                        .pens_config
+                                        .shaper_config
+                                        .rough_options
+                                        .fill_color = Some(fill_color);
+                                }
+                                _ => {}
+                            }
+                        }
+                    ));
                 }
             ),
         );

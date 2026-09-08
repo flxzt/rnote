@@ -54,7 +54,11 @@ impl RnAppWindow {
 
         // index handwriting debounce milis
         app_settings
-            .bind("index-handwriting-debounce", self, "index-handwriting-debounce")
+            .bind(
+                "index-handwriting-debounce",
+                self,
+                "index-handwriting-debounce",
+            )
             .get_no_changes()
             .build();
         // index handwriting
@@ -62,8 +66,6 @@ impl RnAppWindow {
             .bind("index-handwriting", self, "index-handwriting")
             .get_no_changes()
             .build();
-
-
 
         // block pinch zoom
         app_settings
@@ -317,7 +319,46 @@ impl RnAppWindow {
             )
             .get_no_changes()
             .build();
-
+        // highlighter stroke widths
+        app_settings
+            .bind(
+                "highlighter-width-1",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .highlighter_page()
+                    .stroke_width_picker()
+                    .setter_1(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
+        app_settings
+            .bind(
+                "highlighter-width-2",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .highlighter_page()
+                    .stroke_width_picker()
+                    .setter_2(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
+        app_settings
+            .bind(
+                "highlighter-width-3",
+                &self
+                    .overlays()
+                    .penssidebar()
+                    .highlighter_page()
+                    .stroke_width_picker()
+                    .setter_3(),
+                "stroke-width",
+            )
+            .get_no_changes()
+            .build();
         // shaper stroke widths
         app_settings
             .bind(

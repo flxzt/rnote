@@ -18,7 +18,7 @@
             <property name="tooltip_text" translatable="yes">Brush</property>
             <property name="hexpand">true</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -29,7 +29,18 @@
             <property name="hexpand">true</property>
             <property name="group">brush_toggle</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="highlighter_toggle">
+            <property name="icon_name">editor-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Handwriting</property>
+            <property name="hexpand">true</property>
+            <property name="group">brush_toggle</property>
+            <style>
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -40,7 +51,7 @@
             <property name="hexpand">true</property>
             <property name="group">brush_toggle</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -51,7 +62,7 @@
             <property name="hexpand">true</property>
             <property name="group">brush_toggle</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -62,7 +73,7 @@
             <property name="hexpand">true</property>
             <property name="group">brush_toggle</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -73,7 +84,7 @@
             <property name="hexpand">true</property>
             <property name="group">brush_toggle</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -84,20 +95,20 @@
             <property name="hexpand">true</property>
             <property name="group">brush_toggle</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
       </object>
     </child>
     <child>
-      <object class="GtkSeparator"></object>
+      <object class="GtkSeparator"/>
     </child>
     <child>
       <object class="GtkBox">
         <property name="homogeneous">true</property>
         <style>
-          <class name="linked" />
+          <class name="linked"/>
         </style>
         <child>
           <object class="GtkButton" id="undo_button">
@@ -106,7 +117,7 @@
             <property name="tooltip_text" translatable="yes">Undo</property>
             <property name="action-name">win.undo</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>
@@ -117,7 +128,7 @@
             <property name="tooltip_text" translatable="yes">Redo</property>
             <property name="action-name">win.redo</property>
             <style>
-              <class name="flat" />
+              <class name="flat"/>
             </style>
           </object>
         </child>

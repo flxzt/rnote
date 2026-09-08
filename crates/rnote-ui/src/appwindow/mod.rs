@@ -109,7 +109,10 @@ impl RnAppWindow {
 
     #[allow(unused)]
     pub(crate) fn set_index_handwriting_debounce(&self, index_handwriting_debounce: u32) {
-        self.set_property("index-handwriting-debounce", index_handwriting_debounce.to_value());
+        self.set_property(
+            "index-handwriting-debounce",
+            index_handwriting_debounce.to_value(),
+        );
     }
     #[allow(unused)]
     pub(crate) fn index_handwriting(&self) -> bool {
@@ -773,6 +776,41 @@ impl RnAppWindow {
 
             // Current pen
             match pen_style {
+                PenStyle::Highlighter => {
+                    self.overlays()
+                        .penpicker()
+                        .highlighter_toggle()
+                        .set_active(true);
+                    self.overlays()
+                        .penssidebar()
+                        .sidebar_stack()
+                        .set_visible_child_name("highlighter_page");
+
+                    let stroke_color = self
+                        .engine_config()
+                        .read()
+                        .pens_config
+                        .highlighter_config
+                        .marker_options
+                        .0
+                        .stroke_color
+                        .unwrap_or(Color::TRANSPARENT);
+                    let fill_color = self
+                        .engine_config()
+                        .read()
+                        .pens_config
+                        .highlighter_config
+                        .marker_options
+                        .0
+                        .fill_color
+                        .unwrap_or(Color::TRANSPARENT);
+                    self.overlays()
+                        .colorpicker()
+                        .set_stroke_color(gdk::RGBA::from_compose_color(stroke_color));
+                    self.overlays()
+                        .colorpicker()
+                        .set_fill_color(gdk::RGBA::from_compose_color(fill_color));
+                }
                 PenStyle::Brush => {
                     self.overlays().penpicker().brush_toggle().set_active(true);
                     self.overlays()

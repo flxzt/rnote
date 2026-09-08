@@ -1,6 +1,7 @@
 // Modules
 mod brushpage;
 mod eraserpage;
+mod highlighterpage;
 mod selectorpage;
 mod shaperpage;
 mod toolspage;
@@ -9,6 +10,7 @@ mod typewriterpage;
 // Re-exports
 pub(crate) use brushpage::RnBrushPage;
 pub(crate) use eraserpage::RnEraserPage;
+pub(crate) use highlighterpage::RnHighlighterPage;
 use rnote_engine::pens::PenStyle;
 pub(crate) use selectorpage::RnSelectorPage;
 pub(crate) use shaperpage::RnShaperPage;
@@ -34,6 +36,10 @@ mod imp {
         pub(crate) brush_stackpage: TemplateChild<StackPage>,
         #[template_child]
         pub(crate) brush_page: TemplateChild<RnBrushPage>,
+        #[template_child]
+        pub(crate) highlighter_stackpage: TemplateChild<StackPage>,
+        #[template_child]
+        pub(crate) highlighter_page: TemplateChild<RnHighlighterPage>,
         #[template_child]
         pub(crate) shaper_stackpage: TemplateChild<StackPage>,
         #[template_child]
@@ -110,6 +116,9 @@ impl RnPensSideBar {
     pub(crate) fn brush_page(&self) -> RnBrushPage {
         self.imp().brush_page.get()
     }
+    pub(crate) fn highlighter_page(&self) -> RnHighlighterPage {
+        self.imp().highlighter_page.get()
+    }
 
     pub(crate) fn shaper_page(&self) -> RnShaperPage {
         self.imp().shaper_page.get()
@@ -143,6 +152,9 @@ impl RnPensSideBar {
                         match child_name.to_value().get::<String>().unwrap().as_str() {
                             "brush_page" => {
                                 appwindow.set_pen_style(PenStyle::Brush);
+                            }
+                            "highlighter_page" => {
+                                appwindow.set_pen_style(PenStyle::Highlighter);
                             }
                             "shaper_page" => {
                                 appwindow.set_pen_style(PenStyle::Shaper);

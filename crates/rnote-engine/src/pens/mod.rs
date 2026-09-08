@@ -202,6 +202,8 @@ pub enum PenStyle {
     Brush,
     #[serde(rename = "handwriting")]
     Handwriting,
+    #[serde(rename = "highlighter")]
+    Highlighter,
     #[serde(rename = "shaper")]
     Shaper,
     #[serde(rename = "typewriter")]
@@ -236,6 +238,7 @@ impl std::str::FromStr for PenStyle {
         match s {
             "brush" => Ok(Self::Brush),
             "handwriting" => Ok(Self::Handwriting),
+            "highlighter" => Ok(Self::Highlighter),
             "shaper" => Ok(Self::Shaper),
             "typewriter" => Ok(Self::Typewriter),
             "eraser" => Ok(Self::Eraser),
@@ -253,6 +256,7 @@ impl Display for PenStyle {
         match self {
             PenStyle::Brush => write!(f, "brush"),
             PenStyle::Handwriting => write!(f, "handwriting"),
+            PenStyle::Highlighter => write!(f, "highlighter"),
             PenStyle::Shaper => write!(f, "shaper"),
             PenStyle::Typewriter => write!(f, "typewriter"),
             PenStyle::Eraser => write!(f, "eraser"),
@@ -267,6 +271,7 @@ impl PenStyle {
         match self {
             Self::Brush => String::from("pen-brush-symbolic"),
             Self::Handwriting => String::from("pen-brush-symbolic"),
+            Self::Highlighter => String::from("pen-marker-symbolic"), // Assuming pen-marker exists, otherwise use brush
             Self::Shaper => String::from("pen-shaper-symbolic"),
             Self::Typewriter => String::from("pen-typewriter-symbolic"),
             Self::Eraser => String::from("pen-eraser-symbolic"),

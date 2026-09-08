@@ -7,6 +7,7 @@ crates/rnote-ui/data/ui/dialogs/import.ui
 crates/rnote-ui/data/ui/groupediconpicker/groupediconpicker.ui
 crates/rnote-ui/data/ui/groupediconpicker/groupediconpickergroup.ui
 crates/rnote-ui/data/ui/penssidebar/brushpage.ui
+crates/rnote-ui/data/ui/penssidebar/highlightpage.ui
 crates/rnote-ui/data/ui/penssidebar/eraserpage.ui
 crates/rnote-ui/data/ui/penssidebar/penssidebar.ui
 crates/rnote-ui/data/ui/penssidebar/selectorpage.ui

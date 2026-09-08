@@ -3,13 +3,12 @@
 <interface>
   <template class="RnPensSideBar" parent="GtkWidget">
     <property name="layout-manager">
-      <object class="GtkBinLayout" />
+      <object class="GtkBinLayout"/>
     </property>
     <child>
       <object class="GtkStack" id="sidebar_stack">
         <property name="transition_duration">300</property>
         <property name="transition_type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
-
         <!-- Brush Page -->
         <child>
           <object class="GtkStackPage" id="brush_stackpage">
@@ -25,7 +24,21 @@
             </property>
           </object>
         </child>
-
+        <!-- Highlight Page -->
+        <child>
+          <object class="GtkStackPage" id="highlighter_stackpage">
+            <property name="name">highlighter_page</property>
+            <property name="title" translatable="yes">Highlighter</property>
+            <property name="child">
+              <object class="RnHighlighterPage" id="highlighter_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">6</property>
+                <property name="margin_end">6</property>
+              </object>
+            </property>
+          </object>
+        </child>
         <!-- Shaper Page -->
         <child>
           <object class="GtkStackPage" id="shaper_stackpage">
@@ -41,7 +54,6 @@
             </property>
           </object>
         </child>
-
         <!-- Typewriter Page -->
         <child>
           <object class="GtkStackPage" id="typewriter_stackpage">
@@ -57,7 +69,6 @@
             </property>
           </object>
         </child>
-
         <!-- Eraser Page -->
         <child>
           <object class="GtkStackPage" id="eraser_stackpage">
@@ -73,7 +84,6 @@
             </property>
           </object>
         </child>
-
         <!-- Selector Page -->
         <child>
           <object class="GtkStackPage" id="selector_stackpage">
@@ -89,7 +99,6 @@
             </property>
           </object>
         </child>
-
         <!-- Tools Page -->
         <child>
           <object class="GtkStackPage" id="tools_stackpage">

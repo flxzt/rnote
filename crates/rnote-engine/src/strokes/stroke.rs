@@ -471,8 +471,15 @@ impl Stroke {
                         crate::utils::xoppcolor_from_color(options.stroke_color?),
                     ),
                 };
-
-                let tool = xoppformat::XoppTool::Pen;
+                let tool = if let Some(stroke_color) = brushstroke.style.stroke_color() {
+                    if stroke_color.a < 1.0 {
+                        xoppformat::XoppTool::Highlighter
+                    } else {
+                        xoppformat::XoppTool::Pen
+                    }
+                } else {
+                    xoppformat::XoppTool::Pen
+                };
                 let elements_vec = brushstroke.path.into_elements();
                 let stroke_style = &brushstroke.style;
                 let stroke_width =

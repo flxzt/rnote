@@ -26,7 +26,10 @@ pub struct EngineConfig {
     pub snap_positions: bool,
     #[serde(rename = "index_handwriting")]
     pub index_handwriting: bool,
-    #[serde(rename = "handwriting_debounce", default = "default_handwriting_debounce")]
+    #[serde(
+        rename = "handwriting_debounce",
+        default = "default_handwriting_debounce"
+    )]
     pub handwriting_debounce: u32,
     #[serde(skip)]
     pub visual_debug: bool,

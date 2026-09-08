@@ -83,6 +83,18 @@
       <default>12.0</default>
       <summary>the third brush stroke palette width</summary>
     </key>
+    <key name="highlighter-width-1" type="d">
+      <default>15.0</default>
+      <summary>the first highlighter stroke palette width</summary>
+    </key>
+    <key name="highlighter-width-2" type="d">
+      <default>30.0</default>
+      <summary>the second highlighter stroke palette width</summary>
+    </key>
+    <key name="highlighter-width-3" type="d">
+      <default>50.0</default>
+      <summary>the third highlighter stroke palette width</summary>
+    </key>
     <key name="shaper-width-1" type="d">
       <default>2.0</default>
       <summary>the first shaper stroke palette width</summary>

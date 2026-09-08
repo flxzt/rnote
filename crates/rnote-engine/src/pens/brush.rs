@@ -102,7 +102,7 @@ impl PenBehaviour for Brush {
                         .brush_config
                         .new_style_seeds();
 
-                    let preview_style = Self::get_preview_style(&engine_view.as_im());
+                    let preview_style = self.get_preview_style(&engine_view.as_im());
                     let brushstroke =
                         Stroke::BrushStroke(BrushStroke::new(element, preview_style.clone()));
 
@@ -160,11 +160,21 @@ impl PenBehaviour for Brush {
                 if let Some(Stroke::BrushStroke(brushstroke)) =
                     engine_view.store.get_stroke_mut(*current_stroke_key)
                 {
-                    brushstroke.style = engine_view
-                        .config
-                        .pens_config
-                        .brush_config
-                        .style_for_current_options();
+                    if self.style == PenStyle::Highlighter {
+                        let highlighter_config = &engine_view.config.pens_config.highlighter_config;
+                        let mut options = rnote_compose::style::smooth::SmoothOptions::default();
+                        options.stroke_width = highlighter_config.marker_options.stroke_width;
+                        options.stroke_color = highlighter_config.marker_options.stroke_color;
+                        options.fill_color = highlighter_config.marker_options.fill_color;
+                        options.pressure_curve = rnote_compose::style::PressureCurve::Const;
+                        brushstroke.style = Style::Smooth(options);
+                    } else {
+                        brushstroke.style = engine_view
+                            .config
+                            .pens_config
+                            .brush_config
+                            .style_for_current_options();
+                    }
                 }
 
                 // Finish up the last stroke
@@ -272,11 +282,25 @@ impl PenBehaviour for Brush {
                         if let Some(Stroke::BrushStroke(brushstroke)) =
                             engine_view.store.get_stroke_mut(*current_stroke_key)
                         {
-                            brushstroke.style = engine_view
-                                .config
-                                .pens_config
-                                .brush_config
-                                .style_for_current_options();
+                            if self.style == PenStyle::Highlighter {
+                                let highlighter_config =
+                                    &engine_view.config.pens_config.highlighter_config;
+                                let mut options =
+                                    rnote_compose::style::smooth::SmoothOptions::default();
+                                options.stroke_width =
+                                    highlighter_config.marker_options.stroke_width;
+                                options.stroke_color =
+                                    highlighter_config.marker_options.stroke_color;
+                                options.fill_color = highlighter_config.marker_options.fill_color;
+                                options.pressure_curve = rnote_compose::style::PressureCurve::Const;
+                                brushstroke.style = Style::Smooth(options);
+                            } else {
+                                brushstroke.style = engine_view
+                                    .config
+                                    .pens_config
+                                    .brush_config
+                                    .style_for_current_options();
+                            }
                         }
 
                         // Finish up the last stroke
@@ -349,17 +373,13 @@ impl DrawableOnDoc for Brush {
                 preview_style,
                 ..
             } => {
-                match engine_view.config.pens_config.brush_config.style {
-                    BrushStyle::Marker => {
-                        // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
-                    }
-                    BrushStyle::Solid | BrushStyle::Textured => {
-                        path_builder.draw_styled(
-                            cx,
-                            preview_style,
-                            engine_view.camera.total_zoom(),
-                        );
-                    }
+                // TODO look at the history and try to understand idk where is BrushStyle::Marker etc
+                if self.style == PenStyle::Highlighter
+                    || engine_view.config.pens_config.brush_config.style == BrushStyle::Marker
+                {
+                    // Don't draw the highlighter/marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
+                } else {
+                    path_builder.draw_styled(cx, preview_style, engine_view.camera.total_zoom());
                 }
             }
         }
@@ -368,16 +388,29 @@ impl DrawableOnDoc for Brush {
         Ok(())
     }
 }
-
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
 
-    fn get_preview_style(engine_view: &EngineView) -> Style {
-        let mut style = engine_view
-            .config
-            .pens_config
-            .brush_config
-            .style_for_current_options();
+    // Notice we added `&self` here!
+    fn get_preview_style(&self, engine_view: &EngineView) -> Style {
+        let mut style = if self.style == PenStyle::Highlighter {
+            // Extract the inner SmoothOptions from MarkerOptions
+            let crate::pens::pensconfig::brushconfig::MarkerOptions(options) = engine_view
+                .config
+                .pens_config
+                .highlighter_config
+                .marker_options
+                .clone();
+
+            Style::Smooth(options)
+        } else {
+            // This fallback still safely handles the normal Brush and its internal Marker style!
+            engine_view
+                .config
+                .pens_config
+                .brush_config
+                .style_for_current_options()
+        };
 
         if let Some(mut stroke_color) = style.stroke_color() {
             stroke_color.a = 1.0;

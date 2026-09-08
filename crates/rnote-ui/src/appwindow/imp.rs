@@ -310,9 +310,9 @@ impl ObjectImpl for RnAppWindow {
                 let index_handwriting_debounce = value
                     .get::<u32>()
                     .expect("The value needs to be of type `u32`");
-                let previous_index_handwriting_debounce = self.index_handwriting_debounce.replace(
-                    index_handwriting_debounce,
-                );
+                let previous_index_handwriting_debounce = self
+                    .index_handwriting_debounce
+                    .replace(index_handwriting_debounce);
 
                 self.engine_config.write().handwriting_debounce = index_handwriting_debounce;
 
@@ -496,24 +496,36 @@ impl RnAppWindow {
     fn update_index_handwriting_handler(&self) {
         let obj = self.obj();
 
-        if let Some(removed_id) = self.index_handwriting_source_id.borrow_mut().replace(
-            glib::source::timeout_add_local(
-                Duration::from_millis(u64::from(self.index_handwriting_debounce.get())),
-                clone!(#[weak(rename_to=appwindow)] obj, #[upgrade_or] glib::ControlFlow::Break, move || {
-                    appwindow.imp().index_handwriting_source_id.borrow_mut().take();
+        if let Some(removed_id) =
+            self.index_handwriting_source_id
+                .borrow_mut()
+                .replace(glib::source::timeout_add_local(
+                    Duration::from_millis(u64::from(self.index_handwriting_debounce.get())),
+                    clone!(
+                        #[weak(rename_to=appwindow)]
+                        obj,
+                        #[upgrade_or]
+                        glib::ControlFlow::Break,
+                        move || {
+                            appwindow
+                                .imp()
+                                .index_handwriting_source_id
+                                .borrow_mut()
+                                .take();
 
-                    for tab in appwindow.get_all_tabs() {
-                        let _ = tab
-                            .canvas()
-                            .engine_ref()
-                            .engine_tasks_tx()
-                            .send(EngineTask::TriggerHandwritingRecognition);
-                    }
+                            for tab in appwindow.get_all_tabs() {
+                                let _ = tab
+                                    .canvas()
+                                    .engine_ref()
+                                    .engine_tasks_tx()
+                                    .send(EngineTask::TriggerHandwritingRecognition);
+                            }
 
-                    glib::ControlFlow::Break
-                }),
-            ),
-        ) {
+                            glib::ControlFlow::Break
+                        }
+                    ),
+                ))
+        {
             removed_id.remove();
         }
     }

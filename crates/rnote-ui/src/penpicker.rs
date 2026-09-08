@@ -17,6 +17,8 @@ mod imp {
         #[template_child]
         pub(crate) handwriting_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub(crate) highlighter_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub(crate) shaper_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) typewriter_toggle: TemplateChild<ToggleButton>,
@@ -83,7 +85,9 @@ impl RnPenPicker {
     pub(crate) fn handwriting_toggle(&self) -> ToggleButton {
         self.imp().handwriting_toggle.get()
     }
-
+    pub(crate) fn highlighter_toggle(&self) -> ToggleButton {
+        self.imp().highlighter_toggle.get()
+    }
     pub(crate) fn shaper_toggle(&self) -> ToggleButton {
         self.imp().shaper_toggle.get()
     }
@@ -134,7 +138,15 @@ impl RnPenPicker {
                 }
             }
         ));
-
+        imp.highlighter_toggle.connect_toggled(clone!(
+            #[weak]
+            appwindow,
+            move |highlighter_toggle| {
+                if highlighter_toggle.is_active() {
+                    appwindow.set_pen_style(PenStyle::Highlighter);
+                }
+            }
+        ));
         imp.shaper_toggle.connect_toggled(clone!(
             #[weak]
             appwindow,

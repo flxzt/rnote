@@ -1,6 +1,6 @@
 // Imports
-use crate::store::chrono_comp::StrokeLayer;
 use crate::pens::PenStyle;
+use crate::store::chrono_comp::StrokeLayer;
 use rand::{RngExt, SeedableRng};
 use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
@@ -48,7 +48,7 @@ impl TryFrom<u32> for BrushStyle {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "marker_options")]
-pub struct MarkerOptions(SmoothOptions);
+pub struct MarkerOptions(pub SmoothOptions);
 
 impl Default for MarkerOptions {
     fn default() -> Self {
@@ -76,7 +76,7 @@ impl std::ops::DerefMut for MarkerOptions {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "solid_options")]
-pub struct SolidOptions(SmoothOptions);
+pub struct SolidOptions(pub SmoothOptions);
 
 impl Default for SolidOptions {
     fn default() -> Self {
@@ -121,7 +121,10 @@ impl BrushConfig {
         if pen_style == PenStyle::Handwriting {
             return StrokeLayer::UserLayer(1);
         }
-
+        if pen_style == PenStyle::Highlighter {
+            return StrokeLayer::Highlighter;
+        }
+        // Keep existing marker fallback just in case TODO to be removes or handeled
         match &self.style {
             BrushStyle::Marker => StrokeLayer::Highlighter,
             BrushStyle::Solid | BrushStyle::Textured => StrokeLayer::UserLayer(0),

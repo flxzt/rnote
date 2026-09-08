@@ -505,20 +505,26 @@ mod imp {
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
+            let stylus_active = Cell::new(false);
             self.pointer_controller.connect_event(clone!(
                 #[strong]
                 pen_state,
+                #[strong]
+                stylus_active,
                 #[weak(rename_to=canvas)]
                 obj,
                 #[upgrade_or]
                 glib::Propagation::Proceed,
                 move |_, event| {
-                    let (propagation, new_state) = super::input::handle_pointer_controller_event(
-                        &canvas,
-                        event,
-                        pen_state.get(),
-                    );
+                    let (propagation, new_state, new_stylus_active) =
+                        super::input::handle_pointer_controller_event(
+                            &canvas,
+                            event,
+                            pen_state.get(),
+                            stylus_active.get(),
+                        );
                     pen_state.set(new_state);
+                    stylus_active.set(new_stylus_active);
                     propagation
                 }
             ));

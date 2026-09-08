@@ -18,7 +18,8 @@ pub(crate) fn handle_pointer_controller_event(
     canvas: &RnCanvas,
     event: &gdk::Event,
     mut pen_state: PenState,
-) -> (glib::Propagation, PenState) {
+    mut stylus_active: bool,
+) -> (glib::Propagation, PenState, bool) {
     let now = Instant::now();
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
@@ -32,7 +33,22 @@ pub(crate) fn handle_pointer_controller_event(
     //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
-        return (glib::Propagation::Proceed, pen_state);
+        return (glib::Propagation::Proceed, pen_state, stylus_active);
+    }
+
+    // GTK can deliver mouse motion events while a stylus is hovering or drawing.
+    // They must not reuse the stylus state, otherwise the pen position jumps to
+    // the last mouse position and generates an unwanted pen event.
+    if is_stylus {
+        stylus_active = gdk_event_type != gdk::EventType::ProximityOut;
+    } else if stylus_active {
+        // A deliberate mouse click hands control back to the mouse.
+        match gdk_event_type {
+            gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease => {
+                stylus_active = false;
+            }
+            _ => return (glib::Propagation::Proceed, pen_state, stylus_active),
+        }
     }
 
     let mut handle_pen_event = false;
@@ -159,7 +175,7 @@ pub(crate) fn handle_pointer_controller_event(
 
     if handle_pen_event {
         let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
-            return (glib::Propagation::Proceed, pen_state);
+            return (glib::Propagation::Proceed, pen_state, stylus_active);
         };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
@@ -228,7 +244,7 @@ pub(crate) fn handle_pointer_controller_event(
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
-    (propagation, pen_state)
+    (propagation, pen_state, stylus_active)
 }
 
 pub(crate) fn handle_key_controller_key_pressed(

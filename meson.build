@@ -255,6 +255,15 @@ if build_ui == true
     inno_script_conf.set_quoted('UI_OUTPUT', ui_output)
     inno_script_conf.set_quoted('INSTALLER_NAME', win_installer_name)
 
+    # Inno-Setup architecture identifier, derived from the build so an aarch64
+    # build produces an installer that actually runs on Windows on ARM.
+    if host_machine.cpu_family() == 'aarch64'
+        inno_arch = 'arm64'
+    else
+        inno_arch = 'x64compatible'
+    endif
+    inno_script_conf.set('INNO_ARCH', inno_arch)
+
     inno_script = configure_file(
         input: 'build-aux/rnote_inno.iss.in',
         output: 'rnote_inno.iss',

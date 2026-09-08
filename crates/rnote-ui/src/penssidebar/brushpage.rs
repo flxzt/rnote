@@ -2,8 +2,8 @@
 use crate::{RnAppWindow, RnStrokeWidthPicker};
 use adw::prelude::*;
 use gtk4::{
-    Button, CompositeTemplate, ListBox, MenuButton, Popover, Widget, glib, glib::clone,
-    subclass::prelude::*,
+    Button, CompositeTemplate, ListBox, MenuButton, Popover, ToggleButton, Widget, glib,
+    glib::clone, subclass::prelude::*,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::PenPathBuilderType;
@@ -19,19 +19,11 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub(crate) struct RnBrushPage {
         #[template_child]
-        pub(crate) brushstyle_menubutton: TemplateChild<MenuButton>,
+        pub(crate) brushstyle_marker_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) brushstyle_popover: TemplateChild<Popover>,
+        pub(crate) brushstyle_solid_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) brushstyle_popover_close_button: TemplateChild<Button>,
-        #[template_child]
-        pub(crate) brushstyle_listbox: TemplateChild<ListBox>,
-        #[template_child]
-        pub(crate) brushstyle_marker_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) brushstyle_solid_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) brushstyle_textured_row: TemplateChild<adw::ActionRow>,
+        pub(crate) brushstyle_textured_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -104,32 +96,76 @@ impl RnBrushPage {
         glib::Object::new()
     }
 
-    pub(crate) fn brushstyle_menubutton(&self) -> MenuButton {
-        self.imp().brushstyle_menubutton.get()
-    }
-
     pub(crate) fn brushconfig_menubutton(&self) -> MenuButton {
         self.imp().brushconfig_menubutton.get()
     }
 
     pub(crate) fn brush_style(&self) -> Option<BrushStyle> {
-        BrushStyle::try_from(self.imp().brushstyle_listbox.selected_row()?.index() as u32).ok()
+        if self.imp().brushstyle_marker_toggle.is_active() {
+            Some(BrushStyle::Marker)
+        } else if self.imp().brushstyle_solid_toggle.is_active() {
+            Some(BrushStyle::Solid)
+        } else if self.imp().brushstyle_textured_toggle.is_active() {
+            Some(BrushStyle::Textured)
+        } else {
+            None
+        }
     }
 
     pub(crate) fn set_brush_style(&self, brush_style: BrushStyle) {
         match brush_style {
-            BrushStyle::Marker => self
-                .imp()
-                .brushstyle_listbox
-                .select_row(Some(&*self.imp().brushstyle_marker_row)),
-            BrushStyle::Solid => self
-                .imp()
-                .brushstyle_listbox
-                .select_row(Some(&*self.imp().brushstyle_solid_row)),
-            BrushStyle::Textured => self
-                .imp()
-                .brushstyle_listbox
-                .select_row(Some(&*self.imp().brushstyle_textured_row)),
+            BrushStyle::Marker => self.imp().brushstyle_marker_toggle.set_active(true),
+            BrushStyle::Solid => self.imp().brushstyle_solid_toggle.set_active(true),
+            BrushStyle::Textured => self.imp().brushstyle_textured_toggle.set_active(true),
+        }
+    }
+
+    fn apply_brush_style_selection(&self, appwindow: &RnAppWindow, brush_style: BrushStyle) {
+        appwindow
+            .engine_config()
+            .write()
+            .pens_config
+            .brush_config
+            .style = brush_style;
+        self.stroke_width_picker().deselect_setters();
+
+        match brush_style {
+            BrushStyle::Marker => {
+                let stroke_width = appwindow
+                    .engine_config()
+                    .read()
+                    .pens_config
+                    .brush_config
+                    .marker_options
+                    .stroke_width;
+                self.imp()
+                    .stroke_width_picker
+                    .set_stroke_width(stroke_width);
+            }
+            BrushStyle::Solid => {
+                let stroke_width = appwindow
+                    .engine_config()
+                    .read()
+                    .pens_config
+                    .brush_config
+                    .solid_options
+                    .stroke_width;
+                self.imp()
+                    .stroke_width_picker
+                    .set_stroke_width(stroke_width);
+            }
+            BrushStyle::Textured => {
+                let stroke_width = appwindow
+                    .engine_config()
+                    .read()
+                    .pens_config
+                    .brush_config
+                    .textured_options
+                    .stroke_width;
+                self.imp()
+                    .stroke_width_picker
+                    .set_stroke_width(stroke_width);
+            }
         }
     }
 
@@ -195,17 +231,9 @@ impl RnBrushPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
-        let brushstyle_popover = imp.brushstyle_popover.get();
         let brushconfig_popover = imp.brushconfig_popover.get();
 
         // Popovers
-        imp.brushstyle_popover_close_button.connect_clicked(clone!(
-            #[weak]
-            brushstyle_popover,
-            move |_| {
-                brushstyle_popover.popdown();
-            }
-        ));
         imp.brushconfig_popover_close_button.connect_clicked(clone!(
             #[weak]
             brushconfig_popover,
@@ -270,77 +298,57 @@ impl RnBrushPage {
         );
 
         // Style
-        imp.brushstyle_listbox.connect_row_selected(clone!(
+        imp.brushstyle_marker_toggle.connect_toggled(clone!(
             #[weak(rename_to=brushpage)]
             self,
             #[weak]
             appwindow,
-            move |_, _| {
+            move |toggle| {
+                if !toggle.is_active() {
+                    return;
+                }
+
                 let Some(brush_style) = brushpage.brush_style() else {
                     return;
                 };
 
-                appwindow
-                    .engine_config()
-                    .write()
-                    .pens_config
-                    .brush_config
-                    .style = brush_style;
-                brushpage.stroke_width_picker().deselect_setters();
+                brushpage.apply_brush_style_selection(&appwindow, brush_style);
+            }
+        ));
 
-                match brush_style {
-                    BrushStyle::Marker => {
-                        let stroke_width = appwindow
-                            .engine_config()
-                            .read()
-                            .pens_config
-                            .brush_config
-                            .marker_options
-                            .stroke_width;
-                        brushpage
-                            .imp()
-                            .stroke_width_picker
-                            .set_stroke_width(stroke_width);
-                        brushpage
-                            .imp()
-                            .brushstyle_menubutton
-                            .set_icon_name("pen-brush-style-marker-symbolic");
-                    }
-                    BrushStyle::Solid => {
-                        let stroke_width = appwindow
-                            .engine_config()
-                            .read()
-                            .pens_config
-                            .brush_config
-                            .solid_options
-                            .stroke_width;
-                        brushpage
-                            .imp()
-                            .stroke_width_picker
-                            .set_stroke_width(stroke_width);
-                        brushpage
-                            .imp()
-                            .brushstyle_menubutton
-                            .set_icon_name("pen-brush-style-solid-symbolic");
-                    }
-                    BrushStyle::Textured => {
-                        let stroke_width = appwindow
-                            .engine_config()
-                            .read()
-                            .pens_config
-                            .brush_config
-                            .textured_options
-                            .stroke_width;
-                        brushpage
-                            .imp()
-                            .stroke_width_picker
-                            .set_stroke_width(stroke_width);
-                        brushpage
-                            .imp()
-                            .brushstyle_menubutton
-                            .set_icon_name("pen-brush-style-textured-symbolic");
-                    }
+        imp.brushstyle_solid_toggle.connect_toggled(clone!(
+            #[weak(rename_to=brushpage)]
+            self,
+            #[weak]
+            appwindow,
+            move |toggle| {
+                if !toggle.is_active() {
+                    return;
                 }
+
+                let Some(brush_style) = brushpage.brush_style() else {
+                    return;
+                };
+
+                brushpage.apply_brush_style_selection(&appwindow, brush_style);
+            }
+        ));
+
+        imp.brushstyle_textured_toggle.connect_toggled(clone!(
+            #[weak(rename_to=brushpage)]
+            self,
+            #[weak]
+            appwindow,
+            move |toggle| {
+                if !toggle.is_active() {
+                    return;
+                }
+
+                let Some(brush_style) = brushpage.brush_style() else {
+                    return;
+                };
+
+                brushpage.apply_brush_style_selection(&appwindow, brush_style);
             }
         ));
 

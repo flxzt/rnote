@@ -49,6 +49,17 @@ impl StrokeStore {
             .map(Arc::make_mut)
         {
             trash_comp.trashed = trash;
+            // remove the key from the rtree (so that the rtree holds information
+            // only for non trashed strokes) and move to the trashed_keytree instead
+            // Remark : the corresponding stroke will hold onto its rendernodes and image
+            // until `regenerate_rendering_in_viewport_threaded` is called again
+            if trash {
+                if let Some((key, bounds)) = self.key_tree.remove_with_key(key) {
+                    self.trashed_key_tree.insert_with_key(key, bounds);
+                }
+            } else if let Some((key, bounds)) = self.trashed_key_tree.remove_with_key(key) {
+                self.key_tree.insert_with_key(key, bounds);
+            }
             self.update_chrono_to_last(key);
         }
     }
@@ -85,16 +96,16 @@ impl StrokeStore {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+        self.stroke_keys_and_bounds_as_rendered_intersecting_bounds(viewport)
             .into_iter()
-            .for_each(|key| {
+            .for_each(|(key, bounds)| {
                 let mut trash_current_stroke = false;
 
                 if let Some(stroke) = self.stroke_components.get(key) {
                     match stroke.as_ref() {
                         Stroke::BrushStroke(_) | Stroke::ShapeStroke(_) => {
                             // First check if eraser even intersects stroke bounds, avoiding unnecessary work
-                            if eraser_bounds.intersects(&stroke.bounds()) {
+                            if eraser_bounds.intersects(&bounds) {
                                 for hitbox in stroke.hitboxes().into_iter() {
                                     if eraser_bounds.intersects(&hitbox) {
                                         trash_current_stroke = true;

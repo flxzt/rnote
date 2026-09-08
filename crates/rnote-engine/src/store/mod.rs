@@ -9,6 +9,7 @@ pub mod trash_comp;
 // Re-exports
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
+use p2d::bounding_volume::Aabb;
 pub use render_comp::RenderComponent;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
@@ -94,8 +95,14 @@ pub struct StrokeStore {
     /// An rtree backed by the slotmap store, for faster spatial queries.
     ///
     /// Needs to be updated with `update_with_key()` when strokes changed their geometry or position!
+    /// Only holds non trashed keys
     #[serde(skip)]
     key_tree: KeyTree,
+    /// Same principle but only for trashed keys
+    /// This allows operations on non trashed strokes to
+    /// be faster (as they don't incur filtering after the fact)
+    #[serde(skip)]
+    trashed_key_tree: KeyTree,
 }
 
 impl Default for StrokeStore {
@@ -112,6 +119,7 @@ impl Default for StrokeStore {
             live_index: 0,
 
             key_tree: KeyTree::default(),
+            trashed_key_tree: KeyTree::default(),
 
             chrono_counter: 0,
         }
@@ -144,12 +152,13 @@ impl StrokeStore {
 
     /// Rebuild the rtree with the current stored strokes keys and bounds.
     fn rebuild_rtree(&mut self) {
-        let tree_objects = self
+        let (tree_objects, trashed_tree_objects) = self
             .stroke_components
             .iter()
             .map(|(key, stroke)| (key, stroke.bounds()))
-            .collect();
+            .partition(|(key, _bounds)| self.trashed(*key).is_some_and(|x| !x));
         self.key_tree.rebuild_from_vec(tree_objects);
+        self.trashed_key_tree.rebuild_from_vec(trashed_tree_objects);
     }
 
     /// Checks the equality of current state to all fields of the given history entry,
@@ -348,6 +357,7 @@ impl StrokeStore {
         self.render_components.remove(key);
 
         self.key_tree.remove_with_key(key);
+        self.trashed_key_tree.remove_with_key(key);
         Arc::make_mut(&mut self.stroke_components)
             .remove(key)
             .map(|stroke| (*stroke).clone())
@@ -365,7 +375,16 @@ impl StrokeStore {
 
         self.render_components.clear();
         self.key_tree.clear();
+        self.trashed_key_tree.clear();
 
         widget_flags
+    }
+
+    pub(super) fn get_bounds_non_trashed(&self) -> Aabb {
+        self.key_tree.get_bounds()
+    }
+
+    pub(super) fn keytree_is_empty(&self) -> bool {
+        self.key_tree.is_empty()
     }
 }

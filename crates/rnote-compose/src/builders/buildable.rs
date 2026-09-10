@@ -44,6 +44,6 @@ pub trait Buildable: std::fmt::Debug {
     /// Bounds.
     fn bounds(&self, style: &Style, zoom: f64) -> Option<Aabb>;
 
-    /// Draw with a style.
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64);
+    /// Draw with vello_cpu.
+    fn draw_vello(&self, cx: &mut vello_cpu::RenderContext, style: &Style, zoom: f64);
 }

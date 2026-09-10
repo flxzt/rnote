@@ -9,6 +9,6 @@ where
     /// Bounds of the composed shape.
     fn composed_bounds(&self, options: &O) -> Aabb;
 
-    /// Composes and draws the type onto the context, applying the style options to it.
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &O);
+    /// Draw with vello_cpu.
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &O);
 }

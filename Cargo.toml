@@ -95,6 +95,7 @@ unicode-segmentation = "1.13"
 url = "2.5"
 usvg = "0.48.1"
 uuid = { version = "1.29.0", features = ["v4"] }
+vello_cpu = { version = "0.2.0", features = ["multithreading", "text"] }
 winresource = "0.1.31"
 xmlwriter = "0.1.0"
 

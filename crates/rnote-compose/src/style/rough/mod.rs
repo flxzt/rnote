@@ -1,4 +1,6 @@
 // Modules
+/// The roughr vello_cpu generator.
+pub mod rough_vello_cpu;
 /// The module for the rough style.
 pub mod roughoptions;
 

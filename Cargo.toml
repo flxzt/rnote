@@ -94,6 +94,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 unicode-segmentation = "1.13"
 url = "2.5"
 usvg = "0.48.1"
+vello_cpu = { version = "0.2.0", features = ["multithreading"] }
 winresource = "0.1.31"
 xmlwriter = "0.1.0"
 

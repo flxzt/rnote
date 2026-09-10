@@ -55,7 +55,7 @@ image = { version = "0.25.6", default-features = false, features = [
 indicatif = "0.18.0"
 ink-stroke-modeler-rs = "0.1.0"
 itertools = "0.14.0"
-kurbo = "0.11.2"
+kurbo = "0.13.1"
 librsvg = "=2.61"
 notify-debouncer-full = "0.7.0"
 num-derive = "0.4.2"
@@ -94,10 +94,12 @@ tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 unicode-segmentation = "1.12"
 url = "2.5"
 usvg = "0.47.0"
+vello_cpu = { version = "0.2.0", features = ["multithreading"] }
 winresource = "0.1.20"
 xmlwriter = "0.1.0"
 
 [patch.crates-io]
+roughr = { git = "https://github.com/flxzt/rough-rs", branch = "flxzt/expose-traits" }
 
 [profile.dev]
 debug = true

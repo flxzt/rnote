@@ -52,10 +52,8 @@ impl Composer<RoughOptions> for Line {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
+        let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options)).line(
             self.start[0],
             self.start[1],
             self.end[0],
@@ -63,8 +61,6 @@ impl Composer<RoughOptions> for Line {
         );
 
         drawable.draw(cx);
-
-        cx.restore().unwrap();
     }
 }
 
@@ -74,15 +70,9 @@ impl Composer<RoughOptions> for Arrow {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-
-        let arrow_stem = rough_piet::KurboGenerator::new(generate_roughr_options(options)).line(
-            self.start[0],
-            self.start[1],
-            self.tip[0],
-            self.tip[1],
-        );
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
+        let arrow_stem = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
+            .line(self.start[0], self.start[1], self.tip[0], self.tip[1]);
 
         let tip = {
             let lline = {
@@ -100,14 +90,12 @@ impl Composer<RoughOptions> for Arrow {
                 Point2D::new(tip.x, tip.y)
             };
 
-            rough_piet::KurboGenerator::new(generate_roughr_options(options))
+            rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
                 .linear_path(&[lline, tip, rline], false)
         };
 
         arrow_stem.draw(cx);
         tip.draw(cx);
-
-        cx.restore().unwrap();
     }
 }
 
@@ -117,23 +105,15 @@ impl Composer<RoughOptions> for Rectangle {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
         let top_left = -self.cuboid.half_extents;
         let size = self.cuboid.half_extents * 2.0;
 
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options)).rectangle(
-            top_left[0],
-            top_left[1],
-            size[0],
-            size[1],
-        );
+        let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
+            .rectangle(top_left[0], top_left[1], size[0], size[1]);
 
-        cx.transform(self.affine.to_kurbo());
+        cx.set_transform(self.affine.to_kurbo());
         drawable.draw(cx);
-
-        cx.restore().unwrap();
     }
 }
 
@@ -143,18 +123,13 @@ impl Composer<RoughOptions> for Ellipse {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
         let size = self.radii * 2.0;
-
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+        let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .ellipse(0.0, 0.0, size[0], size[1]);
 
-        cx.transform(self.affine.to_kurbo());
+        cx.set_transform(self.affine.to_kurbo());
         drawable.draw(cx);
-
-        cx.restore().unwrap();
     }
 }
 
@@ -164,10 +139,8 @@ impl Composer<RoughOptions> for QuadraticBezier {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
+        let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .bezier_quadratic(
                 roughr::Point2D::new(self.start[0] as f32, self.start[1] as f32),
                 roughr::Point2D::new(self.cp[0] as f32, self.cp[1] as f32),
@@ -175,8 +148,6 @@ impl Composer<RoughOptions> for QuadraticBezier {
             );
 
         drawable.draw(cx);
-
-        cx.restore().unwrap();
     }
 }
 
@@ -186,20 +157,15 @@ impl Composer<RoughOptions> for CubicBezier {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
+        let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .bezier_cubic(
                 roughr::Point2D::new(self.start[0] as f32, self.start[1] as f32),
                 roughr::Point2D::new(self.cp1[0] as f32, self.cp1[1] as f32),
                 roughr::Point2D::new(self.cp2[0] as f32, self.cp2[1] as f32),
                 roughr::Point2D::new(self.end[0] as f32, self.end[1] as f32),
             );
-
         drawable.draw(cx);
-
-        cx.restore().unwrap();
     }
 }
 
@@ -209,8 +175,8 @@ impl Composer<RoughOptions> for Polyline {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
+        let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
         ))
@@ -221,7 +187,7 @@ impl Composer<RoughOptions> for Polyline {
         )
         .collect();
 
-        let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
+        let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .linear_path(&points, false);
 
         drawable.draw(cx);
@@ -234,8 +200,8 @@ impl Composer<RoughOptions> for Polygon {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
+        let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
         ))
@@ -247,7 +213,7 @@ impl Composer<RoughOptions> for Polygon {
         .collect();
 
         let drawable =
-            rough_piet::KurboGenerator::new(generate_roughr_options(options)).polygon(&points);
+            rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options)).polygon(&points);
 
         drawable.draw(cx);
     }
@@ -267,16 +233,16 @@ impl Composer<RoughOptions> for crate::Shape {
         }
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &RoughOptions) {
         match self {
-            crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
-            crate::Shape::Line(line) => line.draw_composed(cx, options),
-            crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
-            crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
-            crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
-            crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
-            crate::Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
-            crate::Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
+            crate::Shape::Arrow(arrow) => arrow.draw_composed_vello(cx, options),
+            crate::Shape::Line(line) => line.draw_composed_vello(cx, options),
+            crate::Shape::Rectangle(rectangle) => rectangle.draw_composed_vello(cx, options),
+            crate::Shape::Ellipse(ellipse) => ellipse.draw_composed_vello(cx, options),
+            crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed_vello(cx, options),
+            crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed_vello(cx, options),
+            crate::Shape::Polyline(polyline) => polyline.draw_composed_vello(cx, options),
+            crate::Shape::Polygon(polygon) => polygon.draw_composed_vello(cx, options),
         }
     }
 }

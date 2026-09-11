@@ -16,18 +16,18 @@ use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use rand_distr::{Distribution, Uniform};
+use vello_cpu::RenderContext;
 
 impl Composer<TexturedOptions> for Line {
     fn composed_bounds(&self, options: &TexturedOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
-        let bez_path = compose_textured_line_path(self, options);
-
+    fn draw_composed(&self, cx: &mut RenderContext, options: &TexturedOptions) {
         if let Some(fill_color) = options.stroke_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(bez_path, &fill_brush);
+            let bez_path = compose_textured_line_path(self, options);
+            cx.set_paint(fill_color);
+            cx.fill_path(&bez_path);
         }
     }
 }
@@ -37,7 +37,7 @@ impl Composer<TexturedOptions> for PenPath {
         self.bounds().loosened(options.stroke_width)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &TexturedOptions) {
         let Some(color) = options.stroke_color else {
             return;
         };
@@ -107,7 +107,8 @@ impl Composer<TexturedOptions> for PenPath {
             options.advance_seed();
         }
 
-        cx.fill(full_path, color);
+        cx.set_paint(color);
+        cx.fill_path(&full_path);
     }
 }
 

@@ -10,5 +10,5 @@ where
     fn composed_bounds(&self, options: &O) -> Aabb;
 
     /// Draw with vello_cpu.
-    fn draw_composed_vello(&self, cx: &mut vello_cpu::RenderContext, options: &O);
+    fn draw_composed(&self, cx: &mut vello_cpu::RenderContext, options: &O);
 }

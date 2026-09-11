@@ -21,20 +21,13 @@ impl Composer<SmoothOptions> for Line {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
-        let line = self.outline_path();
-
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke_styled(
-                line,
-                &stroke_brush,
-                options.stroke_width,
-                &options.piet_stroke_style,
-            );
+            let line = self.outline_path();
+            cx.set_stroke(options.to_kurbo_stroke());
+            cx.set_paint(stroke_color);
+            cx.stroke_path(&line);
         }
-        cx.restore().unwrap();
     }
 }
 
@@ -44,20 +37,13 @@ impl Composer<SmoothOptions> for Arrow {
             .loosened(options.stroke_width)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
-
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         if let Some(stroke_color) = options.stroke_color {
             let arrow = self.to_kurbo(Some(options.stroke_width));
-            cx.stroke_styled(
-                arrow,
-                stroke_color,
-                options.stroke_width,
-                &options.piet_stroke_style,
-            );
+            cx.set_stroke(options.to_kurbo_stroke());
+            cx.set_paint(stroke_color);
+            cx.stroke_path(&arrow);
         }
-
-        cx.restore().unwrap();
     }
 }
 
@@ -66,25 +52,18 @@ impl Composer<SmoothOptions> for Rectangle {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
-        let shape = self.outline_path();
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
+        let rect = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(shape.clone(), &fill_brush);
+            cx.set_paint(fill_color);
+            cx.fill_path(&rect)
         }
-
         if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke_styled(
-                shape,
-                &stroke_brush,
-                options.stroke_width,
-                &options.piet_stroke_style,
-            );
+            cx.set_stroke(options.to_kurbo_stroke());
+            cx.set_paint(stroke_color);
+            cx.stroke_path(&rect);
         }
-        cx.restore().unwrap();
     }
 }
 
@@ -93,25 +72,18 @@ impl Composer<SmoothOptions> for Ellipse {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         let ellipse = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(&ellipse, &fill_brush);
+            cx.set_paint(fill_color);
+            cx.fill_path(&ellipse);
         }
-
         if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke_styled(
-                ellipse,
-                &stroke_brush,
-                options.stroke_width,
-                &options.piet_stroke_style,
-            );
+            cx.set_stroke(options.to_kurbo_stroke());
+            cx.set_paint(stroke_color);
+            cx.stroke_path(&ellipse);
         }
-        cx.restore().unwrap();
     }
 }
 
@@ -120,25 +92,18 @@ impl Composer<SmoothOptions> for QuadraticBezier {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         let quadbez = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(&quadbez, &fill_brush);
+            cx.set_paint(fill_color);
+            cx.fill_path(&quadbez);
         }
-
         if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke_styled(
-                quadbez,
-                &stroke_brush,
-                options.stroke_width,
-                &options.piet_stroke_style,
-            );
+            cx.set_stroke(options.to_kurbo_stroke());
+            cx.set_paint(stroke_color);
+            cx.stroke_path(&quadbez);
         }
-        cx.restore().unwrap();
     }
 }
 
@@ -147,25 +112,19 @@ impl Composer<SmoothOptions> for CubicBezier {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.save().unwrap();
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         let cubbez = self.outline_path();
 
         if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(&cubbez, &fill_brush);
+            cx.set_paint(fill_color);
+            cx.fill_path(&cubbez);
         }
 
         if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke_styled(
-                cubbez,
-                &stroke_brush,
-                options.stroke_width,
-                &options.piet_stroke_style,
-            );
+            cx.set_stroke(options.to_kurbo_stroke());
+            cx.set_paint(stroke_color);
+            cx.stroke_path(&cubbez);
         }
-        cx.restore().unwrap();
     }
 }
 
@@ -174,7 +133,7 @@ impl Composer<SmoothOptions> for Polyline {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         let Some(color) = options.stroke_color else {
             return;
         };
@@ -183,17 +142,19 @@ impl Composer<SmoothOptions> for Polyline {
 
         // Single element/position polylines need special treatment to be rendered
         if n_points == 0 || single_pos {
-            cx.fill(
-                kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width),
-                color,
-            );
+            let circle =
+                kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width).to_path(0.1);
+            cx.set_paint(color);
+            cx.fill_path(&circle);
         } else {
-            let style = options
-                .piet_stroke_style
-                .clone()
-                .line_cap(piet::LineCap::Butt)
-                .line_join(piet::LineJoin::Bevel);
-            cx.stroke_styled(self.outline_path(), color, options.stroke_width, &style);
+            cx.set_stroke(
+                options
+                    .to_kurbo_stroke()
+                    .with_caps(kurbo::Cap::Butt)
+                    .with_join(kurbo::Join::Bevel),
+            );
+            cx.set_paint(color);
+            cx.stroke_path(&self.outline_path());
         }
     }
 }
@@ -203,7 +164,7 @@ impl Composer<SmoothOptions> for Polygon {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         let Some(color) = options.stroke_color else {
             return;
         };
@@ -212,22 +173,25 @@ impl Composer<SmoothOptions> for Polygon {
 
         // Single element/position polylines need special treatment to be rendered
         if n_points == 0 || single_pos {
-            cx.fill(
-                kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width),
-                color,
-            );
+            let circle =
+                kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width).to_path(0.1);
+            cx.set_paint(color);
+            cx.fill_path(&circle);
         } else {
             let outline_path = self.outline_path();
-            if let Some(fill_color) = options.fill_color {
-                cx.fill(&outline_path, fill_color);
-            }
-            let style = options
-                .piet_stroke_style
-                .clone()
-                .line_cap(piet::LineCap::Butt)
-                .line_join(piet::LineJoin::Bevel);
 
-            cx.stroke_styled(&outline_path, color, options.stroke_width, &style);
+            if let Some(fill_color) = options.fill_color {
+                cx.set_paint(fill_color);
+                cx.fill_path(&outline_path);
+            }
+            cx.set_stroke(
+                options
+                    .to_kurbo_stroke()
+                    .with_caps(kurbo::Cap::Butt)
+                    .with_join(kurbo::Join::Bevel),
+            );
+            cx.set_paint(color);
+            cx.stroke_path(&self.outline_path());
         }
     }
 }
@@ -237,7 +201,7 @@ impl Composer<SmoothOptions> for PenPath {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         let Some(color) = options.stroke_color else {
             return;
         };
@@ -245,8 +209,6 @@ impl Composer<SmoothOptions> for PenPath {
         let mut full_path = kurbo::BezPath::new();
         let mut single_pos = true;
         let mut prev = self.start;
-
-        cx.save().unwrap();
 
         for seg in self.segments.iter() {
             if seg.end().pos == self.start.pos {
@@ -343,20 +305,20 @@ impl Composer<SmoothOptions> for PenPath {
             full_path.extend(bez_path);
         }
 
-        cx.fill(full_path, color);
+        cx.set_paint(color);
+        cx.fill_path(&full_path);
 
         // Single element/position strokes need special treatment to be rendered
         if single_pos {
             let start_width = options
                 .pressure_curve
                 .apply(options.stroke_width, self.start.pressure);
-            cx.fill(
-                kurbo::Circle::new(self.start.pos.to_kurbo_point(), start_width * 0.5),
-                color,
+            cx.set_paint(color);
+            cx.fill_path(
+                &kurbo::Circle::new(self.start.pos.to_kurbo_point(), start_width * 0.5)
+                    .to_path(0.1),
             );
         }
-
-        cx.restore().unwrap();
     }
 }
 
@@ -374,7 +336,7 @@ impl Composer<SmoothOptions> for crate::Shape {
         }
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         match self {
             crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
             crate::Shape::Line(line) => line.draw_composed(cx, options),

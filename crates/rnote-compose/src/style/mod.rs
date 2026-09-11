@@ -22,9 +22,9 @@ use crate::shapes::{
 use crate::{Color, PenPath, Shape};
 use anyhow::Context;
 pub use composer::Composer;
+use p2d::bounding_volume::Aabb;
 use serde::{Deserialize, Serialize};
 use vello_cpu::RenderContext;
-use p2d::bounding_volume::Aabb;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// A style choice holding the style options inside its variants.
@@ -130,11 +130,11 @@ impl Composer<Style> for Line {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
-            Style::Textured(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
+            Style::Textured(options) => self.draw_composed(cx, options),
         }
     }
 }
@@ -148,10 +148,10 @@ impl Composer<Style> for Arrow {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -166,10 +166,10 @@ impl Composer<Style> for Rectangle {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -184,10 +184,10 @@ impl Composer<Style> for Ellipse {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -202,10 +202,10 @@ impl Composer<Style> for QuadraticBezier {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -220,10 +220,10 @@ impl Composer<Style> for CubicBezier {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -238,10 +238,10 @@ impl Composer<Style> for Polyline {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -255,10 +255,10 @@ impl Composer<Style> for Polygon {
             Style::Textured(_options) => unimplemented!(),
         }
     }
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
-            Style::Rough(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
+            Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(_options) => unimplemented!(),
         }
     }
@@ -273,11 +273,11 @@ impl Composer<Style> for PenPath {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match options {
-            Style::Smooth(options) => self.draw_composed_vello(cx, options),
+            Style::Smooth(options) => self.draw_composed(cx, options),
             Style::Rough(_) => unimplemented!(),
-            Style::Textured(options) => self.draw_composed_vello(cx, options),
+            Style::Textured(options) => self.draw_composed(cx, options),
         }
     }
 }
@@ -296,18 +296,16 @@ impl Composer<Style> for Shape {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &Style) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &Style) {
         match self {
-            Shape::Arrow(arrow) => arrow.draw_composed_vello(cx, options),
-            Shape::Line(line) => line.draw_composed_vello(cx, options),
-            Shape::Rectangle(rectangle) => rectangle.draw_composed_vello(cx, options),
-            Shape::Ellipse(ellipse) => ellipse.draw_composed_vello(cx, options),
-            Shape::QuadraticBezier(quadratic_bezier) => {
-                quadratic_bezier.draw_composed_vello(cx, options)
-            }
-            Shape::CubicBezier(cubic_bezier) => cubic_bezier.draw_composed_vello(cx, options),
-            Shape::Polyline(polyline) => polyline.draw_composed_vello(cx, options),
-            Shape::Polygon(polygon) => polygon.draw_composed_vello(cx, options),
+            Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
+            Shape::Line(line) => line.draw_composed(cx, options),
+            Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
+            Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
+            Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.draw_composed(cx, options),
+            Shape::CubicBezier(cubic_bezier) => cubic_bezier.draw_composed(cx, options),
+            Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
+            Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
         }
     }
 }

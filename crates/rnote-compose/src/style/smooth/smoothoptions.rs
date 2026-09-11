@@ -4,10 +4,6 @@ use crate::style::PressureCurve;
 use anyhow::Context;
 use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
-use std::{
-    f64,
-    ops::{AddAssign, MulAssign},
-};
 
 /// Options for shapes that can be drawn in a smooth style. Ensure the precursor struct used in deserialization matches this one.
 #[derive(Debug, Clone, Serialize)]
@@ -31,9 +27,6 @@ pub struct SmoothOptions {
     /// Line cap.
     #[serde(rename = "line_cap")]
     pub line_cap: LineCap,
-    /// The inner piet::StrokeStyle, computed using the stroke_width, line_style, and line_cap.
-    #[serde(skip)]
-    pub piet_stroke_style: piet::StrokeStyle,
 }
 
 impl Default for SmoothOptions {
@@ -48,46 +41,13 @@ impl Default for SmoothOptions {
             pressure_curve: PressureCurve::default(),
             line_style,
             line_cap,
-            piet_stroke_style: Self::compute_piet_stroke_style(stroke_width, line_style, line_cap),
         }
     }
 }
 
 impl SmoothOptions {
     /// The ratio between the length of a dash and the width of the stroke
-    const DASH_LENGTH_TO_WIDTH_RATIO: f64 = f64::consts::E;
-
-    fn compute_piet_stroke_style(
-        stroke_width: f64,
-        line_style: LineStyle,
-        line_cap: LineCap,
-    ) -> piet::StrokeStyle {
-        let mut dash_pattern = line_style.as_unscaled_vector();
-        match line_cap {
-            LineCap::Straight => dash_pattern
-                .iter_mut()
-                .for_each(|e| e.mul_assign(stroke_width * Self::DASH_LENGTH_TO_WIDTH_RATIO)),
-            LineCap::Rounded => dash_pattern.iter_mut().enumerate().for_each(|(idx, e)| {
-                if !line_style.is_dotted() {
-                    e.mul_assign(stroke_width * Self::DASH_LENGTH_TO_WIDTH_RATIO);
-                }
-                // If the stroke has a rounded linecap, a half-disk with radius equal to the stroke width is added both ends of a stroke, this increases the length of each line by the width of the stroke, and is not taken into account by DashStroke, it has to be manually accounted for
-                if idx % 2 == 1 {
-                    e.add_assign(2.0 * stroke_width)
-                }
-            }),
-        };
-        let mut stroke_style = piet::StrokeStyle::new();
-        stroke_style.set_dash_pattern(dash_pattern);
-        stroke_style.set_line_cap(line_cap.into());
-        stroke_style
-    }
-
-    /// Updates the inner piet::Strokestyle
-    pub fn update_piet_stroke_style(&mut self) {
-        self.piet_stroke_style =
-            Self::compute_piet_stroke_style(self.stroke_width, self.line_style, self.line_cap);
-    }
+    const DASH_LENGTH_TO_WIDTH_RATIO: f64 = std::f64::consts::E;
 
     /// Updates the line cap
     pub fn update_line_cap(&mut self, line_cap: LineCap) {
@@ -96,7 +56,6 @@ impl SmoothOptions {
             self.line_style = LineStyle::Solid;
         }
         self.line_cap = line_cap;
-        self.update_piet_stroke_style();
     }
 
     /// Updates the line style
@@ -106,7 +65,25 @@ impl SmoothOptions {
             self.line_cap = LineCap::Rounded;
         }
         self.line_style = line_style;
-        self.update_piet_stroke_style();
+    }
+
+    pub fn to_kurbo_stroke(&self) -> kurbo::Stroke {
+        let dash_pattern = self.line_style.to_unscaled_vector();
+        let cap = if self.line_style == LineStyle::Dotted {
+            kurbo::Cap::Round
+        } else {
+            match self.line_cap {
+                LineCap::Straight => kurbo::Cap::Square,
+                LineCap::Rounded => kurbo::Cap::Round,
+            }
+        };
+        kurbo::Stroke {
+            width: self.stroke_width,
+            start_cap: cap,
+            end_cap: cap,
+            dash_pattern: dash_pattern.into(),
+            ..Default::default()
+        }
     }
 }
 
@@ -160,11 +137,6 @@ impl<'de> Deserialize<'de> for SmoothOptions {
             pressure_curve: precursor.pressure_curve,
             line_style: precursor.line_style,
             line_cap: precursor.line_cap,
-            piet_stroke_style: Self::compute_piet_stroke_style(
-                precursor.stroke_width,
-                precursor.line_style,
-                precursor.line_cap,
-            ),
         })
     }
 }
@@ -228,7 +200,7 @@ pub enum LineStyle {
 
 impl LineStyle {
     /// Returns the baseline (meaning unscaled) dash pattern
-    fn as_unscaled_vector(&self) -> Vec<f64> {
+    fn to_unscaled_vector(&self) -> Vec<f64> {
         match self {
             Self::Solid => Vec::new(),
             Self::Dotted => vec![0.0, 0.0], // LineCap must be set to 'Rounded'

@@ -304,7 +304,7 @@ mod imp {
     }
 
     impl StrokeContentPaintable {
-        const CONTENT_BORDER_COLOR: piet::Color = rnote_compose::color::GNOME_BRIGHTS[4];
+        const CONTENT_BORDER_COLOR: Color = rnote_compose::color::GNOME_BRIGHTS[4];
     }
 }
 

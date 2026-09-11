@@ -365,8 +365,8 @@ impl TextStyle {
         affine: &DAffine2,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        const CURSOR_COLOR: piet::Color = color::GNOME_DARKS[2];
-        const CURSOR_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[0];
+        const CURSOR_COLOR: Color = color::GNOME_DARKS[2];
+        const CURSOR_OUTLINE_COLOR: Color = color::GNOME_BRIGHTS[0];
         let text_cursor_width = 2.0 / camera.total_zoom();
 
         if let Ok(cursor_line_metric) =
@@ -412,8 +412,8 @@ impl TextStyle {
         affine: &DAffine2,
         camera: &Camera,
     ) {
-        const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2];
-        const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(25);
+        const OUTLINE_COLOR: Color = color::GNOME_BLUES[2];
+        const FILL_COLOR: Color = color::GNOME_BLUES[1].with_a8(25);
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =

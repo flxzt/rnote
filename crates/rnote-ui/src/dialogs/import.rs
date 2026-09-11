@@ -276,11 +276,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
         .invert_boolean()
         .sync_create()
         .build();
-    pdf_import_adjust_document_row
-        .bind_property("active", &pdf_import_page_spacing_row, "sensitive")
-        .invert_boolean()
-        .sync_create()
-        .build();
 
     let pdf_import_prefs = appwindow
         .engine_config()

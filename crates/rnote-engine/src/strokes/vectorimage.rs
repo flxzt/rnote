@@ -234,12 +234,24 @@ impl VectorImage {
             format.width() * (pdf_import_prefs.page_width_perc / 100.0)
         };
 
-        // calculate the page zoom based on the width of the first page.
-        let page_zoom = if let Some(first_page) = pages.first() {
-            page_width / first_page.render_dimensions().0 as f64
-        } else {
+        // Uniform zoom based on the widest page, keeps relative page sizes.
+        let max_intrinsic_width = page_range
+            .clone()
+            .filter_map(|page_i| pages.get(page_i))
+            .map(|page| page.render_dimensions().0 as f64)
+            .fold(0.0f64, f64::max);
+        if max_intrinsic_width <= 0.0 {
             return Ok(vec![]);
-        };
+        }
+        let page_zoom_fit = page_width / max_intrinsic_width;
+
+        // Stride for OnePerDocumentPage: start each page on a document page boundary.
+        let max_rendered_height = page_range
+            .clone()
+            .filter_map(|page_i| pages.get(page_i))
+            .map(|page| page.render_dimensions().1 as f64 * page_zoom_fit)
+            .fold(0.0f64, f64::max);
+
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
@@ -251,20 +263,26 @@ impl VectorImage {
                     let dimensions = page.render_dimensions();
                     (dimensions.0 as f64, dimensions.1 as f64)
                 };
-                let width = intrinsic_width * page_zoom;
-                let height = intrinsic_height * page_zoom;
+                let width = intrinsic_width * page_zoom_fit;
+                let height = intrinsic_height * page_zoom_fit;
                 let bounds = Aabb::new(Vector2::new(x, y), Vector2::new(x + width, y + height));
 
-                if pdf_import_prefs.adjust_document {
-                    y += height
-                } else {
-                    y += match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
+                y += match pdf_import_prefs.page_spacing {
+                    PdfImportPageSpacing::Continuous => {
+                        if pdf_import_prefs.adjust_document {
+                            height
+                        } else {
                             height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                         }
-                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
-                    };
-                }
+                    }
+                    PdfImportPageSpacing::OnePerDocumentPage => {
+                        if pdf_import_prefs.adjust_document {
+                            max_rendered_height
+                        } else {
+                            format.height()
+                        }
+                    }
+                };
                 let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
                 let svg = Svg { svg_data, bounds };
 

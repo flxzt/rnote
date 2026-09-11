@@ -11,12 +11,12 @@ use crate::workspacebrowser::workspacesbar::RnWorkspaceRow;
 use crate::{RnIconPicker, globals};
 use adw::prelude::*;
 use gettextrs::{gettext, pgettext};
-#[allow(deprecated)]
-use gtk4::ShortcutsWindow;
 use gtk4::{
     Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label, MenuButton, StringList,
     gio, glib, glib::clone,
 };
+#[allow(deprecated)]
+use gtk4::{ShortcutsShortcut, ShortcutsWindow};
 use tracing::{debug, error, warn};
 
 // About Dialog
@@ -54,6 +54,25 @@ pub(crate) fn dialog_keyboard_shortcuts(appwindow: &RnAppWindow) {
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
     #[allow(deprecated)]
     let dialog: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
+
+    // Accelerators that are registered as application accelerators are declared in the ui file
+    // with the `<Primary>` placeholder, which has to be substituted with the platform's
+    // primary modifier. Shortcuts that are handled in the engine through `ModifierKey::KeyboardCtrl`
+    // declare `<Ctrl>` directly and are left untouched.
+    for object in builder.objects() {
+        #[allow(deprecated)]
+        let Ok(shortcut) = object.downcast::<ShortcutsShortcut>() else {
+            continue;
+        };
+        let accel = shortcut.property::<String>("accelerator");
+        if accel.contains(crate::utils::PRIMARY_MODIFIER_PLACEHOLDER) {
+            shortcut.set_property(
+                "accelerator",
+                crate::utils::substitute_primary_modifier(&accel),
+            );
+        }
+    }
+
     dialog.set_transient_for(Some(appwindow));
     dialog.present();
 }

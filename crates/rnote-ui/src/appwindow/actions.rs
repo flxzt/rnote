@@ -1179,53 +1179,61 @@ impl RnAppWindow {
 
     pub(crate) fn setup_action_accels(&self) {
         let app = self.app();
+        // `<Primary>` is substituted with the platform's primary modifier,
+        // see [`crate::utils::set_accels_for_action()`].
+        let set_accels = |detailed_action_name: &str, accels: &[&str]| {
+            crate::utils::set_accels_for_action(&app, detailed_action_name, accels)
+        };
 
-        app.set_accels_for_action("win.active-tab-close", &["<Ctrl>w"]);
-        app.set_accels_for_action("win.fullscreen", &["F11"]);
-        app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
-        app.set_accels_for_action("win.toggle-overview", &["<Ctrl><Shift>o"]);
-        app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
-        app.set_accels_for_action("win.open-appmenu", &["F10"]);
-        app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);
-        app.set_accels_for_action("win.save-doc", &["<Ctrl>s"]);
-        app.set_accels_for_action("win.save-doc-as", &["<Ctrl><Shift>s"]);
-        app.set_accels_for_action("win.new-tab", &["<Ctrl>t"]);
-        app.set_accels_for_action("win.snap-positions", &["<Ctrl><Shift>p"]);
-        app.set_accels_for_action("win.clear-doc", &["<Ctrl>l"]);
-        app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);
-        app.set_accels_for_action("win.add-page-to-doc", &["<Ctrl><Shift>a"]);
-        app.set_accels_for_action("win.remove-page-from-doc", &["<Ctrl><Shift>r"]);
-        app.set_accels_for_action(
+        set_accels("win.active-tab-close", &["<Primary>w"]);
+        set_accels("win.fullscreen", &["F11"]);
+        set_accels("win.keyboard-shortcuts", &["<Primary>question"]);
+        set_accels("win.toggle-overview", &["<Primary><Shift>o"]);
+        set_accels("win.open-canvasmenu", &["F9"]);
+        set_accels("win.open-appmenu", &["F10"]);
+        set_accels("win.open-doc", &["<Primary>o"]);
+        set_accels("win.save-doc", &["<Primary>s"]);
+        set_accels("win.save-doc-as", &["<Primary><Shift>s"]);
+        set_accels("win.new-tab", &["<Primary>t"]);
+        set_accels("win.snap-positions", &["<Primary><Shift>p"]);
+        set_accels("win.clear-doc", &["<Primary>l"]);
+        set_accels("win.print-doc", &["<Primary>p"]);
+        set_accels("win.add-page-to-doc", &["<Primary><Shift>a"]);
+        set_accels("win.remove-page-from-doc", &["<Primary><Shift>r"]);
+        set_accels(
             "win.zoom-in",
-            &["<Ctrl>plus", "<Ctrl>equal", "<Ctrl>KP_Add"],
+            &["<Primary>plus", "<Primary>equal", "<Primary>KP_Add"],
         );
-        app.set_accels_for_action("win.zoom-reset", &["<Ctrl>0", "<Ctrl>KP_0"]);
-        app.set_accels_for_action("win.zoom-out", &["<Ctrl>minus", "<Ctrl>KP_Subtract"]);
-        app.set_accels_for_action("win.import-file", &["<Ctrl><Shift>i"]);
-        app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
-        app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
-        app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
-        app.set_accels_for_action("win.clipboard-cut", &["<Ctrl>x"]);
-        app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
-        app.set_accels_for_action("win.text-bold", &["<Ctrl>b"]);
-        app.set_accels_for_action("win.text-italic", &["<Ctrl>i"]);
-        app.set_accels_for_action("win.text-underline", &["<Ctrl>u"]);
-        app.set_accels_for_action("win.pen-style::brush", &["<Ctrl>1", "<Ctrl>KP_1"]);
-        app.set_accels_for_action("win.pen-style::shaper", &["<Ctrl>2", "<Ctrl>KP_2"]);
-        app.set_accels_for_action("win.pen-style::typewriter", &["<Ctrl>3", "<Ctrl>KP_3"]);
-        app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
-        app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
-        app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
+        set_accels("win.zoom-reset", &["<Primary>0", "<Primary>KP_0"]);
+        set_accels("win.zoom-out", &["<Primary>minus", "<Primary>KP_Subtract"]);
+        set_accels("win.import-file", &["<Primary><Shift>i"]);
+        set_accels("win.undo", &["<Primary>z"]);
+        set_accels("win.redo", &["<Primary><Shift>z"]);
+        set_accels("win.clipboard-copy", &["<Primary>c"]);
+        set_accels("win.clipboard-cut", &["<Primary>x"]);
+        set_accels("win.clipboard-paste", &["<Primary>v"]);
+        set_accels("win.text-bold", &["<Primary>b"]);
+        set_accels("win.text-italic", &["<Primary>i"]);
+        set_accels("win.text-underline", &["<Primary>u"]);
+        set_accels("win.pen-style::brush", &["<Primary>1", "<Primary>KP_1"]);
+        set_accels("win.pen-style::shaper", &["<Primary>2", "<Primary>KP_2"]);
+        set_accels(
+            "win.pen-style::typewriter",
+            &["<Primary>3", "<Primary>KP_3"],
+        );
+        set_accels("win.pen-style::eraser", &["<Primary>4", "<Primary>KP_4"]);
+        set_accels("win.pen-style::selector", &["<Primary>5", "<Primary>KP_5"]);
+        set_accels("win.pen-style::tools", &["<Primary>6", "<Primary>KP_6"]);
         (1..=9).for_each(|i| {
-            app.set_accels_for_action(
+            set_accels(
                 &format!("win.set-color-{i}"),
-                &[&format!("{i}"), &format!("<Ctrl>KP_{i}")],
+                &[&format!("{i}"), &format!("<Primary>KP_{i}")],
             )
         });
 
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
-            app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);
+            set_accels("win.visual-debug", &["<Primary><Shift>v"]);
         }
     }
 

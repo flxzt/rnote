@@ -85,6 +85,10 @@ pub enum KeyboardKey {
     CtrlLeft,
     /// Ctrl right.
     CtrlRight,
+    /// Meta left. This is the Command key on MacOS.
+    MetaLeft,
+    /// Meta right. This is the Command key on MacOS.
+    MetaRight,
     /// Home.
     Home,
     /// End.

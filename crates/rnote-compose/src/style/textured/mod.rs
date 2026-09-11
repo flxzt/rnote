@@ -107,7 +107,7 @@ impl Composer<TexturedOptions> for PenPath {
             options.advance_seed();
         }
 
-        cx.fill(full_path, &Into::<piet::Color>::into(color));
+        cx.fill(full_path, color);
     }
 }
 

@@ -49,8 +49,8 @@ impl LaserTool {
     const OUTER_STROKE_WIDTH: f64 = 6.0;
     const INNER_STROKE_WIDTH: f64 = 1.0;
 
-    const INNER_STROKE_COLOR: piet::Color = color::GNOME_BRIGHTS[1];
-    const OUTER_STROKE_COLOR: piet::Color = color::GNOME_REDS[1];
+    const INNER_STROKE_COLOR: Color = color::GNOME_BRIGHTS[1];
+    const OUTER_STROKE_COLOR: Color = color::GNOME_REDS[1];
 
     const STYLE: piet::StrokeStyle = piet::StrokeStyle::new()
         .line_join(piet::LineJoin::Round)

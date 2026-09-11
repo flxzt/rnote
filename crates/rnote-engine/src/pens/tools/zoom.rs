@@ -31,8 +31,8 @@ impl Default for ZoomTool {
 impl ZoomTool {
     const CURSOR_RADIUS: f64 = 4.0;
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
-    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
-    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
+    const DARK_COLOR: Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: Color = color::GNOME_BRIGHTS[1].with_a8(240);
 
     pub(super) fn handle_event(
         &mut self,

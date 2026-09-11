@@ -14,13 +14,14 @@ use crate::shapes::{
 };
 use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use vello_cpu::RenderContext;
 
 impl Composer<SmoothOptions> for Line {
     fn composed_bounds(&self, options: &SmoothOptions) -> Aabb {
         self.bounds().loosened(options.stroke_width * 0.5)
     }
 
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
         let line = self.outline_path();
 
@@ -50,7 +51,7 @@ impl Composer<SmoothOptions> for Arrow {
             let arrow = self.to_kurbo(Some(options.stroke_width));
             cx.stroke_styled(
                 arrow,
-                &Into::<piet::Color>::into(stroke_color),
+                stroke_color,
                 options.stroke_width,
                 &options.piet_stroke_style,
             );
@@ -184,7 +185,7 @@ impl Composer<SmoothOptions> for Polyline {
         if n_points == 0 || single_pos {
             cx.fill(
                 kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width),
-                &Into::<piet::Color>::into(color),
+                color,
             );
         } else {
             let style = options
@@ -192,12 +193,7 @@ impl Composer<SmoothOptions> for Polyline {
                 .clone()
                 .line_cap(piet::LineCap::Butt)
                 .line_join(piet::LineJoin::Bevel);
-            cx.stroke_styled(
-                self.outline_path(),
-                &Into::<piet::Color>::into(color),
-                options.stroke_width,
-                &style,
-            );
+            cx.stroke_styled(self.outline_path(), color, options.stroke_width, &style);
         }
     }
 }
@@ -218,12 +214,12 @@ impl Composer<SmoothOptions> for Polygon {
         if n_points == 0 || single_pos {
             cx.fill(
                 kurbo::Circle::new(self.start.to_kurbo_point(), options.stroke_width),
-                &Into::<piet::Color>::into(color),
+                color,
             );
         } else {
             let outline_path = self.outline_path();
             if let Some(fill_color) = options.fill_color {
-                cx.fill(&outline_path, &Into::<piet::Color>::into(fill_color));
+                cx.fill(&outline_path, fill_color);
             }
             let style = options
                 .piet_stroke_style
@@ -231,12 +227,7 @@ impl Composer<SmoothOptions> for Polygon {
                 .line_cap(piet::LineCap::Butt)
                 .line_join(piet::LineJoin::Bevel);
 
-            cx.stroke_styled(
-                &outline_path,
-                &Into::<piet::Color>::into(color),
-                options.stroke_width,
-                &style,
-            );
+            cx.stroke_styled(&outline_path, color, options.stroke_width, &style);
         }
     }
 }
@@ -346,13 +337,13 @@ impl Composer<SmoothOptions> for PenPath {
             };
 
             // Outlines for debugging
-            //let stroke_brush = cx.solid_brush(piet::Color::RED);
+            //let stroke_brush = cx.solid_brush(Color::RED);
             //cx.stroke(bez_path.clone(), &stroke_brush, 0.2);
 
             full_path.extend(bez_path);
         }
 
-        cx.fill(full_path, &Into::<piet::Color>::into(color));
+        cx.fill(full_path, color);
 
         // Single element/position strokes need special treatment to be rendered
         if single_pos {
@@ -361,7 +352,7 @@ impl Composer<SmoothOptions> for PenPath {
                 .apply(options.stroke_width, self.start.pressure);
             cx.fill(
                 kurbo::Circle::new(self.start.pos.to_kurbo_point(), start_width * 0.5),
-                &Into::<piet::Color>::into(color),
+                color,
             );
         }
 

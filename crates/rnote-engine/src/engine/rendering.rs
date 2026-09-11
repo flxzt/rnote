@@ -345,7 +345,7 @@ fn origin_indicator_bounds() -> Aabb {
 }
 
 fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {
-    const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
+    const PATH_COLOR: Color = color::GNOME_GREENS[4];
     const PATH_WIDTH: f64 = 1.5;
     let bounds = origin_indicator_bounds();
 

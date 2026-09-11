@@ -180,9 +180,9 @@ impl DrawableOnDoc for Eraser {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(240);
-        const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(160);
-        const PROXIMITY_FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(51);
+        const OUTLINE_COLOR: Color = color::GNOME_REDS[2].with_a8(240);
+        const FILL_COLOR: Color = color::GNOME_REDS[0].with_a8(160);
+        const PROXIMITY_FILL_COLOR: Color = color::GNOME_REDS[0].with_a8(51);
         let outline_width = 2.0 / engine_view.camera.total_zoom();
 
         match &self.state {

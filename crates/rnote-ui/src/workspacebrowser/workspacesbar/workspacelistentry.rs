@@ -132,7 +132,7 @@ impl Default for RnWorkspaceListEntry {
 }
 
 impl RnWorkspaceListEntry {
-    pub(crate) const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
+    pub(crate) const COLOR_DEFAULT: Color = color::GNOME_BLUES[4];
 
     pub(crate) fn new(inner: RnWorkspaceListEntryInner) -> Self {
         glib::Object::builder()

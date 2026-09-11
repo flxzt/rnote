@@ -478,9 +478,9 @@ impl Selector {
     /// Rotate node diameter, in surface coordinates.
     const ROTATE_NODE_DIAMETER: f64 = 18.0;
     /// The outline color when drawing a selection
-    const SELECTION_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
+    const SELECTION_OUTLINE_COLOR: Color = color::GNOME_BRIGHTS[4].with_a8(240);
     /// The fill color when drawing a selection
-    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(13);
+    const SELECTION_FILL_COLOR: Color = color::GNOME_BRIGHTS[2].with_a8(13);
 
     fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {
         match style {
@@ -717,7 +717,7 @@ impl Selector {
             rotate_node_state,
             rotate_node_sphere,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
 
         // Resize Nodes
@@ -726,28 +726,28 @@ impl Selector {
             resize_tl_node_state,
             resize_tl_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
         indicators::draw_rectangular_node(
             piet_cx,
             resize_tr_node_state,
             resize_tr_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
         indicators::draw_rectangular_node(
             piet_cx,
             resize_bl_node_state,
             resize_bl_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
         indicators::draw_rectangular_node(
             piet_cx,
             resize_br_node_state,
             resize_br_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
 
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
@@ -792,11 +792,7 @@ impl Selector {
                 * kurbo::Affine::translate(-rotation_center.to_kurbo_vec()),
         );
 
-        piet_cx.stroke(
-            center_cross,
-            &piet::Color::from(CENTER_CROSS_COLOR),
-            center_cross_path_width,
-        );
+        piet_cx.stroke(center_cross, CENTER_CROSS_COLOR, center_cross_path_width);
         piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         Ok(())

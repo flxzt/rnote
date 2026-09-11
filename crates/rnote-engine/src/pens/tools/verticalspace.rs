@@ -36,12 +36,12 @@ impl Default for VerticalSpaceTool {
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
     const SNAP_START_POS_DIST: f64 = 10.;
-    const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
+    const OFFSET_LINE_COLOR: Color = color::GNOME_BLUES[3];
     const THRESHOLD_LINE_WIDTH: f64 = 3.0;
     const THRESHOLD_LINE_DASH_PATTERN: [f64; 2] = [9.0, 6.0];
     const OFFSET_LINE_WIDTH: f64 = 1.5;
-    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(23);
-    const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(240);
+    const FILL_COLOR: Color = color::GNOME_BRIGHTS[2].with_a8(23);
+    const THRESHOLD_LINE_COLOR: Color = color::GNOME_GREENS[4].with_a8(240);
 
     pub(super) fn handle_event(
         &mut self,

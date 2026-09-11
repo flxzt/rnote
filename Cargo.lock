@@ -4073,6 +4073,7 @@ dependencies = [
  "approx 0.5.1",
  "base64",
  "clap",
+ "color",
  "ink-stroke-modeler-rs",
  "kurbo 0.13.1",
  "num-derive",

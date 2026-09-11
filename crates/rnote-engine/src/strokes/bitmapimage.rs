@@ -198,7 +198,13 @@ impl BitmapImage {
                 let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
                 let png_data = pixmap.into_png()?;
 
-                let image_pos = Vector2::new(x, y);
+                // Center narrower pages within the import width when adjusting the document.
+                let page_x = if pdf_import_prefs.adjust_document {
+                    x + (page_width - width) * 0.5
+                } else {
+                    x
+                };
+                let image_pos = Vector2::new(page_x, y);
                 let image_size = Vector2::new(width, height);
 
                 y += match pdf_import_prefs.page_spacing {

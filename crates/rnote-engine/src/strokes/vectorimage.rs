@@ -265,7 +265,16 @@ impl VectorImage {
                 };
                 let width = intrinsic_width * page_zoom_fit;
                 let height = intrinsic_height * page_zoom_fit;
-                let bounds = Aabb::new(Vector2::new(x, y), Vector2::new(x + width, y + height));
+                // Center narrower pages within the import width when adjusting the document.
+                let page_x = if pdf_import_prefs.adjust_document {
+                    x + (page_width - width) * 0.5
+                } else {
+                    x
+                };
+                let bounds = Aabb::new(
+                    Vector2::new(page_x, y),
+                    Vector2::new(page_x + width, y + height),
+                );
 
                 y += match pdf_import_prefs.page_spacing {
                     PdfImportPageSpacing::Continuous => {

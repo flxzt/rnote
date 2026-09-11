@@ -53,7 +53,7 @@ impl Composer<RoughOptions> for Line {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options)).line(
             self.start[0],
             self.start[1],
@@ -71,7 +71,7 @@ impl Composer<RoughOptions> for Arrow {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let arrow_stem = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .line(self.start[0], self.start[1], self.tip[0], self.tip[1]);
 
@@ -106,7 +106,7 @@ impl Composer<RoughOptions> for Rectangle {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let top_left = -self.cuboid.half_extents;
         let size = self.cuboid.half_extents * 2.0;
 
@@ -124,7 +124,7 @@ impl Composer<RoughOptions> for Ellipse {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let size = self.radii * 2.0;
         let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .ellipse(0.0, 0.0, size[0], size[1]);
@@ -140,7 +140,7 @@ impl Composer<RoughOptions> for QuadraticBezier {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .bezier_quadratic(
                 roughr::Point2D::new(self.start[0] as f32, self.start[1] as f32),
@@ -158,7 +158,7 @@ impl Composer<RoughOptions> for CubicBezier {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let drawable = rough_vello_cpu::KurboGenerator::new(generate_roughr_options(options))
             .bezier_cubic(
                 roughr::Point2D::new(self.start[0] as f32, self.start[1] as f32),
@@ -176,7 +176,7 @@ impl Composer<RoughOptions> for Polyline {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
@@ -201,7 +201,7 @@ impl Composer<RoughOptions> for Polygon {
             .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
@@ -234,16 +234,16 @@ impl Composer<RoughOptions> for crate::Shape {
         }
     }
 
-    fn draw_composed_vello(&self, cx: &mut RenderContext, options: &RoughOptions) {
+    fn draw_composed(&self, cx: &mut RenderContext, options: &RoughOptions) {
         match self {
-            crate::Shape::Arrow(arrow) => arrow.draw_composed_vello(cx, options),
-            crate::Shape::Line(line) => line.draw_composed_vello(cx, options),
-            crate::Shape::Rectangle(rectangle) => rectangle.draw_composed_vello(cx, options),
-            crate::Shape::Ellipse(ellipse) => ellipse.draw_composed_vello(cx, options),
-            crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed_vello(cx, options),
-            crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed_vello(cx, options),
-            crate::Shape::Polyline(polyline) => polyline.draw_composed_vello(cx, options),
-            crate::Shape::Polygon(polygon) => polygon.draw_composed_vello(cx, options),
+            crate::Shape::Arrow(arrow) => arrow.draw_composed(cx, options),
+            crate::Shape::Line(line) => line.draw_composed(cx, options),
+            crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
+            crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
+            crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
+            crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
+            crate::Shape::Polyline(polyline) => polyline.draw_composed(cx, options),
+            crate::Shape::Polygon(polygon) => polygon.draw_composed(cx, options),
         }
     }
 }

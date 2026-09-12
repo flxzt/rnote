@@ -279,6 +279,15 @@
                     <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;z</property>
                   </object>
                 </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" translatable="yes">Open Search</property>
+                    <!-- TODO Use Primary
+                               instead of ctrl so it adapts to Mac should be considerd for all other options
+                               !!!!-->
+                    <property name="accelerator">&lt;Primary&gt;f</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

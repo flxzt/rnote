@@ -2,6 +2,7 @@
 pub mod chrono_comp;
 pub mod keytree;
 pub mod render_comp;
+pub mod search_comp;
 pub mod selection_comp;
 pub mod stroke_comp;
 pub mod trash_comp;
@@ -10,6 +11,7 @@ pub mod trash_comp;
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
 pub use render_comp::RenderComponent;
+pub use search_comp::SearchResult;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
 

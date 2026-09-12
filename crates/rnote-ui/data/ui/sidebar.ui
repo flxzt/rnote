@@ -2,7 +2,7 @@
 <interface>
   <template class="RnSidebar" parent="GtkWidget">
     <property name="layout-manager">
-      <object class="GtkBinLayout" />
+      <object class="GtkBinLayout"/>
     </property>
     <child>
       <object class="AdwToolbarView">
@@ -43,7 +43,7 @@
         <property name="content">
           <object class="AdwViewStack" id="sidebar_stack">
             <style>
-              <class name="background" />
+              <class name="background"/>
             </style>
             <!-- workspace page -->
             <child>
@@ -52,7 +52,7 @@
                 <property name="title" translatable="yes">Workspace</property>
                 <property name="icon-name">workspacebrowser-symbolic</property>
                 <property name="child">
-                  <object class="RnWorkspaceBrowser" id="workspacebrowser"></object>
+                  <object class="RnWorkspaceBrowser" id="workspacebrowser"/>
                 </property>
               </object>
             </child>
@@ -63,7 +63,18 @@
                 <property name="title" translatable="yes">Settings</property>
                 <property name="icon-name">settings-symbolic</property>
                 <property name="child">
-                  <object class="RnSettingsPanel" id="settings_panel"></object>
+                  <object class="RnSettingsPanel" id="settings_panel"/>
+                </property>
+              </object>
+            </child>
+            <!-- search page-->
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">search_page</property>
+                <property name="title" translatable="yes">Search</property>
+                <property name="icon-name">system-search-symbolic</property>
+                <property name="child">
+                  <object class="RnSearchPanel" id="search_panel"/>
                 </property>
               </object>
             </child>

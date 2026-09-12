@@ -212,6 +212,7 @@ impl Engine {
         snapshot.pop();
 
         self.draw_origin_indicator_to_gtk_snapshot(snapshot)?;
+        self.draw_search_highlights_to_gtk_snapshot(snapshot, viewport);
 
         snapshot.restore();
         /*
@@ -238,6 +239,46 @@ impl Engine {
         }
 
         Ok(())
+    }
+
+    #[cfg(feature = "ui")]
+    fn draw_search_highlights_to_gtk_snapshot(
+        &self,
+        snapshot: &gtk4::Snapshot,
+        viewport: p2d::bounding_volume::Aabb,
+    ) {
+        use gtk4::{gdk, graphene, prelude::*};
+        use p2d::bounding_volume::BoundingVolume;
+
+        if self.active_search_results.is_empty() {
+            return;
+        }
+
+        let highlight_color = gdk::RGBA::new(1.0, 1.0, 0.0, 0.35);
+        let active_color = gdk::RGBA::new(1.0, 0.6, 0.0, 0.6);
+
+        for (i, result) in self.active_search_results.iter().enumerate() {
+            if !result.bounds.intersects(&viewport) {
+                continue;
+            }
+
+            let bounds = result.bounds;
+
+            let rect = graphene::Rect::new(
+                bounds.mins.x as f32,
+                bounds.mins.y as f32,
+                (bounds.maxs.x - bounds.mins.x) as f32,
+                (bounds.maxs.y - bounds.mins.y) as f32,
+            );
+
+            let color = if i == self.current_search_index {
+                &active_color
+            } else {
+                &highlight_color
+            };
+
+            snapshot.append_color(color, &rect);
+        }
     }
 
     #[cfg(feature = "ui")]

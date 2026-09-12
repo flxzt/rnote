@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### Canvas Search ### -->
+<interface>
+  <template class="RnSearchPanel" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="orientation">vertical</property>
+      </object>
+    </property>
+    <style>
+      <class name="search_panel"/>
+      <class name="background"/>
+    </style>
+    <!-- Search Bar -->
+    <child>
+      <object class="GtkSearchBar" id="search_bar">
+        <property name="search-mode-enabled">true</property>
+        <property name="show-close-button">false</property>
+        <child>
+          <object class="GtkSearchEntry" id="search_entry">
+            <property name="placeholder-text" translatable="yes">Search...</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <!-- Stack for View switching -->
+    <child>
+      <object class="GtkStack" id="content_stack">
+        <property name="vexpand">true</property>
+        <property name="transition-type">crossfade</property>
+        <!-- Status Page View (No Search / No Results) -->
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">status</property>
+            <property name="child">
+              <object class="AdwStatusPage" id="status_page">
+                <property name="icon-name">system-search-symbolic</property>
+                <property name="title" translatable="yes">Search</property>
+                <property name="description" translatable="yes">Start typing to search the document.</property>
+              </object>
+            </property>
+          </object>
+        </child>
+        <!-- Results View -->
+        <child>
+          <object class="GtkStackPage">
+            <property name="name">results</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="search_scroller">
+                <property name="hscrollbar-policy">never</property>
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="propagate-natural-width">false</property>
+                <property name="propagate-natural-height">false</property>
+                <property name="window-placement">top-left</property>
+                <child>
+                  <object class="AdwClamp">
+                    <property name="margin-top">32</property>
+                    <property name="margin-bottom">24</property>
+                    <property name="margin-start">24</property>
+                    <property name="margin-end">24</property>
+                    <property name="maximum-size">800</property>
+                    <property name="tightening-threshold">600</property>
+                    <property name="hexpand">false</property>
+                    <property name="vexpand">true</property>
+                    <property name="valign">fill</property>
+                    <property name="halign">fill</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">32</property>
+                        <child>
+                          <object class="GtkListBox" id="results_list">
+                            <property name="selection-mode">single</property>
+                            <style>
+                              <class name="boxed-list"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

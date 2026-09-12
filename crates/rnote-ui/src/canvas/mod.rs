@@ -83,6 +83,7 @@ mod imp {
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
         pub(crate) output_file_modified_toast_singleton: glib::WeakRef<adw::Toast>,
+        pub(crate) locked_tool_toast_singleton: glib::WeakRef<adw::Toast>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
@@ -179,6 +180,7 @@ mod imp {
                 output_file_watcher_task: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
                 output_file_modified_toast_singleton: glib::WeakRef::new(),
+                locked_tool_toast_singleton: glib::WeakRef::new(),
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),

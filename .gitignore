@@ -5,8 +5,8 @@
 /_mesonbuild
 /.flatpak-builder
 /.editorconfig
-/.vscode
+/*.code-workspace
+/.idea/
 *.mo
-.idea/
 .toggletasks.json
 *.flatpak

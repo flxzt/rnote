@@ -7,6 +7,7 @@ use gtk4::{
     prelude::*, subclass::prelude::*,
 };
 use once_cell::sync::Lazy;
+use p2d::math::Vector2;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::Camera;
 use rnote_engine::ext::GraphenePointExt;
@@ -33,8 +34,8 @@ mod imp {
         pub(crate) show_scrollbars: Cell<bool>,
         pub(crate) block_pinch_zoom: Cell<bool>,
         pub(crate) inertial_scrolling: Cell<bool>,
-        pub(crate) pointer_pos: Cell<Option<na::Vector2<f64>>>,
-        pub(crate) last_contextmenu_pos: Cell<Option<na::Vector2<f64>>>,
+        pub(crate) pointer_pos: Cell<Option<Vector2>>,
+        pub(crate) last_contextmenu_pos: Cell<Option<Vector2>>,
 
         pub(crate) pointer_motion_controller: EventControllerMotion,
         pub(crate) canvas_drag_gesture: GestureDrag,
@@ -311,6 +312,23 @@ mod imp {
             );
         }
 
+        fn workaround_disable_kinetic_scrolling(&self) {
+            let scroller = self.scroller.get();
+            self.canvas
+                .workaround_disable_kinetic_scrolling(Some(&scroller));
+        }
+
+        fn workaround_restore_kinetic_scrolling(&self) {
+            let scroller = self.scroller.get();
+            self.canvas
+                .workaround_restore_kinetic_scrolling(Some(&scroller));
+        }
+
+        pub(super) fn workaround_cancel_kinetic_scrolling_for_zoom(&self) {
+            self.workaround_disable_kinetic_scrolling();
+            self.workaround_restore_kinetic_scrolling();
+        }
+
         fn setup_input(&self) {
             let obj = self.obj();
 
@@ -319,7 +337,10 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, x, y| {
-                        canvaswrapper.imp().pointer_pos.set(Some(na::vector![x, y]));
+                        canvaswrapper
+                            .imp()
+                            .pointer_pos
+                            .set(Some(Vector2::new(x, y)));
                     }
                 ));
 
@@ -328,20 +349,6 @@ mod imp {
                     obj,
                     move |_| {
                         canvaswrapper.imp().pointer_pos.set(None);
-                    }
-                ));
-            }
-
-            // Actions when moving view with controls provided by the scroller ScrolledWindow.
-            // e.g. touch scrolling when inertial-scrolling is enabled.
-            {
-                self.scroller.connect_edge_overshot(clone!(
-                    #[weak(rename_to=canvaswrapper)]
-                    obj,
-                    move |_, _| {
-                        let canvas = canvaswrapper.canvas();
-                        let widget_flags = canvas.engine_mut().doc_expand_autoexpand();
-                        canvas.emit_handle_widget_flags(widget_flags);
                     }
                 ));
             }
@@ -360,6 +367,11 @@ mod imp {
                             return glib::Propagation::Proceed;
                         }
 
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper
+                            .imp()
+                            .workaround_cancel_kinetic_scrolling_for_zoom();
+
                         let canvas = canvaswrapper.canvas();
                         let old_zoom = canvas.engine_ref().camera.total_zoom();
                         let new_zoom = if dy < 0.0 {
@@ -377,9 +389,9 @@ mod imp {
                                 .get()
                                 .map(|p| {
                                     let p = canvaswrapper
-                                        .compute_point(&canvas, &graphene::Point::from_na_vec(p))
+                                        .compute_point(&canvas, &graphene::Point::from_p2d_vec(p))
                                         .unwrap();
-                                    p.to_na_vec()
+                                    p.to_p2d_vec()
                                 })
                                 .unwrap_or_else(|| camera_size * 0.5);
                             let new_camera_offset = (((camera_offset + screen_offset) / old_zoom)
@@ -400,21 +412,28 @@ mod imp {
 
             // Drag canvas gesture
             {
-                let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let touch_drag_start = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_drag_gesture.connect_drag_begin(clone!(
                     #[strong]
                     touch_drag_start,
                     #[weak(rename_to=canvaswrapper)]
                     obj,
-                    move |_, _, _| {
+                    move |gesture, _, _| {
                         // We don't claim the sequence, because we we want to allow touch zooming.
                         // When the zoom gesture is recognized, it claims it and denies this touch drag gesture.
 
-                        touch_drag_start.set(na::vector![
-                            canvaswrapper.canvas().hadjustment().unwrap().value(),
-                            canvaswrapper.canvas().vadjustment().unwrap().value()
-                        ]);
+                        if let Some(event) = gesture.current_event()
+                            && event.device_tool().is_some()
+                        {
+                            let pressure = event.axis(gdk::AxisUse::Pressure);
+                            if pressure.is_some_and(|p| p <= 0.0) {
+                                gesture.set_state(EventSequenceState::Denied);
+                                return;
+                            }
+                        }
+
+                        touch_drag_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
                 ));
                 self.canvas_drag_gesture.connect_drag_update(clone!(
@@ -424,7 +443,7 @@ mod imp {
                     obj,
                     move |_, x, y| {
                         let canvas = canvaswrapper.canvas();
-                        let new_offset = touch_drag_start.get() - na::vector![x, y];
+                        let new_offset = touch_drag_start.get() - Vector2::new(x, y);
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
@@ -446,7 +465,7 @@ mod imp {
 
             // Move Canvas with middle mouse button
             {
-                let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let mouse_drag_start = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_mouse_drag_middle_gesture
                     .connect_drag_begin(clone!(
@@ -454,7 +473,18 @@ mod imp {
                         mouse_drag_start,
                         #[weak(rename_to=canvaswrapper)]
                         obj,
-                        move |_, _, _| {
+                        move |gesture, _, _| {
+                            // Stylus hover can trigger button events; ignore pan without pressure.
+                            if let Some(event) = gesture.current_event()
+                                && event.device_tool().is_some()
+                            {
+                                let pressure = event.axis(gdk::AxisUse::Pressure);
+                                if pressure.is_some_and(|p| p <= 0.0) {
+                                    gesture.set_state(EventSequenceState::Denied);
+                                    return;
+                                }
+                            }
+
                             mouse_drag_start
                                 .set(canvaswrapper.canvas().engine_ref().camera.offset());
                         }
@@ -467,7 +497,7 @@ mod imp {
                         obj,
                         move |_, x, y| {
                             let canvas = canvaswrapper.canvas();
-                            let new_offset = mouse_drag_start.get() - na::vector![x, y];
+                            let new_offset = mouse_drag_start.get() - Vector2::new(x, y);
                             let widget_flags =
                                 canvas.engine_mut().camera_set_offset_expand(new_offset);
                             canvas.emit_handle_widget_flags(widget_flags);
@@ -494,8 +524,8 @@ mod imp {
                 let prev_scale = Rc::new(Cell::new(1_f64));
                 let zoom_begin = Rc::new(Cell::new(1_f64));
                 let new_zoom = Rc::new(Cell::new(1.0));
-                let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
-                let offset_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+                let bbcenter_begin: Rc<Cell<Option<Vector2>>> = Rc::new(Cell::new(None));
+                let offset_begin = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_zoom_gesture.connect_begin(clone!(
                     #[strong]
@@ -512,15 +542,10 @@ mod imp {
                     obj,
                     move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
-                        // Workaround for a GTK bug where kinetic scroll deceleration continues
-                        // with stale values during a pinch-to-zoom, causing sudden position jumps.
-                        // Toggling kinetic scrolling off/on cancels any active deceleration.
-                        // See: https://gitlab.gnome.org/GNOME/gtk/-/issues/187
-                        let scroller = canvaswrapper.scroller();
-                        if scroller.is_kinetic_scrolling() {
-                            scroller.set_kinetic_scrolling(false);
-                            scroller.set_kinetic_scrolling(true);
-                        }
+
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_disable_kinetic_scrolling();
+
                         let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
 
                         zoom_begin.set(current_zoom);
@@ -530,7 +555,7 @@ mod imp {
                         bbcenter_begin.set(
                             gesture
                                 .bounding_box_center()
-                                .map(|(x, y)| na::vector![x, y]),
+                                .map(|(x, y)| Vector2::new(x, y)),
                         );
                         offset_begin.set(canvaswrapper.canvas().engine_ref().camera.offset());
                     }
@@ -563,7 +588,7 @@ mod imp {
 
                         if let Some(bbcenter_current) = gesture
                             .bounding_box_center()
-                            .map(|(x, y)| na::vector![x, y])
+                            .map(|(x, y)| Vector2::new(x, y))
                         {
                             let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get()
                             {
@@ -588,6 +613,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_gesture, _event_sequence| {
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -603,6 +631,10 @@ mod imp {
                     obj,
                     move |gesture, _event_sequence| {
                         gesture.set_state(EventSequenceState::Denied);
+
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -616,7 +648,7 @@ mod imp {
 
             // Pan with alt + drag
             {
-                let offset_start = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+                let offset_start = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_alt_drag_gesture.connect_drag_begin(clone!(
                     #[strong]
@@ -645,7 +677,7 @@ mod imp {
                     obj,
                     move |_, offset_x, offset_y| {
                         let canvas = canvaswrapper.canvas();
-                        let new_offset = offset_start.get() - na::vector![offset_x, offset_y];
+                        let new_offset = offset_start.get() - Vector2::new(offset_x, offset_y);
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
                         canvas.emit_handle_widget_flags(widget_flags);
                     }
@@ -703,7 +735,7 @@ mod imp {
             // Zoom with alt + shift + drag
             {
                 let zoom_begin = Rc::new(Cell::new(1_f64));
-                let prev_offset = Rc::new(Cell::new(na::Vector2::<f64>::zeros()));
+                let prev_offset = Rc::new(Cell::new(Vector2::ZERO));
 
                 self.canvas_alt_shift_drag_gesture
                     .connect_drag_begin(clone!(
@@ -721,10 +753,14 @@ mod imp {
                                 && modifiers.contains(gdk::ModifierType::SHIFT_MASK)
                             {
                                 gesture.set_state(EventSequenceState::Claimed);
+
+                                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                                canvaswrapper.imp().workaround_disable_kinetic_scrolling();
+
                                 let current_zoom =
                                     canvaswrapper.canvas().engine_ref().camera.total_zoom();
                                 zoom_begin.set(current_zoom);
-                                prev_offset.set(na::Vector2::<f64>::zeros());
+                                prev_offset.set(Vector2::ZERO);
                             } else {
                                 gesture.set_state(EventSequenceState::Denied);
                             }
@@ -739,7 +775,7 @@ mod imp {
                         obj,
                         move |_, offset_x, offset_y| {
                             let canvas = canvaswrapper.canvas();
-                            let new_offset = na::vector![offset_x, offset_y];
+                            let new_offset = Vector2::new(offset_x, offset_y);
                             let current_total_zoom =
                                 canvaswrapper.canvas().engine_ref().camera.total_zoom();
                             // drag down zooms out, drag up zooms in
@@ -768,6 +804,9 @@ mod imp {
                     #[weak(rename_to=canvaswrapper)]
                     obj,
                     move |_, _, _| {
+                        // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        canvaswrapper.imp().workaround_restore_kinetic_scrolling();
+
                         let widget_flags = canvaswrapper
                             .canvas()
                             .engine_mut()
@@ -810,7 +849,7 @@ mod imp {
                         canvaswrapper
                             .imp()
                             .last_contextmenu_pos
-                            .set(Some(na::vector![x, y]));
+                            .set(Some(Vector2::new(x, y)));
                         popover
                             .set_pointing_to(Some(&gdk::Rectangle::new(x as i32, y as i32, 4, 4)));
                         popover.popup();
@@ -867,16 +906,20 @@ impl RnCanvasWrapper {
         self.set_property("inertial-scrolling", inertial_scrolling);
     }
 
-    pub(crate) fn pointer_pos(&self) -> Option<na::Vector2<f64>> {
+    pub(crate) fn pointer_pos(&self) -> Option<Vector2> {
         self.imp().pointer_pos.get()
     }
 
-    pub(crate) fn last_contextmenu_pos(&self) -> Option<na::Vector2<f64>> {
+    pub(crate) fn last_contextmenu_pos(&self) -> Option<Vector2> {
         self.imp().last_contextmenu_pos.get()
     }
 
     pub(crate) fn scroller(&self) -> ScrolledWindow {
         self.imp().scroller.get()
+    }
+
+    pub(crate) fn workaround_cancel_kinetic_scrolling_for_zoom(&self) {
+        self.imp().workaround_cancel_kinetic_scrolling_for_zoom();
     }
 
     pub(crate) fn canvas(&self) -> RnCanvas {

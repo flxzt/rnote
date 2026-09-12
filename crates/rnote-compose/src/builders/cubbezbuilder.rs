@@ -10,33 +10,34 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use std::time::Instant;
 
 #[derive(Debug, Clone)]
 enum CubBezBuilderState {
     Cp1 {
-        start: na::Vector2<f64>,
-        cp1: na::Vector2<f64>,
+        start: Vector2,
+        cp1: Vector2,
     },
     Cp1Finished {
-        start: na::Vector2<f64>,
-        cp1: na::Vector2<f64>,
+        start: Vector2,
+        cp1: Vector2,
     },
     Cp2 {
-        start: na::Vector2<f64>,
-        cp1: na::Vector2<f64>,
-        cp2: na::Vector2<f64>,
+        start: Vector2,
+        cp1: Vector2,
+        cp2: Vector2,
     },
     Cp2Finished {
-        start: na::Vector2<f64>,
-        cp1: na::Vector2<f64>,
-        cp2: na::Vector2<f64>,
+        start: Vector2,
+        cp1: Vector2,
+        cp2: Vector2,
     },
     End {
-        start: na::Vector2<f64>,
-        cp1: na::Vector2<f64>,
-        cp2: na::Vector2<f64>,
-        end: na::Vector2<f64>,
+        start: Vector2,
+        cp1: Vector2,
+        cp2: Vector2,
+        end: Vector2,
     },
 }
 
@@ -152,13 +153,13 @@ impl Buildable for CubBezBuilder {
         match &self.state {
             CubBezBuilderState::Cp1 { start, cp1 }
             | CubBezBuilderState::Cp1Finished { start, cp1 } => Some(
-                Aabb::new_positive((*start).into(), (*cp1).into())
+                Aabb::new_positive(*start, *cp1)
                     .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             CubBezBuilderState::Cp2 { start, cp1, cp2 }
             | CubBezBuilderState::Cp2Finished { start, cp1, cp2 } => {
-                let mut aabb = Aabb::new_positive((*start).into(), (*cp2).into());
-                aabb.take_point((*cp1).into());
+                let mut aabb = Aabb::new_positive(*start, *cp2);
+                aabb.take_point(*cp1);
 
                 Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
@@ -168,10 +169,9 @@ impl Buildable for CubBezBuilder {
                 cp2,
                 end,
             } => {
-                let mut aabb = Aabb::new_positive((*start).into(), (*end).into());
-                aabb.take_point((*cp1).into());
-                aabb.take_point((*cp2).into());
-
+                let mut aabb = Aabb::new_positive(*start, *end);
+                aabb.take_point(*cp1);
+                aabb.take_point(*cp2);
                 Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
         }

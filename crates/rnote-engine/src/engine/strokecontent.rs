@@ -4,6 +4,7 @@ use crate::Svg;
 use crate::document::Background;
 use crate::strokes::Stroke;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -57,7 +58,7 @@ impl StrokeContent {
         )
     }
 
-    pub fn size(&self) -> Option<na::Vector2<f64>> {
+    pub fn size(&self) -> Option<Vector2> {
         self.bounds().map(|b| b.extents())
     }
 

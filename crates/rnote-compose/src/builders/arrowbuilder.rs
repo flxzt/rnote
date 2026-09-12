@@ -9,6 +9,7 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -16,9 +17,9 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct ArrowBuilder {
     /// Start position.
-    start: na::Vector2<f64>,
+    start: Vector2,
     /// Position of the tip.
-    tip: na::Vector2<f64>,
+    tip: Vector2,
 }
 
 impl BuilderCreator for ArrowBuilder {

@@ -3,6 +3,7 @@ use super::RnCanvas;
 use crate::RnAppWindow;
 use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
+use p2d::math::Vector2;
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::WidgetFlags;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
@@ -86,7 +87,7 @@ impl RnCanvas {
     pub(crate) async fn load_in_vectorimage_bytes(
         &self,
         bytes: Vec<u8>,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
@@ -113,7 +114,7 @@ impl RnCanvas {
     pub(crate) async fn load_in_bitmapimage_bytes(
         &self,
         bytes: Vec<u8>,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
@@ -139,7 +140,7 @@ impl RnCanvas {
         &self,
         appwindow: &RnAppWindow,
         bytes: Vec<u8>,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> anyhow::Result<()> {
@@ -170,7 +171,7 @@ impl RnCanvas {
     pub(crate) fn load_in_text(
         &self,
         text: String,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
 
@@ -187,7 +188,7 @@ impl RnCanvas {
         &self,
         json_string: String,
         resize_option: ImageSizeOption,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
@@ -368,21 +369,17 @@ impl RnCanvas {
         Ok(())
     }
 
-    fn determine_stroke_import_pos(
-        &self,
-        target_pos: Option<na::Vector2<f64>>,
-    ) -> na::Vector2<f64> {
+    fn determine_stroke_import_pos(&self, target_pos: Option<Vector2>) -> Vector2 {
         target_pos.unwrap_or_else(|| {
             self.engine_ref()
                 .camera
                 .transform()
                 .inverse()
-                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-                .coords
-                .maxs(&na::vector![
+                .transform_point2(Stroke::IMPORT_OFFSET_DEFAULT)
+                .maxs(&Vector2::new(
                     self.engine_ref().document.x,
-                    self.engine_ref().document.y
-                ])
+                    self.engine_ref().document.y,
+                ))
         })
     }
 }

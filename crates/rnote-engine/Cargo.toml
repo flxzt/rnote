@@ -29,7 +29,6 @@ image = { workspace = true }
 itertools = { workspace = true }
 kurbo = { workspace = true }
 librsvg = { workspace = true }
-nalgebra = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
 once_cell = { workspace = true }

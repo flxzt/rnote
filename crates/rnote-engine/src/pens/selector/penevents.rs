@@ -7,6 +7,7 @@ use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use p2d::query::PointQuery;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::{AabbExt, Vector2Ext};
@@ -104,12 +105,12 @@ impl Selector {
                                 *selection_bounds = new_bounds;
                             }
                         } else if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
-                            .contains_local_point(&element.pos.into())
+                            .contains_local_point(element.pos)
                         {
                             // clicking on the rotate node
                             let rotation_angle = {
-                                let vec = element.pos - selection_bounds.center().coords;
-                                na::Vector2::x().angle_ahead(&vec)
+                                let vec = element.pos - selection_bounds.center();
+                                Vector2::X.angle_to(vec)
                             };
 
                             *modify_state = ModifyState::Rotate {
@@ -123,7 +124,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&element.pos.into())
+                        .contains_local_point(element.pos)
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::TopLeft,
@@ -136,7 +137,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&element.pos.into())
+                        .contains_local_point(element.pos)
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::TopRight,
@@ -149,7 +150,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&element.pos.into())
+                        .contains_local_point(element.pos)
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::BottomLeft,
@@ -162,7 +163,7 @@ impl Selector {
                             *selection_bounds,
                             engine_view.camera,
                         )
-                        .contains_local_point(&element.pos.into())
+                        .contains_local_point(element.pos)
                         {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::BottomRight,
@@ -186,7 +187,7 @@ impl Selector {
                             {
                                 *selection_bounds = new_bounds;
                             }
-                        } else if selection_bounds.contains_local_point(&element.pos.into()) {
+                        } else if selection_bounds.contains_local_point(element.pos) {
                             let snap_corner =
                                 SnapCorner::determine_from_bounds(*selection_bounds, element.pos);
 
@@ -210,14 +211,14 @@ impl Selector {
                         snap_corner,
                     } => {
                         let snap_corner_pos = match snap_corner {
-                            SnapCorner::TopLeft => selection_bounds.mins.coords,
+                            SnapCorner::TopLeft => selection_bounds.mins,
                             SnapCorner::TopRight => {
-                                na::vector![selection_bounds.maxs[0], selection_bounds.mins[1]]
+                                Vector2::new(selection_bounds.maxs[0], selection_bounds.mins[1])
                             }
                             SnapCorner::BottomLeft => {
-                                na::vector![selection_bounds.mins[0], selection_bounds.maxs[1]]
+                                Vector2::new(selection_bounds.mins[0], selection_bounds.maxs[1])
                             }
-                            SnapCorner::BottomRight => selection_bounds.maxs.coords,
+                            SnapCorner::BottomRight => selection_bounds.maxs,
                         };
 
                         let offset = engine_view.document.snap_position(
@@ -225,7 +226,7 @@ impl Selector {
                             engine_view.config,
                         ) - snap_corner_pos;
 
-                        if offset.magnitude()
+                        if offset.length()
                             > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
                         {
                             // move selection
@@ -257,8 +258,8 @@ impl Selector {
                         current_rotation_angle,
                     } => {
                         let new_rotation_angle = {
-                            let vec = element.pos - rotation_center.coords;
-                            na::Vector2::x().angle_ahead(&vec)
+                            let vec = element.pos - *rotation_center;
+                            Vector2::X.angle_to(vec)
                         };
                         let angle_delta = new_rotation_angle - *current_rotation_angle;
 
@@ -295,28 +296,24 @@ impl Selector {
                             .resize_lock_aspectratio
                             || modifier_keys.contains(&ModifierKey::KeyboardCtrl);
                         let snap_corner_pos = match from_corner {
-                            ResizeCorner::TopLeft => start_bounds.mins.coords,
-                            ResizeCorner::TopRight => na::vector![
-                                start_bounds.maxs.coords[0],
-                                start_bounds.mins.coords[1]
-                            ],
-                            ResizeCorner::BottomLeft => na::vector![
-                                start_bounds.mins.coords[0],
-                                start_bounds.maxs.coords[1]
-                            ],
-                            ResizeCorner::BottomRight => start_bounds.maxs.coords,
+                            ResizeCorner::TopLeft => start_bounds.mins,
+                            ResizeCorner::TopRight => {
+                                Vector2::new(start_bounds.maxs[0], start_bounds.mins[1])
+                            }
+                            ResizeCorner::BottomLeft => {
+                                Vector2::new(start_bounds.mins[0], start_bounds.maxs[1])
+                            }
+                            ResizeCorner::BottomRight => start_bounds.maxs,
                         };
                         let pivot = match from_corner {
-                            ResizeCorner::TopLeft => start_bounds.maxs.coords,
-                            ResizeCorner::TopRight => na::vector![
-                                start_bounds.mins.coords[0],
-                                start_bounds.maxs.coords[1]
-                            ],
-                            ResizeCorner::BottomLeft => na::vector![
-                                start_bounds.maxs.coords[0],
-                                start_bounds.mins.coords[1]
-                            ],
-                            ResizeCorner::BottomRight => start_bounds.mins.coords,
+                            ResizeCorner::TopLeft => start_bounds.maxs,
+                            ResizeCorner::TopRight => {
+                                Vector2::new(start_bounds.mins[0], start_bounds.maxs[1])
+                            }
+                            ResizeCorner::BottomLeft => {
+                                Vector2::new(start_bounds.maxs[0], start_bounds.mins[1])
+                            }
+                            ResizeCorner::BottomRight => start_bounds.mins,
                         };
                         let mut offset_to_start = element.pos - *start_pos;
                         if !lock_aspectratio {
@@ -328,10 +325,10 @@ impl Selector {
                         offset_to_start = match from_corner {
                             ResizeCorner::TopLeft => -offset_to_start,
                             ResizeCorner::TopRight => {
-                                na::vector![offset_to_start[0], -offset_to_start[1]]
+                                Vector2::new(offset_to_start[0], -offset_to_start[1])
                             }
                             ResizeCorner::BottomLeft => {
-                                na::vector![-offset_to_start[0], offset_to_start[1]]
+                                Vector2::new(-offset_to_start[0], offset_to_start[1])
                             }
                             ResizeCorner::BottomRight => offset_to_start,
                         };
@@ -341,11 +338,9 @@ impl Selector {
                             let offset_mean = offset_to_start.mean();
                             offset_to_start = start_extents * (offset_mean / start_mean);
                         }
-                        let min_extents = na::Vector2::<f64>::from_element(2.0f64)
-                            / engine_view.camera.total_zoom();
-                        let scale = (start_bounds.extents() + offset_to_start)
-                            .maxs(&min_extents)
-                            .component_div(&selection_bounds.extents());
+                        let min_extents = Vector2::splat(2.) / engine_view.camera.total_zoom();
+                        let scale = (start_bounds.extents() + offset_to_start).maxs(&min_extents)
+                            / selection_bounds.extents();
 
                         // resize strokes
                         engine_view
@@ -369,9 +364,8 @@ impl Selector {
 
                         // Rerender but based on some conditions
                         const RERENDER_BOUNDS_FACTOR: f64 = 1.5;
-                        let last_rendered_bounds_scale = selection_bounds
-                            .extents()
-                            .component_div(&last_rendered_bounds.extents());
+                        let last_rendered_bounds_scale =
+                            selection_bounds.extents() / last_rendered_bounds.extents();
 
                         if last_rendered_bounds_scale[0] < 1. / RERENDER_BOUNDS_FACTOR
                             || last_rendered_bounds_scale[0] > RERENDER_BOUNDS_FACTOR
@@ -445,7 +439,7 @@ impl Selector {
                         if let Some(first) = path.first()
                             && let Some(last) = path.last()
                         {
-                            let aabb = Aabb::new_positive(first.pos.into(), last.pos.into());
+                            let aabb = Aabb::new_positive(first.pos, last.pos);
                             engine_view.store.strokes_hitboxes_contained_in_aabb(
                                 aabb,
                                 engine_view.camera.viewport(),

@@ -88,6 +88,18 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.14.2" date="2026-05-01">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: transparent stroke rendering (@Kneemund)</li>
+          <li>fix: document not staying centered after zooming (@Kneemund)</li>
+          <li>fix: pinch zooming on touchscreen (@Kneemund)</li>
+          <li>fix: jumping view while zooming in (@Kneemund)</li>
+          <li>fix: zooming with "alt+shift+drag" (@Kneemund)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.1" date="2026-04-13">
       <description>
         <p>this release changes:</p>

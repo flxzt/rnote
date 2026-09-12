@@ -10,6 +10,7 @@ use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::strokes::{Resize, resize::ImageSizeOption, resize::calculate_resize_ratio};
 use crate::{Engine, WidgetFlags};
 use futures::channel::oneshot;
+use p2d::math::Vector2;
 use rnote_compose::ext::Vector2Ext;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
@@ -147,7 +148,7 @@ impl Engine {
     /// The bytes are expected to be from a valid UTF-8 encoded Svg string.
     pub fn generate_vectorimage_from_bytes(
         &self,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         bytes: Vec<u8>,
         respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
@@ -187,7 +188,7 @@ impl Engine {
     /// The bytes are expected to be from a valid bitmap image (Png/Jpeg).
     pub fn generate_bitmapimage_from_bytes(
         &self,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         bytes: Vec<u8>,
         respect_borders: bool,
     ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
@@ -229,7 +230,7 @@ impl Engine {
     pub fn generate_pdf_pages_from_bytes(
         &self,
         bytes: Vec<u8>,
-        insert_pos: na::Vector2<f64>,
+        insert_pos: Vector2,
         page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<(Stroke, Option<StrokeLayer>)>>> {
@@ -244,7 +245,7 @@ impl Engine {
             .pdf_import_prefs
             .adjust_document
         {
-            na::Vector2::<f64>::zeros()
+            Vector2::ZERO
         } else {
             insert_pos
         };
@@ -319,7 +320,7 @@ impl Engine {
             let max_size = strokes
                 .iter()
                 .map(|(stroke, _)| stroke.bounds().extents())
-                .fold(na::Vector2::<f64>::zeros(), |acc, x| acc.maxs(&x));
+                .fold(Vector2::ZERO, |acc, x| acc.maxs(&x));
             let columns_used = columns.min(strokes.len() as u32);
             self.document
                 .config
@@ -349,7 +350,7 @@ impl Engine {
     }
 
     /// Insert text.
-    pub fn insert_text(&mut self, text: String, pos: Option<na::Vector2<f64>>) -> WidgetFlags {
+    pub fn insert_text(&mut self, text: String, pos: Option<Vector2>) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
         // we need to always deselect all strokes. Even tough changing the pen style deselects too, but only when the pen is actually changed.
@@ -373,7 +374,7 @@ impl Engine {
     pub fn insert_stroke_content(
         &mut self,
         content: StrokeContent,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         resize: ImageSizeOption,
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();

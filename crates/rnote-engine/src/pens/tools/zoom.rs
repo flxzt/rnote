@@ -3,6 +3,7 @@ use super::ToolsState;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{Camera, DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
@@ -13,16 +14,16 @@ use std::time::Instant;
 #[derive(Clone, Debug)]
 pub(super) struct ZoomTool {
     state: ToolsState,
-    start_surface_coord: na::Vector2<f64>,
-    current_surface_coord: na::Vector2<f64>,
+    start_surface_coord: Vector2,
+    current_surface_coord: Vector2,
 }
 
 impl Default for ZoomTool {
     fn default() -> Self {
         Self {
             state: ToolsState::default(),
-            start_surface_coord: na::Vector2::zeros(),
-            current_surface_coord: na::Vector2::zeros(),
+            start_surface_coord: Vector2::ZERO,
+            current_surface_coord: Vector2::ZERO,
         }
     }
 }
@@ -43,16 +44,10 @@ impl ZoomTool {
 
         let result = match (&mut self.state, event) {
             (ToolsState::Idle, PenEvent::Down { element, .. }) => {
-                self.start_surface_coord = engine_view
-                    .camera
-                    .transform()
-                    .transform_point(&element.pos.into())
-                    .coords;
-                self.current_surface_coord = engine_view
-                    .camera
-                    .transform()
-                    .transform_point(&element.pos.into())
-                    .coords;
+                self.start_surface_coord =
+                    engine_view.camera.transform().transform_point2(element.pos);
+                self.current_surface_coord =
+                    engine_view.camera.transform().transform_point2(element.pos);
                 widget_flags |= engine_view
                     .document
                     .resize_autoexpand(engine_view.store, engine_view.camera);
@@ -72,13 +67,8 @@ impl ZoomTool {
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
                 let total_zoom_old = engine_view.camera.total_zoom();
                 let camera_offset = engine_view.camera.offset();
-
-                let new_surface_coord = engine_view
-                    .camera
-                    .transform()
-                    .transform_point(&element.pos.into())
-                    .coords;
-
+                let new_surface_coord =
+                    engine_view.camera.transform().transform_point2(element.pos);
                 let offset = new_surface_coord - self.current_surface_coord;
 
                 // Drag down zooms out, drag up zooms in
@@ -170,8 +160,8 @@ impl ZoomTool {
     }
 
     fn reset(&mut self) {
-        self.start_surface_coord = na::Vector2::zeros();
-        self.current_surface_coord = na::Vector2::zeros();
+        self.start_surface_coord = Vector2::ZERO;
+        self.current_surface_coord = Vector2::ZERO;
         self.state = ToolsState::Idle;
     }
 }
@@ -186,16 +176,16 @@ impl DrawableOnDoc for ZoomTool {
             .camera
             .transform()
             .inverse()
-            .transform_point(&self.start_surface_coord.into());
+            .transform_point2(self.start_surface_coord);
         let current_circle_center = engine_view
             .camera
             .transform()
             .inverse()
-            .transform_point(&self.current_surface_coord.into());
+            .transform_point2(self.current_surface_coord);
 
         Some(
             Aabb::new_positive(start_circle_center, current_circle_center).extend_by(
-                na::Vector2::repeat(Self::CURSOR_RADIUS + Self::CURSOR_STROKE_WIDTH * 0.5)
+                Vector2::splat(Self::CURSOR_RADIUS + Self::CURSOR_STROKE_WIDTH * 0.5)
                     / engine_view.camera.total_zoom(),
             ),
         )
@@ -208,20 +198,17 @@ impl DrawableOnDoc for ZoomTool {
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = engine_view.camera.total_zoom();
-
         let start_circle_center = engine_view
             .camera
             .transform()
             .inverse()
-            .transform_point(&self.start_surface_coord.into())
-            .coords
+            .transform_point2(self.start_surface_coord)
             .to_kurbo_point();
         let current_circle_center = engine_view
             .camera
             .transform()
             .inverse()
-            .transform_point(&self.current_surface_coord.into())
-            .coords
+            .transform_point2(self.current_surface_coord)
             .to_kurbo_point();
 
         // start circle

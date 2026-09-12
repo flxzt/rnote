@@ -8,6 +8,7 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -15,9 +16,9 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct CoordSystem3DBuilder {
     /// Tip of the z axis.
-    tip_z: na::Vector2<f64>,
+    tip_z: Vector2,
     /// Tip of the y axis.
-    tip_y: na::Vector2<f64>,
+    tip_y: Vector2,
 }
 
 impl BuilderCreator for CoordSystem3DBuilder {
@@ -85,9 +86,8 @@ impl Buildable for CoordSystem3DBuilder {
 impl CoordSystem3DBuilder {
     /// The current state as six individual lines.
     pub fn state_as_lines(&self) -> Vec<Line> {
-        let center = na::vector!(self.tip_z.x, self.tip_y.y);
-        let tip_x_offset =
-            ((center - self.tip_z).magnitude() + (center - self.tip_y).magnitude()) / 4.0;
+        let center = Vector2::new(self.tip_z.x, self.tip_y.y);
+        let tip_x_offset = ((center - self.tip_z).length() + (center - self.tip_y).length()) / 4.0;
 
         let up_axis = Line {
             start: center,
@@ -96,7 +96,7 @@ impl CoordSystem3DBuilder {
 
         let down_axis = Line {
             start: center,
-            end: na::vector![center.x, 2.0 * self.tip_y.y - self.tip_z.y],
+            end: Vector2::new(center.x, 2.0 * self.tip_y.y - self.tip_z.y),
         };
 
         let right_axis = Line {
@@ -106,17 +106,17 @@ impl CoordSystem3DBuilder {
 
         let left_axis = Line {
             start: center,
-            end: na::vector![2.0 * self.tip_z.x - self.tip_y.x, center.y],
+            end: Vector2::new(2.0 * self.tip_z.x - self.tip_y.x, center.y),
         };
 
         let forward_axis = Line {
             start: center,
-            end: center + na::vector![-tip_x_offset, tip_x_offset],
+            end: center + Vector2::new(-tip_x_offset, tip_x_offset),
         };
 
         let backward_axis = Line {
             start: center,
-            end: center + na::vector![tip_x_offset, -tip_x_offset],
+            end: center + Vector2::new(tip_x_offset, -tip_x_offset),
         };
 
         vec![

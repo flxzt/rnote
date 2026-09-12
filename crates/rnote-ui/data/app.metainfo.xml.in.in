@@ -88,6 +88,18 @@
 
   <!-- The changelog should not be translated -->
   <releases>
+    <release version="0.14.1" date="2026-04-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>fix: fixed icon appearance and update to new, more consistent style (@flxzt)</li>
+          <li>fix: file erroneously detected as removed after saving (@turicfr)</li>
+          <li>fix: pinch-to-zoom causing scroll by applying workaround for GTK issue (@RayJW)</li>
+          <li>fix: zooming with Ctrl+Scroll while Capslock is turned on (@Kneemund)</li>
+          <li>fix: grid snapping for all pattern styles (@Kneemund)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.0" date="2026-03-25">
       <description>
         <p>this release changes:</p>

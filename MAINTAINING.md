@@ -1,12 +1,12 @@
 # Create a Release
 
-- Update po template and wait for weblate to apply it
-- Update the German translation and commit/push in the weblate interface
+- Update PO template with `just update-translations-template` and wait for Weblate to apply it
+- Update the German translation and commit/push in the Weblate interface
 - Merge the translation PR
 - Let the Github Action update the "Chinese Traditional" translation from "Chinese Simplified"
-- Reset the weblate repo
-- Run cargo update and update dependencies in flatpak dev Yaml manifest
-- Update the flatpak dev Json manifest from Yaml
+- Reset the Weblate repo
+- Update Wust dependencies by running `cargo update` and update dependencies in flatpak dev YAML manifest
+- Update the flatpak dev JSON manifest from YAML with `just generate-json-flatpak-manifest`
 - Commit the changes and push
 - Release commit: Update the changelog in the appdata file, replace all version numbers in the project and build,
     install and run all tests:
@@ -16,11 +16,12 @@
     - `just test-file-compatibility`
 - Wait for CI to run successfully
 - Create a release with tag `vX.Y.Z` on Github - the installer and tarball will be created by Github Actions CD
-- For Flathub: create a new release branch, update the Flathub flatpak manifest with the new tarball download Url and
-    update the dependencies. Create a PR, and wait for completion of the Flathub builder CI.
-- For Flathub: create the new beta PR as well by copying the updated manifest from the new release branch
-- For Flathub: Merge both beta and release PR's. Optionally publish the builds on Flathub's runner web interface
-    manually for a faster release
+- For Flathub:
+    - Create a new release branch, update the Flathub flatpak manifest with the new tarball download URL and
+        update the dependencies. Create a PR, and wait for completion of the Flathub builder CI.
+    - Create the new beta PR as well by copying the updated manifest from the new release branch
+    - Merge both beta and release PRs.
+        Optionally publish the builds on Flathub's runner web interface manually for a faster release
 
 # Create a Tarball Manually
 
@@ -67,8 +68,8 @@ flatpak mask --remove com.github.flxzt.rnote
 
 # Flatpak Devel Manifest
 
-A manifest `.json` is maintained in addition to the `.yaml`, because Gnome Builder currently only supports Json Flatpak
-manifests. To generate the Json from Yaml, [yq](https://github.com/mikefarah/yq) is used. Run:
+A manifest `.json` is maintained in addition to the `.yaml`, because Gnome Builder currently only supports JSON Flatpak
+manifests. To generate the JSON from YAML, [yq](https://github.com/mikefarah/yq) is used. Run:
 
 ```bash
 just generate-json-flatpak-manifest
@@ -82,7 +83,7 @@ they are templated variables and will be replaced in the build process of the ap
 All changelog entries should be removed as well.
 
 ```bash
-meson compile rnote-pot -C _mesonbuild
+just update-translations-template
 ```
 
 The PO files can then be updated with:

@@ -27,10 +27,10 @@ and post the output.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**  
- - OS: [e.g. Fedora 42, Windows 11 23H2, ...]
- - App Version: [e.g. Rnote v0.14.0]
+ - OS: [e.g. Fedora 42, Windows 11 25H2, ...]
+ - App Version: [e.g. Rnote v0.14.1]
  - Installation Source: [e.g. Flatpak, Archlinux Community Repo, ...]
- - Desktop Environment: [e.g. Gnome 48.0]
+ - Desktop Environment: [e.g. Gnome 50.0]
  - Display Server: [e.g. Wayland or X11]
  - Input Source: [e.g. Mouse and Keyboard, On-Screen-Tablet, External Graphics Tablet, ...]
 

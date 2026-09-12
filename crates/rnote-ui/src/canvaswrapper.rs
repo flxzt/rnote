@@ -354,9 +354,12 @@ mod imp {
                     #[upgrade_or]
                     glib::Propagation::Proceed,
                     move |controller, _, dy| {
-                        if controller.current_event_state() != gdk::ModifierType::CONTROL_MASK {
+                        let modifiers = controller.current_event_state();
+
+                        if !modifiers.contains(gdk::ModifierType::CONTROL_MASK) {
                             return glib::Propagation::Proceed;
                         }
+
                         let canvas = canvaswrapper.canvas();
                         let old_zoom = canvas.engine_ref().camera.total_zoom();
                         let new_zoom = if dy < 0.0 {
@@ -509,6 +512,15 @@ mod imp {
                     obj,
                     move |gesture, _| {
                         gesture.set_state(EventSequenceState::Claimed);
+                        // Workaround for a GTK bug where kinetic scroll deceleration continues
+                        // with stale values during a pinch-to-zoom, causing sudden position jumps.
+                        // Toggling kinetic scrolling off/on cancels any active deceleration.
+                        // See: https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                        let scroller = canvaswrapper.scroller();
+                        if scroller.is_kinetic_scrolling() {
+                            scroller.set_kinetic_scrolling(false);
+                            scroller.set_kinetic_scrolling(true);
+                        }
                         let current_zoom = canvaswrapper.canvas().engine_ref().camera.total_zoom();
 
                         zoom_begin.set(current_zoom);
@@ -615,7 +627,9 @@ mod imp {
                         let modifiers = gesture.current_event_state();
 
                         // At the start BUTTON1_MASK is not included
-                        if modifiers == gdk::ModifierType::ALT_MASK {
+                        if modifiers.contains(gdk::ModifierType::ALT_MASK)
+                            && !modifiers.contains(gdk::ModifierType::SHIFT_MASK)
+                        {
                             gesture.set_state(EventSequenceState::Claimed);
                             offset_start.set(canvaswrapper.canvas().engine_ref().camera.offset());
                         } else {
@@ -703,8 +717,8 @@ mod imp {
                             let modifiers = gesture.current_event_state();
 
                             // At the start BUTTON1_MASK is not included
-                            if modifiers
-                                == (gdk::ModifierType::SHIFT_MASK | gdk::ModifierType::ALT_MASK)
+                            if modifiers.contains(gdk::ModifierType::ALT_MASK)
+                                && modifiers.contains(gdk::ModifierType::SHIFT_MASK)
                             {
                                 gesture.set_state(EventSequenceState::Claimed);
                                 let current_zoom =

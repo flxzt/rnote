@@ -230,7 +230,8 @@ impl PenBehaviour for Brush {
                     .shape_recognition_enabled
                     && let PenEvent::Down { element, .. } = &pen_event
                 {
-                    let hold_radius = Self::HOLD_RADIUS_SURFACE / engine_view.camera.total_zoom();
+                    let hold_radius =
+                        shaperecognition::HOLD_RADIUS_SURFACE / engine_view.camera.total_zoom();
                     if (element.pos - self.hold_anchor).length() > hold_radius {
                         self.hold_anchor = element.pos;
                         self.hold_begin = now;
@@ -421,10 +422,7 @@ impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
     /// The duration the pen must be held still at the end of a drawn stroke
     /// to trigger recognizing it as a shape.
-    const HOLD_DURATION: Duration = Duration::from_millis(700);
-    /// The radius (in surface coordinates) the pen may wobble around the hold anchor
-    /// while still being considered held still.
-    const HOLD_RADIUS_SURFACE: f64 = 6.0;
+    const HOLD_DURATION: Duration = Duration::from_millis(400);
 
     /// Attempt to recognize the currently drawn stroke as a shape and replace it,
     /// triggered when the pen was held still at the end of a drawn stroke.
@@ -457,7 +455,7 @@ impl Brush {
         let recognized_shape = if let Some(Stroke::BrushStroke(brushstroke)) =
             engine_view.store.get_stroke_ref(current_stroke_key)
         {
-            shaperecognition::recognize_shape(&brushstroke.path)
+            shaperecognition::recognize_shape(&brushstroke.path, engine_view.camera.total_zoom())
         } else {
             None
         };

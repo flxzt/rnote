@@ -2,6 +2,7 @@
 use super::PenBehaviour;
 use super::PenStyle;
 use super::pensconfig::brushconfig::BrushStyle;
+use super::shapeadjust::ShapeAdjust;
 use crate::engine::{EngineTask, EngineTaskSender, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
@@ -22,6 +23,7 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shaperecognition;
+use rnote_compose::shapes::Shape;
 use std::time::{Duration, Instant};
 
 #[derive(Debug)]
@@ -34,8 +36,13 @@ enum BrushState {
     },
     /// The drawn stroke was replaced by a recognized shape while the pen is still down.
     ///
-    /// All events are swallowed until the pen is lifted.
-    WaitForPenUp,
+    /// The pen keeps adjusting the shape until it is lifted.
+    AdjustingShape {
+        stroke_key: StrokeKey,
+        adjust: ShapeAdjust,
+        /// Whether the pen moved and actually adjusted the shape.
+        adjusted: bool,
+    },
 }
 
 #[derive(Debug)]
@@ -348,7 +355,37 @@ impl PenBehaviour for Brush {
                     progress,
                 }
             }
-            (BrushState::WaitForPenUp, PenEvent::Up { .. } | PenEvent::Cancel) => {
+            (
+                BrushState::AdjustingShape {
+                    stroke_key,
+                    adjust,
+                    adjusted,
+                },
+                PenEvent::Down { element, .. },
+            ) => {
+                *adjusted = true;
+                let shape = adjust.adjusted(element.pos);
+                widget_flags |= update_shape_stroke(*stroke_key, shape, engine_view);
+
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
+            }
+            (
+                BrushState::AdjustingShape {
+                    stroke_key,
+                    adjust,
+                    adjusted,
+                },
+                PenEvent::Up { element, .. },
+            ) => {
+                if *adjusted {
+                    let shape = adjust.adjusted(element.pos);
+                    widget_flags |= update_shape_stroke(*stroke_key, shape, engine_view);
+                    widget_flags |= engine_view.store.record(Instant::now());
+                }
                 self.state = BrushState::Idle;
 
                 EventResult {
@@ -357,7 +394,16 @@ impl PenBehaviour for Brush {
                     progress: PenProgress::Finished,
                 }
             }
-            (BrushState::WaitForPenUp, _) => EventResult {
+            (BrushState::AdjustingShape { .. }, PenEvent::Cancel) => {
+                self.state = BrushState::Idle;
+
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
+            }
+            (BrushState::AdjustingShape { .. }, _) => EventResult {
                 handled: true,
                 propagate: EventPropagation::Stop,
                 progress: PenProgress::InProgress,
@@ -377,7 +423,7 @@ impl DrawableOnDoc for Brush {
             .style_for_current_options();
 
         match &self.state {
-            BrushState::Idle | BrushState::WaitForPenUp => None,
+            BrushState::Idle | BrushState::AdjustingShape { .. } => None,
             BrushState::Drawing { path_builder, .. } => {
                 path_builder.bounds(&style, engine_view.camera.zoom())
             }
@@ -392,7 +438,7 @@ impl DrawableOnDoc for Brush {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &self.state {
-            BrushState::Idle | BrushState::WaitForPenUp => {}
+            BrushState::Idle | BrushState::AdjustingShape { .. } => {}
             BrushState::Drawing {
                 path_builder,
                 preview_style,
@@ -467,7 +513,7 @@ impl Brush {
         engine_view.store.remove_stroke(current_stroke_key);
         let shape_stroke_key = engine_view.store.insert_stroke(
             Stroke::ShapeStroke(ShapeStroke::new(
-                shape,
+                shape.clone(),
                 engine_view
                     .config
                     .pens_config
@@ -498,8 +544,12 @@ impl Brush {
         widget_flags.store_modified = true;
         widget_flags.redraw = true;
 
-        // Swallow all further events until the pen is lifted
-        self.state = BrushState::WaitForPenUp;
+        // The pen keeps adjusting the recognized shape until it is lifted
+        self.state = BrushState::AdjustingShape {
+            stroke_key: shape_stroke_key,
+            adjust: ShapeAdjust::new(shape, self.hold_anchor),
+            adjusted: false,
+        };
         self.hold_task_handle = None;
 
         widget_flags
@@ -519,6 +569,36 @@ impl Brush {
 
         style
     }
+}
+
+/// Replace the shape of the shape stroke with the given key and update the document for it.
+fn update_shape_stroke(
+    stroke_key: StrokeKey,
+    shape: Shape,
+    engine_view: &mut EngineViewMut,
+) -> WidgetFlags {
+    let mut widget_flags = WidgetFlags::default();
+
+    if let Some(Stroke::ShapeStroke(shapestroke)) = engine_view.store.get_stroke_mut(stroke_key) {
+        shapestroke.shape = shape;
+    } else {
+        return widget_flags;
+    }
+
+    engine_view.store.update_geometry_for_stroke(stroke_key);
+    engine_view.store.regenerate_rendering_for_stroke_threaded(
+        engine_view.tasks_tx.clone(),
+        stroke_key,
+        engine_view.camera.viewport(),
+        engine_view.camera.image_scale(),
+    );
+    widget_flags |= engine_view
+        .document
+        .resize_autoexpand(engine_view.store, engine_view.camera);
+    widget_flags.store_modified = true;
+    widget_flags.redraw = true;
+
+    widget_flags
 }
 
 #[cfg(feature = "ui")]

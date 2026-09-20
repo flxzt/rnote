@@ -129,7 +129,7 @@ impl Default for BrushConfig {
             marker_options: MarkerOptions::default(),
             solid_options: SolidOptions::default(),
             textured_options: TexturedOptions::default(),
-            shape_recognition_enabled: false,
+            shape_recognition_enabled: true,
             shape_recognition_delay: Self::SHAPE_RECOGNITION_DELAY_DEFAULT,
         }
     }

@@ -155,7 +155,15 @@ impl PenBehaviour for Brush {
                         .brush_config
                         .shape_recognition_enabled
                     {
-                        reset_hold_task(&mut self.hold_task_handle, engine_view.tasks_tx.clone());
+                        reset_hold_task(
+                            &mut self.hold_task_handle,
+                            engine_view.tasks_tx.clone(),
+                            engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .shape_recognition_delay,
+                        );
                     } else {
                         self.hold_task_handle = None;
                     }
@@ -242,7 +250,15 @@ impl PenBehaviour for Brush {
                     if (element.pos - self.hold_anchor).length() > hold_radius {
                         self.hold_anchor = element.pos;
                         self.hold_begin = now;
-                        reset_hold_task(&mut self.hold_task_handle, engine_view.tasks_tx.clone());
+                        reset_hold_task(
+                            &mut self.hold_task_handle,
+                            engine_view.tasks_tx.clone(),
+                            engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .shape_recognition_delay,
+                        );
                     }
                 }
 
@@ -466,9 +482,6 @@ impl DrawableOnDoc for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
-    /// The duration the pen must be held still at the end of a drawn stroke
-    /// to trigger recognizing it as a shape.
-    const HOLD_DURATION: Duration = Duration::from_millis(400);
 
     /// Attempt to recognize the currently drawn stroke as a shape and replace it,
     /// triggered when the pen was held still at the end of a drawn stroke.
@@ -494,7 +507,12 @@ impl Brush {
         };
         // Guard against the timeout task and the pen resuming movement racing each other:
         // only recognize when the pen actually rested at the hold anchor for the entire hold duration.
-        if self.hold_begin.elapsed() < Self::HOLD_DURATION.mul_f64(0.9) {
+        let hold_duration = engine_view
+            .config
+            .pens_config
+            .brush_config
+            .shape_recognition_delay;
+        if self.hold_begin.elapsed() < hold_duration.mul_f64(0.9) {
             return widget_flags;
         }
 
@@ -619,7 +637,11 @@ fn trigger_brush_sound(engine_view: &mut EngineViewMut) {
 ///
 /// When the timeout is reached, a task is sent to the engine
 /// which triggers recognizing the currently drawn stroke as a shape.
-fn reset_hold_task(handle: &mut Option<OneOffTaskHandle>, tasks_tx: EngineTaskSender) {
+fn reset_hold_task(
+    handle: &mut Option<OneOffTaskHandle>,
+    tasks_tx: EngineTaskSender,
+    hold_duration: Duration,
+) {
     if let Some(handle) = handle.as_mut()
         && handle.reset_timeout().is_ok()
     {
@@ -629,7 +651,7 @@ fn reset_hold_task(handle: &mut Option<OneOffTaskHandle>, tasks_tx: EngineTaskSe
     let hold_task = move || {
         tasks_tx.send(EngineTask::BrushRecognizeShape);
     };
-    *handle = Some(OneOffTaskHandle::new(hold_task, Brush::HOLD_DURATION));
+    *handle = Some(OneOffTaskHandle::new(hold_task, hold_duration));
 }
 
 fn new_builder(

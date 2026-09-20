@@ -7,6 +7,7 @@ use rnote_compose::style::PressureCurve;
 use rnote_compose::style::smooth::{LineCap, SmoothOptions};
 use rnote_compose::style::textured::TexturedOptions;
 use serde::{Deserialize, Serialize};
+use std::time::Duration;
 
 #[derive(
     Debug,
@@ -97,7 +98,7 @@ impl std::ops::DerefMut for SolidOptions {
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "brush_config")]
 pub struct BrushConfig {
     #[serde(rename = "builder_type")]
@@ -114,11 +115,32 @@ pub struct BrushConfig {
     /// are automatically replaced with the recognized shape.
     #[serde(rename = "shape_recognition_enabled")]
     pub shape_recognition_enabled: bool,
+    /// The duration the pen has to be held still at the end of a stroke
+    /// to trigger recognizing it as a shape.
+    #[serde(rename = "shape_recognition_delay")]
+    pub shape_recognition_delay: Duration,
+}
+
+impl Default for BrushConfig {
+    fn default() -> Self {
+        Self {
+            builder_type: PenPathBuilderType::default(),
+            style: BrushStyle::default(),
+            marker_options: MarkerOptions::default(),
+            solid_options: SolidOptions::default(),
+            textured_options: TexturedOptions::default(),
+            shape_recognition_enabled: false,
+            shape_recognition_delay: Self::SHAPE_RECOGNITION_DELAY_DEFAULT,
+        }
+    }
 }
 
 impl BrushConfig {
     pub const STROKE_WIDTH_MIN: f64 = 0.1;
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const SHAPE_RECOGNITION_DELAY_MIN: Duration = Duration::from_millis(100);
+    pub const SHAPE_RECOGNITION_DELAY_MAX: Duration = Duration::from_millis(2000);
+    pub const SHAPE_RECOGNITION_DELAY_DEFAULT: Duration = Duration::from_millis(400);
 
     pub(crate) fn layer_for_current_options(&self) -> StrokeLayer {
         match &self.style {

@@ -4,7 +4,7 @@ use rand::{RngExt, SeedableRng};
 use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
-use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::style::smooth::{LineCap, SmoothOptions};
 use rnote_compose::style::textured::TexturedOptions;
 use serde::{Deserialize, Serialize};
 
@@ -159,12 +159,14 @@ impl BrushConfig {
     pub(crate) fn style_for_recognized_shape(&self) -> Style {
         match &self.style {
             BrushStyle::Marker => {
-                let MarkerOptions(options) = self.marker_options.clone();
+                let MarkerOptions(mut options) = self.marker_options.clone();
+                options.update_line_cap(LineCap::Rounded);
 
                 Style::Smooth(options)
             }
             BrushStyle::Solid => {
-                let SolidOptions(options) = self.solid_options.clone();
+                let SolidOptions(mut options) = self.solid_options.clone();
+                options.update_line_cap(LineCap::Rounded);
 
                 Style::Smooth(options)
             }
@@ -173,6 +175,7 @@ impl BrushConfig {
                 options.stroke_width = self.textured_options.stroke_width;
                 options.stroke_color = self.textured_options.stroke_color;
                 options.pressure_curve = PressureCurve::Const;
+                options.update_line_cap(LineCap::Rounded);
 
                 Style::Smooth(options)
             }

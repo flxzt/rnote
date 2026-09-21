@@ -28,7 +28,7 @@ app_website = 'https://rnote.flxzt.net'
 app_repo_url = 'https://github.com/flxzt/rnote'
 app_issues_url = 'https://github.com/flxzt/rnote/issues'
 app_support_url = 'https://github.com/flxzt/rnote/discussions'
-app_donate_url = 'https://rnote.flxzt.net/donate/'
+app_donate_url = 'https://rnote.flxzt.net/#support'
 app_author_name = 'Felix Zwettler'
 app_authors = run_command(
     'cat',

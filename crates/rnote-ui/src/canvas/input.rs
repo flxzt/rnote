@@ -13,7 +13,13 @@ use std::collections::HashSet;
 use std::time::{Duration, Instant};
 use tracing::trace;
 
-// Returns whether the event should be inhibited from propagating, and the new pen state
+/// Handles a pointer controller event.
+///
+/// Returns:
+/// - the propagation of the event, which is `glib::Propagation::Stop` when the event
+///   should be inhibited from propagating
+/// - the new pen state
+/// - whether a stylus input session is active
 pub(crate) fn handle_pointer_controller_event(
     canvas: &RnCanvas,
     event: &gdk::Event,

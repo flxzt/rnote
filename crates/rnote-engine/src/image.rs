@@ -180,6 +180,29 @@ impl Transformable for Image {
 }
 
 impl Image {
+    /// Create a new image from a buffer of premultiplied RGBA8 bytes.
+    ///
+    /// This avoids an encode/decode round-trip for pixel data that is already in the
+    /// format rnote keeps images in memory ([`ImageMemoryFormat::R8g8b8a8Premultiplied`]).
+    pub fn from_premultiplied_rgba8(
+        data: Vec<u8>,
+        pixel_width: u32,
+        pixel_height: u32,
+    ) -> Self {
+        let bounds = Aabb::new(
+            Vector2::ZERO,
+            Vector2::new(pixel_width as f64, pixel_height as f64),
+        );
+
+        Self {
+            data: glib::Bytes::from_owned(data),
+            rectangle: Rectangle::from_p2d_aabb(bounds),
+            pixel_width,
+            pixel_height,
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
+        }
+    }
+
     pub fn assert_valid(&self) -> anyhow::Result<()> {
         self.rectangle.bounds().assert_valid()?;
 

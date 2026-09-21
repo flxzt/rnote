@@ -11,7 +11,6 @@ use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::Transformable;
 use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::Rectangle;
@@ -105,7 +104,19 @@ impl BitmapImage {
         pos: Vector2,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
-        let image = Image::try_from_encoded_bytes(bytes)?;
+        Self::from_image(
+            Image::try_from_encoded_bytes(bytes)?,
+            pos,
+            size_option,
+        )
+    }
+
+    /// Create a [BitmapImage] from an already decoded [Image].
+    pub fn from_image(
+        image: Image,
+        pos: Vector2,
+        size_option: ImageSizeOption,
+    ) -> Result<Self, anyhow::Error> {
         let initial_size = Vector2::new(image.pixel_width as f64, image.pixel_height as f64);
         let (size, resize_ratio) = match size_option {
             ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
@@ -162,7 +173,7 @@ impl BitmapImage {
         let mut y = insert_pos[1];
 
         // TODO: investigate if this can be parallelized with rayon's `par_iter()`
-        let pngs = page_range
+        let images = page_range
             .map(|page_i| {
                 let page = pages
                     .get(page_i)
@@ -184,7 +195,17 @@ impl BitmapImage {
                 // TODO: implement drawing page borders.
                 // Possibly with vello-cpu, since it already is a dependency of hayro
                 let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
-                let png_data = pixmap.into_png()?;
+
+                // vello-cpu renders to premultiplied RGBA8, which is exactly the format rnote
+                // stores images in memory, so the rendered page can be handed over directly.
+                // Encoding it to PNG only to decode it again would allocate every page twice
+                // more (an un-premultiplied buffer plus the encoded buffer), and the encoded
+                // pages of the whole document would be held simultaneously.
+                let image = Image::from_premultiplied_rgba8(
+                    pixmap.data_as_u8_slice().to_vec(),
+                    pixmap.width() as u32,
+                    pixmap.height() as u32,
+                );
 
                 let image_pos = Vector2::new(x, y);
                 let image_size = Vector2::new(width, height);
@@ -200,14 +221,10 @@ impl BitmapImage {
                     };
                 }
 
-                Ok((png_data, image_pos, image_size))
+                Self::from_image(image, image_pos, ImageSizeOption::ImposeSize(image_size))
             })
-            .collect::<anyhow::Result<Vec<(Vec<u8>, Vector2, Vector2)>>>()?;
+            .collect::<anyhow::Result<Vec<Self>>>()?;
 
-        pngs.into_par_iter()
-            .map(|(png_data, pos, size)| {
-                Self::from_image_bytes(&png_data, pos, ImageSizeOption::ImposeSize(size))
-            })
-            .collect()
+        Ok(images)
     }
 }

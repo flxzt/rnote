@@ -184,11 +184,7 @@ impl Image {
     ///
     /// This avoids an encode/decode round-trip for pixel data that is already in the
     /// format rnote keeps images in memory ([`ImageMemoryFormat::R8g8b8a8Premultiplied`]).
-    pub fn from_premultiplied_rgba8(
-        data: Vec<u8>,
-        pixel_width: u32,
-        pixel_height: u32,
-    ) -> Self {
+    pub fn from_premultiplied_rgba8(data: Vec<u8>, pixel_width: u32, pixel_height: u32) -> Self {
         let bounds = Aabb::new(
             Vector2::ZERO,
             Vector2::new(pixel_width as f64, pixel_height as f64),

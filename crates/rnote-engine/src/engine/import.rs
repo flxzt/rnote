@@ -162,8 +162,8 @@ impl Engine {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::from_svg_str(
-                    &svg_str,
+                VectorImage::from_svg_string(
+                    svg_str,
                     pos,
                     ImageSizeOption::ResizeImage(resize_struct),
                 )
@@ -221,6 +221,9 @@ impl Engine {
     ///
     /// The bytes are expected to be from a valid Pdf.
     ///
+    /// Takes ownership of the bytes: they are handed over to hayro, which keeps them alive for the
+    /// whole import, so passing them by value avoids a full copy of the file.
+    ///
     /// Note: `insert_pos` does not have an effect when the `adjust_document` import pref is set true.
     #[allow(clippy::type_complexity)]
     pub fn generate_pdf_pages_from_bytes(
@@ -251,7 +254,7 @@ impl Engine {
                 match pdf_import_prefs.pages_type {
                     PdfImportPagesType::Bitmap => {
                         let bitmapimages = BitmapImage::from_pdf_bytes(
-                            &bytes,
+                            bytes,
                             pdf_import_prefs,
                             insert_pos,
                             page_range,
@@ -265,7 +268,7 @@ impl Engine {
                     }
                     PdfImportPagesType::Vector => {
                         let vectorimages = VectorImage::from_pdf_bytes(
-                            &bytes,
+                            bytes,
                             pdf_import_prefs,
                             insert_pos,
                             page_range,

@@ -138,8 +138,13 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
-    pub fn from_svg_str(
-        svg_data: &str,
+    /// Construct a vector image from an Svg string.
+    ///
+    /// Takes ownership of the Svg data because the parsed [usvg::Tree] is self-contained: the data
+    /// can be released before the tree is serialized again (see below), which halves the transient
+    /// for the large Svg data of imported Pdf pages.
+    pub fn from_svg_string(
+        svg_data: String,
         pos: Vector2,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
@@ -156,7 +161,7 @@ impl VectorImage {
             attributes_indent: xmlwriter::Indent::None,
         };
         let svg_tree = usvg::Tree::from_str(
-            svg_data,
+            &svg_data,
             &usvg::Options {
                 fontdb: Arc::clone(&USVG_FONTDB),
                 ..Default::default()
@@ -167,6 +172,12 @@ impl VectorImage {
             svg_tree.size().width() as f64,
             svg_tree.size().height() as f64,
         );
+
+        // The tree owns everything it needs, so the source data is not needed anymore. For a scanned
+        // Pdf page the tree holds the decoded page image while the source data holds it encoded, so
+        // releasing one of the two before the tree is serialized avoids holding both at once.
+        drop(svg_data);
+
         let svg_data = svg_tree.to_string(&xml_options);
 
         let mut affine = DAffine2::IDENTITY;
@@ -205,21 +216,25 @@ impl VectorImage {
         })
     }
 
+    /// Generate vector image strokes from the pages of a Pdf.
+    ///
+    /// Takes ownership of the Pdf bytes: hayro parses Pdf objects lazily and keeps the file bytes
+    /// alive for as long as the [hayro_syntax::Pdf] exists, so the buffer is handed over instead of
+    /// being copied. Copying it kept a second, equally large copy of the whole file resident for the
+    /// entire import.
     pub fn from_pdf_bytes(
-        to_be_read: &[u8],
+        to_be_read: Vec<u8>,
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: Vector2,
         page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        // TODO: how to avoid this allocation without lifetime issues?
-        let data = Arc::new(to_be_read.to_vec());
         let pdf = if let Some(password) = password {
-            hayro_syntax::Pdf::new_with_password(data, &password)
+            hayro_syntax::Pdf::new_with_password(to_be_read, &password)
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         } else {
-            hayro_syntax::Pdf::new(data)
+            hayro_syntax::Pdf::new(to_be_read)
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         };
         let interpreter_settings = hayro_interpret::InterpreterSettings::default();
@@ -243,7 +258,18 @@ impl VectorImage {
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
-        // TODO: investigate if this can be parallelized with rayon's `par_iter()`
+        // The pages are converted one after another and only parsed in parallel below.
+        //
+        // `hayro_svg::convert()` is the memory-hungry step: it renders the page and re-encodes
+        // its image, which costs a transient of roughly 35 MB for a small page and ~95 MB for a
+        // page of a scanned textbook (dominated by decoding and re-encoding the page image).
+        // Parallelizing it multiplies that transient by the number of pages in flight, which
+        // measured *worse* than converting sequentially on real documents: on a 128 MB scanned
+        // textbook importing 5 pages took 424 MB of peak allocation here versus 606 MB when the
+        // conversion was moved into the parallel pass, while on a 60-page scan of small pages the
+        // same change went the other way (967 MB -> 765 MB) because holding the converted Svg of
+        // every page is what dominates there. Sequential conversion is the variant that never
+        // regresses; parallelizing it needs a bound on the number of pages in flight.
         let svgs = page_range
             .filter_map(|page_i| {
                 let page = pages.get(page_i)?;
@@ -274,8 +300,8 @@ impl VectorImage {
 
         svgs.into_par_iter()
             .map(|svg| {
-                Self::from_svg_str(
-                    svg.svg_data.as_str(),
+                Self::from_svg_string(
+                    svg.svg_data,
                     svg.bounds.mins,
                     ImageSizeOption::ImposeSize(svg.bounds.extents()),
                 )

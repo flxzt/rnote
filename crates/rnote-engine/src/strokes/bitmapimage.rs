@@ -17,7 +17,6 @@ use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
-use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
@@ -104,11 +103,7 @@ impl BitmapImage {
         pos: Vector2,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
-        Self::from_image(
-            Image::try_from_encoded_bytes(bytes)?,
-            pos,
-            size_option,
-        )
+        Self::from_image(Image::try_from_encoded_bytes(bytes)?, pos, size_option)
     }
 
     /// Create a [BitmapImage] from an already decoded [Image].
@@ -137,21 +132,25 @@ impl BitmapImage {
         Ok(Self { image, rectangle })
     }
 
+    /// Generate bitmap image strokes from the pages of a Pdf.
+    ///
+    /// Takes ownership of the Pdf bytes: hayro parses Pdf objects lazily and keeps the file bytes
+    /// alive for as long as the [hayro_syntax::Pdf] exists, so the buffer is handed over instead of
+    /// being copied. Copying it kept a second, equally large copy of the whole file resident for the
+    /// entire import.
     pub fn from_pdf_bytes(
-        to_be_read: &[u8],
+        to_be_read: Vec<u8>,
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: Vector2,
         page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        // TODO: how to avoid this allocation without lifetime issues?
-        let data = Arc::new(to_be_read.to_vec());
         let pdf = if let Some(password) = password {
-            hayro_syntax::Pdf::new_with_password(data, &password)
+            hayro_syntax::Pdf::new_with_password(to_be_read, &password)
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         } else {
-            hayro_syntax::Pdf::new(data)
+            hayro_syntax::Pdf::new(to_be_read)
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         };
         let interpreter_settings = hayro_interpret::InterpreterSettings::default();

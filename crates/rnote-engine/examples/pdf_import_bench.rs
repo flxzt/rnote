@@ -1,7 +1,10 @@
 //! Headless memory benchmark for the PDF import path.
 //!
 //! The GUI is the only place that normally drives PDF import, so this example calls the
-//! same entry points directly and reports peak RSS, which is what we want to watch.
+//! same entry points directly. Reports peak *allocated* bytes from a tracking global
+//! allocator (RSS is unreliable when the kernel compresses or swaps pages), plus `VmHWM` RSS
+//! as a secondary figure, and hashes the imported pixel data / SVG text so a refactor can be
+//! proven byte-identical instead of assumed.
 //!
 //! Usage:
 //!   cargo run -p rnote-engine --release --example pdf_import_bench -- <file.pdf> [vector|bitmap] [max_pages] [scalefactor]
@@ -114,26 +117,28 @@ fn fnv1a(bytes: &[u8], mut hash: u64) -> u64 {
 
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args().skip(1);
-    let path = args
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("usage: <file.pdf> [vector|bitmap] [max_pages] [scalefactor]"))?;
+    let path = args.next().ok_or_else(|| {
+        anyhow::anyhow!("usage: <file.pdf> [vector|bitmap] [max_pages] [scalefactor]")
+    })?;
     let mode = args.next().unwrap_or_else(|| "vector".to_string());
     let max_pages: Option<usize> = args.next().map(|s| s.parse::<usize>().unwrap());
     let scalefactor: Option<f64> = args.next().map(|s| s.parse::<f64>().unwrap());
 
     let bytes = std::fs::read(&path)?;
+    let file_len = bytes.len();
     let format = Format::default();
 
-    let mut prefs = PdfImportPrefs::default();
-    prefs.pages_type = match mode.as_str() {
-        "bitmap" => PdfImportPagesType::Bitmap,
-        "vector" => PdfImportPagesType::Vector,
-        other => return Err(anyhow::anyhow!("unknown mode '{other}'")),
+    let mut prefs = PdfImportPrefs {
+        pages_type: match mode.as_str() {
+            "bitmap" => PdfImportPagesType::Bitmap,
+            "vector" => PdfImportPagesType::Vector,
+            other => return Err(anyhow::anyhow!("unknown mode '{other}'")),
+        },
+        ..Default::default()
     };
     if let Some(sf) = scalefactor {
         prefs.bitmap_scalefactor = sf;
     }
-
     let started = Instant::now();
 
     // Import every page (page_range = None means "all pages", the default behaviour).
@@ -141,7 +146,7 @@ fn main() -> anyhow::Result<()> {
     let (dimensions, retained): (Vec<(u32, u32)>, u64) = match prefs.pages_type {
         PdfImportPagesType::Bitmap => {
             let strokes = BitmapImage::from_pdf_bytes(
-                &bytes,
+                bytes,
                 prefs,
                 Vector2::ZERO,
                 max_pages.map(|n| 0..n),
@@ -160,7 +165,7 @@ fn main() -> anyhow::Result<()> {
         }
         PdfImportPagesType::Vector => {
             let strokes = VectorImage::from_pdf_bytes(
-                &bytes,
+                bytes,
                 prefs,
                 Vector2::ZERO,
                 max_pages.map(|n| 0..n),
@@ -178,11 +183,10 @@ fn main() -> anyhow::Result<()> {
 
     let elapsed = started.elapsed();
 
-    println!("file            {} ({:.1} MB)", path, bytes.len() as f64 / 1e6);
+    println!("file            {} ({:.1} MB)", path, file_len as f64 / 1e6);
     println!(
         "mode            {} (scalefactor {})",
-        mode,
-        prefs.bitmap_scalefactor
+        mode, prefs.bitmap_scalefactor
     );
     if !dimensions.is_empty() {
         if let Some((w, h)) = dimensions.first() {

@@ -78,7 +78,7 @@ class Pdf:
 
 
 def image_xobject(jpeg: bytes, w: int, h: int, gray: bool) -> bytes:
-    cs = b"/DeviceGray" if gray else b"/DeviceRGB"
+    cs = b"/ColorSpace /DeviceGray" if gray else b"/ColorSpace /DeviceRGB"
     return (
         b"<< /Type /XObject /Subtype /Image "
         + f"/Width {w} /Height {h} ".encode()

@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-01 17:10+0200\n"
 "PO-Revision-Date: 2026-09-22 17:01+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Pedro Wasconcelos <pedro.wasconcelos@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "rnote/repo/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -2034,8 +2034,7 @@ msgstr "Selecionar"
 
 #: crates/rnote-ui/src/dialogs/export.rs:726
 msgid "Exporting document pages failed, no directory selected"
-msgstr ""
-"Falha ao exportar as páginas do documento, nenhum diretório selecionado"
+msgstr "Falha ao exportar as páginas do documento, nenhum diretório selecionado"
 
 #: crates/rnote-ui/src/dialogs/export.rs:738
 msgid "Exporting document pages failed"

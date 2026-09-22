@@ -1,5 +1,7 @@
 // Imports
 use crate::RnAppWindow;
+use crate::globals::sub_style_accel_label;
+use crate::utils::append_accel_to_tooltip;
 use gtk4::{
     CompositeTemplate, ToggleButton, Widget, glib, glib::clone, prelude::*, subclass::prelude::*,
 };
@@ -101,6 +103,18 @@ impl RnSelectorPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+
+        for (i, toggle) in [
+            imp.selectorstyle_polygon_toggle.get(),
+            imp.selectorstyle_rect_toggle.get(),
+            imp.selectorstyle_single_toggle.get(),
+            imp.selectorstyle_intersectingpath_toggle.get(),
+        ]
+        .iter()
+        .enumerate()
+        {
+            append_accel_to_tooltip(toggle, &sub_style_accel_label(i));
+        }
 
         imp.selectorstyle_polygon_toggle.connect_toggled(clone!(
             #[weak]

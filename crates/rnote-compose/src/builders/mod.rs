@@ -46,6 +46,8 @@ use serde::{Deserialize, Serialize};
     Clone,
     Debug,
     Default,
+    PartialEq,
+    Eq,
     Serialize,
     Deserialize,
     num_derive::FromPrimitive,

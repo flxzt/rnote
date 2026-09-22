@@ -1,5 +1,7 @@
 // Imports
 use crate::RnAppWindow;
+use crate::globals::sub_style_accel_label;
+use crate::utils::append_accel_to_tooltip;
 use gtk4::{
     Button, CompositeTemplate, MenuButton, Popover, ToggleButton, Widget, glib, glib::clone,
     prelude::*, subclass::prelude::*,
@@ -117,6 +119,18 @@ impl RnToolsPage {
 
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
+
+        for (i, toggle) in [
+            imp.toolstyle_verticalspace_toggle.get(),
+            imp.toolstyle_offsetcamera_toggle.get(),
+            imp.toolstyle_zoom_toggle.get(),
+            imp.toolstyle_laser_toggle.get(),
+        ]
+        .iter()
+        .enumerate()
+        {
+            append_accel_to_tooltip(toggle, &sub_style_accel_label(i));
+        }
         // for now doesn't do anything but for the close button later
         let verticalspace_popover = imp.verticalspace_popover.get();
 

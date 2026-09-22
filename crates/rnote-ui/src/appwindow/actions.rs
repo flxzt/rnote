@@ -1,5 +1,9 @@
 // Imports
 use crate::RnApp;
+use crate::globals::{
+    STROKE_WIDTH_STEP, SUB_STYLES_BRUSH, SUB_STYLES_ERASER, SUB_STYLES_SELECTOR, SUB_STYLES_SHAPER,
+    SUB_STYLES_TOOLS,
+};
 use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
@@ -202,6 +206,14 @@ impl RnAppWindow {
         );
         self.add_action(&action_pen_style);
 
+        let action_sub_style =
+            gio::SimpleAction::new("sub-style", Some(&i32::static_variant_type()));
+        self.add_action(&action_sub_style);
+        let action_stroke_width_increase = gio::SimpleAction::new("stroke-width-increase", None);
+        self.add_action(&action_stroke_width_increase);
+        let action_stroke_width_decrease = gio::SimpleAction::new("stroke-width-decrease", None);
+        self.add_action(&action_stroke_width_decrease);
+
         // Open settings
         action_open_settings.connect_activate(clone!(
             #[weak(rename_to = appwindow)]
@@ -363,6 +375,35 @@ impl RnAppWindow {
                     appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
                 action.set_state(&pen_style_str.to_variant());
+            }
+        ));
+
+        // Sub-style of the currently active pen
+        action_sub_style.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, target| {
+                let Some(index) = target.and_then(|t| t.get::<i32>()) else {
+                    error!("Activated sub-style action with invalid target");
+                    return;
+                };
+                appwindow.apply_sub_style(index);
+            }
+        ));
+
+        action_stroke_width_increase.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                appwindow.adjust_stroke_width(STROKE_WIDTH_STEP);
+            }
+        ));
+
+        action_stroke_width_decrease.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                appwindow.adjust_stroke_width(-STROKE_WIDTH_STEP);
             }
         ));
 
@@ -1182,7 +1223,11 @@ impl RnAppWindow {
 
         app.set_accels_for_action("win.active-tab-close", &["<Ctrl>w"]);
         app.set_accels_for_action("win.fullscreen", &["F11"]);
-        app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
+        app.set_accels_for_action(
+            "win.keyboard-shortcuts",
+            // `question` needs shift on most layouts, so the shifted variant is bound as well.
+            &["<Ctrl>question", "<Ctrl><Shift>question", "<Ctrl>slash"],
+        );
         app.set_accels_for_action("win.toggle-overview", &["<Ctrl><Shift>o"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
@@ -1217,6 +1262,11 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
         (1..=9).for_each(|i| {
+            app.set_accels_for_action(&format!("win.sub-style({i})"), &[&format!("<Alt>{i}")])
+        });
+        app.set_accels_for_action("win.stroke-width-increase", &["bracketright"]);
+        app.set_accels_for_action("win.stroke-width-decrease", &["bracketleft"]);
+        (1..=9).for_each(|i| {
             app.set_accels_for_action(
                 &format!("win.set-color-{i}"),
                 &[&format!("{i}"), &format!("<Ctrl>KP_{i}")],
@@ -1227,6 +1277,72 @@ impl RnAppWindow {
         if config::PROFILE.to_lowercase().as_str() == "devel" {
             app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);
         }
+    }
+
+    /// Apply the n-th (1-based) sub-style of the currently active pen.
+    ///
+    /// The sub-style is applied by driving the corresponding sidebar page, so that the widget state
+    /// and the engine config stay in sync.
+    fn apply_sub_style(&self, index: i32) {
+        let Some(canvas) = self.active_tab_canvas() else {
+            return;
+        };
+        let Ok(index) = usize::try_from(index - 1) else {
+            error!("Activated sub-style action with out of range target {index}");
+            return;
+        };
+        let penssidebar = self.overlays().penssidebar();
+
+        match canvas.engine_ref().current_pen_style_w_override() {
+            PenStyle::Brush => {
+                if let Some(style) = SUB_STYLES_BRUSH.get(index) {
+                    penssidebar.brush_page().set_brush_style(*style);
+                }
+            }
+            PenStyle::Shaper => {
+                if let Some(builder_type) = SUB_STYLES_SHAPER.get(index) {
+                    penssidebar
+                        .shaper_page()
+                        .set_shapebuildertype(*builder_type);
+                }
+            }
+            PenStyle::Eraser => {
+                if let Some(style) = SUB_STYLES_ERASER.get(index) {
+                    penssidebar.eraser_page().set_eraser_style(*style);
+                }
+            }
+            PenStyle::Selector => {
+                if let Some(style) = SUB_STYLES_SELECTOR.get(index) {
+                    penssidebar.selector_page().set_selector_style(*style);
+                }
+            }
+            PenStyle::Tools => {
+                if let Some(style) = SUB_STYLES_TOOLS.get(index) {
+                    penssidebar.tools_page().set_tool_style(*style);
+                }
+            }
+            PenStyle::Typewriter => {}
+        }
+    }
+
+    /// Change the stroke width of the currently active pen by the given delta, clamped to the range
+    /// the pen accepts. Pens without a stroke width are ignored.
+    fn adjust_stroke_width(&self, delta: f64) {
+        let Some(canvas) = self.active_tab_canvas() else {
+            return;
+        };
+        let penssidebar = self.overlays().penssidebar();
+
+        let stroke_width_picker = match canvas.engine_ref().current_pen_style_w_override() {
+            PenStyle::Brush => penssidebar.brush_page().stroke_width_picker(),
+            PenStyle::Shaper => penssidebar.shaper_page().stroke_width_picker(),
+            PenStyle::Eraser => penssidebar.eraser_page().stroke_width_picker(),
+            PenStyle::Typewriter | PenStyle::Selector | PenStyle::Tools => return,
+        };
+        let adjustment = stroke_width_picker.spinbutton().adjustment();
+        let stroke_width = (stroke_width_picker.stroke_width() + delta)
+            .clamp(adjustment.lower(), adjustment.upper());
+        stroke_width_picker.set_stroke_width(stroke_width);
     }
 
     fn clipboard_paste(&self, target_pos: Option<Vector2>) {

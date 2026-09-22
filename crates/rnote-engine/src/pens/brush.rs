@@ -2,12 +2,16 @@
 use super::PenBehaviour;
 use super::PenStyle;
 use super::pensconfig::brushconfig::BrushStyle;
-use crate::engine::{EngineView, EngineViewMut};
+use super::shapeadjust::ShapeAdjust;
+use crate::engine::{EngineTask, EngineTaskSender, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
+use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
+use crate::tasks::OneOffTaskHandle;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::Constraints;
 use rnote_compose::Style;
@@ -18,7 +22,9 @@ use rnote_compose::builders::{
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::{Element, Segment};
-use std::time::Instant;
+use rnote_compose::shaperecognition;
+use rnote_compose::shapes::Shape;
+use std::time::{Duration, Instant};
 
 #[derive(Debug)]
 enum BrushState {
@@ -28,17 +34,35 @@ enum BrushState {
         current_stroke_key: StrokeKey,
         preview_style: Style,
     },
+    /// The drawn stroke was replaced by a recognized shape while the pen is still down.
+    ///
+    /// The pen keeps adjusting the shape until it is lifted.
+    AdjustingShape {
+        stroke_key: StrokeKey,
+        adjust: ShapeAdjust,
+        /// Whether the pen moved and actually adjusted the shape.
+        adjusted: bool,
+    },
 }
 
 #[derive(Debug)]
 pub struct Brush {
     state: BrushState,
+    /// The position where the pen last came (approximately) to rest, while drawing.
+    hold_anchor: Vector2,
+    /// The time the pen came to rest at the current hold anchor.
+    hold_begin: Instant,
+    /// Task that fires when the pen was held still long enough to trigger shape recognition.
+    hold_task_handle: Option<OneOffTaskHandle>,
 }
 
 impl Default for Brush {
     fn default() -> Self {
         Self {
             state: BrushState::Idle,
+            hold_anchor: Vector2::ZERO,
+            hold_begin: Instant::now(),
+            hold_task_handle: None,
         }
     }
 }
@@ -49,6 +73,7 @@ impl PenBehaviour for Brush {
     }
 
     fn deinit(&mut self) -> WidgetFlags {
+        self.hold_task_handle = None;
         WidgetFlags::default()
     }
 
@@ -122,6 +147,27 @@ impl PenBehaviour for Brush {
                         preview_style,
                     };
 
+                    self.hold_anchor = element.pos;
+                    self.hold_begin = now;
+                    if engine_view
+                        .config
+                        .pens_config
+                        .brush_config
+                        .shape_recognition_enabled
+                    {
+                        reset_hold_task(
+                            &mut self.hold_task_handle,
+                            engine_view.tasks_tx.clone(),
+                            engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .shape_recognition_delay,
+                        );
+                    } else {
+                        self.hold_task_handle = None;
+                    }
+
                     EventResult {
                         handled: true,
                         propagate: EventPropagation::Stop,
@@ -171,6 +217,7 @@ impl PenBehaviour for Brush {
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 self.state = BrushState::Idle;
+                self.hold_task_handle = None;
 
                 widget_flags |= engine_view.store.record(Instant::now());
                 widget_flags.store_modified = true;
@@ -189,6 +236,32 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
+                // Track whether the pen is being held still,
+                // which after a timeout triggers recognizing the drawn stroke as a shape.
+                if engine_view
+                    .config
+                    .pens_config
+                    .brush_config
+                    .shape_recognition_enabled
+                    && let PenEvent::Down { element, .. } = &pen_event
+                {
+                    let hold_radius =
+                        shaperecognition::HOLD_RADIUS_SURFACE / engine_view.camera.total_zoom();
+                    if (element.pos - self.hold_anchor).length() > hold_radius {
+                        self.hold_anchor = element.pos;
+                        self.hold_begin = now;
+                        reset_hold_task(
+                            &mut self.hold_task_handle,
+                            engine_view.tasks_tx.clone(),
+                            engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .shape_recognition_delay,
+                        );
+                    }
+                }
+
                 let builder_result =
                     path_builder.handle_event(pen_event, now, Constraints::default());
                 let handled = builder_result.handled;
@@ -283,6 +356,7 @@ impl PenBehaviour for Brush {
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = BrushState::Idle;
+                        self.hold_task_handle = None;
 
                         widget_flags |= engine_view.store.record(Instant::now());
                         widget_flags.store_modified = true;
@@ -297,6 +371,59 @@ impl PenBehaviour for Brush {
                     progress,
                 }
             }
+            (
+                BrushState::AdjustingShape {
+                    stroke_key,
+                    adjust,
+                    adjusted,
+                },
+                PenEvent::Down { element, .. },
+            ) => {
+                *adjusted = true;
+                let shape = adjust.adjusted(element.pos);
+                widget_flags |= update_shape_stroke(*stroke_key, shape, engine_view);
+
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::InProgress,
+                }
+            }
+            (
+                BrushState::AdjustingShape {
+                    stroke_key,
+                    adjust,
+                    adjusted,
+                },
+                PenEvent::Up { element, .. },
+            ) => {
+                if *adjusted {
+                    let shape = adjust.adjusted(element.pos);
+                    widget_flags |= update_shape_stroke(*stroke_key, shape, engine_view);
+                    widget_flags |= engine_view.store.record(Instant::now());
+                }
+                self.state = BrushState::Idle;
+
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
+            }
+            (BrushState::AdjustingShape { .. }, PenEvent::Cancel) => {
+                self.state = BrushState::Idle;
+
+                EventResult {
+                    handled: true,
+                    propagate: EventPropagation::Stop,
+                    progress: PenProgress::Finished,
+                }
+            }
+            (BrushState::AdjustingShape { .. }, _) => EventResult {
+                handled: true,
+                propagate: EventPropagation::Stop,
+                progress: PenProgress::InProgress,
+            },
         };
 
         (event_result, widget_flags)
@@ -312,7 +439,7 @@ impl DrawableOnDoc for Brush {
             .style_for_current_options();
 
         match &self.state {
-            BrushState::Idle => None,
+            BrushState::Idle | BrushState::AdjustingShape { .. } => None,
             BrushState::Drawing { path_builder, .. } => {
                 path_builder.bounds(&style, engine_view.camera.zoom())
             }
@@ -327,7 +454,7 @@ impl DrawableOnDoc for Brush {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         match &self.state {
-            BrushState::Idle => {}
+            BrushState::Idle | BrushState::AdjustingShape { .. } => {}
             BrushState::Drawing {
                 path_builder,
                 preview_style,
@@ -356,6 +483,96 @@ impl DrawableOnDoc for Brush {
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
 
+    /// Attempt to recognize the currently drawn stroke as a shape and replace it,
+    /// triggered when the pen was held still at the end of a drawn stroke.
+    pub(crate) fn recognize_shape_on_hold(
+        &mut self,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if !engine_view
+            .config
+            .pens_config
+            .brush_config
+            .shape_recognition_enabled
+        {
+            return widget_flags;
+        }
+        let BrushState::Drawing {
+            current_stroke_key, ..
+        } = self.state
+        else {
+            return widget_flags;
+        };
+        // Guard against the timeout task and the pen resuming movement racing each other:
+        // only recognize when the pen actually rested at the hold anchor for the entire hold duration.
+        let hold_duration = engine_view
+            .config
+            .pens_config
+            .brush_config
+            .shape_recognition_delay;
+        if self.hold_begin.elapsed() < hold_duration.mul_f64(0.9) {
+            return widget_flags;
+        }
+
+        let recognized_shape = if let Some(Stroke::BrushStroke(brushstroke)) =
+            engine_view.store.get_stroke_ref(current_stroke_key)
+        {
+            shaperecognition::recognize_shape(&brushstroke.path, engine_view.camera.total_zoom())
+        } else {
+            None
+        };
+        let Some(shape) = recognized_shape else {
+            return widget_flags;
+        };
+
+        // Replace the drawn stroke with the recognized shape
+        engine_view.store.remove_stroke(current_stroke_key);
+        let shape_stroke_key = engine_view.store.insert_stroke(
+            Stroke::ShapeStroke(ShapeStroke::new(
+                shape.clone(),
+                engine_view
+                    .config
+                    .pens_config
+                    .brush_config
+                    .style_for_recognized_shape(),
+            )),
+            Some(
+                engine_view
+                    .config
+                    .pens_config
+                    .brush_config
+                    .layer_for_current_options(),
+            ),
+        );
+        engine_view
+            .store
+            .update_geometry_for_stroke(shape_stroke_key);
+        engine_view.store.regenerate_rendering_for_stroke_threaded(
+            engine_view.tasks_tx.clone(),
+            shape_stroke_key,
+            engine_view.camera.viewport(),
+            engine_view.camera.image_scale(),
+        );
+        widget_flags |= engine_view
+            .document
+            .resize_autoexpand(engine_view.store, engine_view.camera);
+        widget_flags |= engine_view.store.record(Instant::now());
+        widget_flags.store_modified = true;
+        widget_flags.redraw = true;
+
+        // The pen keeps adjusting the recognized shape until it is lifted
+        self.state = BrushState::AdjustingShape {
+            stroke_key: shape_stroke_key,
+            adjust: ShapeAdjust::new(shape, self.hold_anchor),
+            adjusted: false,
+        };
+        self.hold_task_handle = None;
+
+        widget_flags
+    }
+
     fn get_preview_style(engine_view: &EngineView) -> Style {
         let mut style = engine_view
             .config
@@ -372,6 +589,36 @@ impl Brush {
     }
 }
 
+/// Replace the shape of the shape stroke with the given key and update the document for it.
+fn update_shape_stroke(
+    stroke_key: StrokeKey,
+    shape: Shape,
+    engine_view: &mut EngineViewMut,
+) -> WidgetFlags {
+    let mut widget_flags = WidgetFlags::default();
+
+    if let Some(Stroke::ShapeStroke(shapestroke)) = engine_view.store.get_stroke_mut(stroke_key) {
+        shapestroke.shape = shape;
+    } else {
+        return widget_flags;
+    }
+
+    engine_view.store.update_geometry_for_stroke(stroke_key);
+    engine_view.store.regenerate_rendering_for_stroke_threaded(
+        engine_view.tasks_tx.clone(),
+        stroke_key,
+        engine_view.camera.viewport(),
+        engine_view.camera.image_scale(),
+    );
+    widget_flags |= engine_view
+        .document
+        .resize_autoexpand(engine_view.store, engine_view.camera);
+    widget_flags.store_modified = true;
+    widget_flags.redraw = true;
+
+    widget_flags
+}
+
 #[cfg(feature = "ui")]
 fn play_marker_sound(engine_view: &mut EngineViewMut) {
     if let Some(audioplayer) = engine_view.audioplayer {
@@ -384,6 +631,27 @@ fn trigger_brush_sound(engine_view: &mut EngineViewMut) {
     if let Some(audioplayer) = engine_view.audioplayer.as_mut() {
         audioplayer.trigger_random_brush_sound();
     }
+}
+
+/// (Re-)start the hold timeout, (re-)installing the one-off task when it already fired or is not installed yet.
+///
+/// When the timeout is reached, a task is sent to the engine
+/// which triggers recognizing the currently drawn stroke as a shape.
+fn reset_hold_task(
+    handle: &mut Option<OneOffTaskHandle>,
+    tasks_tx: EngineTaskSender,
+    hold_duration: Duration,
+) {
+    if let Some(handle) = handle.as_mut()
+        && handle.reset_timeout().is_ok()
+    {
+        return;
+    }
+
+    let hold_task = move || {
+        tasks_tx.send(EngineTask::BrushRecognizeShape);
+    };
+    *handle = Some(OneOffTaskHandle::new(hold_task, hold_duration));
 }
 
 fn new_builder(

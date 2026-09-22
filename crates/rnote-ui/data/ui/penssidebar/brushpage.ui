@@ -206,6 +206,28 @@ Results in the best looking handwriting.</property>
             </object>
           </child>
           <child>
+            <!-- Shape recognition -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Shape Recognition</property>
+              <child>
+                <object class="AdwSwitchRow" id="shaperecognition_row">
+                  <property name="title" translatable="yes">Recognize Shapes</property>
+                  <property name="subtitle" translatable="yes">Hold the pen still at the end of a drawn stroke to replace it with the recognized geometric shape</property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwSpinRow" id="shaperecognition_delay_row">
+                  <property name="title" translatable="yes">Hold Duration</property>
+                  <property name="subtitle" translatable="yes">The duration in seconds the pen has to be held still to recognize the shape</property>
+                  <property name="adjustment">shaperecognition_delay_adj</property>
+                  <property name="numeric">true</property>
+                  <property name="digits">2</property>
+                  <property name="climb-rate">0.05</property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
             <!-- Solid options -->
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Solid Style</property>
@@ -263,6 +285,10 @@ Results in the best looking handwriting.</property>
           </child>
         </object>
       </child>
+    </object>
+    <object class="GtkAdjustment" id="shaperecognition_delay_adj">
+      <property name="step-increment">0.05</property>
+      <property name="page-increment">0.5</property>
     </object>
     <object class="GtkAdjustment" id="texturedstyle_density_adj">
       <property name="step-increment">0.1</property>

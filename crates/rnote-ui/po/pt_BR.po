@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-13 19:46+0200\n"
+"POT-Creation-Date: 2026-06-01 17:10+0200\n"
 "PO-Revision-Date: 2026-06-30 16:30+0000\n"
 "Last-Translator: PhoenixCausesOof <phoenixcausesoof@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -110,7 +110,7 @@ msgstr "Limpar"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:656
+#: crates/rnote-ui/src/canvas/mod.rs:730
 msgid "New Document"
 msgstr "Novo Documento"
 
@@ -451,7 +451,7 @@ msgstr "Importar Pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
-#: crates/rnote-ui/src/dialogs/import.rs:94
+#: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "Importar"
 
@@ -1214,7 +1214,13 @@ msgstr "Ampliar"
 msgid "Zoom to Page Width"
 msgstr "Ampliar Para Se Ajustar À Largura Da Página"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:128
+#: crates/rnote-ui/data/ui/canvasmenu.ui:121
+#, fuzzy
+#| msgid "Zoom to Page Width"
+msgid "Zoom to Real Size"
+msgstr "Ampliar Para Se Ajustar À Largura Da Página"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:136
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1222,7 +1228,7 @@ msgstr ""
 "Remover Pagina\n"
 "Disponível no Layout Fixo de Documento."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:137
+#: crates/rnote-ui/data/ui/canvasmenu.ui:145
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1230,7 +1236,7 @@ msgstr ""
 "Adicionar Pagina.\n"
 "Disponível em layouts de tamanho fixo."
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:146
+#: crates/rnote-ui/data/ui/canvasmenu.ui:154
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1247,7 +1253,7 @@ msgid "Fill Color"
 msgstr "Preencher Cor"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:38
+#: crates/rnote-ui/src/dialogs/import.rs:39
 msgid "Open"
 msgstr "Abrir"
 
@@ -1269,7 +1275,7 @@ msgid "Duplicate"
 msgstr "Duplicar"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:658
+#: crates/rnote-ui/src/canvas/mod.rs:732
 msgid "Draft"
 msgstr "Esboço"
 
@@ -1834,7 +1840,7 @@ msgid "Print Document"
 msgstr "Imprimir Documento"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:92
+#: crates/rnote-ui/src/dialogs/import.rs:93
 msgid "Import File"
 msgstr "Importar Arquivo"
 
@@ -1894,7 +1900,7 @@ msgstr "Criar novo Diretório"
 msgid "Open Workspace Folder"
 msgstr "Abrir Área de Trabalho"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:794
+#: crates/rnote-ui/src/appwindow/actions.rs:845
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1903,11 +1909,11 @@ msgstr "Abrir Área de Trabalho"
 msgid "Saving document failed"
 msgstr "Falha ao salvar documento"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:885
+#: crates/rnote-ui/src/appwindow/actions.rs:936
 msgid "Printing document failed"
 msgstr "Falha ao imprimir documento"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:962
+#: crates/rnote-ui/src/appwindow/actions.rs:1013
 msgid "Exporting selection failed, nothing selected"
 msgstr "Falha ao exportar seleção, nada selecionado"
 
@@ -1933,7 +1939,7 @@ msgstr "Botão 3"
 msgid "Button 4"
 msgstr "Botão 4"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:223
+#: crates/rnote-ui/src/appwindow/mod.rs:224
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
@@ -1941,49 +1947,50 @@ msgstr ""
 "As configurações do esquema não estão instaladas. As configurações do "
 "aplicativo não puderam ser carregas e não serão salvas."
 
-#: crates/rnote-ui/src/appwindow/mod.rs:576
+#: crates/rnote-ui/src/appwindow/mod.rs:572
 msgid "Opening file failed"
 msgstr "Falha ao abrir arquivo"
 
-#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:1005
+#: crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid file name -"
 msgstr "- nome de arquivo invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:908
+#: crates/rnote-ui/src/canvas/mod.rs:1018
 msgid "- invalid folder path -"
 msgstr "- caminho de diretório invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:932
+#: crates/rnote-ui/src/canvas/mod.rs:1042
 msgid "Opened file was modified on disk"
 msgstr "O arquivo aberto foi modificado no disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:933
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 msgid "Reload"
 msgstr "Recarregar"
 
-#: crates/rnote-ui/src/canvas/mod.rs:949
+#: crates/rnote-ui/src/canvas/mod.rs:1059
 msgid "Reloading .rnote file from disk failed"
 msgstr "Recarregar o arquivo .rnote do disco falhou"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1024
+#: crates/rnote-ui/src/canvas/mod.rs:1134
 msgid "Opened file was renamed or moved."
 msgstr "O arquivo aberto foi renomeado ou movido."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1153
 msgid "Opened file was removed."
 msgstr "O arquivo aberto foi removido."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1269
+#: crates/rnote-ui/src/canvas/mod.rs:1383
 msgid "Inserting file failed"
 msgstr "Falha ao inserir arquivo"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1281
+#: crates/rnote-ui/src/canvas/mod.rs:1395
 msgid "Inserting text failed"
 msgstr "Falha ao inserir texto"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:30
+#: crates/rnote-ui/src/dialogs/import.rs:31
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2027,7 +2034,8 @@ msgstr "Selecionar"
 
 #: crates/rnote-ui/src/dialogs/export.rs:726
 msgid "Exporting document pages failed, no directory selected"
-msgstr "Falha ao exportar as páginas do documento, nenhum diretório selecionado"
+msgstr ""
+"Falha ao exportar as páginas do documento, nenhum diretório selecionado"
 
 #: crates/rnote-ui/src/dialogs/export.rs:738
 msgid "Exporting document pages failed"
@@ -2078,50 +2086,50 @@ msgstr "Falha ao exportar a configuração do motor"
 msgid "Exported engine config successfully"
 msgstr "Configuração do motor exportada com sucesso"
 
-#: crates/rnote-ui/src/dialogs/import.rs:36
+#: crates/rnote-ui/src/dialogs/import.rs:37
 msgid "Open File"
 msgstr "Abrir arquivo"
 
-#: crates/rnote-ui/src/dialogs/import.rs:86
+#: crates/rnote-ui/src/dialogs/import.rs:87
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "Jpg, Pdf, Png, Svg, Xopp, Txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
-#: crates/rnote-ui/src/dialogs/import.rs:418
+#: crates/rnote-ui/src/dialogs/import.rs:187
+#: crates/rnote-ui/src/dialogs/import.rs:419
 msgid "- no file name -"
 msgstr "- sem nome de arquivo -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:425
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no title -"
 msgstr "- sem título -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:431
 msgid "- no author -"
 msgstr "- sem autor -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:437
+#: crates/rnote-ui/src/dialogs/import.rs:438
 #, fuzzy
 #| msgid "Modification date:"
 msgid "- no modification date -"
 msgstr "Dada de modificação:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:443
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "File name:"
 msgstr "Nome do arquivo:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Title:"
 msgstr "Título:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Author:"
 msgstr "Autor:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Modification date:"
 msgstr "Dada de modificação:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:448
 msgid "Pages:"
 msgstr "Páginas:"
 

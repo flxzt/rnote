@@ -154,6 +154,9 @@ impl BitmapImage {
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         };
         let interpreter_settings = hayro_interpret::InterpreterSettings::default();
+        // hayro 0.7 takes a render cache, which upstream intends to be created once per PDF and
+        // reused across the render invocations of that document.
+        let render_cache = hayro::RenderCache::new();
         let pages = pdf.pages();
         let page_range = page_range.unwrap_or(0..pages.len());
         let page_width = if pdf_import_prefs.adjust_document {
@@ -193,7 +196,8 @@ impl BitmapImage {
 
                 // TODO: implement drawing page borders.
                 // Possibly with vello-cpu, since it already is a dependency of hayro
-                let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
+                let pixmap =
+                    hayro::render(page, &render_cache, &interpreter_settings, &render_settings);
 
                 // vello-cpu renders to premultiplied RGBA8, which is exactly the format rnote
                 // stores images in memory, so the rendered page can be handed over directly.

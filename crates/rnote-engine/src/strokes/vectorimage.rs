@@ -270,6 +270,9 @@ impl VectorImage {
         // same change went the other way (967 MB -> 765 MB) because holding the converted Svg of
         // every page is what dominates there. Sequential conversion is the variant that never
         // regresses; parallelizing it needs a bound on the number of pages in flight.
+        // As in the bitmap path, the render cache is created once for the document and reused
+        // across the pages of this import.
+        let render_cache = hayro_svg::RenderCache::new();
         let svgs = page_range
             .filter_map(|page_i| {
                 let page = pages.get(page_i)?;
@@ -291,7 +294,12 @@ impl VectorImage {
                         PdfImportPageSpacing::OnePerDocumentPage => format.height(),
                     };
                 }
-                let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
+                let svg_data = hayro_svg::convert(
+                    page,
+                    &render_cache,
+                    &interpreter_settings,
+                    &render_settings,
+                );
                 let svg = Svg { svg_data, bounds };
 
                 Some(svg)

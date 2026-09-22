@@ -87,8 +87,8 @@ prerequisites-win:
     pacman -S --noconfirm \
         unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
         mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
-        mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
-        mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
+        mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 \
+        mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH"

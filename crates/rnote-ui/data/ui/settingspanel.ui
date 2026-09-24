@@ -580,7 +580,7 @@ on a drawing pad</property>
                 <!-- Lock settings for the pen/eraser-->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Pen/Eraser mode</property>
+                    <property name="title" translatable="yes">Stylus pen modes</property>
                     <child>
                       <object class="RnPenModeRow" id="lock_pen_mode">
                         <property name="title" translatable="yes">Tool for the pen action</property>

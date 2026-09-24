@@ -35,5 +35,6 @@ jobs:
       - name: Check file changes
         run: |
           git diff-index --quiet HEAD -- || \
-            { echo "::error title=Check Translations::Translations can be updated. Run 'just update-translations' and commit the changes." \
+            { echo "::error title=Check Translations::Translations can be updated. \
+              Run 'just update-translations' and commit the changes." \
             && exit 1; }

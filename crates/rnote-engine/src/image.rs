@@ -391,7 +391,7 @@ impl Image {
 }
 
 pub(super) fn convert_image_bgra_to_rgba(_width: u32, _height: u32, mut bytes: Vec<u8>) -> Vec<u8> {
-    for src in bytes.chunks_exact_mut(4) {
+    for src in bytes.as_chunks_mut::<4>().0 {
         let (blue, green, red, alpha) = (src[0], src[1], src[2], src[3]);
         src[0] = red;
         src[1] = green;

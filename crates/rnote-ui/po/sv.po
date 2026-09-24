@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-13 19:46+0200\n"
+"POT-Creation-Date: 2026-06-01 17:10+0200\n"
 "PO-Revision-Date: 2026-06-30 16:32+0000\n"
 "Last-Translator: arqtik <martynascamets1@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/rnote/repo/sv/>\n"
@@ -107,7 +107,7 @@ msgstr "Rensa"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:656
+#: crates/rnote-ui/src/canvas/mod.rs:730
 #, fuzzy
 msgid "New Document"
 msgstr "Nytt document"
@@ -454,7 +454,7 @@ msgstr "Importera PDF"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
-#: crates/rnote-ui/src/dialogs/import.rs:94
+#: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "Importera"
 
@@ -1350,19 +1350,24 @@ msgstr "Zooma in"
 msgid "Zoom to Page Width"
 msgstr "Zooma för att passa bladbredden"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:128
+#: crates/rnote-ui/data/ui/canvasmenu.ui:121
+#, fuzzy
+msgid "Zoom to Real Size"
+msgstr "Zooma för att passa bladbredden"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:136
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:137
+#: crates/rnote-ui/data/ui/canvasmenu.ui:145
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
 msgstr ""
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:146
+#: crates/rnote-ui/data/ui/canvasmenu.ui:154
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1380,7 +1385,7 @@ msgid "Fill Color"
 msgstr "Solid"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:38
+#: crates/rnote-ui/src/dialogs/import.rs:39
 msgid "Open"
 msgstr "Öppna"
 
@@ -1405,7 +1410,7 @@ msgid "Duplicate"
 msgstr "Duplicera markering"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:658
+#: crates/rnote-ui/src/canvas/mod.rs:732
 msgid "Draft"
 msgstr "Utkast"
 
@@ -2015,7 +2020,7 @@ msgid "Print Document"
 msgstr "Nytt document"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:92
+#: crates/rnote-ui/src/dialogs/import.rs:93
 #, fuzzy
 #| msgid "Import file"
 msgid "Import File"
@@ -2092,7 +2097,7 @@ msgstr "Vektor"
 msgid "Open Workspace Folder"
 msgstr "Arbetsytans namn"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:794
+#: crates/rnote-ui/src/appwindow/actions.rs:845
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -2103,11 +2108,11 @@ msgstr "Arbetsytans namn"
 msgid "Saving document failed"
 msgstr "Spara dokumentet misslyckades."
 
-#: crates/rnote-ui/src/appwindow/actions.rs:885
+#: crates/rnote-ui/src/appwindow/actions.rs:936
 msgid "Printing document failed"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/actions.rs:962
+#: crates/rnote-ui/src/appwindow/actions.rs:1013
 #, fuzzy
 msgid "Exporting selection failed, nothing selected"
 msgstr "Exportera val som SVG"
@@ -2132,62 +2137,63 @@ msgstr ""
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:223
+#: crates/rnote-ui/src/appwindow/mod.rs:224
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:576
+#: crates/rnote-ui/src/appwindow/mod.rs:572
 #, fuzzy
 msgid "Opening file failed"
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:1005
+#: crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
 msgstr "- inget filnamn -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:908
+#: crates/rnote-ui/src/canvas/mod.rs:1018
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:932
+#: crates/rnote-ui/src/canvas/mod.rs:1042
 msgid "Opened file was modified on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:933
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 msgid "Reload"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:949
+#: crates/rnote-ui/src/canvas/mod.rs:1059
 msgid "Reloading .rnote file from disk failed"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1024
+#: crates/rnote-ui/src/canvas/mod.rs:1134
 #, fuzzy
 msgid "Opened file was renamed or moved."
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1153
 #, fuzzy
 msgid "Opened file was removed."
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1269
+#: crates/rnote-ui/src/canvas/mod.rs:1383
 #, fuzzy
 msgid "Inserting file failed"
 msgstr "Öppna fil"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1281
+#: crates/rnote-ui/src/canvas/mod.rs:1395
 #, fuzzy
 msgid "Inserting text failed"
 msgstr "Exportera blad som SVG"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:30
+#: crates/rnote-ui/src/dialogs/import.rs:31
 #, fuzzy
 #| msgid ".rnote file"
 msgid ".rnote"
@@ -2308,50 +2314,50 @@ msgstr "Exportera markering"
 msgid "Exported engine config successfully"
 msgstr "Exportera val som SVG"
 
-#: crates/rnote-ui/src/dialogs/import.rs:36
+#: crates/rnote-ui/src/dialogs/import.rs:37
 msgid "Open File"
 msgstr "Öppna Fil"
 
-#: crates/rnote-ui/src/dialogs/import.rs:86
+#: crates/rnote-ui/src/dialogs/import.rs:87
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
-#: crates/rnote-ui/src/dialogs/import.rs:418
+#: crates/rnote-ui/src/dialogs/import.rs:187
+#: crates/rnote-ui/src/dialogs/import.rs:419
 msgid "- no file name -"
 msgstr "- inget filnamn -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:425
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no title -"
 msgstr "- ingen titel -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:431
 msgid "- no author -"
 msgstr "- ingen författare -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:437
+#: crates/rnote-ui/src/dialogs/import.rs:438
 #, fuzzy
 #| msgid "Modification date:"
 msgid "- no modification date -"
 msgstr "Ändringsdatum:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:443
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "File name:"
 msgstr "Filnamn:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Title:"
 msgstr "Titel:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Author:"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Modification date:"
 msgstr "Ändringsdatum:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:448
 msgid "Pages:"
 msgstr "Sidor:"
 

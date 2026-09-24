@@ -229,13 +229,23 @@ impl RnToolsPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    appwindow
+                    if appwindow
                         .engine_config()
-                        .write()
+                        .read()
                         .pens_config
                         .tools_config
                         .verticalspace_tool_config
-                        .limit_movement_vertical_borders = row.is_active();
+                        .limit_movement_vertical_borders
+                        != row.is_active()
+                    {
+                        appwindow
+                            .engine_config()
+                            .write()
+                            .pens_config
+                            .tools_config
+                            .verticalspace_tool_config
+                            .limit_movement_vertical_borders = row.is_active();
+                    }
                 }
             ));
         imp.verticalspace_limit_movement_horizontal_bordersrow
@@ -244,13 +254,23 @@ impl RnToolsPage {
                 #[weak]
                 appwindow,
                 move |row| {
-                    appwindow
+                    if appwindow
                         .engine_config()
-                        .write()
+                        .read()
                         .pens_config
                         .tools_config
                         .verticalspace_tool_config
-                        .limit_movement_horizontal_borders = row.is_active();
+                        .limit_movement_horizontal_borders
+                        != row.is_active()
+                    {
+                        appwindow
+                            .engine_config()
+                            .write()
+                            .pens_config
+                            .tools_config
+                            .verticalspace_tool_config
+                            .limit_movement_horizontal_borders = row.is_active();
+                    }
                 }
             ));
     }
@@ -270,13 +290,13 @@ impl RnToolsPage {
             .set_active(
                 tools_config
                     .verticalspace_tool_config
-                    .limit_movement_horizontal_borders,
+                    .limit_movement_vertical_borders,
             );
         imp.verticalspace_limit_movement_horizontal_bordersrow
             .set_active(
                 tools_config
                     .verticalspace_tool_config
-                    .limit_movement_vertical_borders,
+                    .limit_movement_horizontal_borders,
             );
     }
 }

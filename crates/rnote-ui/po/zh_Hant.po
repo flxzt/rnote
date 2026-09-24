@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-13 19:46+0200\n"
+"POT-Creation-Date: 2026-06-01 17:10+0200\n"
 "PO-Revision-Date: 2026-06-30 16:29+0000\n"
 "Last-Translator: openCC converted withginkgo <tabicallet@outlook.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://hosted.weblate.org/"
@@ -40,14 +40,15 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote 是一款基於向量繪圖的軟體，用於素描、手寫筆記，以及為檔案和圖片添加註釋"
-"。"
+"Rnote 是一款基於向量繪圖的軟體，用於素描、手寫筆記，以及為檔案和圖片添加註"
+"釋。"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
-msgstr "免責宣告：該檔案格式尚未完全支援，它可能改變並損壞不同版本之間的相容性。"
+msgstr ""
+"免責宣告：該檔案格式尚未完全支援，它可能改變並損壞不同版本之間的相容性。"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
@@ -107,7 +108,7 @@ msgstr "清空"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:656
+#: crates/rnote-ui/src/canvas/mod.rs:730
 msgid "New Document"
 msgstr "新建文件"
 
@@ -448,7 +449,7 @@ msgstr "匯入 pdf"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:19
 #: crates/rnote-ui/data/ui/dialogs/import.ui:212
-#: crates/rnote-ui/src/dialogs/import.rs:94
+#: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "匯入"
 
@@ -1210,7 +1211,13 @@ msgstr "放大"
 msgid "Zoom to Page Width"
 msgstr "縮放以適合頁寬"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:128
+#: crates/rnote-ui/data/ui/canvasmenu.ui:121
+#, fuzzy
+#| msgid "Zoom to Page Width"
+msgid "Zoom to Real Size"
+msgstr "縮放以適合頁寬"
+
+#: crates/rnote-ui/data/ui/canvasmenu.ui:136
 msgid ""
 "Remove Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1218,7 +1225,7 @@ msgstr ""
 "移除頁面。\n"
 "可選用固定大小的文件佈局。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:137
+#: crates/rnote-ui/data/ui/canvasmenu.ui:145
 msgid ""
 "Add Page.\n"
 "Available in Fixed-Size Document Layout."
@@ -1226,7 +1233,7 @@ msgstr ""
 "新增頁面。\n"
 "可選用固定大小的文件佈局。"
 
-#: crates/rnote-ui/data/ui/canvasmenu.ui:146
+#: crates/rnote-ui/data/ui/canvasmenu.ui:154
 msgid ""
 "Resize Document to Fit Content.\n"
 "Available in Fixed-Size Document Layout."
@@ -1243,7 +1250,7 @@ msgid "Fill Color"
 msgstr "填充顏色"
 
 #: crates/rnote-ui/data/ui/filerow.ui:61
-#: crates/rnote-ui/src/dialogs/import.rs:38
+#: crates/rnote-ui/src/dialogs/import.rs:39
 msgid "Open"
 msgstr "開啟"
 
@@ -1265,7 +1272,7 @@ msgid "Duplicate"
 msgstr "重複所選內容"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:658
+#: crates/rnote-ui/src/canvas/mod.rs:732
 msgid "Draft"
 msgstr "草稿"
 
@@ -1830,7 +1837,7 @@ msgid "Print Document"
 msgstr "列印"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:215
-#: crates/rnote-ui/src/dialogs/import.rs:92
+#: crates/rnote-ui/src/dialogs/import.rs:93
 msgid "Import File"
 msgstr "匯入檔案"
 
@@ -1890,7 +1897,7 @@ msgstr "建立新資料夾"
 msgid "Open Workspace Folder"
 msgstr "開啟工作區目錄"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:794
+#: crates/rnote-ui/src/appwindow/actions.rs:845
 #: crates/rnote-ui/src/appwindow/imp.rs:425
 #: crates/rnote-ui/src/dialogs/export.rs:82
 #: crates/rnote-ui/src/dialogs/mod.rs:127
@@ -1899,11 +1906,11 @@ msgstr "開啟工作區目錄"
 msgid "Saving document failed"
 msgstr "文件儲存失敗"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:885
+#: crates/rnote-ui/src/appwindow/actions.rs:936
 msgid "Printing document failed"
 msgstr "列印失敗"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:962
+#: crates/rnote-ui/src/appwindow/actions.rs:1013
 msgid "Exporting selection failed, nothing selected"
 msgstr "匯出選擇內容失敗，沒有選擇內容"
 
@@ -1927,55 +1934,56 @@ msgstr "按鈕 3"
 msgid "Button 4"
 msgstr "按鈕 4"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:223
+#: crates/rnote-ui/src/appwindow/mod.rs:224
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr "未安裝設定格式（Settings schema）。無法載入和儲存應用程式設定。"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:576
+#: crates/rnote-ui/src/appwindow/mod.rs:572
 msgid "Opening file failed"
 msgstr "檔案開啟失敗"
 
-#: crates/rnote-ui/src/canvas/mod.rs:895 crates/rnote-ui/src/dialogs/mod.rs:205
+#: crates/rnote-ui/src/canvas/mod.rs:1005
+#: crates/rnote-ui/src/dialogs/mod.rs:205
 #: crates/rnote-ui/src/dialogs/mod.rs:338
 msgid "- invalid file name -"
 msgstr "—— 無效檔名 ——"
 
-#: crates/rnote-ui/src/canvas/mod.rs:908
+#: crates/rnote-ui/src/canvas/mod.rs:1018
 msgid "- invalid folder path -"
 msgstr "—— 無效的資料夾路徑 ——"
 
-#: crates/rnote-ui/src/canvas/mod.rs:932
+#: crates/rnote-ui/src/canvas/mod.rs:1042
 msgid "Opened file was modified on disk"
 msgstr "開啟的檔案已在磁碟上被修改過"
 
-#: crates/rnote-ui/src/canvas/mod.rs:933
+#: crates/rnote-ui/src/canvas/mod.rs:1043
 msgid "Reload"
 msgstr "重新載入"
 
-#: crates/rnote-ui/src/canvas/mod.rs:949
+#: crates/rnote-ui/src/canvas/mod.rs:1059
 msgid "Reloading .rnote file from disk failed"
 msgstr "從磁碟重新載入 .rnote 檔案失敗"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1024
+#: crates/rnote-ui/src/canvas/mod.rs:1134
 msgid "Opened file was renamed or moved."
 msgstr "開啟的檔案已被刪除或者重新命名。"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1153
 msgid "Opened file was removed."
 msgstr "開啟的檔案已被刪除。"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1269
+#: crates/rnote-ui/src/canvas/mod.rs:1383
 msgid "Inserting file failed"
 msgstr "插入檔案失敗"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1281
+#: crates/rnote-ui/src/canvas/mod.rs:1395
 msgid "Inserting text failed"
 msgstr "插入文字失敗"
 
 #: crates/rnote-ui/src/dialogs/export.rs:34
-#: crates/rnote-ui/src/dialogs/import.rs:30
+#: crates/rnote-ui/src/dialogs/import.rs:31
 msgid ".rnote"
 msgstr ".rnote"
 
@@ -2070,48 +2078,48 @@ msgstr "引擎設定匯出失敗"
 msgid "Exported engine config successfully"
 msgstr "引擎設定匯出成功"
 
-#: crates/rnote-ui/src/dialogs/import.rs:36
+#: crates/rnote-ui/src/dialogs/import.rs:37
 msgid "Open File"
 msgstr "開啟檔案"
 
-#: crates/rnote-ui/src/dialogs/import.rs:86
+#: crates/rnote-ui/src/dialogs/import.rs:87
 msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "jpg，pdf，png，svg，xopp，txt"
 
-#: crates/rnote-ui/src/dialogs/import.rs:186
-#: crates/rnote-ui/src/dialogs/import.rs:418
+#: crates/rnote-ui/src/dialogs/import.rs:187
+#: crates/rnote-ui/src/dialogs/import.rs:419
 msgid "- no file name -"
 msgstr "—— 沒有檔名 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:425
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no title -"
 msgstr "—— 無標題 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:430
+#: crates/rnote-ui/src/dialogs/import.rs:431
 msgid "- no author -"
 msgstr "—— 無作者 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:437
+#: crates/rnote-ui/src/dialogs/import.rs:438
 msgid "- no modification date -"
 msgstr "—— 沒有修改日期 ——"
 
-#: crates/rnote-ui/src/dialogs/import.rs:443
+#: crates/rnote-ui/src/dialogs/import.rs:444
 msgid "File name:"
 msgstr "檔名："
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:445
 msgid "Title:"
 msgstr "標題："
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:446
 msgid "Author:"
 msgstr "作者："
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:447
 msgid "Modification date:"
 msgstr "修改日期："
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:448
 msgid "Pages:"
 msgstr "頁碼："
 

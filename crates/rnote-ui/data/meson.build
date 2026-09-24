@@ -210,6 +210,8 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/fill-color-symbolic.svg',
     'icons/scalable/actions/focus-mode-symbolic.svg',
     'icons/scalable/actions/keyboard-ctrl-space-shortcut-symbolic.svg',
+    'icons/scalable/actions/lock-close-symbolic.svg',
+    'icons/scalable/actions/lock-open-symbolic.svg',
     'icons/scalable/actions/minus-symbolic.svg',
     'icons/scalable/actions/misc-menu-symbolic.svg',
     'icons/scalable/actions/mouse-button-primary-symbolic.svg',

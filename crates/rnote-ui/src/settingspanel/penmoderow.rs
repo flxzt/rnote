@@ -4,7 +4,7 @@ use super::penshortcutmodels::{
 };
 use adw::{prelude::*, subclass::prelude::*};
 use glib::subclass::Signal;
-use gtk4::{CompositeTemplate, glib};
+use gtk4::{CompositeTemplate, ToggleButton, glib};
 use num_traits::ToPrimitive;
 use rnote_engine::pens::PenStyle;
 
@@ -19,7 +19,7 @@ mod imp {
         pub(crate) changepenstyle_model: ChangePenStyleListModel,
 
         #[template_child]
-        pub(crate) mode: TemplateChild<gtk4::Switch>,
+        pub(crate) mode_lock: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -52,6 +52,14 @@ mod imp {
 
             obj.connect_selected_item_notify(move |row| {
                 row.emit_by_name::<()>("action-changed", &[]);
+            });
+
+            self.mode_lock.connect_active_notify(move |mode_lock| {
+                if mode_lock.is_active() {
+                    mode_lock.set_icon_name("lock-close-symbolic");
+                } else {
+                    mode_lock.set_icon_name("lock-open-symbolic");
+                }
             });
         }
 

@@ -695,7 +695,7 @@ impl RnSettingsPanel {
 
         imp.lock_pen_mode
             .imp()
-            .mode
+            .mode_lock
             .bind_property("active", appwindow, "lock-pen")
             .sync_create()
             .bidirectional()
@@ -703,7 +703,7 @@ impl RnSettingsPanel {
 
         imp.lock_eraser_mode
             .imp()
-            .mode
+            .mode_lock
             .bind_property("active", appwindow, "lock-eraser")
             .sync_create()
             .bidirectional()

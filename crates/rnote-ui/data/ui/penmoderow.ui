@@ -14,21 +14,13 @@
             <property name="margin-start">0</property>
             <property name="margin-end">0</property>
             <property name="limit-events">true</property>
-            <property name="spacing">6</property>
-            <property name="width-request">90</property>
+            <property name="spacing">12</property>
             <child>
-                <object class="GtkSeparator"></object>
-            </child>
-            <child>
-                <object class="GtkLabel">
-                    <property name="label">Lock</property>
-                </object>
-            </child>
-            <child>
-                <object class="GtkSwitch" id="mode">
+                <object class="GtkToggleButton" id="mode_lock">
                     <property name="margin-end">2</property>
                     <property name="halign">end</property>
-                    <property name="valign">center</property>
+                <property name="valign">center</property>
+                <property name="icon-name">lock-open-symbolic</property>
                 </object>
             </child>
         </object>

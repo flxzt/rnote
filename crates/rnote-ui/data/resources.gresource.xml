@@ -25,6 +25,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/iconpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/overlays.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penmoderow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penshortcutrow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
@@ -79,6 +80,8 @@
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/focus-mode-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/keyboard-ctrl-space-shortcut-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/lock-close-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/lock-open-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/minus-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/misc-menu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/mouse-button-primary-symbolic.svg</file>
@@ -139,6 +142,7 @@
         <file compressed="true">icons/scalable/actions/stylus-button-eraser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-primary-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stylus-button-secondary-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/stylus-pen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/tab-new-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-align-center-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/text-align-end-symbolic.svg</file>

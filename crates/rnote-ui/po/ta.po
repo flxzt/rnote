@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-01 17:10+0200\n"
-"PO-Revision-Date: 2026-06-30 16:31+0000\n"
-"Last-Translator: தமிழ்நேரம் <tamilneram247@gmail.com>\n"
+"PO-Revision-Date: 2026-09-22 17:02+0000\n"
+"Last-Translator: GitHub webhook <noreply-webhook-github@weblate.org>\n"
 "Language-Team: Tamil <https://hosted.weblate.org/projects/rnote/repo/ta/>\n"
 "Language: ta\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -39,8 +39,8 @@ msgid ""
 "Rnote is a vector-based drawing app for sketching, handwritten notes and to "
 "annotate documents and pictures."
 msgstr ""
-"Rnote என்பது ஒரு திசையன் அடிப்படையிலான வரைதல் பயன்பாடாகும், இது வரைதல், கையால் "
-"எழுதப்பட்ட குறிப்புகள் மற்றும் ஆவணங்கள் மற்றும் படங்களை சிறுகுறிப்பு செய்ய."
+"Rnote என்பது ஒரு திசையன் அடிப்படையிலான வரைதல் பயன்பாடாகும், இது வரைதல், கையால் எழுதப்பட்ட "
+"குறிப்புகள் மற்றும் ஆவணங்கள் மற்றும் படங்களை சிறுகுறிப்பு செய்ய."
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:25
 msgid ""
@@ -483,7 +483,8 @@ msgstr "பக்கத்தின் அகலம் (%)"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:110
 msgid "Set the width of imported Pdf's in percentage to the format width"
-msgstr "இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
+msgstr ""
+"இறக்குமதி செய்யப்பட்ட Pdf இன் அகலத்தை வடிவ அகலத்திற்கு சதவீதத்தில் அமைக்கவும்"
 
 #: crates/rnote-ui/data/ui/dialogs/import.ui:117
 msgid "Page Spacing"
@@ -771,7 +772,8 @@ msgstr "அனைத்து பக்கவாதங்களையும் �
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:90
 msgid "Invert Color Brightness of All Selected Strokes"
-msgstr "தேர்ந்தெடுக்கப்பட்ட அனைத்து பக்கவாதங்களின் வண்ண பிரகாசத்தை தலைகீழாக மாற்றவும்"
+msgstr ""
+"தேர்ந்தெடுக்கப்பட்ட அனைத்து பக்கவாதங்களின் வண்ண பிரகாசத்தை தலைகீழாக மாற்றவும்"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:100
 #: crates/rnote-ui/data/ui/shortcuts.ui:260
@@ -2021,7 +2023,8 @@ msgstr "ஆவணம் வெற்றிகரமாகச் சேமிக�
 
 #: crates/rnote-ui/src/dialogs/export.rs:293
 msgid "Exporting document failed, no file selected"
-msgstr "ஆவணத்தை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+msgstr ""
+"ஆவணத்தை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: crates/rnote-ui/src/dialogs/export.rs:308
 msgid "Exporting document failed"
@@ -2055,7 +2058,8 @@ msgstr "தேர்ந்தெடுக்கவும்"
 
 #: crates/rnote-ui/src/dialogs/export.rs:726
 msgid "Exporting document pages failed, no directory selected"
-msgstr "ஆவணப் பக்கங்களை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பகம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+msgstr ""
+"ஆவணப் பக்கங்களை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பகம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: crates/rnote-ui/src/dialogs/export.rs:738
 msgid "Exporting document pages failed"
@@ -2067,7 +2071,8 @@ msgstr "ஆவணப் பக்கங்கள் வெற்றிகரம�
 
 #: crates/rnote-ui/src/dialogs/export.rs:1089
 msgid "Exporting selection failed, no file selected"
-msgstr "தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
+msgstr ""
+"தேர்வை ஏற்றுமதி செய்வதில் தோல்வி, கோப்பு எதுவும் தேர்ந்தெடுக்கப்படவில்லை"
 
 #: crates/rnote-ui/src/dialogs/export.rs:1100
 msgid "Exporting selection failed"

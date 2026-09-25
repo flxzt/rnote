@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-01 17:10+0200\n"
-"PO-Revision-Date: 2026-06-30 16:32+0000\n"
+"PO-Revision-Date: 2026-09-22 17:04+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Hindi <https://hosted.weblate.org/projects/rnote/repo/hi/>\n"
 "Language: hi\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -47,8 +47,8 @@ msgid ""
 "Disclaimer: The file format is still unstable. It might change and break "
 "compatibility between versions."
 msgstr ""
-"अस्वीकरण: फाइल स्वरूप अभी भी अस्थिर है। यह संस्करणों के बीच संगतता को बदल और तोड़ सकता "
-"है।"
+"अस्वीकरण: फाइल स्वरूप अभी भी अस्थिर है। यह संस्करणों के बीच संगतता को बदल और तोड़ सकता है"
+"।"
 
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:35
 msgid "An overview"
@@ -305,7 +305,8 @@ msgstr "मुद्रण के लिए अनुकूलित करे�
 #: crates/rnote-ui/data/ui/dialogs/export.ui:336
 #: crates/rnote-ui/data/ui/dialogs/export.ui:534
 msgid "Set whether the content should be optimized for printing"
-msgstr "निर्धारित करें कि क्या सामग्री को मुद्रण के लिए अनुकूलित किया जाना चाहिए"
+msgstr ""
+"निर्धारित करें कि क्या सामग्री को मुद्रण के लिए अनुकूलित किया जाना चाहिए"
 
 #: crates/rnote-ui/data/ui/dialogs/export.ui:130
 #: crates/rnote-ui/data/ui/dialogs/export.ui:341
@@ -1941,7 +1942,8 @@ msgstr "बटन 4"
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
-msgstr "सेटिंग्स स्कीमा स्थापित नहीं है। ऐप सेटिंग लोड नहीं की जा सकीं और सहेजी नहीं जाएंगी।"
+msgstr ""
+"सेटिंग्स स्कीमा स्थापित नहीं है। ऐप सेटिंग लोड नहीं की जा सकीं और सहेजी नहीं जाएंगी।"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:572
 msgid "Opening file failed"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-01 17:10+0200\n"
-"PO-Revision-Date: 2026-06-30 16:29+0000\n"
+"PO-Revision-Date: 2026-09-22 16:58+0000\n"
 "Last-Translator: Fuan200 <juandiazfdez1992@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/rnote/repo/es/>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -1511,8 +1511,7 @@ msgstr "Ppp"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:245
 msgid "Set the Dpi (dots per inch). Defaults to 96."
-msgstr ""
-"Establecer los PPP (puntos por pulgada). El valor predeterminado es 96."
+msgstr "Establecer los PPP (puntos por pulgada). El valor predeterminado es 96."
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:255
 msgid "Revert"

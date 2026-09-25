@@ -77,6 +77,64 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
 
             //std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug");
         }
+
+        // Windows on ARM has no native desktop OpenGL driver, so WGL is serviced
+        // by Microsoft's OpenGLOn12 mapping layer, which translates OpenGL onto
+        // Direct3D 12. That layer crashes with an access violation (0xc0000005)
+        // after a few minutes of normal use.
+        //
+        // Steering GDK away from WGL makes it pick EGL, and with it the ANGLE
+        // that is already shipped alongside the app, mapping GL ES onto
+        // Direct3D 11 instead. GPU rendering is kept: GSK still ends up on
+        // GskGLRenderer, it just no longer goes through OpenGLOn12.
+        //
+        // Only applied as a default, so GDK_DISABLE from the environment wins.
+        #[cfg(all(target_os = "windows", target_arch = "aarch64"))]
+        if std::env::var_os("GDK_DISABLE").is_none() {
+            // SAFETY: this setup only happens while still being single-threaded
+            unsafe {
+                std::env::set_var("GDK_DISABLE", "wgl");
+            }
+        }
+
+        // On Windows, pangocairo renders glyphs through cairo's win32 font
+        // backend, which goes to DirectWrite and Direct2D. On Windows on ARM
+        // that path is broken: pango logs "All font fallbacks failed" for every
+        // layout and rendering text eventually dies with an access violation
+        // (0xc0000005) in d2d1.dll. It reproducibly takes down the app when a
+        // document containing a text stroke is opened, or when the typewriter
+        // is used.
+        //
+        // The fontconfig/freetype backend works correctly here, so select it
+        // explicitly. Fontconfig is present and configured in the MSYS2
+        // environment the app is built and shipped with.
+        //
+        // Only applied as a default, so PANGOCAIRO_BACKEND from the environment
+        // wins, and scoped to aarch64 because the DirectWrite path was only
+        // verified to be broken there.
+        //
+        // This deliberately does not use `std::env::set_var`: on Windows that
+        // only calls SetEnvironmentVariableW, which updates the Win32
+        // environment block but not the copy the C runtime builds at startup.
+        // pangocairo reads the variable with plain `getenv` (unlike GDK, which
+        // uses `g_getenv` and therefore does see `set_var`), so it would never
+        // observe the value. `_putenv_s` updates the CRT table that `getenv`
+        // reads, and pangocairo resolves to the same UCRT as the app.
+        #[cfg(all(target_os = "windows", target_arch = "aarch64"))]
+        if std::env::var_os("PANGOCAIRO_BACKEND").is_none() {
+            unsafe extern "C" {
+                fn _putenv_s(
+                    name: *const std::ffi::c_char,
+                    value: *const std::ffi::c_char,
+                ) -> std::ffi::c_int;
+            }
+
+            // SAFETY: this setup only happens while still being single-threaded,
+            // and both pointers are valid nul-terminated C string literals.
+            unsafe {
+                _putenv_s(c"PANGOCAIRO_BACKEND".as_ptr(), c"fc".as_ptr());
+            }
+        }
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
 

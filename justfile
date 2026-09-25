@@ -6,7 +6,10 @@ log_level := "debug"
 build_folder := "_mesonbuild"
 flatpak_app_folder := "_flatpak_app"
 flatpak_repo_folder := "_flatpak_repo"
-mingw64_prefix_path := "C:/msys64/mingw64"
+# Install prefix for Windows builds. Empty means "derive from the active MSYS2
+# environment", which makes MINGW64 and CLANGARM64 work without editing this file.
+# Override with e.g. `just msys_prefix_path=C:/msys64/mingw64 setup-win-installer`.
+msys_prefix_path := ""
 
 [private]
 linux_distr := `grep -o -E '^ID=([a-zA-Z0-9_]*)$' -r /etc/os-release | cut -d= -f2 | tr '[:upper:]' '[:lower:]'`
@@ -83,12 +86,69 @@ prerequisites-dev: prerequisites
     cargo binstall -y --locked cargo-nextest cargo-edit cargo-deny
 
 # in MSYS2 shell
+#
+# Works in any MSYS2 environment (https://www.msys2.org/docs/environments/).
+# The package prefix and the install prefix are taken from the environment, so
+# MINGW64 (x86_64) and CLANGARM64 (aarch64, e.g. Snapdragon X) use the same recipes.
 prerequisites-win:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+
     pacman -S --noconfirm \
-        unzip git mingw-w64-x86_64-xz mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-clang \
-        mingw-w64-x86_64-toolchain mingw-w64-x86_64-autotools mingw-w64-x86_64-make mingw-w64-x86_64-cmake \
-        mingw-w64-x86_64-meson mingw-w64-x86_64-diffutils mingw-w64-x86_64-desktop-file-utils \
-        mingw-w64-x86_64-appstream mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-angleproject
+        unzip git \
+        "${MINGW_PACKAGE_PREFIX}-xz" "${MINGW_PACKAGE_PREFIX}-pkgconf" \
+        "${MINGW_PACKAGE_PREFIX}-toolchain" "${MINGW_PACKAGE_PREFIX}-autotools" \
+        "${MINGW_PACKAGE_PREFIX}-make" "${MINGW_PACKAGE_PREFIX}-cmake" \
+        "${MINGW_PACKAGE_PREFIX}-meson" "${MINGW_PACKAGE_PREFIX}-diffutils" \
+        "${MINGW_PACKAGE_PREFIX}-desktop-file-utils" "${MINGW_PACKAGE_PREFIX}-appstream" \
+        "${MINGW_PACKAGE_PREFIX}-gtk4" "${MINGW_PACKAGE_PREFIX}-libadwaita" \
+        "${MINGW_PACKAGE_PREFIX}-angleproject"
+
+    if [[ "${MSYSTEM}" != "MINGW64" ]]; then
+        # Pin gtk before dcomp, for the same reason as the MINGW64 pinning below
+        # (only the package names and the repo path differ).
+        #
+        # Since the Win32 backend moved to DirectComposition, GSK cannot realize
+        # GL or Vulkan on a GdkWin32Toplevel unless a dcomp device exists, and
+        # silently degrades to GskCairoRenderer, i.e. pure software rendering.
+        # Verified on CLANGARM64 / Snapdragon X Elite: WGL 4.6 contexts are
+        # created fine on the Adreno X1-85, but every renderer still falls back
+        # to cairo with "OpenGL requires Direct Composition".
+        # gettext must be pinned along with it: gtk 4.18.6 and libadwaita 1.7.7
+        # import DllMain from libintl-8.dll, which newer gettext no longer
+        # exports. Without this the app dies at load time with
+        # STATUS_ENTRYPOINT_NOT_FOUND (0xC0000139) before printing anything.
+        repo_arch="$(echo "${MSYSTEM}" | tr '[:upper:]' '[:lower:]')"
+        pinned=(
+            "${MINGW_PACKAGE_PREFIX}-gettext-libtextstyle-0.26-1-any.pkg.tar.zst"
+            "${MINGW_PACKAGE_PREFIX}-gettext-runtime-0.26-1-any.pkg.tar.zst"
+            "${MINGW_PACKAGE_PREFIX}-gettext-tools-0.26-1-any.pkg.tar.zst"
+            "${MINGW_PACKAGE_PREFIX}-gtk4-4.18.6-3-any.pkg.tar.zst"
+            "${MINGW_PACKAGE_PREFIX}-libadwaita-1.7.7-1-any.pkg.tar.zst"
+        )
+        pin_dir="$(mktemp -d)"
+        for p in "${pinned[@]}"; do
+            curl -fsSL -o "${pin_dir}/${p}" "https://repo.msys2.org/mingw/${repo_arch}/${p}"
+        done
+        pacman -U --noconfirm "${pinned[@]/#/${pin_dir}/}"
+        rm -rf "${pin_dir}"
+
+        # Keep `pacman -Syu` from silently undoing the pin (and with it the GPU
+        # acceleration). Remove these from IgnorePkg to upgrade deliberately.
+        # Note: IgnorePkg only takes effect inside the [options] section,
+        # appending it to the end of the file lands in a repo section and is
+        # silently ignored (pacman only warns).
+        if ! grep -qE "^IgnorePkg.*${MINGW_PACKAGE_PREFIX}-gtk4" /etc/pacman.conf; then
+            sed -i "/^\[options\]/a IgnorePkg   = ${MINGW_PACKAGE_PREFIX}-gtk4 ${MINGW_PACKAGE_PREFIX}-libadwaita ${MINGW_PACKAGE_PREFIX}-gettext-runtime ${MINGW_PACKAGE_PREFIX}-gettext-libtextstyle ${MINGW_PACKAGE_PREFIX}-gettext-tools" \
+                /etc/pacman.conf
+        fi
+
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        exit 0
+    fi
+
+    # Everything below is a workaround for x86_64/GCC-specific breakage in the
+    # MINGW64 environment and is deliberately skipped elsewhere.
     mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
     # We need to pin version : cairo before dwrite, gtk before dcomp
     # cairo : before 
@@ -145,13 +205,34 @@ setup-release *MESON_ARGS:
         {{ MESON_ARGS }} \
         {{ build_folder }}
 
-# in MINGW64 shell
-setup-win-installer installer_name="rnote-win-installer":
+# Dev build in a MSYS2 shell (MINGW64, CLANGARM64, ..). Unlike `setup-dev` this
+# installs into the MSYS2 prefix instead of /usr, so the app can be run locally
+# without building the installer.
+setup-win-dev *MESON_ARGS:
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    prefix="{{ msys_prefix_path }}"
+    [[ -n "$prefix" ]] || prefix="$(cygpath -m "$MSYSTEM_PREFIX")"
     meson setup \
-        --prefix={{ mingw64_prefix_path }} \
+        --prefix="$prefix" \
+        -Dprofile=devel \
+        -Dwin-build-environment-path="$prefix" \
+        -Dci={{ ci }} \
+        {{ MESON_ARGS }} \
+        {{ build_folder }}
+
+# in a MSYS2 shell (MINGW64, CLANGARM64, ..)
+setup-win-installer installer_name="rnote-win-installer":
+    #!/usr/bin/env bash
+    set -euxo pipefail
+    prefix="{{ msys_prefix_path }}"
+    [[ -n "$prefix" ]] || prefix="$(cygpath -m "$MSYSTEM_PREFIX")"
+    meson setup \
+        --prefix="$prefix" \
         -Dprofile=default \
         -Dcli=true \
         -Dwin-installer-name={{ installer_name }} \
+        -Dwin-build-environment-path="$prefix" \
         -Dci={{ ci }} \
         {{ build_folder }}
 

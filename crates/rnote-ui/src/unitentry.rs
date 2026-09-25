@@ -288,6 +288,8 @@ impl RnUnitEntry {
     }
 
     #[allow(unused)]
+    /// **Note**: if both "value" and "dpi" should be changed at the same time, use [Self::set_dpi_and_value_px()] instead.
+    /// It ensures that no intermittent wrong "value" change signals are emitted by the Widget.
     pub(crate) fn set_dpi(&self, dpi: f64) {
         self.set_property("dpi", dpi.to_value());
     }
@@ -302,6 +304,8 @@ impl RnUnitEntry {
         )
     }
 
+    /// **Note**: if both "value" and "dpi" should be changed at the same time, use [Self::set_dpi_and_value_px()] instead.
+    /// It ensures that no intermittent wrong "value" change signals are emitted by the Widget.
     pub(crate) fn set_value_in_px(&self, val_px: f64) {
         self.set_value(MeasureUnit::convert_measurement(
             val_px,
@@ -316,5 +320,37 @@ impl RnUnitEntry {
         let value = self.value();
         self.set_dpi(dpi);
         self.set_value(value);
+    }
+
+    /// Sets both dpi and value such that no intermittent wrong "value"
+    /// change signals are emitted by the Widget.
+    pub(crate) fn set_dpi_and_value_px(&self, dpi: f64, val_px: f64) {
+        if self.unit() == MeasureUnit::Px {
+            // Note : setting value then dpi will work if and only if the unit is is px
+            // Then value_in_px returns self.value() directly
+            // because dpi is not a variable in the convert_measurement call
+
+            self.set_value_in_px(val_px);
+            self.set_dpi(dpi);
+        } else {
+            // NOTE : this is mostly for security
+            // as we default to px for now on startup for the unit
+            // this shouldn't matter too much (at most this will limit duplicated
+            // calls to the engine with erroneous value_px on the first call)
+
+            // silent set on the dpi (because the new dpi value == to the cell one,
+            // does not trigger a calculation on value again)
+            // hence both the property and the cell have the new value
+            self.imp().dpi.replace(dpi);
+            self.set_dpi(dpi);
+
+            self.set_value(MeasureUnit::convert_measurement(
+                val_px,
+                MeasureUnit::Px,
+                dpi,
+                self.unit(),
+                dpi,
+            ));
+        }
     }
 }

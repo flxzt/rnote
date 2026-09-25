@@ -162,8 +162,8 @@ impl Engine {
             let result = || -> anyhow::Result<VectorImage> {
                 let svg_str = String::from_utf8(bytes)?;
 
-                VectorImage::from_svg_str(
-                    &svg_str,
+                VectorImage::from_svg_string(
+                    svg_str,
                     pos,
                     ImageSizeOption::ResizeImage(resize_struct),
                 )
@@ -221,6 +221,9 @@ impl Engine {
     ///
     /// The bytes are expected to be from a valid Pdf.
     ///
+    /// Takes ownership of the bytes: they are handed over to hayro, which keeps them alive for the
+    /// whole import, so passing them by value avoids a full copy of the file.
+    ///
     /// Note: `insert_pos` does not have an effect when the `adjust_document` import pref is set true.
     #[allow(clippy::type_complexity)]
     pub fn generate_pdf_pages_from_bytes(
@@ -251,7 +254,7 @@ impl Engine {
                 match pdf_import_prefs.pages_type {
                     PdfImportPagesType::Bitmap => {
                         let bitmapimages = BitmapImage::from_pdf_bytes(
-                            &bytes,
+                            bytes,
                             pdf_import_prefs,
                             insert_pos,
                             page_range,
@@ -265,7 +268,7 @@ impl Engine {
                     }
                     PdfImportPagesType::Vector => {
                         let vectorimages = VectorImage::from_pdf_bytes(
-                            &bytes,
+                            bytes,
                             pdf_import_prefs,
                             insert_pos,
                             page_range,
@@ -402,5 +405,243 @@ impl Engine {
         widget_flags.redraw = true;
 
         widget_flags
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    //! Regression tests for the Pdf import paths.
+    //!
+    //! The Pdf import code had no tests at all, so these pin the observable contract of the two import
+    //! modes (page count, page order, rendered raster format and pixels, stored Svg) on a Pdf that is
+    //! built inside the test. That keeps the test self-contained: no fixture file, no external tool.
+    //!
+    //! What is deliberately *not* asserted: exact pixel values or hashes of a whole page. The renderer
+    //! is allowed to change its antialiasing, and a test that has to be updated for every renderer bump
+    //! gets deleted instead.
+    use super::*;
+
+    use crate::document::Format;
+    use crate::image::ImageMemoryFormat;
+
+    /// Page size used by the first page of the fixtures.
+    const PAGE_W: f64 = 200.0;
+    const PAGE_H: f64 = 300.0;
+
+    /// Build a minimal but valid Pdf whose pages are `(width, height)` Pdf user units and have a black
+    /// rectangle on the middle 50% of the page. Uncompressed and font-free, so the bytes stay small and
+    /// the rendered pixels are predictable: black in the center, white everywhere else.
+    fn test_pdf(page_sizes: &[(f64, f64)]) -> Vec<u8> {
+        // Object ids: 1 catalog, 2 page tree, then a content stream + page object per page.
+        let content_id = |i: usize| 3 + 2 * i;
+        let page_id = |i: usize| 4 + 2 * i;
+
+        let mut objects: Vec<Vec<u8>> = vec![
+            b"<< /Type /Catalog /Pages 2 0 R >>".to_vec(),
+            format!(
+                "<< /Type /Pages /Kids [{}] /Count {} >>",
+                (0..page_sizes.len())
+                    .map(|i| format!("{} 0 R", page_id(i)))
+                    .collect::<Vec<_>>()
+                    .join(" "),
+                page_sizes.len()
+            )
+            .into_bytes(),
+        ];
+
+        for (i, &(w, h)) in page_sizes.iter().enumerate() {
+            let content = format!(
+                "0 0 0 rg {} {} {} {} re f",
+                w * 0.25,
+                h * 0.25,
+                w * 0.5,
+                h * 0.5
+            );
+            objects.push(
+                format!(
+                    "<< /Length {} >>\nstream\n{}\nendstream",
+                    content.len(),
+                    content
+                )
+                .into_bytes(),
+            );
+            objects.push(
+            format!(
+                "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 {w} {h}] /Resources << >> /Contents {} 0 R >>",
+                content_id(i)
+            )
+            .into_bytes(),
+        );
+        }
+
+        let mut out: Vec<u8> = b"%PDF-1.7\n".to_vec();
+        let mut offsets = Vec::with_capacity(objects.len());
+        for (i, object) in objects.iter().enumerate() {
+            offsets.push(out.len());
+            out.extend_from_slice(format!("{} 0 obj\n", i + 1).as_bytes());
+            out.extend_from_slice(object);
+            out.extend_from_slice(b"\nendobj\n");
+        }
+        let xref_offset = out.len();
+        out.extend_from_slice(format!("xref\n0 {}\n", objects.len() + 1).as_bytes());
+        out.extend_from_slice(b"0000000000 65535 f \n");
+        for offset in &offsets {
+            out.extend_from_slice(format!("{offset:010} 00000 n \n").as_bytes());
+        }
+        out.extend_from_slice(
+            format!(
+                "trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{xref_offset}\n%%EOF\n",
+                objects.len() + 1
+            )
+            .as_bytes(),
+        );
+        out
+    }
+
+    fn three_pages() -> Vec<u8> {
+        test_pdf(&[(PAGE_W, PAGE_H); 3])
+    }
+
+    fn prefs(pages_type: PdfImportPagesType) -> PdfImportPrefs {
+        PdfImportPrefs {
+            pages_type,
+            ..Default::default()
+        }
+    }
+
+    /// The premultiplied RGBA8 pixel at `(x, y)`.
+    fn pixel(image: &crate::image::Image, x: u32, y: u32) -> [u8; 4] {
+        let i = (y as usize * image.pixel_width as usize + x as usize) * 4;
+        let data: &[u8] = &image.data;
+        [data[i], data[i + 1], data[i + 2], data[i + 3]]
+    }
+
+    fn aspect_ratio(images: &[BitmapImage]) -> f64 {
+        let image = &images[0].image;
+        image.pixel_width as f64 / image.pixel_height as f64
+    }
+
+    #[test]
+    fn bitmap_import_renders_every_page_in_order() {
+        let images = BitmapImage::from_pdf_bytes(
+            three_pages(),
+            prefs(PdfImportPagesType::Bitmap),
+            Vector2::ZERO,
+            None,
+            &Format::default(),
+            None,
+        )
+        .expect("importing the test Pdf failed");
+
+        assert_eq!(images.len(), 3, "one stroke per page");
+
+        for image in &images {
+            // The page's aspect ratio survives rendering (up to rounding to whole pixels).
+            let rendered = image.image.pixel_width as f64 / image.image.pixel_height as f64;
+            assert!(
+                (rendered - PAGE_W / PAGE_H).abs() < 0.01,
+                "page aspect ratio {rendered} does not match {}",
+                PAGE_W / PAGE_H
+            );
+            assert!(matches!(
+                image.image.memory_format,
+                ImageMemoryFormat::R8g8b8a8Premultiplied
+            ));
+            assert_eq!(
+                image.image.data.len(),
+                (image.image.pixel_width * image.image.pixel_height * 4) as usize,
+                "the pixel buffer must match ImageMemoryFormat"
+            );
+
+            // Pdf import renders on an opaque white background, so the buffer is fully opaque and
+            // premultiplied values can be compared as plain RGB.
+            let center = pixel(
+                &image.image,
+                image.image.pixel_width / 2,
+                image.image.pixel_height / 2,
+            );
+            assert!(
+                center == [0, 0, 0, 255],
+                "the black center rectangle should render black, got {center:?}"
+            );
+
+            let corner = pixel(&image.image, 2, 2);
+            assert!(
+                corner == [255, 255, 255, 255],
+                "the page margin should render white, got {corner:?}"
+            );
+        }
+
+        // Pages are placed one after another, not on top of each other.
+        let first = images[0].rectangle.bounds();
+        let second = images[1].rectangle.bounds();
+        assert!(
+            second.mins[1] >= first.maxs[1],
+            "pages overlap: {first:?} then {second:?}"
+        );
+    }
+
+    #[test]
+    fn bitmap_import_page_range_only_imports_the_range() {
+        // Distinct page widths, so the imported page can be identified by its aspect ratio.
+        let bytes = test_pdf(&[
+            (PAGE_W, PAGE_H),
+            (PAGE_W + 100.0, PAGE_H),
+            (PAGE_W + 200.0, PAGE_H),
+        ]);
+
+        let images = BitmapImage::from_pdf_bytes(
+            bytes,
+            prefs(PdfImportPagesType::Bitmap),
+            Vector2::ZERO,
+            Some(1..2),
+            &Format::default(),
+            None,
+        )
+        .expect("importing a page range failed");
+
+        assert_eq!(images.len(), 1, "only the selected page is imported");
+        assert!(
+            (aspect_ratio(&images) - (PAGE_W + 100.0) / PAGE_H).abs() < 0.01,
+            "the second page was expected, got aspect ratio {}",
+            aspect_ratio(&images)
+        );
+    }
+
+    #[test]
+    fn vector_import_keeps_a_parseable_svg_per_page() {
+        let images = VectorImage::from_pdf_bytes(
+            three_pages(),
+            prefs(PdfImportPagesType::Vector),
+            Vector2::ZERO,
+            None,
+            &Format::default(),
+            None,
+        )
+        .expect("importing the test Pdf failed");
+
+        assert_eq!(images.len(), 3, "one stroke per page");
+
+        for image in &images {
+            assert!(
+                image.svg_data.contains("<svg"),
+                "stored Svg data is not an Svg document"
+            );
+            // The stored Svg is what the renderer parses again on every draw, so it has to stay valid.
+            usvg::Tree::from_str(&image.svg_data, &usvg::Options::default())
+                .expect("the stored Svg data does not parse");
+            assert!(
+                image.intrinsic_size[0] > 0.0 && image.intrinsic_size[1] > 0.0,
+                "intrinsic size was not determined"
+            );
+        }
+
+        // Pages are placed one after another, not on top of each other.
+        let first = images[0].rectangle.bounds();
+        let second = images[1].rectangle.bounds();
+        assert!(
+            second.mins[1] >= first.maxs[1],
+            "pages overlap: {first:?} then {second:?}"
+        );
     }
 }

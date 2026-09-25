@@ -11,14 +11,12 @@ use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
-use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::Transformable;
 use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
-use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
@@ -105,7 +103,15 @@ impl BitmapImage {
         pos: Vector2,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
-        let image = Image::try_from_encoded_bytes(bytes)?;
+        Self::from_image(Image::try_from_encoded_bytes(bytes)?, pos, size_option)
+    }
+
+    /// Create a [BitmapImage] from an already decoded [Image].
+    pub fn from_image(
+        image: Image,
+        pos: Vector2,
+        size_option: ImageSizeOption,
+    ) -> Result<Self, anyhow::Error> {
         let initial_size = Vector2::new(image.pixel_width as f64, image.pixel_height as f64);
         let (size, resize_ratio) = match size_option {
             ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
@@ -126,24 +132,31 @@ impl BitmapImage {
         Ok(Self { image, rectangle })
     }
 
+    /// Generate bitmap image strokes from the pages of a Pdf.
+    ///
+    /// Takes ownership of the Pdf bytes: hayro parses Pdf objects lazily and keeps the file bytes
+    /// alive for as long as the [hayro_syntax::Pdf] exists, so the buffer is handed over instead of
+    /// being copied. Copying it kept a second, equally large copy of the whole file resident for the
+    /// entire import.
     pub fn from_pdf_bytes(
-        to_be_read: &[u8],
+        to_be_read: Vec<u8>,
         pdf_import_prefs: PdfImportPrefs,
         insert_pos: Vector2,
         page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        // TODO: how to avoid this allocation without lifetime issues?
-        let data = Arc::new(to_be_read.to_vec());
         let pdf = if let Some(password) = password {
-            hayro_syntax::Pdf::new_with_password(data, &password)
+            hayro_syntax::Pdf::new_with_password(to_be_read, &password)
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         } else {
-            hayro_syntax::Pdf::new(data)
+            hayro_syntax::Pdf::new(to_be_read)
                 .map_err(|err| anyhow!("Creating Pdf instance failed, Err: {err:?}"))?
         };
         let interpreter_settings = hayro_interpret::InterpreterSettings::default();
+        // hayro 0.7 takes a render cache, which upstream intends to be created once per PDF and
+        // reused across the render invocations of that document.
+        let render_cache = hayro::RenderCache::new();
         let pages = pdf.pages();
         let page_range = page_range.unwrap_or(0..pages.len());
         let page_width = if pdf_import_prefs.adjust_document {
@@ -162,7 +175,7 @@ impl BitmapImage {
         let mut y = insert_pos[1];
 
         // TODO: investigate if this can be parallelized with rayon's `par_iter()`
-        let pngs = page_range
+        let images = page_range
             .map(|page_i| {
                 let page = pages
                     .get(page_i)
@@ -183,8 +196,19 @@ impl BitmapImage {
 
                 // TODO: implement drawing page borders.
                 // Possibly with vello-cpu, since it already is a dependency of hayro
-                let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
-                let png_data = pixmap.into_png()?;
+                let pixmap =
+                    hayro::render(page, &render_cache, &interpreter_settings, &render_settings);
+
+                // vello-cpu renders to premultiplied RGBA8, which is exactly the format rnote
+                // stores images in memory, so the rendered page can be handed over directly.
+                // Encoding it to PNG only to decode it again would allocate every page twice
+                // more (an un-premultiplied buffer plus the encoded buffer), and the encoded
+                // pages of the whole document would be held simultaneously.
+                let image = Image::from_premultiplied_rgba8(
+                    pixmap.data_as_u8_slice().to_vec(),
+                    pixmap.width() as u32,
+                    pixmap.height() as u32,
+                );
 
                 let image_pos = Vector2::new(x, y);
                 let image_size = Vector2::new(width, height);
@@ -200,14 +224,10 @@ impl BitmapImage {
                     };
                 }
 
-                Ok((png_data, image_pos, image_size))
+                Self::from_image(image, image_pos, ImageSizeOption::ImposeSize(image_size))
             })
-            .collect::<anyhow::Result<Vec<(Vec<u8>, Vector2, Vector2)>>>()?;
+            .collect::<anyhow::Result<Vec<Self>>>()?;
 
-        pngs.into_par_iter()
-            .map(|(png_data, pos, size)| {
-                Self::from_image_bytes(&png_data, pos, ImageSizeOption::ImposeSize(size))
-            })
-            .collect()
+        Ok(images)
     }
 }

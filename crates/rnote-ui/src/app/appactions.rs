@@ -65,7 +65,9 @@ impl RnApp {
 
     // Accelerators / Keyboard Shortcuts
     pub(crate) fn setup_action_accels(&self) {
-        self.set_accels_for_action("app.quit", &["<Ctrl>q"]);
-        self.set_accels_for_action("app.new-window", &["<Ctrl>n"]);
+        // `<Primary>` is substituted with the platform's primary modifier,
+        // see [`crate::utils::set_accels_for_action()`].
+        crate::utils::set_accels_for_action(self, "app.quit", &["<Primary>q"]);
+        crate::utils::set_accels_for_action(self, "app.new-window", &["<Primary>n"]);
     }
 }

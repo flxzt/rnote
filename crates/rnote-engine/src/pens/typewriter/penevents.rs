@@ -1057,6 +1057,8 @@ impl Typewriter {
                                 }
                                 KeyboardKey::CtrlLeft
                                 | KeyboardKey::CtrlRight
+                                | KeyboardKey::MetaLeft
+                                | KeyboardKey::MetaRight
                                 | KeyboardKey::ShiftLeft
                                 | KeyboardKey::ShiftRight => EventResult {
                                     handled: false,

@@ -12,6 +12,7 @@
     <child>
       <object class="GtkBox">
         <property name="orientation">vertical</property>
+        <property name="spacing">3</property>
         <property name="vexpand">false</property>
         <child>
           <object class="GtkMenuButton" id="shapebuildertype_menubutton">
@@ -54,11 +55,6 @@
     </child>
     <child>
       <object class="RnStrokeWidthPicker" id="stroke_width_picker">
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
       </object>
     </child>
 

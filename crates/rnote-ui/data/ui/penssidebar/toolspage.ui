@@ -16,6 +16,7 @@
         <child>
           <object class="GtkBox">
             <property name="orientation">vertical</property>
+            <property name="spacing">3</property>
             <child>
               <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
                 <property name="tooltip_text" translatable="yes">Insert Vertical Space</property>

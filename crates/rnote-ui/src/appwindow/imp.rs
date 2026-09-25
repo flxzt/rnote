@@ -718,11 +718,6 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .brush_page()
-                .brushstyle_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .brush_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
             obj.overlays()
@@ -831,11 +826,6 @@ impl RnAppWindow {
                 .penssidebar()
                 .brush_page()
                 .brushconfig_menubutton()
-                .set_direction(ArrowType::Left);
-            obj.overlays()
-                .penssidebar()
-                .brush_page()
-                .brushstyle_menubutton()
                 .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()

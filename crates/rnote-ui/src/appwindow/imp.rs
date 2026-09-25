@@ -730,6 +730,11 @@ impl RnAppWindow {
                 .set_position(PositionType::Left);
             obj.overlays()
                 .penssidebar()
+                .selector_page()
+                .strokewidth_menubutton()
+                .set_direction(ArrowType::Right);
+            obj.overlays()
+                .penssidebar()
                 .tools_page()
                 .verticalspace_menubutton()
                 .set_direction(ArrowType::Right);
@@ -845,6 +850,11 @@ impl RnAppWindow {
                 .eraser_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Right);
+            obj.overlays()
+                .penssidebar()
+                .selector_page()
+                .strokewidth_menubutton()
+                .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()
                 .tools_page()

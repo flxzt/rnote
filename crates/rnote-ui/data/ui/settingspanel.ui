@@ -596,7 +596,7 @@ on a drawing pad</property>
                     <child>
                       <object class="RnPenModeRow" id="lock_eraser_mode">
                         <property name="title" translatable="yes">Tool for the eraser action</property>
-                        <property name="subtitle" translatable="yes">Set/lock the action for the pen</property>
+                        <property name="subtitle" translatable="yes">Set/lock the action for the eraser</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">stylus-button-eraser-symbolic</property>

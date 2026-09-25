@@ -49,6 +49,9 @@ pub enum ShortcutAction {
         #[serde(rename = "mode")]
         mode: ShortcutMode,
     },
+    /// Toggle the focus mode of the appwindow.
+    #[serde(rename = "toggle_focus_mode")]
+    ToggleFocusMode,
 }
 
 /// The registered shortcut actions for the given shortcut keys.

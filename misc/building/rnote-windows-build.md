@@ -22,7 +22,7 @@ If you installed Inno Setup, append `:/c/Program Files (x86)/Inno Setup 6` to th
 
 To install dependencies, install `just` and run the `prerequisites-win` command inside the MSYS2 terminal
 ```bash
-cargo install --locked just
+pacman -S just
 just prerequisites-win
 ```
 Or run the corresponding `prerequisites-win` section in [the justfile](../../justfile) in a MSYS2 terminal manually.
@@ -48,18 +48,17 @@ cd rnote/
 git submodule update --init --recursive
 ```
 
-Or (from the mingw64 terminal):
+Or (from the ucrt64 terminal):
 
 ```bash
 MSYS=winsymlinks:native git clone https://github.com/flxzt/rnote.git
 git submodule update --init --recursive
 ```
-
 Verify that you see in `/crates/rnote-ui/po` the four files zh_CN.po, zh_HK.po, zh_SG.po and zh_TW.po as symlinks
 (and not as a text file with a single line inside).
 
-For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/`´
-and rustc apparently wants to link with both, resulting in "multiple definitions of pthread\_..." linker errors.
+For unknown reasons, `libpthread.a` **and** `libpthread.dll.a` exist in `/mingw64/lib/` and rustc apparently wants to
+link with both, resulting in "multiple definitions of pthread\_..." linker errors.
 To solve this (in a very hacky way), rename `libpthread.dll.a` to `libpthread.dll.a.bak`.
 
 ```bash
@@ -71,7 +70,7 @@ mv /mingw64/lib/libpthread.dll.a /mingw64/lib/libpthread.dll.a.bak
 In the directory that you cloned Rnote into, run the following command to setup meson.
 
 ```bash
-meson setup --prefix=C:/msys64/mingw64 _mesonbuild
+meson setup --prefix=C:/msys64/ucrt64 _mesonbuild
 ```
 
 Then, the project can be compiled...
@@ -86,9 +85,8 @@ meson compile -C _mesonbuild
 meson install -C _mesonbuild
 ```
 
-The installed binary can now be executed.
-It is located at `C:\msys64\mingw64\bin\rnote.exe` and depends on the environment provided by MSYS2.
-It is not portable.
+The installed binary can now be executed. It is located at `C:\msys64\ucrt64\bin\rnote.exe` and depends on the
+environment provided by MSYS2, so it is not portable.
 
 ## Building the Installer
 
@@ -100,11 +98,11 @@ meson compile build-installer -C _mesonbuild
 ```
 
 If successful, the generated installer will be located at `_mesonbuild/rnote-win-installer.exe`.
-If you did not install MSYS2 into the default directory (`C:\msys64`),
-then you will have to adjust the meson option called `msys-path` prior to building.
+If you did not install msys2/ucrt64 into the default directory (`C:\msys64\ucrt64`),
+then you will have to adjust the meson option called `win-build-environment-path` prior to building.
 
 ```bash
-meson configure -Dmsys-path='C:\path\to\msys64' _mesonbuild
+meson configure -Dwin-build-environment-path='C:\path\to\msys64\ucrt64' _mesonbuild
 ```
 
 Likewise, you can adjust the output name of the installer using the `win-installer-name` option

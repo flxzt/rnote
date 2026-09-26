@@ -147,7 +147,7 @@ if build_ui == true
         rnote_compose_sources,
         rnote_engine_sources,
         rnote_ui_sources,
-        rnote_ui_gresources_files,
+        rnote_ui_data_files,
         files(
             meson.project_source_root() + '/crates/rnote-compose/Cargo.toml',
             meson.project_source_root() + '/crates/rnote-engine/Cargo.toml',

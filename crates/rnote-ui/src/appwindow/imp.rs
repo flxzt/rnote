@@ -115,7 +115,7 @@ impl ObjectImpl for RnAppWindow {
 
         // Load the application css
         let css = CssProvider::new();
-        css.load_from_resource((String::from(config::APP_IDPATH) + "ui/style.css").as_str());
+        css.load_from_string(&include_str!("../../data/style.css"));
 
         let display = gdk::Display::default().unwrap();
         gtk4::style_context_add_provider_for_display(
@@ -123,6 +123,18 @@ impl ObjectImpl for RnAppWindow {
             &css,
             gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
+
+        #[cfg(target_os = "windows")]
+        {
+            let css = CssProvider::new();
+            css.load_from_string(&include_str!("../../data/style-win.css"));
+            let display = gdk::Display::default().unwrap();
+            gtk4::style_context_add_provider_for_display(
+                &display,
+                &css,
+                gtk4::STYLE_PROVIDER_PRIORITY_USER,
+            );
+        }
 
         self.setup_input();
         self.setup_overview();

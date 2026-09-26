@@ -365,15 +365,20 @@ rnote_ui_gresources_ui_files = files(
     'ui/sidebar.ui',
     'ui/strokecontentpreview.ui',
     'ui/strokewidthpicker.ui',
-    'ui/style.css',
     'ui/unitentry.ui',
     'ui/workspacebrowser.ui',
     'ui/workspacesbar/workspacerow.ui',
     'ui/workspacesbar/workspacesbar.ui',
 )
 
-rnote_ui_gresources_files = [
+rnote_css_style = files(
+    'style.css',
+    'style-win.css',
+)
+
+rnote_ui_data_files = [
     rnote_ui_gresources_icons_files,
     rnote_ui_gresources_ui_files,
+    rnote_css_style,
     files('resources.gresource.xml'),
 ]

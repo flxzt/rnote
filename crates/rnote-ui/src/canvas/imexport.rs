@@ -98,9 +98,11 @@ impl RnCanvas {
             self.engine_mut()
                 .generate_vectorimage_from_bytes(pos, bytes, respect_borders);
         let vectorimage = vectorimage_receiver.await??;
-        let widget_flags = self
-            .engine_mut()
-            .import_generated_content(vec![(Stroke::VectorImage(vectorimage), None)], false);
+        let widget_flags = self.engine_mut().import_generated_content(
+            vec![(Stroke::VectorImage(vectorimage), None)],
+            false,
+            1,
+        );
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -121,9 +123,11 @@ impl RnCanvas {
             self.engine_mut()
                 .generate_bitmapimage_from_bytes(pos, bytes, respect_borders);
         let bitmapimage = bitmapimage_receiver.await??;
-        let widget_flags = self
-            .engine_mut()
-            .import_generated_content(vec![(Stroke::BitmapImage(bitmapimage), None)], false);
+        let widget_flags = self.engine_mut().import_generated_content(
+            vec![(Stroke::BitmapImage(bitmapimage), None)],
+            false,
+            1,
+        );
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())
@@ -141,20 +145,21 @@ impl RnCanvas {
         password: Option<String>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
-        let adjust_document = appwindow
+        let pdf_import_prefs = appwindow
             .engine_config()
             .read()
             .import_prefs
-            .pdf_import_prefs
-            .adjust_document;
+            .pdf_import_prefs;
 
         let strokes_receiver = self
             .engine_mut()
             .generate_pdf_pages_from_bytes(bytes, pos, page_range, password);
         let strokes = strokes_receiver.await??;
-        let widget_flags = self
-            .engine_mut()
-            .import_generated_content(strokes, adjust_document);
+        let widget_flags = self.engine_mut().import_generated_content(
+            strokes,
+            pdf_import_prefs.adjust_document,
+            pdf_import_prefs.columns,
+        );
 
         self.emit_handle_widget_flags(widget_flags);
         Ok(())

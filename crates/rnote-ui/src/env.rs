@@ -74,9 +74,40 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
                 "GDK_PIXBUF_MODULEDIR",
                 lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),
             );
-
-            //std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug");
         }
+
+        // Without DirectComposition GSK falls back to the cairo software
+        // renderer, where strokes and images render as flat coloured (pink) boxes.
+        if std::env::var_os("GDK_DEBUG").is_none() {
+            unsafe { std::env::set_var("GDK_DEBUG", "dcomp") };
+        }
+        // On Windows, pangocairo renders glyphs through cairo's win32 font backend, which goes to DirectWrite
+        // and Direct2D.
+        // On Windows that path is broken: pango logs "All font fallbacks failed" for every layout and rendering
+        // text eventually dies with an access violation (0xc0000005) in d2d1.dll.
+        // It reproducibly takes down the app when a document containing a text stroke is opened, or when the
+        // typewriter is used.
+        //
+        // The fontconfig/freetype backend works correctly here, so select it explicitly.
+        // Fontconfig is present and configured in the MSYS2 environment the app is built and shipped with.
+        //
+        // This deliberately does not use `std::env::set_var`: on Windows that only calls SetEnvironmentVariableW,
+        // which updates the Win32 environment block but not the copy the C runtime builds at startup.
+        // pangocairo reads the variable with plain `getenv` (unlike GDK, which uses `g_getenv` and therefore does
+        // see `set_var`), so it would never observe the value. `_putenv_s` updates the CRT table that `getenv`
+        // reads, and pangocairo resolves to the same UCRT as the app.
+        if std::env::var_os("PANGOCAIRO_BACKEND").is_none() {
+            unsafe extern "C" {
+                fn _putenv_s(
+                    name: *const std::ffi::c_char,
+                    value: *const std::ffi::c_char,
+                ) -> std::ffi::c_int;
+            }
+
+            unsafe { _putenv_s(c"PANGOCAIRO_BACKEND".as_ptr(), c"fc".as_ptr()) };
+        }
+
+        //unsafe { std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug") };
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
 

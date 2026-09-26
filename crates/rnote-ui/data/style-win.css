@@ -1,0 +1,24 @@
+/* this windows-specific stylesheet will be loaded with "user" precedence to overwite the application style. */
+
+.csd {
+    margin: -9px;
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+}
+
+.csd:backdrop {
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+}
+
+popover {
+    margin: -33px -23px -25px -23px;
+    box-shadow: unset;
+}
+
+popover contents {
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+}

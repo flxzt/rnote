@@ -168,6 +168,10 @@ flatpak run --command=rnote-cli com.github.flxzt.rnote help
 
     To verify what event each pen button sends, you can use `evtest` on Linux.
 
+- **On Windows: the application window is surrounded by a black border instead of a shadow**:
+  This is due to a bug with the underlying UI toolkit GTK4.
+  Unfortunately for the time being this cannot be fixed easily and is a known issue.
+
 ## Translations
 
 <a href="https://hosted.weblate.org/engage/rnote/">

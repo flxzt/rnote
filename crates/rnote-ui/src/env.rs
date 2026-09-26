@@ -74,9 +74,40 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
                 "GDK_PIXBUF_MODULEDIR",
                 lib_dir.join("gdk-pixbuf-2.0\\2.10.0\\loaders"),
             );
-
-            //std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug");
         }
+
+        // Without DirectComposition GSK falls back to the cairo software
+        // renderer, where strokes and images render as flat coloured (pink) boxes.
+        if std::env::var_os("GDK_DEBUG").is_none() {
+            unsafe { std::env::set_var("GDK_DEBUG", "dcomp") };
+        }
+        // On Windows, pangocairo renders glyphs through cairo's win32 font backend, which goes to DirectWrite
+        // and Direct2D.
+        // On Windows that path is broken: pango logs "All font fallbacks failed" for every layout and rendering
+        // text eventually dies with an access violation (0xc0000005) in d2d1.dll.
+        // It reproducibly takes down the app when a document containing a text stroke is opened, or when the
+        // typewriter is used.
+        //
+        // The fontconfig/freetype backend works correctly here, so select it explicitly.
+        // Fontconfig is present and configured in the MSYS2 environment the app is built and shipped with.
+        //
+        // This deliberately does not use `std::env::set_var`: on Windows that only calls SetEnvironmentVariableW,
+        // which updates the Win32 environment block but not the copy the C runtime builds at startup.
+        // pangocairo reads the variable with plain `getenv` (unlike GDK, which uses `g_getenv` and therefore does
+        // see `set_var`), so it would never observe the value. `_putenv_s` updates the CRT table that `getenv`
+        // reads, and pangocairo resolves to the same UCRT as the app.
+        if std::env::var_os("PANGOCAIRO_BACKEND").is_none() {
+            unsafe extern "C" {
+                fn _putenv_s(
+                    name: *const std::ffi::c_char,
+                    value: *const std::ffi::c_char,
+                ) -> std::ffi::c_int;
+            }
+
+            unsafe { _putenv_s(c"PANGOCAIRO_BACKEND".as_ptr(), c"fc".as_ptr()) };
+        }
+
+        //unsafe { std::env::set_var("RUST_LOG", "rnote=debug,rnote-cli=debug,rnote-engine=debug,rnote-compose=debug") };
     } else if cfg!(target_os = "macos") {
         let canonicalized_exec_dir = exec_parent_dir()?.canonicalize()?;
 
@@ -121,46 +152,4 @@ fn macos_is_in_app_bundle(canonicalized_exec_dir: impl AsRef<Path>) -> bool {
                 false
             }
         })
-}
-
-#[cfg(target_os = "windows")]
-/// Workaround for windows for shadow that intercept mouse events outside of the
-/// actual window. See https://github.com/flxzt/rnote/issues/1372
-///
-/// Taken from gaphor
-/// See comment from https://github.com/gaphor/gaphor/blob/a7b35712b166a38b78933a79613eab330f7bd885/gaphor/ui/styling-windows.css
-/// and https://gitlab.gnome.org/GNOME/gtk/-/issues/6255#note_1952796
-pub fn window_styling_workaround() -> anyhow::Result<()> {
-    use gtk4::{gdk, style_context_add_provider_for_display};
-
-    // gtk needs to be initialized for the style provider to work
-    gtk4::init()?;
-
-    let default_display = gdk::Display::default();
-    let style_provider = gtk4::CssProvider::new();
-    style_provider.load_from_string(
-        "
-            .csd {
-          box-shadow: 0 3px 9px 1px alpha(black, 0.35),
-                      0 0 0 1px alpha(black, 0.18);
-        }
-        
-        .csd:backdrop {
-          box-shadow: 0 3px 9px 1px transparent,
-                      0 2px 6px 2px alpha(black, 1),
-                      0 0 0 1px alpha(black, 0.06);
-        }",
-    );
-
-    match default_display {
-        Some(display) => {
-            style_context_add_provider_for_display(
-                &display,
-                &style_provider,
-                gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
-            );
-            Ok(())
-        }
-        None => Err(anyhow::anyhow!("Could not find a default display")),
-    }
 }

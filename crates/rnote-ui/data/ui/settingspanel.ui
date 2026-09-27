@@ -441,6 +441,12 @@ gets disabled.</property>
                       </object>
                     </child>
                     <child>
+                      <object class="AdwSwitchRow" id="doc_auto_export_svg">
+                        <property name="title" translatable="yes">Auto Export SVG</property>
+                        <property name="subtitle" translatable="yes">Automatically export as [filename].svg on save</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="AdwActionRow" id="background_pattern_invert_color_row">
                         <property name="title" translatable="yes">Invert Color Brightness</property>
                         <property name="subtitle" translatable="yes">Invert the brightness of the background and pattern colors</property>

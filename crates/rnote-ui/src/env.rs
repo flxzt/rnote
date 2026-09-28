@@ -76,6 +76,13 @@ pub(crate) fn setup_env() -> anyhow::Result<()> {
             );
         }
 
+        // The OpenGL renderer has proven to be buggy and can even produce crashes on windows.
+        // Stick to vulkan by default.
+        // If it's initialization fails, Gtk4 falls back to OpenGL anyway.
+        if std::env::var_os("GSK_RENDERER").is_none() {
+            unsafe { std::env::set_var("GSK_RENDERER", "vulkan") };
+        }
+
         // Without DirectComposition GSK falls back to the cairo software
         // renderer, where strokes and images render as flat coloured (pink) boxes.
         if std::env::var_os("GDK_DEBUG").is_none() {

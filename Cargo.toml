@@ -96,6 +96,8 @@ url = "2.5"
 usvg = "0.47.0"
 winresource = "0.1.20"
 xmlwriter = "0.1.0"
+# inkml parser/writer
+writer_inkml = {git = "https://github.com/Doublonmousse/writer_reader_inkml", rev = "9370cf6a65ce566d91c232ca47d2cf08008e605e"}
 
 [patch.crates-io]
 

@@ -540,6 +540,28 @@ impl Engine {
         widget_flags
     }
 
+    /// Get the width of the thinnest stroke in the selection.
+    pub fn get_selection_stroke_width(&self) -> Option<f64> {
+        let keys = self.store.selection_keys_as_rendered();
+        self.store.min_stroke_width(&keys)
+    }
+
+    /// Change the width of all selected strokes.
+    pub fn change_selection_stroke_width(&mut self, width: f64) -> WidgetFlags {
+        let keys = self.store.selection_keys_as_rendered();
+        if keys.is_empty() {
+            return WidgetFlags::default();
+        }
+
+        let widget_flags = self.store.set_stroke_widths(&keys, width);
+
+        widget_flags
+            | self.current_pen_update_state()
+            | self.doc_resize_autoexpand()
+            | self.record(Instant::now())
+            | self.update_rendering_current_viewport()
+    }
+
     /// Generate bounds for each page on the document which contains content.
     pub fn pages_bounds_w_content(&self, split_order: SplitOrder) -> Vec<Aabb> {
         let doc_bounds = self.document.bounds();

@@ -235,20 +235,25 @@ impl VectorImage {
         };
 
         // Uniform zoom based on the widest page, keeps relative page sizes.
-        let max_intrinsic_width = page_range
+        let selected_pages: Vec<_> = page_range
             .clone()
             .filter_map(|page_i| pages.get(page_i))
+            .collect();
+        if selected_pages.is_empty() {
+            return Ok(vec![]);
+        }
+        let max_intrinsic_width = selected_pages
+            .iter()
             .map(|page| page.render_dimensions().0 as f64)
             .fold(0.0f64, f64::max);
         if max_intrinsic_width <= 0.0 {
-            return Ok(vec![]);
+            return Err(anyhow!("PDF pages have zero intrinsic width"));
         }
         let page_zoom_fit = page_width / max_intrinsic_width;
 
         // Stride for OnePerDocumentPage: start each page on a document page boundary.
-        let max_rendered_height = page_range
-            .clone()
-            .filter_map(|page_i| pages.get(page_i))
+        let max_rendered_height = selected_pages
+            .iter()
             .map(|page| page.render_dimensions().1 as f64 * page_zoom_fit)
             .fold(0.0f64, f64::max);
 

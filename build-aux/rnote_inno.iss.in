@@ -33,8 +33,10 @@ OutputDir={#meson_build_root}
 OutputBaseFilename=@INSTALLER_NAME@
 SetupIconFile={#meson_source_root}\crates\rnote-ui\data\icons\rnote.ico
 UninstallDisplayIcon = {app}\bin\{#MyAppExeName}
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
+; Let the user choose between an administrative (all users) and a non
+; administrative (current user only) install mode. PrivilegesRequired is left
+; at its default (admin), so "all users" stays the default choice.
+PrivilegesRequiredOverridesAllowed=dialog
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
 Compression=lzma2/ultra64

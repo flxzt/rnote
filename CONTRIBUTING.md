@@ -1,15 +1,15 @@
 # Contributing to Rnote
 
-This document outlines the various ways of contributing to Rnote
-and gives an overview of its structure and the tooling used.
+This document provides a guideline how to contribute to Rnote.
 
 # Maintainers
 
+The current core maintainers of the project are:
 - @flxzt : Original Author and Maintainer
 - @Doublonmousse : Maintainer
 - @Kneemund : Maintainer
 
-# Bug Reports & Features Requests
+# Contribute Bug Reports & Feature Requests
 
 Start from the templates located in `.github/ISSUE_TEMPLATE`.
 
@@ -41,10 +41,10 @@ see: [rnote-macos-build.md](./misc/building/rnote-macos-build.md).
 
 ## Windows
 
-For windows `mingw64` is used as the development and build environment.
-For the installer `innosetup` is used.
+For windows `msys/mingw64` is used as the development and build environment.
+For the installer "Inno Setup" is used.
 
-It should always be ensured that the app will build in `mingw64`,
+It should always be ensured that the app will build in the `msys/mingw64` environment,
 however tight integration with the Windows OS is not a priority.
 
 For more details on how to build the application and the installer on Windows
@@ -52,171 +52,151 @@ see: [rnote-windows-build.md](./misc/building/rnote-windows-build.md).
 
 # Translations
 
-A great way to contribute to the project without writing code is adding a new
-or start maintaining an existing translation language.
-The translations files are located in `crates/rnote-ui/po/`.
-
- Creating translations for new languages or updating existing ones can be done in multiple ways:
-- take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit".
+A great way to contribute to the project without writing code is adding a new or start maintaining an existing
+translation language.
+The translation files are located in `crates/rnote-ui/po/`.
+Creating translations for new languages or updating existing ones can be done in multiple ways:
+- Take the `rnote.pot` file and generate a new `.po` translation file from it, for example with "Poedit".
     Add the new translation language to `LINGUAS` and submit a PR with the changed files.
-- use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser
+- Use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser
     without having to deal with git.
 
-# Code Style
+# Contribute Code
 
-## Formatting
-
-For formatting `rustfmt` is used. It picks up the formatting configuration file `rustfmt.toml`.
-
-To check the formatting run:
-
-```bash
-cargo fmt --check
-```
-
-And to directly apply
-
-```bash
-cargo fmt
-```
-The formatting is also checked in the CI and a prerequisite for merging additional or changed code. 
-
-## Lints
-
-For linting `clippy` is used.
-Because the app needs to be built through meson, there is a meson target that prints available lints:
-
-For the UI
-
-```bash
-meson compile ui-cargo-clippy -C _mesonbuild
-```
-
-For the CLI
-
-```bash
-meson compile cli-cargo-clippy -C _mesonbuild
-```
-
-If consciously considered clippy warnings can also disabled in code by using `#[allow(clippy::<lint-name>)].
-However this must be justified when getting new code in.
-
-## Pre-Commit hooks
-
-Per default on an initial build git pre-commit hooks are installed to ensure the outlined style consistency.
-Check out [pre-commit.hook](hooks/pre-commit.hook) to see what the hook will do in detail.
-
-# Tests
-
-## Unit Tests
-
-Some unit tests are added throughout the codebase.
-First, install [cargo-nextest](https://nexte.st/).
-To run the tests execute:
-
-```bash
-meson compile cargo-test -C _mesonbuild
-```
-
-Just like in any other rust crate, tests can be added by declaring a tests module prefixed with the #[cfg(test)]
-attribute, then adding test functions prefixed by the #[test] attribute.
-Tests should be as closely coupled to the code they target as reasonably possible
-and in most cases should reside in the same source file.
-
-## Data / Package File Validation
-
-To check the style and correctness of other data/auxiliary files like the `.desktop`
-or `metainfo.xml` AppData definition file execute:
-
-```bash
-meson test -C _mesonbuild
-```
-
-# Contributing Code
-
-All code additions should go through a PR->Review cycle.
-The core maintainers can also push directly to main but should only do that in case of
-trivial changes and fixes.
-
-The CI must run successfully in an opened PR to get it merged.
+Code changes and additions need to adhere to the code checks outlined in chapter [#Code Checks](#code-checks).
+All changes and additions should go through a PR->Review cycle.
+The core maintainers can also push directly to main but should only do that in case of trivial changes and fixes.
+The CI must run successfully to get a change merged.
 Ideally the optional lint step does not report any warnings.
 But because new lints can appear on new clippy versions this is not mandatory.
-
 Please add a short description outlining the changes and the reasons for them.
 When adding new features and/or changes in the UI some screenshots or screen captures would be nice.
 When it fixes a specific issue, the description should reference the to-be-fixed issue with `fixes #<num>`.
 
-## Disclosure
+## Usage of LLM/Gen-AI
 
-Always disclose the use of LLM/GenAI tools when creating an issue or
-a merge request. Do not include trailers like “Co-authored-by:” or
-“Assisted-by:” in commit messages, since they serve as free advertising
-for AI companies.
+**Vibe-coded contributions that were primarily implemented by an LLM will not be accepted.**  
+There is very limited value in having an external contributor as an intermediary between a maintainer and an LLM/Gen-AI
+model.
+It's also worth emphasizing that all contributions are reviewed by humans with limited available time.
+LLM-driven contributions can easily create a dangerous imbalance where a maintainer invests more time into a change than
+the contributor themselves.
 
-# Build system
+Only consider to open a change with LLM assistance after careful consideration for the time spent needed for a review.
+Always disclose for which part of a change LLM/Gen-AI tools were used in detail.
+Do not let the LLM generate descriptions, comments or other text intended for human consumption.
+If maintainers suspect a review is simply forwarded to an LLM they are free to abort the review and deny the change
+request without further reason.
+Do not include trailers like “Co-authored-by:” or “Assisted-by:” in commit messages, since they serve as free
+advertising for LLM/Gen-AI companies.
 
-For building the application the `cargo` calls are wrapped by meson.
-It uses a user specified build directory (e.g. `_mesonbuild`) where the build artifacts will be compiled into.
-All additional files needed before/after compilation are prepared and placed into it as well.
+**You need to own the code fully and you must be confident to be able defend your choices for any line of changed
+code.**
+Otherwise maintainers are free to deny a change request without further reason.
+
+# Code Checks
+
+## Pre-Commit hooks
+
+By default on an initial build git pre-commit hooks are installed on initial development setup to ensure code checks
+already at the time a change is committed.
+Check out [pre-commit.hook](hooks/pre-commit.hook) to see what the hook will do in detail.
+
+## Formatting
+
+For formatting `rustfmt` is used. It picks up the formatting configuration file `rustfmt.toml`.
+To check the formatting run:
+
+```bash
+just fmt-check
+```
+
+And to directly apply run:
+
+```bash
+just fmt
+```
+
+The formatting is also checked in the CI and applied formatting is a prerequisite for merging additional or changed
+code.
+
+## Lints
+
+For linting rust code `clippy` is used.
+To lint the codebase run:
+
+```bash
+just lint
+```
+
+If carefully considered clippy warnings can also be disabled in code by using `#[allow(clippy::\<lint-name\>)].
+However this must be justified.
+
+## Tests
+
+Unit tests are added throughout the codebase.
+To run them, install [cargo-nextest](https://nexte.st/).
+Additionally, the style and correctness of other data/auxiliary files like the `.desktop` or `metainfo.xml` AppData
+definition file is checked as well.
+To execute all tests, run:
+
+```bash
+just test
+```
+
+### Adding unit-tests
+
+Just like in any other rust crate, tests can be added by declaring a tests module prefixed with the #[cfg(test)]
+attribute, then adding test functions prefixed by the #[test] attribute.
+Tests should be as closely coupled to the code they target as reasonably possible and in most cases should reside in the
+same source file.
+
+# Supported Platforms
+
+The application currently supports the following platforms:
+
+## Linux
+
+Rnote is mainly developed for Linux and integrates best with the Gnome desktop environment.
+The application should nonetheless function properly regardless of which DE, compositor or distribution is used.
+In addition the focus for development and testing is on Wayland, at this point X11 has a lot of issues and
+inconsistencies especially with regards to pen input which is an integral part of the application.
+This is why X11 is now considered unsupported.
+For more details on how to build the application on Linux either natively or as flatpak see:
+[BUILDING.md](./BUILDING.md).
+
+## macOS
+
+The application is also bundled for macOS, @dehesselle is active in issues that affect the app bundle.
+For more details on how to build the application on macOS see:
+[docs/build-macos.md](./docs/build-macos.md).
+
+## Windows
+
+For windows `msys/mingw64` is used as the development and build environment.
+For the installer "Inno Setup" is used.
+It should always be ensured that the app will build in `msys/mingw64`, however tight integration with the Windows OS is
+not a priority.
+For more details on how to build the application and the installer on Windows see:
+[docs/build-win.md](./docs/build-win.md).
+
 
 # Dependencies
 
-Rust dependencies are declared in the root workspace `Cargo.toml`, or if crate-specific
-in the individual crate's `Cargo.toml` configuration files.
-
+Rust dependencies are declared in the root workspace `Cargo.toml`, or if crate-specific, in the individual crate's
+`Cargo.toml` configuration files.
 The generated `Cargo.lock` file pins the dependencies to specific versions and is checked in.
-
 All non-rust dependencies are declared in the root `meson.build` file.
-For example, you'll find declarations for dependencies like `glib` and `gtk4`.
-
-# Architecture
-
-The codebase is separated into multiple crates that have specific purposes and separate concerns:
-
-- `rnote-compose` : the base crate that is only responsible for supplying basic types needed for a drawing application.
-    Things like shapes, paths, pen-path builders, etc. In this crate is also the implementation for how to render
-    these primitives with `cairo` or rather the `piet` abstraction.
-    The dependencies should be kept minimal here. 
-- `rnote-engine` : the core crate of the drawing application.
-    In it is the entire core logic of the drawing part of the Rnote application.
-
-    It is categorized like this:
-    - `rnote-engine/store` : an Entity-Component-System pattern is used there to hold all strokes
-    that are produced by the user in a generational Vector and the methods that define the interactions with them.
-    - `rnote-engine/document` : information about the entire document (it's dimensions, colors, ..)
-    - `rnote-engine/fileformats` : dictates the current stable Rnote file format,
-        and implements the methods required to load and save itself;
-        additionally contains the code required to convert from and into other formats
-        (notably Xournal++'s `.xopp` format and older versions of the Rnote file format).
-    - `rnote-engine/pens` : The user always generates/interacts with strokes through what Rnote internally
-        calls `pens`. For example the "Brush" pen produces pen paths, the "Shaper" pen produces geometric shapes,
-        the `eraser` pen removes strokes, .. .
-    - `rnote-engine/strokes` contain the definition of different types that can be generated or imported
-        into the engine. There are "brush strokes", "shape strokes" but also vector and rasterized images
-        are represented as a "stroke type".
-    
-    The main "Engine" type is responsible for keeping an undo-stack and utilizes the Clone-On-Write datastructure
-    of the "store" to achieve that.
-
-    There are also smaller utilities and features like the "Camera" which is responsible for the canvas viewport,
-    "AudioPlayer" to play pen sounds when enabled, .. .
-
-- `rnote-cli` : basic CLI frontend that takes the engine as dependency and uses the "clap" crate.
-    Intended to be used by power-users for automating format conversions or exports and other miscellaneous tasks.
-    But it also plays a role in verifying the stability of the file format - it's test subcommand 
-    is used in the CI to check whether `.rnote` files in different versions can still be imported successfully.
-
-- `rnote-ui` : the UI frontend built with Gtk4 and Libadwaita.
-    Most of the code here is glib `Object`'s or Gtk `Widget`s.
-    The application is represented by `RnApp`, the main application window by `RnAppWindow`
-    and the Canvas by `RnCanvas`. The canvas has one instance per tab and holds the engine.
+For example, you will find declarations for C dependencies like `glib` and `gtk4`.
 
 # Documentation
 
-the `rnote-compose` and `rnote-engine` crates should be treated as libraries and should contain at least
+The `rnote-compose` and `rnote-engine` crates should be treated as stand-alone libraries and should contain at least
 a bit of documentation for their features and functionality.
-
-The `rnote-cli` and `rnote-ui` crates are "consumer" crates and especially the UI contains a ton of
-boilerplate code so in there documentation is not so critical. 
-
+The `rnote-cli` and `rnote-ui` crates are "consumer" crates and especially the UI contains a ton of boilerplate code so
+in there documentation is not so critical.
 However especially Gtk quirks and workarounds should always be documented in code.
+
+# Architecture
+
+Architectural decisions are documented in [docs/arch.md](./docs/arch.md)

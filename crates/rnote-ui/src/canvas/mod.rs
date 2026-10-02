@@ -83,6 +83,7 @@ mod imp {
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
         pub(crate) output_file_modified_toast_singleton: glib::WeakRef<adw::Toast>,
+        pub(crate) locked_tool_toast_singleton: glib::WeakRef<adw::Toast>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
@@ -179,6 +180,7 @@ mod imp {
                 output_file_watcher_task: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
                 output_file_modified_toast_singleton: glib::WeakRef::new(),
+                locked_tool_toast_singleton: glib::WeakRef::new(),
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -505,20 +507,26 @@ mod imp {
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
+            let stylus_active = Cell::new(false);
             self.pointer_controller.connect_event(clone!(
                 #[strong]
                 pen_state,
+                #[strong]
+                stylus_active,
                 #[weak(rename_to=canvas)]
                 obj,
                 #[upgrade_or]
                 glib::Propagation::Proceed,
                 move |_, event| {
-                    let (propagation, new_state) = super::input::handle_pointer_controller_event(
-                        &canvas,
-                        event,
-                        pen_state.get(),
-                    );
+                    let (propagation, new_state, new_stylus_active) =
+                        super::input::handle_pointer_controller_event(
+                            &canvas,
+                            event,
+                            pen_state.get(),
+                            stylus_active.get(),
+                        );
                     pen_state.set(new_state);
+                    stylus_active.set(new_stylus_active);
                     propagation
                 }
             ));

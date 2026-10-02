@@ -21,6 +21,8 @@ pub mod penevent;
 pub mod penpath;
 /// utilities for serializing / deserializing
 pub mod serialize;
+/// module for recognizing geometric shapes in drawn pen paths
+pub mod shaperecognition;
 /// module for shapes
 pub mod shapes;
 /// module for splitorder

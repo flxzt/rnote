@@ -11,6 +11,7 @@ use rnote_compose::style::PressureCurve;
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::pensconfig::BrushConfig;
 use rnote_engine::pens::pensconfig::brushconfig::{BrushStyle, SolidOptions};
+use std::time::Duration;
 
 mod imp {
     use super::*;
@@ -46,6 +47,10 @@ mod imp {
         pub(crate) brush_buildertype_curved: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub(crate) brush_buildertype_modeled: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub(crate) shaperecognition_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) shaperecognition_delay_row: TemplateChild<adw::SpinRow>,
         #[template_child]
         pub(crate) solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -363,6 +368,48 @@ impl RnBrushPage {
             }
         ));
 
+        // Shape recognition
+        imp.shaperecognition_row.connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            #[weak(rename_to=brushpage)]
+            self,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .shape_recognition_enabled = row.is_active();
+                brushpage
+                    .imp()
+                    .shaperecognition_delay_row
+                    .set_sensitive(row.is_active());
+            }
+        ));
+
+        imp.shaperecognition_delay_row.get().set_range(
+            BrushConfig::SHAPE_RECOGNITION_DELAY_MIN.as_secs_f64(),
+            BrushConfig::SHAPE_RECOGNITION_DELAY_MAX.as_secs_f64(),
+        );
+        // set value after the range!
+        imp.shaperecognition_delay_row
+            .get()
+            .set_value(BrushConfig::SHAPE_RECOGNITION_DELAY_DEFAULT.as_secs_f64());
+
+        imp.shaperecognition_delay_row.get().connect_changed(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                appwindow
+                    .engine_config()
+                    .write()
+                    .pens_config
+                    .brush_config
+                    .shape_recognition_delay = Duration::from_secs_f64(row.value());
+            }
+        ));
+
         // Solid style
         // Pressure curve
         imp.solidstyle_pressure_curves_row
@@ -443,6 +490,12 @@ impl RnBrushPage {
 
         self.set_brush_style(brush_config.style);
         self.set_buildertype(brush_config.builder_type);
+        imp.shaperecognition_row
+            .set_active(brush_config.shape_recognition_enabled);
+        imp.shaperecognition_delay_row
+            .set_sensitive(brush_config.shape_recognition_enabled);
+        imp.shaperecognition_delay_row
+            .set_value(brush_config.shape_recognition_delay.as_secs_f64());
 
         match brush_config.style {
             BrushStyle::Marker => {

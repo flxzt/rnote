@@ -11,46 +11,11 @@ The current core maintainers of the project are:
 
 # Contribute Bug Reports & Feature Requests
 
-Start from the templates located in `.github/ISSUE_TEMPLATE`.
-
-It is recommended to file a bug report or feature request directly through the github web UI
+File a bug report or feature request directly through the github web UI
 by clicking on `Repository->Issues->New Issue`.
 Choose between the different existing templates and **please** fill them out completely as requested.
 
-# Platforms
-
-## Linux
-
-Rnote is mainly developed for Linux and integrates best with the Gnome desktop environment.
-The application should nonetheless be ensured to function properly
-regardless of which DE, compositor, or distribution is used.
-
-In addition the focus for development and testing is on Wayland,
-at this point X11 has a lot of issues and inconsistencies especially with regards to
-pen input which is an integral part of the application.
-This is why X11 is now considered unsupported.
-
-For more details on how to build the application on linux either natively or as flatpak see: [BUILDING.md](./BUILDING.md).
-
-## MacOS
-
-The application is also bundled for MacOS, @dehesselle is active in issues that affect the app bundle.
-
-For more details on how to build the application on MacOS
-see: [rnote-macos-build.md](./misc/building/rnote-macos-build.md).
-
-## Windows
-
-For windows `msys/mingw64` is used as the development and build environment.
-For the installer "Inno Setup" is used.
-
-It should always be ensured that the app will build in the `msys/mingw64` environment,
-however tight integration with the Windows OS is not a priority.
-
-For more details on how to build the application and the installer on Windows
-see: [rnote-windows-build.md](./misc/building/rnote-windows-build.md).
-
-# Translations
+# Contribute Translations
 
 A great way to contribute to the project without writing code is adding a new or start maintaining an existing
 translation language.
@@ -96,11 +61,11 @@ Otherwise maintainers are free to deny a change request without further reason.
 
 # Code Checks
 
-## Pre-Commit hooks
+## Pre-Commit hook
 
-By default on an initial build git pre-commit hooks are installed on initial development setup to ensure code checks
-already at the time a change is committed.
-Check out [pre-commit.hook](hooks/pre-commit.hook) to see what the hook will do in detail.
+When the developer runs the "prerequisite" recipe after checking out the repository a pre-commit hook is installed to
+ensure code checks already at the time a change is committed.
+Take a look at the [pre-commit.hook](hooks/pre-commit.hook) file to see what the hook checks in detail.
 
 ## Formatting
 

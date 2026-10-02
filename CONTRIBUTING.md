@@ -11,9 +11,10 @@ The current core maintainers of the project are:
 
 # Contribute Bug Reports & Feature Requests
 
-File a bug report or feature request directly through the github web UI
-by clicking on `Repository->Issues->New Issue`.
-Choose between the different existing templates and **please** fill them out completely as requested.
+File a bug report or feature request directly through the GitHub web UI by clicking on `Repository->Issues->New Issue`.
+Choose between the different existing templates and please fill them out completely as requested.
+If not filled with these details or the issue is clearly created with low amounts of effort, maintainers are free to
+close it without further reason.
 
 # Contribute Translations
 

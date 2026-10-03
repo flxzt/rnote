@@ -331,7 +331,7 @@ impl Engine {
             .with_borrow_mut(|broker| self.document.config.spellcheck.get_dictionary(broker));
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
-            typewriter.refresh_spellcheck_cache_in_modifying_stroke(&mut engine_view_mut!(self));
+            typewriter.ensure_spellchecked_in_modifying_stroke(&mut engine_view_mut!(self));
 
             widget_flags.redraw = true;
         }

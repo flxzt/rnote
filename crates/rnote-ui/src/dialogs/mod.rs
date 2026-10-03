@@ -105,6 +105,7 @@ pub(crate) async fn dialog_new_doc(appwindow: &RnAppWindow, canvas: &RnCanvas) {
 
     match dialog.choose_future(Some(appwindow)).await.as_str() {
         "discard" => {
+            canvas.cleanup_autosaves();
             new_doc(appwindow, canvas);
         }
         "save" => {
@@ -244,7 +245,10 @@ pub(crate) async fn dialog_close_tab(appwindow: &RnAppWindow, tab_page: &adw::Ta
     // Returns close_finish_confirm, a boolean that indicates if the tab should actually be closed or closing
     // should be aborted.
     match dialog.choose_future(Some(appwindow)).await.as_str() {
-        "discard" => true,
+        "discard" => {
+            canvas.cleanup_autosaves();
+            true
+        }
         "save" => {
             if let Some(save_file) = save_file {
                 appwindow.overlays().progressbar_start_pulsing();
@@ -378,7 +382,12 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     let close = match dialog.choose_future(Some(appwindow)).await.as_str() {
         "discard" => {
-            // do nothing and close
+            // Delete autosaves in all tabs before quitting
+            for tab in &tabs {
+                let canvas = tab.child().downcast::<RnCanvasWrapper>().unwrap().canvas();
+                canvas.cleanup_autosaves();
+            }
+            // close
             true
         }
         "save" => {

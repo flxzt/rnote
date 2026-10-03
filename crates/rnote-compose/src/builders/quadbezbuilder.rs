@@ -10,22 +10,23 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use std::time::Instant;
 
 #[derive(Debug, Clone)]
 enum QuadBezBuilderState {
     Cp {
-        start: na::Vector2<f64>,
-        cp: na::Vector2<f64>,
+        start: Vector2,
+        cp: Vector2,
     },
     CpFinished {
-        start: na::Vector2<f64>,
-        cp: na::Vector2<f64>,
+        start: Vector2,
+        cp: Vector2,
     },
     End {
-        start: na::Vector2<f64>,
-        cp: na::Vector2<f64>,
-        end: na::Vector2<f64>,
+        start: Vector2,
+        cp: Vector2,
+        end: Vector2,
     },
 }
 
@@ -108,15 +109,13 @@ impl Buildable for QuadBezBuilder {
         match &self.state {
             QuadBezBuilderState::Cp { start, cp }
             | QuadBezBuilderState::CpFinished { start, cp } => Some(
-                Aabb::new_positive((*start).into(), (*cp).into())
+                Aabb::new_positive(*start, *cp)
                     .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             ),
             QuadBezBuilderState::End { start, cp, end } => {
                 let stroke_width = style.stroke_width();
-
-                let mut aabb = Aabb::new_positive((*start).into(), (*end).into());
-                aabb.take_point((*cp).into());
-
+                let mut aabb = Aabb::new_positive(*start, *end);
+                aabb.take_point(*cp);
                 Some(aabb.loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom))
             }
         }

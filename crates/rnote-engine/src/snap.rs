@@ -1,5 +1,6 @@
 // Imports
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SnapCorner {
@@ -11,7 +12,7 @@ pub enum SnapCorner {
 
 impl SnapCorner {
     /// Determine the corner for the position to snap to depending on to which corner of the bounds it is closest to.
-    pub fn determine_from_bounds(bounds: Aabb, pos: na::Vector2<f64>) -> Self {
+    pub fn determine_from_bounds(bounds: Aabb, pos: Vector2) -> Self {
         let dist_left = (pos[0] - bounds.mins[0]).abs();
         let dist_right = (pos[0] - bounds.maxs[0]).abs();
         let dist_top = (pos[1] - bounds.mins[1]).abs();

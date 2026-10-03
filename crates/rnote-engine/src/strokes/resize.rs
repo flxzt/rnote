@@ -1,3 +1,5 @@
+use p2d::math::Vector2;
+
 /// Enum that lists the different options for sizing the image
 ///
 /// Either respect the original image size (in pixel or dimensions)
@@ -7,7 +9,7 @@ pub enum ImageSizeOption {
     /// respect the size of the original image (no resizing applied)
     RespectOriginalSize,
     /// Use the given size
-    ImposeSize(na::Vector2<f64>),
+    ImposeSize(Vector2),
     /// Resize the image with various constraints
     ResizeImage(Resize),
 }
@@ -21,7 +23,7 @@ pub struct Resize {
     /// if the layout has a fixed size vertically
     pub layout_fixed_width: bool,
     /// viewport
-    pub max_viewpoint: Option<na::OPoint<f64, na::Const<2>>>,
+    pub max_viewpoint: Option<Vector2>,
     /// resize to the viewport
     pub restrain_to_viewport: bool,
     /// To force elements to not go over borders
@@ -66,8 +68,8 @@ fn helper_calculate_fit_ratio(
 /// the image in documents coordinates
 pub fn calculate_resize_ratio(
     resize: Resize,
-    initial_size_image: na::Vector2<f64>,
-    pos_left_top_canvas: na::Vector2<f64>,
+    initial_size_image: Vector2,
+    pos_left_top_canvas: Vector2,
 ) -> f64 {
     let next_page_x = helper_calculate_page_next_limit(&pos_left_top_canvas.x, &resize.width);
     let next_page_y = helper_calculate_page_next_limit(&pos_left_top_canvas.y, &resize.height);
@@ -76,13 +78,13 @@ pub fn calculate_resize_ratio(
     let ratios = [
         // check that we do not go out of the canvas view in the x direction
         helper_calculate_fit_ratio(
-            &resize.max_viewpoint.unwrap_or(na::point![1.0, 1.0]).x,
+            &resize.max_viewpoint.unwrap_or(Vector2::splat(1.)).x,
             &pos_left_top_canvas.x,
             &initial_size_image.x,
         ),
         // check that we do not go out of view in the y direction
         helper_calculate_fit_ratio(
-            &resize.max_viewpoint.unwrap_or(na::point![1.0, 1.0]).y,
+            &resize.max_viewpoint.unwrap_or(Vector2::splat(1.)).y,
             &pos_left_top_canvas.y,
             &initial_size_image.y,
         ),

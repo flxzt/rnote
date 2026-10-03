@@ -250,6 +250,8 @@ impl Composer<SmoothOptions> for PenPath {
         let Some(color) = options.stroke_color else {
             return;
         };
+
+        let mut full_path = kurbo::BezPath::new();
         let mut single_pos = true;
         let mut prev = self.start;
 
@@ -347,8 +349,10 @@ impl Composer<SmoothOptions> for PenPath {
             //let stroke_brush = cx.solid_brush(piet::Color::RED);
             //cx.stroke(bez_path.clone(), &stroke_brush, 0.2);
 
-            cx.fill(bez_path, &Into::<piet::Color>::into(color));
+            full_path.extend(bez_path);
         }
+
+        cx.fill(full_path, &Into::<piet::Color>::into(color));
 
         // Single element/position strokes need special treatment to be rendered
         if single_pos {
@@ -403,7 +407,7 @@ fn compose_lines_variable_width(
     // The lines variable is ghosted here, to make sure we can only use the filtered
     let lines = lines
         .iter()
-        .filter(|line| (line.end - line.start).magnitude() > 0.0)
+        .filter(|line| (line.end - line.start).length() > 0.0)
         .collect::<Vec<&Line>>();
     let n_lines = lines.len();
     if n_lines == 0 {

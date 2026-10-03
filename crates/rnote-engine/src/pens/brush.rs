@@ -10,6 +10,7 @@ use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use piet::RenderContext;
 use rnote_compose::Constraints;
+use rnote_compose::Style;
 use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{
     PenPathBuilderType, PenPathCurvedBuilder, PenPathModeledBuilder, PenPathSimpleBuilder,
@@ -25,6 +26,7 @@ enum BrushState {
     Drawing {
         path_builder: Box<dyn Buildable<Emit = Segment>>,
         current_stroke_key: StrokeKey,
+        preview_style: Style,
     },
 }
 
@@ -74,10 +76,13 @@ impl PenBehaviour for Brush {
                         .bounds()
                         .loosened(Self::INPUT_OVERSHOOT),
                 ) {
-                    if engine_view.config.pens_config.brush_config.style == BrushStyle::Marker {
-                        play_marker_sound(engine_view);
-                    } else {
-                        trigger_brush_sound(engine_view);
+                    #[cfg(feature = "ui")]
+                    {
+                        if engine_view.config.pens_config.brush_config.style == BrushStyle::Marker {
+                            play_marker_sound(engine_view);
+                        } else {
+                            trigger_brush_sound(engine_view);
+                        }
                     }
 
                     engine_view
@@ -86,14 +91,10 @@ impl PenBehaviour for Brush {
                         .brush_config
                         .new_style_seeds();
 
-                    let brushstroke = Stroke::BrushStroke(BrushStroke::new(
-                        element,
-                        engine_view
-                            .config
-                            .pens_config
-                            .brush_config
-                            .style_for_current_options(),
-                    ));
+                    let preview_style = Self::get_preview_style(&engine_view.as_im());
+                    let brushstroke =
+                        Stroke::BrushStroke(BrushStroke::new(element, preview_style.clone()));
+
                     let current_stroke_key = engine_view.store.insert_stroke(
                         brushstroke,
                         Some(
@@ -118,6 +119,7 @@ impl PenBehaviour for Brush {
                             now,
                         ),
                         current_stroke_key,
+                        preview_style,
                     };
 
                     EventResult {
@@ -144,6 +146,16 @@ impl PenBehaviour for Brush {
                 },
                 PenEvent::Cancel,
             ) => {
+                if let Some(Stroke::BrushStroke(brushstroke)) =
+                    engine_view.store.get_stroke_mut(*current_stroke_key)
+                {
+                    brushstroke.style = engine_view
+                        .config
+                        .pens_config
+                        .brush_config
+                        .style_for_current_options();
+                }
+
                 // Finish up the last stroke
                 engine_view
                     .store
@@ -173,6 +185,7 @@ impl PenBehaviour for Brush {
                 BrushState::Drawing {
                     path_builder,
                     current_stroke_key,
+                    ..
                 },
                 pen_event,
             ) => {
@@ -183,15 +196,25 @@ impl PenBehaviour for Brush {
 
                 let progress = match builder_result.progress {
                     BuilderProgress::InProgress => {
-                        if engine_view.config.pens_config.brush_config.style != BrushStyle::Marker {
-                            trigger_brush_sound(engine_view);
+                        #[cfg(feature = "ui")]
+                        {
+                            if engine_view.config.pens_config.brush_config.style
+                                != BrushStyle::Marker
+                            {
+                                trigger_brush_sound(engine_view);
+                            }
                         }
 
                         PenProgress::InProgress
                     }
                     BuilderProgress::EmitContinue(segments) => {
-                        if engine_view.config.pens_config.brush_config.style != BrushStyle::Marker {
-                            trigger_brush_sound(engine_view);
+                        #[cfg(feature = "ui")]
+                        {
+                            if engine_view.config.pens_config.brush_config.style
+                                != BrushStyle::Marker
+                            {
+                                trigger_brush_sound(engine_view);
+                            }
                         }
 
                         let n_segments = segments.len();
@@ -233,6 +256,16 @@ impl PenBehaviour for Brush {
                                 engine_view.camera.viewport(),
                                 engine_view.camera.image_scale(),
                             );
+                        }
+
+                        if let Some(Stroke::BrushStroke(brushstroke)) =
+                            engine_view.store.get_stroke_mut(*current_stroke_key)
+                        {
+                            brushstroke.style = engine_view
+                                .config
+                                .pens_config
+                                .brush_config
+                                .style_for_current_options();
                         }
 
                         // Finish up the last stroke
@@ -295,18 +328,21 @@ impl DrawableOnDoc for Brush {
 
         match &self.state {
             BrushState::Idle => {}
-            BrushState::Drawing { path_builder, .. } => {
+            BrushState::Drawing {
+                path_builder,
+                preview_style,
+                ..
+            } => {
                 match engine_view.config.pens_config.brush_config.style {
                     BrushStyle::Marker => {
                         // Don't draw the marker, as the pen would render on top of other strokes, while the stroke itself would render underneath them.
                     }
                     BrushStyle::Solid | BrushStyle::Textured => {
-                        let style = engine_view
-                            .config
-                            .pens_config
-                            .brush_config
-                            .style_for_current_options();
-                        path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
+                        path_builder.draw_styled(
+                            cx,
+                            preview_style,
+                            engine_view.camera.total_zoom(),
+                        );
                     }
                 }
             }
@@ -319,14 +355,31 @@ impl DrawableOnDoc for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+
+    fn get_preview_style(engine_view: &EngineView) -> Style {
+        let mut style = engine_view
+            .config
+            .pens_config
+            .brush_config
+            .style_for_current_options();
+
+        if let Some(mut stroke_color) = style.stroke_color() {
+            stroke_color.a = 1.0;
+            style.set_stroke_color(stroke_color);
+        }
+
+        style
+    }
 }
 
+#[cfg(feature = "ui")]
 fn play_marker_sound(engine_view: &mut EngineViewMut) {
     if let Some(audioplayer) = engine_view.audioplayer {
         audioplayer.play_random_marker_sound();
     }
 }
 
+#[cfg(feature = "ui")]
 fn trigger_brush_sound(engine_view: &mut EngineViewMut) {
     if let Some(audioplayer) = engine_view.audioplayer.as_mut() {
         audioplayer.trigger_random_brush_sound();

@@ -59,7 +59,7 @@ pub trait DrawableOnDoc {
     ) -> anyhow::Result<()> {
         use crate::ext::GrapheneRectExt;
         use gtk4::{graphene, prelude::*};
-        use rnote_compose::ext::{AabbExt, Affine2Ext};
+        use rnote_compose::ext::{AabbExt, DAffine2Ext};
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
             let viewport = engine_view.camera.viewport();

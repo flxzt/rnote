@@ -9,12 +9,13 @@ use anyhow::anyhow;
 use hayro::{hayro_interpret, hayro_syntax, vello_cpu};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
+use p2d::math::Vector2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use rnote_compose::ext::{AabbExt, Affine2Ext};
+use rnote_compose::Transformable;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
@@ -50,7 +51,7 @@ impl Drawable for BitmapImage {
         let piet_image_format = piet::ImageFormat::from(self.image.memory_format);
 
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        cx.transform(self.rectangle.transform.affine.to_kurbo());
+        cx.transform(self.rectangle.affine.to_kurbo());
 
         let piet_image = cx
             .make_image(
@@ -85,15 +86,15 @@ impl Shapeable for BitmapImage {
 }
 
 impl Transformable for BitmapImage {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.rectangle.translate(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         self.rectangle.rotate(angle, center);
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.rectangle.scale(scale);
     }
 }
@@ -101,13 +102,11 @@ impl Transformable for BitmapImage {
 impl BitmapImage {
     pub fn from_image_bytes(
         bytes: &[u8],
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         let image = Image::try_from_encoded_bytes(bytes)?;
-
-        let initial_size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
-
+        let initial_size = Vector2::new(image.pixel_width as f64, image.pixel_height as f64);
         let (size, resize_ratio) = match size_option {
             ImageSizeOption::RespectOriginalSize => (initial_size, 1.0f64),
             ImageSizeOption::ImposeSize(given_size) => (given_size, 1.0f64),
@@ -116,21 +115,21 @@ impl BitmapImage {
                 calculate_resize_ratio(resize_struct, initial_size, pos),
             ),
         };
-
-        let mut transform = Transform::default();
-        transform.append_scale_mut(na::Vector2::new(resize_ratio, resize_ratio));
+        let mut transform = DAffine2::IDENTITY;
+        transform.append_scale_mut(Vector2::splat(resize_ratio));
         transform.append_translation_mut(pos + size * resize_ratio * 0.5);
         let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(size * 0.5),
-            transform,
+            affine: transform,
         };
+
         Ok(Self { image, rectangle })
     }
 
     pub fn from_pdf_bytes(
         to_be_read: &[u8],
         pdf_import_prefs: PdfImportPrefs,
-        insert_pos: na::Vector2<f64>,
+        insert_pos: Vector2,
         page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
@@ -153,12 +152,29 @@ impl BitmapImage {
             format.width() * (pdf_import_prefs.page_width_perc / 100.0)
         };
 
-        // calculate the page zoom based on the width of the first page.
-        let page_zoom = if let Some(first_page) = pages.first() {
-            page_width / first_page.render_dimensions().0 as f64
-        } else {
+        // Uniform zoom based on the widest page, keeps relative page sizes.
+        let selected_pages: Vec<_> = page_range
+            .clone()
+            .filter_map(|page_i| pages.get(page_i))
+            .collect();
+        if selected_pages.is_empty() {
             return Ok(vec![]);
-        };
+        }
+        let max_intrinsic_width = selected_pages
+            .iter()
+            .map(|page| page.render_dimensions().0 as f64)
+            .fold(0.0f64, f64::max);
+        if max_intrinsic_width <= 0.0 {
+            return Err(anyhow!("PDF pages have zero intrinsic width"));
+        }
+        let page_zoom_fit = page_width / max_intrinsic_width;
+
+        // Stride for OnePerDocumentPage: start each page on a document page boundary.
+        let max_rendered_height = selected_pages
+            .iter()
+            .map(|page| page.render_dimensions().1 as f64 * page_zoom_fit)
+            .fold(0.0f64, f64::max);
+
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
@@ -172,11 +188,11 @@ impl BitmapImage {
                     let dimensions = page.render_dimensions();
                     (dimensions.0 as f64, dimensions.1 as f64)
                 };
-                let width = intrinsic_width * page_zoom;
-                let height = intrinsic_height * page_zoom;
+                let width = intrinsic_width * page_zoom_fit;
+                let height = intrinsic_height * page_zoom_fit;
                 let render_settings = hayro::RenderSettings {
-                    x_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom) as f32,
-                    y_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom) as f32,
+                    x_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom_fit) as f32,
+                    y_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom_fit) as f32,
                     width: Some((pdf_import_prefs.bitmap_scalefactor * width).ceil() as u16),
                     height: Some((pdf_import_prefs.bitmap_scalefactor * height).ceil() as u16),
                     bg_color: vello_cpu::color::AlphaColor::WHITE,
@@ -187,23 +203,35 @@ impl BitmapImage {
                 let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
                 let png_data = pixmap.into_png()?;
 
-                let image_pos = na::vector![x, y];
-                let image_size = na::vector![width, height];
-
-                if pdf_import_prefs.adjust_document {
-                    y += height
+                // Center narrower pages within the import width when adjusting the document.
+                let page_x = if pdf_import_prefs.adjust_document {
+                    x + (page_width - width) * 0.5
                 } else {
-                    y += match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
+                    x
+                };
+                let image_pos = Vector2::new(page_x, y);
+                let image_size = Vector2::new(width, height);
+
+                y += match pdf_import_prefs.page_spacing {
+                    PdfImportPageSpacing::Continuous => {
+                        if pdf_import_prefs.adjust_document {
+                            height
+                        } else {
                             height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                         }
-                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
-                    };
-                }
+                    }
+                    PdfImportPageSpacing::OnePerDocumentPage => {
+                        if pdf_import_prefs.adjust_document {
+                            max_rendered_height
+                        } else {
+                            format.height()
+                        }
+                    }
+                };
 
                 Ok((png_data, image_pos, image_size))
             })
-            .collect::<anyhow::Result<Vec<(Vec<u8>, na::Vector2<f64>, na::Vector2<f64>)>>>()?;
+            .collect::<anyhow::Result<Vec<(Vec<u8>, Vector2, Vector2)>>>()?;
 
         pngs.into_par_iter()
             .map(|(png_data, pos, size)| {

@@ -15,6 +15,16 @@ pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";
 /// The suffix delimiter when duplicating/renaming already existing files for usage in a regular expression
 pub(crate) const FILE_DUP_SUFFIX_DELIM_REGEX: &str = r"\s-\s";
 
+/// An asynchronous adaptation of the [`rnote_engine::utils::atomic_save_to_file`] function.
+pub(crate) async fn atomic_save_to_file_future<Q>(filepath: Q, bytes: Vec<u8>) -> anyhow::Result<()>
+where
+    Q: AsRef<std::path::Path>,
+{
+    let filepath = filepath.as_ref().to_path_buf();
+
+    blocking::unblock(move || rnote_engine::utils::atomic_save_to_file(filepath, bytes)).await
+}
+
 /// Create a new file or replace if it already exists, asynchronously.
 pub(crate) async fn create_replace_file_future(
     bytes: Vec<u8>,

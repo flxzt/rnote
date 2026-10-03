@@ -64,6 +64,7 @@ if host_machine.system() != 'windows'
     appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
     appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
     appdata_conf.set('APP_WEBSITE', app_website)
+    appdata_conf.set('APP_REPO_URL', app_repo_url)
     appdata_conf.set('APP_ISSUES_URL', app_issues_url)
     appdata_conf.set('APP_SUPPORT_URL', app_support_url)
     appdata_conf.set('APP_DONATE_URL', app_donate_url)
@@ -201,6 +202,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/drawing-pad-button-2-symbolic.svg',
     'icons/scalable/actions/drawing-pad-button-3-symbolic.svg',
     'icons/scalable/actions/drawing-pad-button-4-symbolic.svg',
+    'icons/scalable/actions/stylus-pen-symbolic.svg',
     'icons/scalable/actions/edit-redo-symbolic.svg',
     'icons/scalable/actions/edit-symbolic.svg',
     'icons/scalable/actions/edit-undo-symbolic.svg',
@@ -208,6 +210,8 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/fill-color-symbolic.svg',
     'icons/scalable/actions/focus-mode-symbolic.svg',
     'icons/scalable/actions/keyboard-ctrl-space-shortcut-symbolic.svg',
+    'icons/scalable/actions/lock-close-symbolic.svg',
+    'icons/scalable/actions/lock-open-symbolic.svg',
     'icons/scalable/actions/minus-symbolic.svg',
     'icons/scalable/actions/misc-menu-symbolic.svg',
     'icons/scalable/actions/mouse-button-primary-symbolic.svg',
@@ -267,6 +271,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/stylus-button-eraser-symbolic.svg',
     'icons/scalable/actions/stylus-button-primary-symbolic.svg',
     'icons/scalable/actions/stylus-button-secondary-symbolic.svg',
+    'icons/scalable/actions/stylus-pen-symbolic.svg',
     'icons/scalable/actions/tab-new-symbolic.svg',
     'icons/scalable/actions/text-align-end-symbolic.svg',
     'icons/scalable/actions/text-align-fill-symbolic.svg',
@@ -336,6 +341,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/zoom-fit-width-symbolic.svg',
     'icons/scalable/actions/zoom-in-symbolic.svg',
     'icons/scalable/actions/zoom-out-symbolic.svg',
+    'icons/scalable/actions/zoom-real-width-symbolic.svg',
     'icons/scalable/apps/rnote-devel.svg',
     'icons/scalable/apps/rnote.svg',
     'icons/scalable/mimetypes/application-rnote.svg',
@@ -358,6 +364,7 @@ rnote_ui_gresources_ui_files = files(
     'ui/iconpicker.ui',
     'ui/mainheader.ui',
     'ui/overlays.ui',
+    'ui/penmoderow.ui',
     'ui/penpicker.ui',
     'ui/penshortcutrow.ui',
     'ui/penssidebar/brushpage.ui',

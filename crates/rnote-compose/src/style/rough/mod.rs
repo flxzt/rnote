@@ -8,7 +8,7 @@ pub use roughoptions::RoughOptions;
 // Imports
 use super::Composer;
 use crate::Color;
-use crate::ext::Vector2Ext;
+use crate::ext::{DAffine2Ext, Vector2Ext};
 use crate::shapes::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
@@ -128,7 +128,7 @@ impl Composer<RoughOptions> for Rectangle {
             size[1],
         );
 
-        cx.transform(self.transform.to_kurbo());
+        cx.transform(self.affine.to_kurbo());
         drawable.draw(cx);
 
         cx.restore().unwrap();
@@ -149,7 +149,7 @@ impl Composer<RoughOptions> for Ellipse {
         let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
             .ellipse(0.0, 0.0, size[0], size[1]);
 
-        cx.transform(self.transform.to_kurbo());
+        cx.transform(self.affine.to_kurbo());
         drawable.draw(cx);
 
         cx.restore().unwrap();

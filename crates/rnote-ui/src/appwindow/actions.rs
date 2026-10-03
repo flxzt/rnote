@@ -1,4 +1,5 @@
 // Imports
+use crate::RnApp;
 use crate::{RnAppWindow, RnCanvas, config, dialogs};
 use gettextrs::gettext;
 use gtk4::gio::InputStream;
@@ -8,8 +9,10 @@ use gtk4::{
     prelude::*,
 };
 use p2d::bounding_volume::BoundingVolume;
+use p2d::math::Vector2;
 use rnote_compose::SplitOrder;
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GraphenePointExt;
 use rnote_engine::pens::PenStyle;
@@ -68,6 +71,8 @@ impl RnAppWindow {
         self.add_action(&action_zoom_reset);
         let action_zoom_fit_width = gio::SimpleAction::new("zoom-fit-width", None);
         self.add_action(&action_zoom_fit_width);
+        let action_zoom_real_width = gio::SimpleAction::new("zoom-real-width", None);
+        self.add_action(&action_zoom_real_width);
         let action_zoomin = gio::SimpleAction::new("zoom-in", None);
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
@@ -131,6 +136,27 @@ impl RnAppWindow {
         self.add_action(&action_active_tab_move_right);
         let action_active_tab_close = gio::SimpleAction::new("active-tab-close", None);
         self.add_action(&action_active_tab_close);
+        let action_active_tab_move_window =
+            gio::SimpleAction::new("active-tab-move-to-new-window", None);
+        self.add_action(&action_active_tab_move_window);
+
+        let color_setters = {
+            let p = self.overlays().colorpicker();
+            [
+                [p.setter_1(), p.setter_2(), p.setter_3()],
+                [p.setter_4(), p.setter_5(), p.setter_6()],
+                [p.setter_7(), p.setter_8(), p.setter_9()],
+            ]
+            .concat()
+        };
+        for (i, setter) in color_setters.into_iter().enumerate() {
+            let action = gio::SimpleAction::new(&format!("set-color-{}", i + 1), None);
+            self.add_action(&action);
+            action.connect_activate(clone!(move |_, _| {
+                setter.set_active(true);
+            }));
+        }
+
         let action_drawing_pad_pressed_button_0 =
             gio::SimpleAction::new("drawing-pad-pressed-button-0", None);
         self.add_action(&action_drawing_pad_pressed_button_0);
@@ -383,6 +409,20 @@ impl RnAppWindow {
             }
         ));
 
+        action_active_tab_move_window.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                if let Some(active_tab_page) = appwindow.active_tab_page()
+                    && let Some(rn_app_out) = appwindow.application()
+                {
+                    let rnapp = rn_app_out.downcast::<RnApp>().unwrap();
+                    let tab_view = rnapp.new_appwindow_init_return_tab();
+                    appwindow.transfer_page(&active_tab_page, &tab_view, 0);
+                }
+            }
+        ));
+
         // Drawing pad buttons
         action_drawing_pad_pressed_button_0.connect_activate(clone!(
             #[weak(rename_to=appwindow)]
@@ -607,9 +647,14 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = Camera::ZOOM_DEFAULT;
                 let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
@@ -629,6 +674,10 @@ impl RnAppWindow {
                 let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
                 let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = f64::from(wrapper.scroller().width())
@@ -643,14 +692,47 @@ impl RnAppWindow {
             }
         ));
 
+        // Zoom real to width
+        action_zoom_real_width.connect_activate(clone!(
+            #[weak(rename_to=appwindow)]
+            self,
+            move |_, _| {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
+                    return;
+                };
+                let canvas = wrapper.canvas();
+                let viewport_center = canvas.engine_ref().camera.viewport_center();
+                let Some(surface) = appwindow.surface() else {
+                    return;
+                };
+                let Some(monitor) = canvas.display().monitor_at_surface(&surface) else {
+                    return;
+                };
+                let ppi = monitor.geometry().width() as f64 / monitor.width_mm() as f64
+                    * MeasureUnit::AMOUNT_MM_IN_INCH;
+                let new_zoom = ppi / wrapper.canvas().engine_ref().document.config.format.dpi();
+                let mut widget_flags = canvas.engine_mut().zoom_w_timeout(new_zoom);
+                widget_flags |= canvas
+                    .engine_mut()
+                    .camera
+                    .set_viewport_center(viewport_center);
+                appwindow.handle_widget_flags(widget_flags, &canvas)
+            }
+        ));
+
         // Zoom in
         action_zoomin.connect_activate(clone!(
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom =
                     canvas.engine_ref().camera.total_zoom() * (1.0 + RnCanvas::ZOOM_SCROLL_STEP);
@@ -668,9 +750,14 @@ impl RnAppWindow {
             #[weak(rename_to=appwindow)]
             self,
             move |_, _| {
-                let Some(canvas) = appwindow.active_tab_canvas() else {
+                let Some(wrapper) = appwindow.active_tab_wrapper() else {
                     return;
                 };
+
+                // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
+                wrapper.workaround_cancel_kinetic_scrolling_for_zoom();
+
+                let canvas = wrapper.canvas();
                 let viewport_center = canvas.engine_ref().camera.viewport_center();
                 let new_zoom = canvas.engine_ref().camera.total_zoom()
                     * (1.0 / (1.0 + RnCanvas::ZOOM_SCROLL_STEP));
@@ -1042,18 +1129,19 @@ impl RnAppWindow {
 
                 let pointer_pos = wrapper.pointer_pos().and_then(|wrapper_point| {
                     let canvas_point = wrapper
-                        .compute_point(&canvas, &graphene::Point::from_na_vec(wrapper_point));
+                        .compute_point(&canvas, &graphene::Point::from_p2d_vec(wrapper_point));
 
                     if let Some(point) = canvas_point {
                         let x = point.x() as f64;
                         let y = point.y() as f64;
 
                         if canvas.contains(x, y) {
-                            let transformed_point =
-                                (canvas.engine_ref().camera.transform().inverse()
-                                    * na::point![x, y])
-                                .coords;
-
+                            let transformed_point = canvas
+                                .engine_ref()
+                                .camera
+                                .transform()
+                                .inverse()
+                                .transform_point2(Vector2::new(x, y));
                             return Some(transformed_point);
                         }
                     }
@@ -1075,10 +1163,13 @@ impl RnAppWindow {
                 let canvas = wrapper.canvas();
 
                 let last_contextmenu_pos = wrapper.last_contextmenu_pos().map(|vec2| {
-                    let p = graphene::Point::new(vec2.x as f32, vec2.y as f32);
-                    (canvas.engine_ref().camera.transform().inverse()
-                        * na::point![p.x() as f64, p.y() as f64])
-                    .coords
+                    let p = graphene::Point::from_p2d_vec(vec2);
+                    canvas
+                        .engine_ref()
+                        .camera
+                        .transform()
+                        .inverse()
+                        .transform_point2(p.to_p2d_vec())
                 });
 
                 appwindow.clipboard_paste(last_contextmenu_pos);
@@ -1125,13 +1216,20 @@ impl RnAppWindow {
         app.set_accels_for_action("win.pen-style::eraser", &["<Ctrl>4", "<Ctrl>KP_4"]);
         app.set_accels_for_action("win.pen-style::selector", &["<Ctrl>5", "<Ctrl>KP_5"]);
         app.set_accels_for_action("win.pen-style::tools", &["<Ctrl>6", "<Ctrl>KP_6"]);
+        (1..=9).for_each(|i| {
+            app.set_accels_for_action(
+                &format!("win.set-color-{i}"),
+                &[&format!("{i}"), &format!("<Ctrl>KP_{i}")],
+            )
+        });
+
         // shortcuts for devel build
         if config::PROFILE.to_lowercase().as_str() == "devel" {
             app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);
         }
     }
 
-    fn clipboard_paste(&self, target_pos: Option<na::Vector2<f64>>) {
+    fn clipboard_paste(&self, target_pos: Option<Vector2>) {
         let content_formats = self.clipboard().formats();
         let Some(canvas) = self.active_tab_canvas() else {
             return;

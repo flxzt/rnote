@@ -3,6 +3,7 @@ use crate::image::{Image, ImageMemoryFormat, convert_image_bgra_to_rgba};
 use anyhow::Context;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Rectangle;
@@ -79,7 +80,7 @@ impl Svg {
             indent: xmlwriter::Indent::None,
             attributes_indent: xmlwriter::Indent::None,
         };
-        let bounds_simplified = Aabb::new(na::point![0.0, 0.0], self.bounds.extents().into());
+        let bounds_simplified = Aabb::new(Vector2::ZERO, self.bounds.extents());
         let svg_data_wrapped = rnote_compose::utils::wrap_svg_root(
             &rnote_compose::utils::remove_xml_header(&self.svg_data),
             Some(bounds_simplified),
@@ -269,7 +270,7 @@ impl Svg {
                 height_scaled,
                 data,
             )),
-            rect: Rectangle::from_p2d_aabb(bounds),
+            rectangle: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
             // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied

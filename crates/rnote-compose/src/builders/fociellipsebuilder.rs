@@ -10,20 +10,18 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
 #[derive(Debug, Clone)]
 /// Foci ellipse builder state.
 pub enum FociEllipseBuilderState {
-    Start(na::Vector2<f64>),
-    StartFinished(na::Vector2<f64>),
-    Foci([na::Vector2<f64>; 2]),
-    FociFinished([na::Vector2<f64>; 2]),
-    FociAndPoint {
-        foci: [na::Vector2<f64>; 2],
-        point: na::Vector2<f64>,
-    },
+    Start(Vector2),
+    StartFinished(Vector2),
+    Foci([Vector2; 2]),
+    FociFinished([Vector2; 2]),
+    FociAndPoint { foci: [Vector2; 2], point: Vector2 },
 }
 
 #[derive(Debug, Clone)]
@@ -123,12 +121,12 @@ impl Buildable for FociEllipseBuilder {
         match &self.state {
             FociEllipseBuilderState::Start(first)
             | FociEllipseBuilderState::StartFinished(first) => Some(Aabb::from_half_extents(
-                (*first).into(),
-                na::Vector2::repeat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
+                *first,
+                Vector2::splat(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
             )),
             FociEllipseBuilderState::Foci(foci) | FociEllipseBuilderState::FociFinished(foci) => {
                 Some(
-                    Aabb::new_positive(foci[0].into(), foci[1].into())
+                    Aabb::new_positive(foci[0], foci[1])
                         .loosened(stroke_width.max(indicators::POS_INDICATOR_RADIUS) / zoom),
                 )
             }

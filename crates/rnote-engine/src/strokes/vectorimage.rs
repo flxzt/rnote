@@ -11,12 +11,13 @@ use anyhow::anyhow;
 use hayro::{hayro_interpret, hayro_syntax};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
+use p2d::glamx::DAffine2;
+use p2d::math::Vector2;
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
-use rnote_compose::ext::AabbExt;
+use rnote_compose::Transformable;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transform;
-use rnote_compose::transform::Transformable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
@@ -28,9 +29,9 @@ pub struct VectorImage {
     pub svg_data: String,
     #[serde(
         rename = "intrinsic_size",
-        with = "rnote_compose::serialize::na_vector2_f64_dp3"
+        with = "rnote_compose::serialize::glam_vector2_dp3"
     )]
-    pub intrinsic_size: na::Vector2<f64>,
+    pub intrinsic_size: Vector2,
     #[serde(rename = "rectangle")]
     pub rectangle: Rectangle,
 }
@@ -39,7 +40,7 @@ impl Default for VectorImage {
     fn default() -> Self {
         Self {
             svg_data: String::default(),
-            intrinsic_size: na::Vector2::zeros(),
+            intrinsic_size: Vector2::ZERO,
             rectangle: Rectangle::default(),
         }
     }
@@ -64,7 +65,7 @@ impl Content for VectorImage {
         let group = svg::node::element::Group::new()
             .set(
                 "transform",
-                self.rectangle.transform.to_svg_transform_attr_str(),
+                self.rectangle.affine.to_svg_transform_attr_str(),
             )
             .add(svg_root);
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
@@ -123,15 +124,15 @@ impl Shapeable for VectorImage {
 }
 
 impl Transformable for VectorImage {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: Vector2) {
         self.rectangle.translate(offset);
     }
 
-    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+    fn rotate(&mut self, angle: f64, center: Vector2) {
         self.rectangle.rotate(angle, center);
     }
 
-    fn scale(&mut self, scale: na::Vector2<f64>) {
+    fn scale(&mut self, scale: Vector2) {
         self.rectangle.scale(scale);
     }
 }
@@ -139,7 +140,7 @@ impl Transformable for VectorImage {
 impl VectorImage {
     pub fn from_svg_str(
         svg_data: &str,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
         size_option: ImageSizeOption,
     ) -> Result<Self, anyhow::Error> {
         const COORDINATES_PREC: u8 = 3;
@@ -162,37 +163,37 @@ impl VectorImage {
             },
         )?;
 
-        let intrinsic_size = na::vector![
+        let intrinsic_size = Vector2::new(
             svg_tree.size().width() as f64,
-            svg_tree.size().height() as f64
-        ];
+            svg_tree.size().height() as f64,
+        );
         let svg_data = svg_tree.to_string(&xml_options);
 
-        let mut transform = Transform::default();
+        let mut affine = DAffine2::IDENTITY;
         let rectangle = match size_option {
             ImageSizeOption::RespectOriginalSize => {
                 // Size not given : use the intrinsic size
-                transform.append_translation_mut(pos + intrinsic_size * 0.5);
+                affine.append_translation_mut(pos + intrinsic_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
-                    transform,
+                    affine,
                 }
             }
             ImageSizeOption::ImposeSize(given_size) => {
                 // Size given : use the given size
-                transform.append_translation_mut(pos + given_size * 0.5);
+                affine.append_translation_mut(pos + given_size * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(given_size * 0.5),
-                    transform,
+                    affine,
                 }
             }
             ImageSizeOption::ResizeImage(resize_struct) => {
                 // Resize : calculate the ratio
                 let resize_ratio = calculate_resize_ratio(resize_struct, intrinsic_size, pos);
-                transform.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
+                affine.append_translation_mut(pos + intrinsic_size * resize_ratio * 0.5);
                 Rectangle {
                     cuboid: p2d::shape::Cuboid::new(intrinsic_size * resize_ratio * 0.5),
-                    transform,
+                    affine,
                 }
             }
         };
@@ -207,7 +208,7 @@ impl VectorImage {
     pub fn from_pdf_bytes(
         to_be_read: &[u8],
         pdf_import_prefs: PdfImportPrefs,
-        insert_pos: na::Vector2<f64>,
+        insert_pos: Vector2,
         page_range: Option<Range<usize>>,
         format: &Format,
         password: Option<String>,
@@ -233,12 +234,29 @@ impl VectorImage {
             format.width() * (pdf_import_prefs.page_width_perc / 100.0)
         };
 
-        // calculate the page zoom based on the width of the first page.
-        let page_zoom = if let Some(first_page) = pages.first() {
-            page_width / first_page.render_dimensions().0 as f64
-        } else {
+        // Uniform zoom based on the widest page, keeps relative page sizes.
+        let selected_pages: Vec<_> = page_range
+            .clone()
+            .filter_map(|page_i| pages.get(page_i))
+            .collect();
+        if selected_pages.is_empty() {
             return Ok(vec![]);
-        };
+        }
+        let max_intrinsic_width = selected_pages
+            .iter()
+            .map(|page| page.render_dimensions().0 as f64)
+            .fold(0.0f64, f64::max);
+        if max_intrinsic_width <= 0.0 {
+            return Err(anyhow!("PDF pages have zero intrinsic width"));
+        }
+        let page_zoom_fit = page_width / max_intrinsic_width;
+
+        // Stride for OnePerDocumentPage: start each page on a document page boundary.
+        let max_rendered_height = selected_pages
+            .iter()
+            .map(|page| page.render_dimensions().1 as f64 * page_zoom_fit)
+            .fold(0.0f64, f64::max);
+
         let x = insert_pos[0];
         let mut y = insert_pos[1];
 
@@ -250,20 +268,35 @@ impl VectorImage {
                     let dimensions = page.render_dimensions();
                     (dimensions.0 as f64, dimensions.1 as f64)
                 };
-                let width = intrinsic_width * page_zoom;
-                let height = intrinsic_height * page_zoom;
-                let bounds = Aabb::new(na::point![x, y], na::point![x + width, y + height]);
-
-                if pdf_import_prefs.adjust_document {
-                    y += height
+                let width = intrinsic_width * page_zoom_fit;
+                let height = intrinsic_height * page_zoom_fit;
+                // Center narrower pages within the import width when adjusting the document.
+                let page_x = if pdf_import_prefs.adjust_document {
+                    x + (page_width - width) * 0.5
                 } else {
-                    y += match pdf_import_prefs.page_spacing {
-                        PdfImportPageSpacing::Continuous => {
+                    x
+                };
+                let bounds = Aabb::new(
+                    Vector2::new(page_x, y),
+                    Vector2::new(page_x + width, y + height),
+                );
+
+                y += match pdf_import_prefs.page_spacing {
+                    PdfImportPageSpacing::Continuous => {
+                        if pdf_import_prefs.adjust_document {
+                            height
+                        } else {
                             height + Stroke::IMPORT_OFFSET_DEFAULT[1] * 0.5
                         }
-                        PdfImportPageSpacing::OnePerDocumentPage => format.height(),
-                    };
-                }
+                    }
+                    PdfImportPageSpacing::OnePerDocumentPage => {
+                        if pdf_import_prefs.adjust_document {
+                            max_rendered_height
+                        } else {
+                            format.height()
+                        }
+                    }
+                };
                 let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
                 let svg = Svg { svg_data, bounds };
 
@@ -275,7 +308,7 @@ impl VectorImage {
             .map(|svg| {
                 Self::from_svg_str(
                     svg.svg_data.as_str(),
-                    svg.bounds.mins.coords,
+                    svg.bounds.mins,
                     ImageSizeOption::ImposeSize(svg.bounds.extents()),
                 )
             })

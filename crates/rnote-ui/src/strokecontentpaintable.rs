@@ -4,6 +4,7 @@ use gtk4::graphene;
 use gtk4::{gdk, glib, glib::clone, gsk, prelude::*, subclass::prelude::*};
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_engine::Image;
 use rnote_engine::engine::StrokeContent;
 use rnote_engine::ext::GdkRGBAExt;
@@ -298,7 +299,7 @@ mod imp {
 
         Image::try_from_cairo_surface(
             target_surface,
-            Aabb::new(na::point![0., 0.], na::point![width, height]),
+            Aabb::new(Vector2::ZERO, Vector2::new(width, height)),
         )
     }
 

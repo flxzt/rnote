@@ -11,16 +11,19 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
-use gtk4::{Application, IconTheme, Widget, gdk, gio, glib};
+use gtk4::{Application, IconTheme, Widget, gdk, gio, glib, glib::clone};
+use p2d::math::Vector2;
 use rnote_compose::Color;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
 use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::pens::PenMode;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::{WidgetFlags, engine::EngineTask};
 use std::path::Path;
+use std::time::Duration;
 use tracing::{debug, error};
 
 glib::wrapper! {
@@ -78,6 +81,42 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn set_pen_style(&self, pen_style: PenStyle) {
         self.set_property("pen-style", pen_style.to_variant().to_value());
+    }
+
+    /// sets the pen style on the appwindow only if the penmode does
+    /// not hold a lock
+    pub(crate) fn set_pen_style_with_lock(&self, pen_style: PenStyle) {
+        if let Some(canvas) = self.active_tab_canvas() {
+            let current_penstyle = canvas.engine_ref().current_pen_style_w_override();
+            let current_penmode = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+
+            let locked = self.lock_pen_state(current_penmode);
+            if current_penstyle != pen_style {
+                if locked {
+                    self.overlays().dispatch_toast_w_button_singleton(
+                        &gettext("Tool Locked"),
+                        &gettext("Unlock"),
+                        clone!(
+                            #[weak(rename_to=appwindow)]
+                            self,
+                            #[weak]
+                            canvas,
+                            move |_reload_toast| {
+                                let current_penmode =
+                                    canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+                                appwindow.set_lock_pen_state(current_penmode, false);
+                                appwindow.refresh_ui();
+                            }
+                        ),
+                        Some(Duration::from_secs(2)),
+                        &canvas.imp().locked_tool_toast_singleton,
+                    );
+                    self.refresh_ui();
+                } else {
+                    self.set_pen_style(pen_style);
+                }
+            }
+        }
     }
 
     #[allow(unused)]
@@ -180,6 +219,20 @@ impl RnAppWindow {
         self.set_property("save-in-progress", save_in_progress.to_value());
     }
 
+    pub(crate) fn lock_pen_state(&self, pen_mode: PenMode) -> bool {
+        match pen_mode {
+            PenMode::Pen => self.property::<bool>("lock-pen"),
+            PenMode::Eraser => self.property::<bool>("lock-eraser"),
+        }
+    }
+
+    pub(crate) fn set_lock_pen_state(&self, pen_mode: PenMode, lock: bool) {
+        match pen_mode {
+            PenMode::Pen => self.set_property("lock-pen", lock.to_value()),
+            PenMode::Eraser => self.set_property("lock-eraser", lock.to_value()),
+        }
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
@@ -205,7 +258,7 @@ impl RnAppWindow {
     }
 
     /// Must be called after application is associated with the window else the init will panic
-    pub(crate) fn init(&self) {
+    pub(crate) fn init(&self, add_initial_tab: bool) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
@@ -235,7 +288,9 @@ impl RnAppWindow {
         }
 
         // An initial tab (canvas).
-        self.add_initial_tab();
+        if add_initial_tab {
+            self.add_initial_tab();
+        }
 
         // Anything that needs to be done right before showing the appwindow
 
@@ -292,12 +347,7 @@ impl RnAppWindow {
             canvas.set_empty(false);
         }
         if widget_flags.view_modified {
-            let widget_size = canvas.widget_size();
-            let offset_mins_maxs = canvas.engine_ref().camera_offset_mins_maxs();
-            let offset = canvas.engine_ref().camera.offset();
-            // Keep the adjustments configuration in sync
-            canvas.configure_adjustments(widget_size, offset_mins_maxs, offset);
-            canvas.queue_resize();
+            canvas.queue_allocate();
         }
         if widget_flags.zoomed_temporarily {
             let total_zoom = canvas.engine_ref().camera.total_zoom();
@@ -340,6 +390,18 @@ impl RnAppWindow {
     /// Get the active (selected) tab page.
     pub(crate) fn active_tab_page(&self) -> Option<adw::TabPage> {
         self.imp().overlays.tabview().selected_page()
+    }
+
+    pub(crate) fn transfer_page(
+        &self,
+        page: &adw::TabPage,
+        other_view: &adw::TabView,
+        position: i32,
+    ) {
+        self.imp()
+            .overlays
+            .tabview()
+            .transfer_page(page, other_view, position);
     }
 
     pub(crate) fn n_tabs_open(&self) -> usize {
@@ -555,7 +617,7 @@ impl RnAppWindow {
     pub(crate) async fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
     ) {
         self.overlays().progressbar_start_pulsing();
@@ -585,7 +647,7 @@ impl RnAppWindow {
     async fn try_open_file(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
     ) -> anyhow::Result<bool> {
         let file_imported = match FileType::lookup_file_type(&input_file) {

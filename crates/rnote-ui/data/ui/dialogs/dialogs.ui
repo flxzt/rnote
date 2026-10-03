@@ -71,11 +71,13 @@ Changes which are not saved will be permanently lost.</property>
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="edit_selected_workspace_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="edit_selected_workspace_button_apply">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Apply</property>
                 <style>
                   <class name="suggested-action" />

@@ -3,6 +3,7 @@ use super::ToolsState;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::Vector2Ext;
@@ -13,20 +14,20 @@ use std::time::Instant;
 #[derive(Clone, Debug)]
 pub(super) struct OffsetCameraTool {
     state: ToolsState,
-    start: na::Vector2<f64>,
+    start: Vector2,
 }
 
 impl Default for OffsetCameraTool {
     fn default() -> Self {
         Self {
             state: ToolsState::default(),
-            start: na::Vector2::zeros(),
+            start: Vector2::ZERO,
         }
     }
 }
 
 impl OffsetCameraTool {
-    const CURSOR_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
+    const CURSOR_SIZE: Vector2 = Vector2::splat(16.);
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
     const CURSOR_PATH: &'static str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
     const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
@@ -60,16 +61,8 @@ impl OffsetCameraTool {
                 progress: PenProgress::Idle,
             },
             (ToolsState::Active, PenEvent::Down { element, .. }) => {
-                let offset = engine_view
-                    .camera
-                    .transform()
-                    .transform_point(&element.pos.into())
-                    .coords
-                    - engine_view
-                        .camera
-                        .transform()
-                        .transform_point(&self.start.into())
-                        .coords;
+                let offset = engine_view.camera.transform().transform_point2(element.pos)
+                    - engine_view.camera.transform().transform_point2(self.start);
 
                 widget_flags |= engine_view
                     .camera
@@ -142,7 +135,7 @@ impl OffsetCameraTool {
     }
 
     fn reset(&mut self) {
-        self.start = na::Vector2::zeros();
+        self.start = Vector2::ZERO;
         self.state = ToolsState::Idle;
     }
 }
@@ -154,8 +147,8 @@ impl DrawableOnDoc for OffsetCameraTool {
         }
 
         Some(Aabb::from_half_extents(
-            self.start.into(),
-            ((Self::CURSOR_SIZE + na::Vector2::repeat(Self::CURSOR_STROKE_WIDTH)) * 0.5)
+            self.start,
+            ((Self::CURSOR_SIZE + Vector2::splat(Self::CURSOR_STROKE_WIDTH)) * 0.5)
                 / engine_view.camera.total_zoom(),
         ))
     }
@@ -168,7 +161,7 @@ impl DrawableOnDoc for OffsetCameraTool {
         cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
         if let Some(bounds) = self.bounds_on_doc(engine_view) {
-            cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
+            cx.transform(kurbo::Affine::translate(bounds.mins.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / engine_view.camera.total_zoom()));
 
             let bez_path = kurbo::BezPath::from_svg(Self::CURSOR_PATH).unwrap();

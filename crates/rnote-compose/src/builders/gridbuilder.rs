@@ -9,23 +9,24 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
 #[derive(Debug, Clone, Copy)]
 enum GridBuilderState {
     FirstCell {
-        start: na::Vector2<f64>,
-        current: na::Vector2<f64>,
+        start: Vector2,
+        current: Vector2,
     },
     FirstCellFinished {
-        start: na::Vector2<f64>,
-        current: na::Vector2<f64>,
+        start: Vector2,
+        current: Vector2,
     },
     Grids {
-        start: na::Vector2<f64>,
-        cell_size: na::Vector2<f64>,
-        current: na::Vector2<f64>,
+        start: Vector2,
+        cell_size: Vector2,
+        current: Vector2,
     },
 }
 
@@ -113,7 +114,7 @@ impl Buildable for GridBuilder {
             GridBuilderState::FirstCell { start, current }
             | GridBuilderState::FirstCellFinished { start, current }
             | GridBuilderState::Grids { start, current, .. } => {
-                Some(Aabb::new_positive((*start).into(), (*current).into()).loosened(bounds_margin))
+                Some(Aabb::new_positive(*start, *current).loosened(bounds_margin))
             }
         }
     }
@@ -154,7 +155,7 @@ impl Buildable for GridBuilder {
                     indicators::draw_pos_indicator(
                         cx,
                         PenState::Up,
-                        *start + cell_size.component_mul(&na::vector![cols, rows]),
+                        *start + cell_size * Vector2::new(cols, rows),
                         zoom,
                     );
                 }
@@ -201,37 +202,36 @@ impl GridBuilder {
                 // lines of the upper side
                 let mut lines = (0..cols)
                     .map(|col| Line {
-                        start: na::vector![start[0] + cell_size[0] * col as f64, start[1]],
-                        end: na::vector![start[0] + cell_size[0] * (col + 1) as f64, start[1]],
+                        start: Vector2::new(start[0] + cell_size[0] * col as f64, start[1]),
+                        end: Vector2::new(start[0] + cell_size[0] * (col + 1) as f64, start[1]),
                     })
                     .collect::<Vec<Line>>();
 
                 // lines of the left side
                 lines.extend((0..rows).map(|row| Line {
-                    start: na::vector![start[0], start[1] + cell_size[1] * row as f64],
-                    end: na::vector![start[0], start[1] + cell_size[1] * (row + 1) as f64],
+                    start: Vector2::new(start[0], start[1] + cell_size[1] * row as f64),
+                    end: Vector2::new(start[0], start[1] + cell_size[1] * (row + 1) as f64),
                 }));
 
                 // cell outlines
                 lines.extend((0..rows).flat_map(move |row| {
                     (0..cols).flat_map(move |col| {
-                        let corner =
-                            start + cell_size.component_mul(&na::vector![col as f64, row as f64]);
+                        let corner = start + cell_size * Vector2::new(col as f64, row as f64);
 
                         [
                             Line {
-                                start: na::vector![corner[0] + cell_size[0], corner[1]],
-                                end: na::vector![
+                                start: Vector2::new(corner[0] + cell_size[0], corner[1]),
+                                end: Vector2::new(
                                     corner[0] + cell_size[0],
-                                    corner[1] + cell_size[1]
-                                ],
+                                    corner[1] + cell_size[1],
+                                ),
                             },
                             Line {
-                                start: na::vector![corner[0], corner[1] + cell_size[1]],
-                                end: na::vector![
+                                start: Vector2::new(corner[0], corner[1] + cell_size[1]),
+                                end: Vector2::new(
                                     corner[0] + cell_size[0],
-                                    corner[1] + cell_size[1]
-                                ],
+                                    corner[1] + cell_size[1],
+                                ),
                             },
                         ]
                     })

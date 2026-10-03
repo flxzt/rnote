@@ -17,10 +17,10 @@ jobs:
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build nightly flatpak
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        uses: flatpak/flatpak-github-actions/flatpak-builder@401fe28a8384095fc1531b9d320b292f0ee45adb
         with:
           manifest-path: build-aux/com.github.flxzt.rnote.Devel.yaml
           cache-key: flatpak-builder-${{ github.sha }}

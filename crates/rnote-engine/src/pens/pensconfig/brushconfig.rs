@@ -1,6 +1,6 @@
 // Imports
 use crate::store::chrono_comp::StrokeLayer;
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rnote_compose::Style;
 use rnote_compose::builders::PenPathBuilderType;
 use rnote_compose::style::PressureCurve;
@@ -125,7 +125,7 @@ impl BrushConfig {
 
     /// A new seed for new shapes
     pub(crate) fn new_style_seeds(&mut self) {
-        let seed = Some(rand_pcg::Pcg64::from_os_rng().random());
+        let seed = Some(rand_pcg::Pcg64::from_rng(&mut rand::rng()).random());
         self.textured_options.seed = seed;
     }
 

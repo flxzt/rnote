@@ -11,6 +11,7 @@ global_conf.set_quoted('APP_VERSION_SUFFIX', version_suffix)
 global_conf.set_quoted('APP_AUTHOR_NAME', app_author_name)
 global_conf.set_quoted('APP_AUTHORS', app_authors)
 global_conf.set_quoted('APP_WEBSITE', app_website)
+global_conf.set_quoted('APP_REPO_URL', app_repo_url)
 global_conf.set_quoted('APP_ISSUES_URL', app_issues_url)
 global_conf.set_quoted('APP_SUPPORT_URL', app_support_url)
 global_conf.set_quoted('APP_DONATE_URL', app_donate_url)
@@ -75,6 +76,7 @@ rnote_ui_sources = files(
     'penssidebar/toolspage.rs',
     'penssidebar/typewriterpage.rs',
     'settingspanel/mod.rs',
+    'settingspanel/penmoderow.rs',
     'settingspanel/penshortcutmodels.rs',
     'settingspanel/penshortcutrow.rs',
     'sidebar.rs',

@@ -18,6 +18,7 @@ anyhow = { workspace = true }
 approx = { workspace = true }
 async-fs = { workspace = true }
 base64 = { workspace = true }
+blocking = { workspace = true }
 cairo-rs = { workspace = true }
 chrono = { workspace = true }
 fs_extra = { workspace = true }
@@ -29,7 +30,6 @@ ijson = { workspace = true }
 image = { workspace = true }
 itertools = { workspace = true }
 kurbo = { workspace = true }
-nalgebra = { workspace = true }
 notify-debouncer-full = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }

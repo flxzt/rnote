@@ -114,6 +114,14 @@
                   <property name="action-name">win.zoom-fit-width</property>
                 </object>
               </child>
+              <child>
+                <object class="GtkButton" id="zoom_real_width_button">
+                  <property name="hexpand">false</property>
+                  <property name="icon_name">zoom-real-width-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Zoom to Real Size</property>
+                  <property name="action-name">win.zoom-real-width</property>
+                </object>
+              </child>
             </object>
           </child>
           <child>

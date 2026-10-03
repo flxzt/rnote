@@ -1,10 +1,12 @@
 // Imports
 use crate::RnAppWindow;
 use gtk4::{
-    Button, CompositeTemplate, TemplateChild, ToggleButton, Widget, glib, glib::clone, prelude::*,
+    Box, Button, CompositeTemplate, EventControllerLegacy, TemplateChild, ToggleButton, Widget,
+    glib::{self, clone},
+    prelude::*,
     subclass::prelude::*,
 };
-use rnote_engine::pens::PenStyle;
+use rnote_engine::pens::{PenMode, PenStyle};
 
 mod imp {
     use super::*;
@@ -12,6 +14,8 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penpicker.ui")]
     pub(crate) struct RnPenPicker {
+        #[template_child]
+        pub(crate) toolbox: TemplateChild<Box>,
         #[template_child]
         pub(crate) brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -109,12 +113,46 @@ impl RnPenPicker {
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
+        // controller to switch pen mode when hovering with a pen/eraser over the toolbox toolbar
+        let pointer_controller_toolbox = EventControllerLegacy::builder()
+            .name("pointer_controller_toolbar")
+            .propagation_phase(gtk4::PropagationPhase::Bubble)
+            .build();
+
+        pointer_controller_toolbox.connect_event(clone!(
+            #[weak]
+            appwindow,
+            #[upgrade_or]
+            glib::Propagation::Proceed,
+            move |_, event| {
+                if let Some(canvas) = appwindow.active_tab_canvas()
+                    && let Some(device) = event.device_tool()
+                {
+                    match device.tool_type() {
+                        gtk4::gdk::DeviceToolType::Pen => {
+                            let widget_flags = canvas.engine_mut().change_pen_mode(PenMode::Pen);
+                            canvas.emit_handle_widget_flags(widget_flags);
+                        }
+                        gtk4::gdk::DeviceToolType::Eraser => {
+                            let widget_flags = canvas.engine_mut().change_pen_mode(PenMode::Eraser);
+                            canvas.emit_handle_widget_flags(widget_flags);
+                        }
+                        _ => {}
+                    }
+                }
+
+                glib::Propagation::Proceed
+            }
+        ));
+
+        imp.toolbox.add_controller(pointer_controller_toolbox);
+
         imp.brush_toggle.connect_toggled(clone!(
             #[weak]
             appwindow,
             move |brush_toggle| {
                 if brush_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Brush);
+                    appwindow.set_pen_style_with_lock(PenStyle::Brush);
                 }
             }
         ));
@@ -124,7 +162,7 @@ impl RnPenPicker {
             appwindow,
             move |shaper_toggle| {
                 if shaper_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Shaper);
+                    appwindow.set_pen_style_with_lock(PenStyle::Shaper);
                 }
             }
         ));
@@ -134,7 +172,7 @@ impl RnPenPicker {
             appwindow,
             move |typewriter_toggle| {
                 if typewriter_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Typewriter);
+                    appwindow.set_pen_style_with_lock(PenStyle::Typewriter);
                 }
             }
         ));
@@ -144,7 +182,7 @@ impl RnPenPicker {
             appwindow,
             move |eraser_toggle| {
                 if eraser_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Eraser);
+                    appwindow.set_pen_style_with_lock(PenStyle::Eraser);
                 }
             }
         ));
@@ -154,7 +192,7 @@ impl RnPenPicker {
             appwindow,
             move |selector_toggle| {
                 if selector_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Selector);
+                    appwindow.set_pen_style_with_lock(PenStyle::Selector);
                 }
             }
         ));
@@ -164,7 +202,7 @@ impl RnPenPicker {
             appwindow,
             move |tools_toggle| {
                 if tools_toggle.is_active() {
-                    appwindow.set_pen_style(PenStyle::Tools);
+                    appwindow.set_pen_style_with_lock(PenStyle::Tools);
                 }
             }
         ));

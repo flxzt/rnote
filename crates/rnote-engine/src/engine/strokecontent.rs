@@ -4,6 +4,7 @@ use crate::Svg;
 use crate::document::Background;
 use crate::strokes::Stroke;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -27,8 +28,8 @@ impl StrokeContent {
     pub const MIME_TYPE: &'static str = "application/rnote-stroke-content";
     pub const CLIPBOARD_EXPORT_MARGIN: f64 = 6.0;
 
-    pub fn with_bounds(mut self, bounds: Option<Aabb>) -> Self {
-        self.bounds = bounds;
+    pub fn with_bounds(mut self, bounds: Aabb) -> Self {
+        self.bounds = Some(bounds);
         self
     }
 
@@ -37,8 +38,8 @@ impl StrokeContent {
         self
     }
 
-    pub fn with_background(mut self, background: Option<Background>) -> Self {
-        self.background = background;
+    pub fn with_background(mut self, background: Background) -> Self {
+        self.background = Some(background);
         self
     }
 
@@ -57,7 +58,7 @@ impl StrokeContent {
         )
     }
 
-    pub fn size(&self) -> Option<na::Vector2<f64>> {
+    pub fn size(&self) -> Option<Vector2> {
         self.bounds().map(|b| b.extents())
     }
 

@@ -469,8 +469,10 @@ impl TextStyle {
 
 #[derive(Debug, Clone, Default)]
 pub struct SpellcheckCache {
-    pub language: Option<String>,
-    pub errors: BTreeMap<usize, usize>,
+    language: Option<String>,
+    errors: BTreeMap<usize, usize>,
+    /// Range mutated since the last refresh.
+    dirty: Option<Range<usize>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -490,7 +492,7 @@ pub struct TextStroke {
     #[serde(rename = "text_style")]
     pub text_style: TextStyle,
     #[serde(skip)]
-    pub spellcheck_cache: SpellcheckCache,
+    spellcheck_cache: SpellcheckCache,
 }
 
 impl Default for TextStroke {
@@ -596,8 +598,20 @@ impl TextStroke {
         }
     }
 
-    pub fn get_text_slice_for_range(&self, range: Range<usize>) -> &str {
-        &self.text[range]
+    pub fn get_text_slice_for_range(&self, range: Range<usize>) -> Option<&str> {
+        self.text.get(range)
+    }
+
+    /// Misspelled word start indices mapped to their byte length.
+    pub fn errors(&self) -> &BTreeMap<usize, usize> {
+        &self.spellcheck_cache.errors
+    }
+
+    /// The misspelled-word range at or before `index`.
+    pub fn error_at(&self, index: usize) -> Option<Range<usize>> {
+        let start = self.get_word_start_index_at_or_before(index);
+        let length = *self.spellcheck_cache.errors.get(&start)?;
+        Some(start..start + length)
     }
 
     /// Get a cursor matching best for the given coordinate.
@@ -624,81 +638,114 @@ impl TextStroke {
 
     fn check_spelling_words(&mut self, words: Vec<(usize, String)>, dict: &enchant::Dict) {
         for (word_start_index, word) in words {
-            if let Ok(valid_word) = dict.check(word.as_str()) {
-                let word_end_index = word_start_index + word.len();
-                let word_range = word_start_index..word_end_index;
+            let word_end_index = word_start_index + word.len();
+            let word_range = word_start_index..word_end_index;
 
-                self.spellcheck_cache
-                    .errors
-                    .retain(|key, _| !word_range.contains(key));
+            // Drop first so a failed check can't leave a stale error.
+            self.spellcheck_cache
+                .errors
+                .retain(|key, _| !word_range.contains(key));
 
-                // TODO: maybe faster for large texts
-                // let keys_to_remove = self
-                //     .error_words
-                //     .range(word_range)
-                //     .map(|(&key, _)| key)
-                //     .collect_vec();
-
-                // for existing_word in keys_to_remove {
-                //     self.error_words.remove(&existing_word);
-                // }
-
-                if !valid_word {
+            match dict.check(word.as_str()) {
+                Ok(false) => {
                     self.spellcheck_cache
                         .errors
                         .insert(word_start_index, word.len());
                 }
-            } else {
-                error!("Failed to check spelling for word '{word}'");
+                Ok(true) => {}
+                Err(_) => {
+                    error!("Failed to check spelling for word '{word}'");
+                }
             }
         }
     }
 
-    pub fn check_spelling_refresh_cache(&mut self, spellcheck: &Spellcheck) {
-        if let Some(dict) = &spellcheck.dict {
-            let language = dict.get_lang();
+    /// Recheck the dirty range, or the whole text after a language change.
+    pub fn ensure_spellchecked(&mut self, spellcheck: &Spellcheck) {
+        let dirty = self.spellcheck_cache.dirty.take();
 
-            let language_changed = self
-                .spellcheck_cache
-                .language
-                .clone()
-                .is_none_or(|cached_language| cached_language != language);
-
-            if language_changed {
-                self.spellcheck_cache.errors.clear();
-                self.spellcheck_cache.language = Some(language.to_owned());
-
-                let words = self
-                    .text
-                    .unicode_word_indices()
-                    .map(|(index, word)| (index, word.to_owned()))
-                    .collect_vec();
-
-                self.check_spelling_words(words, dict);
-            }
-        } else {
+        let Some(dict) = &spellcheck.dict else {
             self.spellcheck_cache.errors.clear();
             self.spellcheck_cache.language = None;
+            return;
+        };
+
+        let language = dict.get_lang();
+        let language_changed = self
+            .spellcheck_cache
+            .language
+            .as_deref()
+            .is_none_or(|cached_language| cached_language != language);
+
+        if language_changed {
+            self.spellcheck_cache.errors.clear();
+            self.spellcheck_cache.language = Some(language.to_owned());
+
+            let words = self
+                .text
+                .unicode_word_indices()
+                .map(|(index, word)| (index, word.to_owned()))
+                .collect_vec();
+
+            self.check_spelling_words(words, dict);
+        } else if let Some(dirty) = dirty {
+            let words = self.get_surrounding_words(dirty.start, dirty.end);
+            self.check_spelling_words(words, dict);
         }
     }
 
+    /// Replace `range` with `replacement`; keeps spellcheck and attrs in sync.
+    fn splice(&mut self, range: Range<usize>, replacement: &str) {
+        let removed_len = range.end - range.start;
+        let delta = replacement.len() as isize - removed_len as isize;
+        let affected = range.start..range.start + replacement.len();
+
+        // Drop errors in the replaced range, shift the ones after it.
+        let trailing_errors = self.spellcheck_cache.errors.split_off(&range.start);
+        self.spellcheck_cache.errors.extend(
+            trailing_errors
+                .into_iter()
+                .filter_map(|(start, length)| {
+                    if start < range.end {
+                        None
+                    } else {
+                        start.checked_add_signed(delta).map(|start| (start, length))
+                    }
+                })
+                .collect_vec(),
+        );
+
+        // Merge the old dirty range in post-splice coordinates.
+        let dirty = match self.spellcheck_cache.dirty.take() {
+            None => affected,
+            Some(previous) => {
+                let map = |index: usize| {
+                    if index >= range.end {
+                        index.saturating_add_signed(delta)
+                    } else if index >= range.start {
+                        affected.end
+                    } else {
+                        index
+                    }
+                };
+                map(previous.start).min(affected.start)..map(previous.end).max(affected.end)
+            }
+        };
+        self.spellcheck_cache.dirty = Some(dirty);
+
+        self.text.replace_range(range.clone(), replacement);
+        self.translate_attrs(range.start, delta as i32);
+    }
+
+    /// Corrections for the misspelled word at or before `index`.
     pub fn get_spellcheck_corrections_at_index(
         &self,
         spellcheck: &Spellcheck,
         index: usize,
     ) -> Option<Vec<String>> {
-        let Some(dict) = &spellcheck.dict else {
-            return None;
-        };
-
-        let start_index = self.get_prev_word_start_index(index);
-
-        if let Some(length) = self.spellcheck_cache.errors.get(&start_index) {
-            let word = self.get_text_slice_for_range(start_index..start_index + length);
-            return Some(dict.suggest(word));
-        }
-
-        None
+        let dict = spellcheck.dict.as_ref()?;
+        let word = self.get_text_slice_for_range(self.error_at(index)?)?;
+        Some(dict.suggest(word))
     }
 
     pub fn apply_spellcheck_correction_at_cursor(
@@ -706,77 +753,31 @@ impl TextStroke {
         cursor: &mut GraphemeCursor,
         correction: &str,
     ) {
-        let cur_pos = cursor.cur_cursor();
-        let start_index = self.get_prev_word_start_index(cur_pos);
+        let Some(word_range) = self.error_at(cursor.cur_cursor()) else {
+            return;
+        };
+        let start_index = word_range.start;
 
-        if let Some(length) = self.spellcheck_cache.errors.get(&start_index) {
-            let old_length = *length;
-            let new_length = correction.len();
+        self.splice(word_range, correction);
 
-            self.text
-                .replace_range(start_index..start_index + old_length, correction);
-
-            self.spellcheck_cache.errors.remove(&start_index);
-
-            // translate the text attributes
-            self.translate_attrs_after_cursor(
-                start_index + old_length,
-                (new_length as i32) - (old_length as i32),
-            );
-
-            *cursor = GraphemeCursor::new(start_index + new_length, self.text.len(), true);
-        }
+        *cursor = GraphemeCursor::new(start_index + correction.len(), self.text.len(), true);
     }
 
-    pub fn check_spelling_range(
-        &mut self,
-        start_index: usize,
-        end_index: usize,
-        spellcheck: &Spellcheck,
-    ) {
-        if let Some(dict) = &spellcheck.dict {
-            let words = self.get_surrounding_words(start_index, end_index);
-            self.check_spelling_words(words, dict);
-        }
-    }
-
-    pub fn insert_text_after_cursor(
-        &mut self,
-        text: &str,
-        cursor: &mut GraphemeCursor,
-        spellcheck: &Spellcheck,
-    ) {
+    pub fn insert_text_after_cursor(&mut self, text: &str, cursor: &mut GraphemeCursor) {
         let cur_pos = cursor.cur_cursor();
         let next_pos = cur_pos + text.len();
 
-        self.text.insert_str(cur_pos, text);
-
-        // translate the text attributes
-        self.translate_attrs_after_cursor(cur_pos, text.len() as i32);
-
-        self.check_spelling_range(cur_pos, next_pos, spellcheck);
+        self.splice(cur_pos..cur_pos, text);
 
         *cursor = GraphemeCursor::new(next_pos, self.text.len(), true);
     }
 
-    pub fn remove_grapheme_before_cursor(
-        &mut self,
-        cursor: &mut GraphemeCursor,
-        spellcheck: &Spellcheck,
-    ) {
+    pub fn remove_grapheme_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
         if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
             if let Some(prev_pos) = cursor.prev_boundary(&self.text, 0).unwrap() {
-                self.text.replace_range(prev_pos..cur_pos, "");
-
-                // translate the text attributes
-                self.translate_attrs_after_cursor(
-                    prev_pos,
-                    prev_pos as i32 - cur_pos as i32 + "".len() as i32,
-                );
-
-                self.check_spelling_range(prev_pos, cur_pos, spellcheck);
+                self.splice(prev_pos..cur_pos, "");
             }
 
             // New text length, new cursor
@@ -784,24 +785,12 @@ impl TextStroke {
         }
     }
 
-    pub fn remove_grapheme_after_cursor(
-        &mut self,
-        cursor: &mut GraphemeCursor,
-        spellcheck: &Spellcheck,
-    ) {
+    pub fn remove_grapheme_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
         if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
             if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
-                self.text.replace_range(cur_pos..next_pos, "");
-
-                // translate the text attributes
-                self.translate_attrs_after_cursor(
-                    cur_pos,
-                    -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
-                );
-
-                self.check_spelling_range(cur_pos, next_pos, spellcheck);
+                self.splice(cur_pos..next_pos, "");
             }
 
             // New text length, new cursor
@@ -809,48 +798,24 @@ impl TextStroke {
         }
     }
 
-    pub fn remove_word_before_cursor(
-        &mut self,
-        cursor: &mut GraphemeCursor,
-        spellcheck: &Spellcheck,
-    ) {
+    pub fn remove_word_before_cursor(&mut self, cursor: &mut GraphemeCursor) {
         let cur_pos = cursor.cur_cursor();
         let prev_pos = self.get_prev_word_start_index(cur_pos);
 
         if cur_pos != prev_pos {
-            self.text.replace_range(prev_pos..cur_pos, "");
-
-            // translate the text attributes
-            self.translate_attrs_after_cursor(
-                prev_pos,
-                prev_pos as i32 - cur_pos as i32 + "".len() as i32,
-            );
-
-            self.check_spelling_range(prev_pos, cur_pos, spellcheck);
+            self.splice(prev_pos..cur_pos, "");
 
             // New text length, new cursor
             *cursor = GraphemeCursor::new(prev_pos, self.text.len(), true);
         }
     }
 
-    pub fn remove_word_after_cursor(
-        &mut self,
-        cursor: &mut GraphemeCursor,
-        spellcheck: &Spellcheck,
-    ) {
+    pub fn remove_word_after_cursor(&mut self, cursor: &mut GraphemeCursor) {
         let cur_pos = cursor.cur_cursor();
         let next_pos = self.get_next_word_end_index(cur_pos);
 
         if cur_pos != next_pos {
-            self.text.replace_range(cur_pos..next_pos, "");
-
-            // translate the text attributes
-            self.translate_attrs_after_cursor(
-                cur_pos,
-                -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
-            );
-
-            self.check_spelling_range(cur_pos, next_pos, spellcheck);
+            self.splice(cur_pos..next_pos, "");
 
             // New text length, new cursor
             *cursor = GraphemeCursor::new(cur_pos, self.text.len(), true);
@@ -862,7 +827,6 @@ impl TextStroke {
         cursor: &mut GraphemeCursor,
         selection_cursor: &mut GraphemeCursor,
         replace_text: &str,
-        spellcheck: &Spellcheck,
     ) {
         let cursor_pos = cursor.cur_cursor();
         let selection_cursor_pos = selection_cursor.cur_cursor();
@@ -873,7 +837,7 @@ impl TextStroke {
             selection_cursor_pos..cursor_pos
         };
 
-        self.text.replace_range(cursor_range.clone(), replace_text);
+        self.splice(cursor_range.clone(), replace_text);
 
         *cursor = GraphemeCursor::new(
             cursor_range.start + replace_text.len(),
@@ -885,48 +849,12 @@ impl TextStroke {
             self.text.len(),
             true,
         );
-
-        self.translate_attrs_after_cursor(
-            cursor.cur_cursor(),
-            -(cursor_range.end as i32 - cursor_range.start as i32) + replace_text.len() as i32,
-        );
-
-        self.check_spelling_range(
-            cursor_range.start,
-            cursor_range.start + replace_text.len(),
-            spellcheck,
-        );
     }
 
-    /// Translate the ranged text attributes after the given cursor.
+    /// Translate the ranged text attributes after `from_pos`.
     ///
     /// Overlapping ranges are extended / shrunk
-    ///
-    /// * `from_pos` is always the start of the range to translate.
-    /// * `offset` is the translation. The end of the range is calculated by adding the **absolute** value of the offset.
-    fn translate_attrs_after_cursor(&mut self, from_pos: usize, offset: i32) {
-        let translated_words = if offset < 0 {
-            let to_pos = from_pos.saturating_add(offset.unsigned_abs() as usize);
-            self.spellcheck_cache
-                .errors
-                .split_off(&from_pos)
-                .split_off(&to_pos)
-        } else {
-            self.spellcheck_cache.errors.split_off(&from_pos)
-        };
-
-        for (word_start, word_length) in translated_words {
-            let Some(new_word_start) = word_start.checked_add_signed(offset as isize) else {
-                continue;
-            };
-
-            if new_word_start >= from_pos {
-                self.spellcheck_cache
-                    .errors
-                    .insert(new_word_start, word_length);
-            }
-        }
-
+    fn translate_attrs(&mut self, from_pos: usize, offset: i32) {
         for attr in self.text_style.ranged_text_attributes.iter_mut() {
             if attr.range.start > from_pos {
                 if offset >= 0 {
@@ -1068,9 +996,23 @@ impl TextStroke {
             }
         }
 
-        // debug!("surrounding words: {words:?}");
-
         words
+    }
+
+    fn get_word_start_index_at_or_before(&self, current_char_index: usize) -> usize {
+        let mut prev_word_start = current_char_index;
+
+        for (start_index, _) in self.text.unicode_word_indices() {
+            if start_index == current_char_index {
+                return current_char_index;
+            }
+            if start_index > current_char_index {
+                break;
+            }
+            prev_word_start = start_index;
+        }
+
+        prev_word_start
     }
 
     fn get_prev_word_start_index(&self, current_char_index: usize) -> usize {

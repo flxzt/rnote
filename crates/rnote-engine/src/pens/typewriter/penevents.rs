@@ -1,9 +1,9 @@
 // Imports
-use super::{ModifyState, SelectionMode, Typewriter, TypewriterState};
+use super::{ModifyState, SelectionMode, Typewriter, TypewriterState, finish_edit};
 use crate::engine::EngineViewMut;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
-use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
+use crate::{DrawableOnDoc, WidgetFlags};
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
@@ -56,7 +56,7 @@ impl Typewriter {
                             GraphemeCursor::new(0, textstroke.text.len(), true)
                         };
 
-                        textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+                        textstroke.ensure_spellchecked(engine_view.spellcheck);
                         engine_view.store.update_chrono_to_last(stroke_key);
 
                         new_state = TypewriterState::Modifying {
@@ -552,7 +552,7 @@ impl Typewriter {
 
                         let mut textstroke =
                             TextStroke::new(String::from(keychar), *pos, text_style);
-                        textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+                        textstroke.ensure_spellchecked(engine_view.spellcheck);
 
                         let mut cursor = GraphemeCursor::new(0, textstroke.text.len(), true);
 
@@ -606,27 +606,6 @@ impl Typewriter {
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
-                            let mut update_stroke =
-                                |store: &mut StrokeStore, keychar_is_whitespace: bool| {
-                                    store.update_geometry_for_stroke(*stroke_key);
-                                    store.regenerate_rendering_for_stroke(
-                                        *stroke_key,
-                                        engine_view.camera.viewport(),
-                                        engine_view.camera.image_scale(),
-                                    );
-                                    widget_flags |= engine_view
-                                        .document
-                                        .resize_autoexpand(store, engine_view.camera);
-                                    if keychar_is_whitespace {
-                                        widget_flags |= store.record(Instant::now());
-                                    } else {
-                                        widget_flags |=
-                                            store.update_latest_history_entry(Instant::now());
-                                    }
-
-                                    widget_flags.store_modified = true;
-                                };
-
                             *pen_down = false;
 
                             // Handling keyboard input
@@ -650,9 +629,12 @@ impl Typewriter {
                                         textstroke.insert_text_after_cursor(
                                             keychar.to_string().as_str(),
                                             cursor,
-                                            engine_view.spellcheck,
                                         );
-                                        update_stroke(engine_view.store, keychar.is_whitespace());
+                                        widget_flags |= finish_edit(
+                                            engine_view,
+                                            *stroke_key,
+                                            keychar.is_whitespace(),
+                                        );
                                     }
 
                                     EventResult {
@@ -663,17 +645,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::BackSpace => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                                        textstroke.remove_word_before_cursor(
-                                            cursor,
-                                            engine_view.spellcheck,
-                                        );
+                                        textstroke.remove_word_before_cursor(cursor);
                                     } else {
-                                        textstroke.remove_grapheme_before_cursor(
-                                            cursor,
-                                            engine_view.spellcheck,
-                                        );
+                                        textstroke.remove_grapheme_before_cursor(cursor);
                                     }
-                                    update_stroke(engine_view.store, false);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, false);
 
                                     EventResult {
                                         handled: true,
@@ -682,12 +658,8 @@ impl Typewriter {
                                     }
                                 }
                                 KeyboardKey::HorizontalTab => {
-                                    textstroke.insert_text_after_cursor(
-                                        "\t",
-                                        cursor,
-                                        engine_view.spellcheck,
-                                    );
-                                    update_stroke(engine_view.store, false);
+                                    textstroke.insert_text_after_cursor("\t", cursor);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, false);
 
                                     EventResult {
                                         handled: true,
@@ -696,12 +668,8 @@ impl Typewriter {
                                     }
                                 }
                                 KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
-                                    textstroke.insert_text_after_cursor(
-                                        "\n",
-                                        cursor,
-                                        engine_view.spellcheck,
-                                    );
-                                    update_stroke(engine_view.store, true);
+                                    textstroke.insert_text_after_cursor("\n", cursor);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, true);
 
                                     EventResult {
                                         handled: true,
@@ -711,17 +679,11 @@ impl Typewriter {
                                 }
                                 KeyboardKey::Delete => {
                                     if modifier_keys.contains(&ModifierKey::KeyboardCtrl) {
-                                        textstroke.remove_word_after_cursor(
-                                            cursor,
-                                            engine_view.spellcheck,
-                                        );
+                                        textstroke.remove_word_after_cursor(cursor);
                                     } else {
-                                        textstroke.remove_grapheme_after_cursor(
-                                            cursor,
-                                            engine_view.spellcheck,
-                                        );
+                                        textstroke.remove_grapheme_after_cursor(cursor);
                                     }
-                                    update_stroke(engine_view.store, false);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, false);
 
                                     EventResult {
                                         handled: true,
@@ -910,19 +872,6 @@ impl Typewriter {
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
-                            let mut update_stroke = |store: &mut StrokeStore| {
-                                store.update_geometry_for_stroke(*stroke_key);
-                                store.regenerate_rendering_for_stroke(
-                                    *stroke_key,
-                                    engine_view.camera.viewport(),
-                                    engine_view.camera.image_scale(),
-                                );
-                                widget_flags |= engine_view
-                                    .document
-                                    .resize_autoexpand(store, engine_view.camera)
-                                    | store.record(Instant::now());
-                                widget_flags.store_modified = true;
-                            };
                             let mut quit_selecting = false;
 
                             // Handle keyboard keys
@@ -939,9 +888,8 @@ impl Typewriter {
                                             cursor,
                                             selection_cursor,
                                             String::from(keychar).as_str(),
-                                            engine_view.spellcheck,
                                         );
-                                        update_stroke(engine_view.store);
+                                        widget_flags |= finish_edit(engine_view, *stroke_key, true);
                                         quit_selecting = true;
                                     }
                                     EventResult {
@@ -1045,9 +993,8 @@ impl Typewriter {
                                         cursor,
                                         selection_cursor,
                                         "\n",
-                                        engine_view.spellcheck,
                                     );
-                                    update_stroke(engine_view.store);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, true);
                                     quit_selecting = true;
                                     EventResult {
                                         handled: true,
@@ -1060,9 +1007,8 @@ impl Typewriter {
                                         cursor,
                                         selection_cursor,
                                         "",
-                                        engine_view.spellcheck,
                                     );
-                                    update_stroke(engine_view.store);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, true);
                                     quit_selecting = true;
                                     EventResult {
                                         handled: true,
@@ -1075,9 +1021,8 @@ impl Typewriter {
                                         cursor,
                                         selection_cursor,
                                         "\t",
-                                        engine_view.spellcheck,
                                     );
-                                    update_stroke(engine_view.store);
+                                    widget_flags |= finish_edit(engine_view, *stroke_key, true);
                                     quit_selecting = true;
                                     EventResult {
                                         handled: true,
@@ -1172,7 +1117,7 @@ impl Typewriter {
                 let text_len = text.len();
 
                 let mut textstroke = TextStroke::new(text, *pos, text_style);
-                textstroke.check_spelling_refresh_cache(engine_view.spellcheck);
+                textstroke.ensure_spellchecked(engine_view.spellcheck);
 
                 let cursor = GraphemeCursor::new(text_len, text_len, true);
 
@@ -1216,35 +1161,13 @@ impl Typewriter {
                         if let Some(Stroke::TextStroke(textstroke)) =
                             engine_view.store.get_stroke_mut(*stroke_key)
                         {
-                            textstroke.insert_text_after_cursor(
-                                &text,
-                                cursor,
-                                engine_view.spellcheck,
-                            );
-
-                            engine_view.store.update_geometry_for_stroke(*stroke_key);
-                            engine_view.store.regenerate_rendering_for_stroke(
-                                *stroke_key,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-                            widget_flags |= engine_view
-                                .document
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                            *pen_down = false;
-
+                            textstroke.insert_text_after_cursor(&text, cursor);
                             // only record new history entry if the text contains ascii-whitespace,
                             // else only update history
-                            if text.contains(char::is_whitespace) {
-                                widget_flags |= engine_view.store.record(Instant::now());
-                            } else {
-                                widget_flags |= engine_view
-                                    .store
-                                    .update_latest_history_entry(Instant::now());
-                            }
+                            let record = text.contains(char::is_whitespace);
+                            widget_flags |= finish_edit(engine_view, *stroke_key, record);
 
-                            widget_flags.store_modified = true;
+                            *pen_down = false;
                         }
 
                         EventResult {
@@ -1268,30 +1191,13 @@ impl Typewriter {
                                 cursor,
                                 selection_cursor,
                                 text.as_str(),
-                                engine_view.spellcheck,
                             );
-                            engine_view.store.update_geometry_for_stroke(*stroke_key);
-                            engine_view.store.regenerate_rendering_for_stroke(
-                                *stroke_key,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-                            widget_flags |= engine_view
-                                .document
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                            *finished = true;
-
                             // only record new history entry if the text contains ascii-whitespace,
                             // else only update history
-                            if text.contains(char::is_whitespace) {
-                                widget_flags |= engine_view.store.record(Instant::now());
-                            } else {
-                                widget_flags |= engine_view
-                                    .store
-                                    .update_latest_history_entry(Instant::now());
-                            }
-                            widget_flags.store_modified = true;
+                            let record = text.contains(char::is_whitespace);
+                            widget_flags |= finish_edit(engine_view, *stroke_key, record);
+
+                            *finished = true;
                         }
 
                         EventResult {

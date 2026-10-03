@@ -2,6 +2,7 @@
 
 import sys
 import os
+import re
 import shutil
 import glob
 import itertools
@@ -41,6 +42,44 @@ def run_command(command, error_message):
         sys.exit(1)
 
 
+env_bin_dir = f"{build_environment_path}/bin"
+
+
+def collect_dependencies(binary, out_dir):
+    """Copy every DLL from the build environment that `binary` needs, transitively.
+
+    This reads the PE import table with objdump rather than using `ldd`. `ldd`
+    resolves dependencies by actually loading the binary, which deadlocks on
+    libraries that do work at load time - notably ANGLE's libGLESv2.dll, where
+    the installer build would hang indefinitely.
+
+    DLLs that do not exist in the build environment are Windows system DLLs and
+    are deliberately not packaged.
+    """
+    seen = set()
+    queue = [binary]
+
+    while queue:
+        current = queue.pop()
+        result = subprocess.run(
+            ["objdump", "-p", current], capture_output=True, text=True, errors="replace"
+        )
+        if result.returncode != 0:
+            print(f"Reading imports of {current} failed", file=sys.stderr)
+            sys.exit(1)
+
+        for name in re.findall(r"DLL Name:\s*(\S+)", result.stdout):
+            key = name.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+
+            candidate = os.path.join(env_bin_dir, name)
+            if os.path.exists(candidate):
+                shutil.copy(candidate, out_dir)
+                queue.append(candidate)
+
+
 # Collect DLLs
 print("Collecting DLLs...", file=sys.stderr)
 dlls_dir = os.path.join(build_root, "dlls")
@@ -50,40 +89,32 @@ if os.path.exists(dlls_dir):
 
 os.mkdir(dlls_dir)
 
-# Don't use os.path.join here, because that uses the wrong separators which breaks wildcard expansion.
-run_command(
-    f"ldd {build_root}/{ui_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
-    "Collecting app DLLs failed"
-)
+collect_dependencies(f"{build_root}/{ui_output}", dlls_dir)
 
 for loader in glob.glob(f"{build_environment_path}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll"):
-    run_command(
-        f"ldd {loader} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
-        f"Collecting pixbuf-loader ({loader}) DLLs failed"
-    )
+    collect_dependencies(loader, dlls_dir)
 
+# ANGLE is loaded at runtime, so it is not in the import table of anything above
+# and has to be packaged explicitly, together with what it depends on.
 for angle_dll in itertools.chain(
-    glob.glob(f"{build_environment_path}/bin/libEGL*.dll"),
-    glob.glob(f"{build_environment_path}/bin/libGLES*.dll"),
+    glob.glob(f"{env_bin_dir}/libEGL*.dll"),
+    glob.glob(f"{env_bin_dir}/libGLES*.dll"),
 ):
-    run_command(
-        f"cp {angle_dll} {dlls_dir}",
-        f"Collecting angle ({angle_dll}) DLLs failed",
-    )
-    run_command(
-        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
-        f"Collecting angle dependency ({angle_dll}) DLLs failed",
-    )
+    shutil.copy(angle_dll, dlls_dir)
+    collect_dependencies(angle_dll, dlls_dir)
 
-# add libcrypto-3-x64.dll and libssl-3-x64.dll
-run_command(
-    f"cp {build_environment_path}/bin/libcrypto-3-x64.dll {dlls_dir}",
-    "Collecting libcrypto-3-x64.dll failed",
-)
-run_command(
-    f"cp {build_environment_path}/bin/libssl-3-x64.dll {dlls_dir}",
-    "Collecting libssl-3-x64.dll failed",
-)
+# add the openssl runtime. The file name carries the architecture
+# (libcrypto-3-x64.dll on x86_64, libcrypto-3-arm64.dll on aarch64), so glob it.
+for openssl_pattern in ("libcrypto-3-*.dll", "libssl-3-*.dll"):
+    matches = glob.glob(f"{build_environment_path}/bin/{openssl_pattern}")
+    if not matches:
+        print(f"Could not find any openssl dll matching {openssl_pattern}", file=sys.stderr)
+        sys.exit(1)
+    for openssl_dll in matches:
+        run_command(
+            f"cp {openssl_dll} {dlls_dir}",
+            f"Collecting openssl ({openssl_dll}) failed",
+        )
 
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`
 print("Collecting and compiling GSchemas...", file=sys.stderr)

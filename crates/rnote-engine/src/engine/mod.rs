@@ -327,8 +327,12 @@ impl Engine {
     pub fn refresh_spellcheck_language(&mut self) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        self.spellcheck.dict = spellcheck::BROKER
-            .with_borrow_mut(|broker| self.document.config.spellcheck.get_dictionary(broker));
+        if self.spellcheck.dict.as_ref().map(|dict| dict.get_lang())
+            != self.document.config.spellcheck.resolved_language()
+        {
+            self.spellcheck.dict = spellcheck::BROKER
+                .with_borrow_mut(|broker| self.document.config.spellcheck.get_dictionary(broker));
+        }
 
         if let Pen::Typewriter(typewriter) = self.penholder.current_pen_ref() {
             typewriter.ensure_spellchecked_in_modifying_stroke(&mut engine_view_mut!(self));

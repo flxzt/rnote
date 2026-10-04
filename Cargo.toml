@@ -39,6 +39,7 @@ gio = "0.21.1"
 glib = "0.21.1"
 glib-build-tools = "0.21.0"
 gtk4 = { version = "0.10.0", features = ["v4_18"] }
+enchant = "0.3.0"
 hayro = { git = "https://github.com/LaurenzV/hayro", rev = "56c62b2a25232d5407af8efe819c49ad46605979" }
 hayro-svg = { git = "https://github.com/LaurenzV/hayro", rev = "56c62b2a25232d5407af8efe819c49ad46605979" }
 ijson = "0.1.4"

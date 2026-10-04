@@ -6,7 +6,6 @@ mod penshortcutrow;
 // Re-exports
 pub(crate) use penmoderow::RnPenModeRow;
 pub(crate) use penshortcutrow::RnPenShortcutRow;
-use rnote_compose::ext::Vector2Ext;
 
 // Imports
 use crate::{RnAppWindow, RnIconPicker, RnUnitEntry};
@@ -17,11 +16,13 @@ use gtk4::{
     StringList, ToggleButton, Widget, gdk, glib, glib::clone, subclass::prelude::*,
 };
 use num_traits::ToPrimitive;
+use rnote_compose::ext::Vector2Ext;
 use rnote_compose::penevent::ShortcutKey;
 use rnote_engine::WidgetFlags;
-use rnote_engine::document::Layout;
 use rnote_engine::document::background::PatternStyle;
 use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::document::{Layout, SpellcheckConfig, SpellcheckConfigLanguage};
+use rnote_engine::engine::spellcheck;
 use rnote_engine::ext::GdkRGBAExt;
 use rnote_engine::pens::PenMode;
 use std::cell::RefCell;
@@ -34,6 +35,7 @@ mod imp {
     pub(crate) struct RnSettingsPanel {
         pub(crate) temporary_format: RefCell<Format>,
         pub(crate) app_restart_toast_singleton: RefCell<Option<adw::Toast>>,
+        pub(crate) spellcheck_available_languages: RefCell<Vec<String>>,
 
         #[template_child]
         pub(crate) settings_scroller: TemplateChild<ScrolledWindow>,
@@ -111,6 +113,10 @@ mod imp {
         pub(crate) doc_background_pattern_height_unitentry: TemplateChild<RnUnitEntry>,
         #[template_child]
         pub(crate) doc_show_origin_indicator_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) doc_spellcheck_row: TemplateChild<adw::SwitchRow>,
+        #[template_child]
+        pub(crate) doc_spellcheck_language_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
@@ -360,6 +366,62 @@ impl RnSettingsPanel {
             .set_selected(position);
     }
 
+    pub(crate) fn spellcheck_language(&self) -> SpellcheckConfigLanguage {
+        let position = self.imp().doc_spellcheck_language_row.selected();
+
+        if position == 0 {
+            SpellcheckConfigLanguage::Automatic
+        } else {
+            SpellcheckConfigLanguage::Language(
+                self.imp()
+                    .spellcheck_available_languages
+                    .borrow()
+                    .get((position - 1) as usize)
+                    .unwrap()
+                    .to_owned(),
+            )
+        }
+    }
+
+    pub(crate) fn set_spellcheck_language(&self, language: &SpellcheckConfigLanguage) {
+        match language {
+            SpellcheckConfigLanguage::Automatic => {
+                self.imp().doc_spellcheck_language_row.set_selected(0);
+            }
+            SpellcheckConfigLanguage::Language(language) => {
+                let position = {
+                    let imp = self.imp();
+                    let mut languages = imp.spellcheck_available_languages.borrow_mut();
+                    if let Some(position) = languages.iter().position(|l| l == language) {
+                        position
+                    } else {
+                        languages.push(language.to_owned());
+                        if let Some(model) = imp
+                            .doc_spellcheck_language_row
+                            .model()
+                            .and_downcast::<StringList>()
+                        {
+                            model.append(&format!("{} ({})", language, gettext("not found")));
+                        }
+                        languages.len() - 1
+                    }
+                };
+                self.imp()
+                    .doc_spellcheck_language_row
+                    .set_selected((position + 1) as u32);
+            }
+        }
+    }
+
+    pub(crate) fn set_spellcheck_enabled(&self, enabled: bool) {
+        self.imp().doc_spellcheck_row.set_active(enabled);
+    }
+
+    pub(crate) fn set_spellcheck_config(&self, config: &SpellcheckConfig) {
+        self.set_spellcheck_enabled(config.enabled);
+        self.set_spellcheck_language(&config.language);
+    }
+
     #[allow(unused)]
     pub(crate) fn format_orientation(&self) -> format::Orientation {
         if self.imp().format_orientation_portrait_toggle.is_active() {
@@ -473,6 +535,7 @@ impl RnSettingsPanel {
                 .config
                 .format
                 .show_origin_indicator;
+            let spellcheck_config = canvas.engine_ref().document.config.spellcheck.clone();
 
             imp.doc_show_format_borders_row
                 .set_active(show_format_borders);
@@ -492,6 +555,7 @@ impl RnSettingsPanel {
             self.set_document_layout(&document_layout);
             imp.doc_show_origin_indicator_row
                 .set_active(show_origin_indicator);
+            self.set_spellcheck_config(&spellcheck_config);
         }
     }
 
@@ -836,6 +900,7 @@ impl RnSettingsPanel {
                     .document_config_preset_mut()
                     .format
                     .show_origin_indicator = doc_config.format.show_origin_indicator;
+                appwindow.document_config_preset_mut().spellcheck = doc_config.spellcheck;
 
                 let widget_flags = WidgetFlags {
                     refresh_ui: true,
@@ -872,6 +937,7 @@ impl RnSettingsPanel {
                     .config
                     .format
                     .show_origin_indicator = doc_config.format.show_origin_indicator;
+                canvas.engine_mut().document.config.spellcheck = doc_config.spellcheck;
 
                 let mut widget_flags = canvas.engine_mut().doc_resize_autoexpand();
                 widget_flags |= canvas.engine_mut().background_rendering_regenerate();
@@ -1183,6 +1249,60 @@ impl RnSettingsPanel {
                         .format
                         .show_origin_indicator = row.is_active();
                     canvas.queue_draw();
+                }
+            ));
+
+        imp.doc_spellcheck_row
+            .get()
+            .bind_property("active", &*imp.doc_spellcheck_language_row, "sensitive")
+            .sync_create()
+            .build();
+
+        imp.doc_spellcheck_row.get().connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+
+                canvas.engine_mut().document.config.spellcheck.enabled = row.is_active();
+
+                let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
+                appwindow.handle_widget_flags(widget_flags, &canvas);
+            }
+        ));
+
+        imp.spellcheck_available_languages
+            .replace(spellcheck::AVAILABLE_LANGUAGES.clone());
+
+        imp.doc_spellcheck_language_row.get().set_model(Some(
+            &std::iter::once(format!(
+                "{} ({})",
+                gettext("Automatic"),
+                spellcheck::AUTOMATIC_LANGUAGE.unwrap_or(&gettext("None"))
+            ))
+            .chain(imp.spellcheck_available_languages.borrow().iter().cloned())
+            .collect::<StringList>(),
+        ));
+
+        imp.doc_spellcheck_language_row
+            .get()
+            .connect_selected_item_notify(clone!(
+                #[weak(rename_to=settings_panel)]
+                self,
+                #[weak]
+                appwindow,
+                move |_| {
+                    let Some(canvas) = appwindow.active_tab_canvas() else {
+                        return;
+                    };
+
+                    let language = settings_panel.spellcheck_language();
+                    canvas.engine_mut().document.config.spellcheck.language = language;
+
+                    let widget_flags = canvas.engine_mut().refresh_spellcheck_language();
+                    appwindow.handle_widget_flags(widget_flags, &canvas);
                 }
             ));
 

@@ -139,9 +139,9 @@ For more details on how to build the application on macOS see:
 
 ## Windows
 
-For windows `msys/mingw64` is used as the development and build environment.
+For windows `msys/ucrt64` is used as the development and build environment.
 For the installer "Inno Setup" is used.
-It should always be ensured that the app will build in `msys/mingw64`, however tight integration with the Windows OS is
+It should always be ensured that the app will build in `msys/ucrt64`, however tight integration with the Windows OS is
 not a priority.
 For more details on how to build the application and the installer on Windows see:
 [docs/build-win.md](./docs/build-win.md).

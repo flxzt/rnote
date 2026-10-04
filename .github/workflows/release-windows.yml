@@ -41,12 +41,13 @@ jobs:
             | sed -e 's/[^A-Za-z0-9._-]/_/g')-x86_64" >> $GITHUB_OUTPUT
 
       - name: Setup MSYS2
-        uses: msys2/setup-msys2@e9898307ac31d1a803454791be09ab9973336e1c
+        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
         with:
           release: false
           update: true
+          msystem: UCRT64
           install: |
-            mingw-w64-x86_64-binutils
+            just
 
       - name: Install rust toolchain
         uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
@@ -61,7 +62,6 @@ jobs:
 
       - name: Prerequisites
         run: |
-          cargo install --locked just
           just ci=true prerequisites-win
 
       - name: Setup

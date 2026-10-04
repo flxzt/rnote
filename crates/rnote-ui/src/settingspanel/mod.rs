@@ -389,17 +389,26 @@ impl RnSettingsPanel {
                 self.imp().doc_spellcheck_language_row.set_selected(0);
             }
             SpellcheckConfigLanguage::Language(language) => {
-                if let Some(position) = self
-                    .imp()
-                    .spellcheck_available_languages
-                    .borrow()
-                    .iter()
-                    .position(|l| l == language)
-                {
-                    self.imp()
-                        .doc_spellcheck_language_row
-                        .set_selected((position + 1) as u32);
-                }
+                let position = {
+                    let imp = self.imp();
+                    let mut languages = imp.spellcheck_available_languages.borrow_mut();
+                    if let Some(position) = languages.iter().position(|l| l == language) {
+                        position
+                    } else {
+                        languages.push(language.to_owned());
+                        if let Some(model) = imp
+                            .doc_spellcheck_language_row
+                            .model()
+                            .and_downcast::<StringList>()
+                        {
+                            model.append(&format!("{} ({})", language, gettext("not found")));
+                        }
+                        languages.len() - 1
+                    }
+                };
+                self.imp()
+                    .doc_spellcheck_language_row
+                    .set_selected((position + 1) as u32);
             }
         }
     }

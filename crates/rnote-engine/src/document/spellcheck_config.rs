@@ -13,10 +13,10 @@ pub enum SpellcheckConfigLanguage {
 }
 
 impl SpellcheckConfigLanguage {
-    fn resolve(&self) -> Option<&String> {
+    fn resolve(&self) -> Option<&str> {
         match self {
             Self::Automatic => *spellcheck::AUTOMATIC_LANGUAGE,
-            Self::Language(language) => Some(language),
+            Self::Language(language) => Some(language.as_str()),
         }
     }
 }
@@ -40,13 +40,16 @@ impl Default for SpellcheckConfig {
 }
 
 impl SpellcheckConfig {
-    pub fn get_dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
-        if self.enabled
-            && let Some(language) = self.language.resolve()
-        {
-            return broker.request_dict(language).ok();
+    pub fn resolved_language(&self) -> Option<&str> {
+        if self.enabled {
+            self.language.resolve()
+        } else {
+            None
         }
+    }
 
-        None
+    pub fn get_dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
+        self.resolved_language()
+            .and_then(|language| broker.request_dict(language).ok())
     }
 }

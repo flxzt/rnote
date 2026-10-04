@@ -18,7 +18,7 @@ pub static AVAILABLE_LANGUAGES: Lazy<Vec<String>> = Lazy::new(|| {
         .collect()
 });
 
-pub static AUTOMATIC_LANGUAGE: Lazy<Option<&String>> = Lazy::new(|| {
+pub static AUTOMATIC_LANGUAGE: Lazy<Option<&str>> = Lazy::new(|| {
     // try each system language
     for system_language in glib::language_names() {
         // first pass: try exact match (e.g. "en_US.UTF-8" starts with "en_US")
@@ -28,7 +28,7 @@ pub static AUTOMATIC_LANGUAGE: Lazy<Option<&String>> = Lazy::new(|| {
                     "found exact spellcheck language match: {:?} (system: {:?})",
                     available_language, system_language
                 );
-                return Some(available_language);
+                return Some(available_language.as_str());
             }
         }
 
@@ -40,19 +40,19 @@ pub static AUTOMATIC_LANGUAGE: Lazy<Option<&String>> = Lazy::new(|| {
                         "found language-only spellcheck match: {:?} (system: {:?})",
                         available_language, system_language
                     );
-                    return Some(available_language);
+                    return Some(available_language.as_str());
                 }
             }
         }
     }
 
     // fallback: use the first available language
-    let fallback = AVAILABLE_LANGUAGES.first();
-    if let Some(ref lang) = fallback {
-        debug!("using fallback spellcheck language: {:?}", lang);
+    if let Some(language) = AVAILABLE_LANGUAGES.first() {
+        debug!("using fallback spellcheck language: {:?}", language);
+        Some(language.as_str())
+    } else {
+        None
     }
-
-    fallback
 });
 
 #[derive(Default)]

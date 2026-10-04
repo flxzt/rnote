@@ -301,10 +301,13 @@ impl TextStyle {
         T: piet::Text,
     {
         let text_layout = self.build_text_layout(piet_text, text)?;
+        Ok(Self::line_metrics(&text_layout))
+    }
 
-        Ok((0..text_layout.line_count())
+    fn line_metrics(text_layout: &impl piet::TextLayout) -> Vec<piet::LineMetric> {
+        (0..text_layout.line_count())
             .map(|line| text_layout.line_metric(line).unwrap())
-            .collect::<Vec<piet::LineMetric>>())
+            .collect()
     }
 
     /// The cursors line metric relative to the textstroke bounds.
@@ -405,38 +408,35 @@ impl TextStyle {
         Ok(())
     }
 
-    pub fn draw_text_error(
+    pub fn draw_text_errors(
         &self,
         cx: &mut impl piet::RenderContext,
         text: String,
-        start_index: usize,
-        end_index: usize,
+        errors: &BTreeMap<usize, usize>,
         affine: &DAffine2,
         camera: &Camera,
     ) {
+        if errors.is_empty() {
+            return;
+        }
+
         const ERROR_COLOR: piet::Color = color::GNOME_REDS[2];
         const STYLE: piet::StrokeStyle = piet::StrokeStyle::new().line_cap(piet::LineCap::Round);
-
         let scale = 1.0 / camera.total_zoom();
 
-        if let Ok(selection_rects) =
-            self.get_rects_for_indices(text.clone(), start_index, end_index)
-        {
-            // Get baseline for the current line. Really unnecessary to do this for every error since the font size is uniform,
-            // but piet does not provide any other way to get the baseline.
+        let Ok(text_layout) = self.build_text_layout(cx.text(), text) else {
+            return;
+        };
+        let lines = Self::line_metrics(&text_layout);
 
-            if let Ok(line_metric) = self.cursor_line_metric(cx.text(), text, start_index) {
-                for selection_rect in selection_rects {
-                    let width = selection_rect.width();
-                    let origin = affine.to_kurbo()
-                        * kurbo::Point::new(
-                            selection_rect.x0,
-                            selection_rect.y0 + line_metric.baseline + 2.0,
-                        );
+        for (&start, &length) in errors {
+            let line_metric = &lines[piet::util::line_number_for_position(&lines, start)];
+            for rect in text_layout.rects_for_range(start..start + length) {
+                let origin = affine.to_kurbo()
+                    * kurbo::Point::new(rect.x0, rect.y0 + line_metric.baseline + 2.0);
 
-                    let path = create_wavy_line(origin, width, scale);
-                    cx.stroke_styled(path, &ERROR_COLOR, 1.5 * scale, &STYLE);
-                }
+                let path = create_wavy_line(origin, rect.width(), scale);
+                cx.stroke_styled(path, &ERROR_COLOR, 1.5 * scale, &STYLE);
             }
         }
     }

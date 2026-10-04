@@ -9,13 +9,13 @@ thread_local! {
 }
 
 pub static AVAILABLE_LANGUAGES: Lazy<Vec<String>> = Lazy::new(|| {
-    BROKER.with_borrow_mut(|broker| {
-        broker
-            .list_dicts()
-            .iter()
-            .map(|dict| dict.lang.to_owned())
-            .collect()
-    })
+    // dedicated broker: language resolution may run while the shared BROKER is already mutably borrowed, and borrowing it again would panic.
+    let mut broker = enchant::Broker::new();
+    broker
+        .list_dicts()
+        .iter()
+        .map(|dict| dict.lang.to_owned())
+        .collect()
 });
 
 pub static AUTOMATIC_LANGUAGE: Lazy<Option<&String>> = Lazy::new(|| {

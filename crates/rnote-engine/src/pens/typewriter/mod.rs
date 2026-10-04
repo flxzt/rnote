@@ -215,16 +215,13 @@ impl DrawableOnDoc for Typewriter {
                     }
 
                     // Draw error ranges
-                    for (start_index, length) in textstroke.errors() {
-                        textstroke.text_style.draw_text_error(
-                            cx,
-                            textstroke.text.to_owned(),
-                            *start_index,
-                            *start_index + *length,
-                            &textstroke.affine,
-                            engine_view.camera,
-                        );
-                    }
+                    textstroke.text_style.draw_text_errors(
+                        cx,
+                        textstroke.text.to_owned(),
+                        textstroke.errors(),
+                        &textstroke.affine,
+                        engine_view.camera,
+                    );
 
                     // Draw the cursor
                     if self.cursor_visible {

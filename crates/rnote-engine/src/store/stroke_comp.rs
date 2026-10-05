@@ -103,6 +103,50 @@ impl StrokeStore {
             .collect::<Vec<Stroke>>()
     }
 
+    /// The width of the thinnest stroke from the given keys.
+    pub(crate) fn min_stroke_width(&self, keys: &[StrokeKey]) -> Option<f64> {
+        let strokes = self.get_strokes_ref(keys);
+
+        strokes
+            .iter()
+            .filter_map(|stroke| match stroke {
+                Stroke::BrushStroke(brush_stroke) => Some(brush_stroke.style.stroke_width()),
+                Stroke::ShapeStroke(shape_stroke) => Some(shape_stroke.style.stroke_width()),
+                _ => None,
+            })
+            .reduce(f64::min)
+    }
+
+    /// Change the width of the strokes for the given keys.
+    pub(crate) fn set_stroke_widths(&mut self, keys: &[StrokeKey], width: f64) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if keys.is_empty() {
+            return widget_flags;
+        }
+
+        for &key in keys {
+            if let Some(stroke) = self.get_stroke_mut(key) {
+                match stroke {
+                    Stroke::BrushStroke(brush_stroke) => {
+                        brush_stroke.style.set_stroke_width(width);
+                    }
+                    Stroke::ShapeStroke(shape_stroke) => {
+                        shape_stroke.style.set_stroke_width(width);
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        self.update_geometry_for_strokes(keys);
+
+        widget_flags.redraw = true;
+        widget_flags.store_modified = true;
+
+        widget_flags
+    }
+
     /// Updates the stroke geometry.
     ///
     /// The stroke then needs to update its rendering.

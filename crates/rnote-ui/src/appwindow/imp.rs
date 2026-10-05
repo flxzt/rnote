@@ -121,7 +121,7 @@ impl ObjectImpl for RnAppWindow {
 
         // Load the application css
         let css = CssProvider::new();
-        css.load_from_string(&include_str!("../../data/style.css"));
+        css.load_from_string(include_str!("../../data/style.css"));
 
         let display = gdk::Display::default().unwrap();
         gtk4::style_context_add_provider_for_display(

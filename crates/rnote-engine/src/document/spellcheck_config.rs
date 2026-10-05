@@ -47,9 +47,4 @@ impl SpellcheckConfig {
             None
         }
     }
-
-    pub fn get_dictionary(&self, broker: &mut enchant::Broker) -> Option<enchant::Dict> {
-        self.resolved_language()
-            .and_then(|language| broker.request_dict(language).ok())
-    }
 }

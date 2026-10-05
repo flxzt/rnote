@@ -2,20 +2,20 @@
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
 use std::fmt::Debug;
-use tracing::debug;
+use tracing::{debug, warn};
 
 thread_local! {
-    pub(super) static BROKER: RefCell<enchant::Broker> = RefCell::new(enchant::Broker::new());
+    static BROKER: RefCell<enchant::Broker> = RefCell::new(enchant::Broker::new());
 }
 
 pub static AVAILABLE_LANGUAGES: Lazy<Vec<String>> = Lazy::new(|| {
-    // dedicated broker: language resolution may run while the shared BROKER is already mutably borrowed, and borrowing it again would panic.
-    let mut broker = enchant::Broker::new();
-    broker
-        .list_dicts()
-        .iter()
-        .map(|dict| dict.lang.to_owned())
-        .collect()
+    BROKER.with_borrow_mut(|broker| {
+        broker
+            .list_dicts()
+            .iter()
+            .map(|dict| dict.lang.to_owned())
+            .collect()
+    })
 });
 
 pub static AUTOMATIC_LANGUAGE: Lazy<Option<&str>> = Lazy::new(|| {
@@ -72,5 +72,23 @@ impl Debug for Spellcheck {
                     .unwrap_or(String::from("None")),
             )
             .finish()
+    }
+}
+
+impl Spellcheck {
+    pub fn set_language(&mut self, language: Option<&str>) {
+        if self.dict.as_ref().map(|dict| dict.get_lang()) == language {
+            return;
+        }
+
+        self.dict = None;
+        let Some(language) = language else {
+            return;
+        };
+
+        match BROKER.with_borrow_mut(|broker| broker.request_dict(language)) {
+            Ok(dict) => self.dict = Some(dict),
+            Err(err) => warn!("requesting spellcheck dictionary `{language}` failed, Err: {err}"),
+        }
     }
 }

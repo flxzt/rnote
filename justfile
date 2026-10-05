@@ -199,7 +199,7 @@ generate-docs:
     meson compile cli-cargo-doc -C {{ build_folder }}
 
 check-outdated-dependencies:
-    cargo upgrade --dry-run -vv
+    cargo upgrade --dry-run --incompatible -vv
 
 [doc('Regenerates the .pot file in the translations folder.
 Note that all entries with strings starting and ending like this "@<..>@" must be removed,

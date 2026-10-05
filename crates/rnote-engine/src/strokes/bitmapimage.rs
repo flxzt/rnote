@@ -177,6 +177,7 @@ impl BitmapImage {
 
         let x = insert_pos[0];
         let mut y = insert_pos[1];
+        let render_cache = hayro::RenderCache::new();
 
         // TODO: investigate if this can be parallelized with rayon's `par_iter()`
         let pngs = page_range
@@ -190,17 +191,22 @@ impl BitmapImage {
                 };
                 let width = intrinsic_width * page_zoom_fit;
                 let height = intrinsic_height * page_zoom_fit;
-                let render_settings = hayro::RenderSettings {
+                let render_settings = hayro::RenderSettings::default();
+                let pixmap_settings = hayro::PixmapSettings {
                     x_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom_fit) as f32,
                     y_scale: (pdf_import_prefs.bitmap_scalefactor * page_zoom_fit) as f32,
-                    width: Some((pdf_import_prefs.bitmap_scalefactor * width).ceil() as u16),
-                    height: Some((pdf_import_prefs.bitmap_scalefactor * height).ceil() as u16),
                     bg_color: vello_cpu::color::AlphaColor::WHITE,
                 };
 
                 // TODO: implement drawing page borders.
                 // Possibly with vello-cpu, since it already is a dependency of hayro
-                let pixmap = hayro::render(page, &interpreter_settings, &render_settings);
+                let pixmap = hayro::render(
+                    page,
+                    &render_cache,
+                    &interpreter_settings,
+                    &render_settings,
+                    &pixmap_settings,
+                );
                 let png_data = pixmap.into_png()?;
 
                 // Center narrower pages within the import width when adjusting the document.

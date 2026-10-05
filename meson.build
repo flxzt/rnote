@@ -58,8 +58,8 @@ else
 endif
 
 # Dependencies
-dependency('glib-2.0', version: '>= 2.76')
-dependency('gio-2.0', version: '>= 2.76')
+dependency('glib-2.0', version: '>= 2.88')
+dependency('gio-2.0', version: '>= 2.88')
 dependency('cairo', version: '>= 1.18')
 # UI/CLI specific dependencies are declared below
 
@@ -136,9 +136,9 @@ run_target(
 # build/install the ui
 if build_ui == true
     # ui dependencies
-    dependency('appstream')
-    dependency('gtk4', version: '>= 4.18')
-    dependency('libadwaita-1', version: '>= 1.7')
+    dependency('appstream', version: '>=1.0')
+    dependency('gtk4', version: '>= 4.22')
+    dependency('libadwaita-1', version: '>= 1.9')
 
     # ui crate
     subdir('crates/rnote-ui')

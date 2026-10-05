@@ -259,6 +259,7 @@ impl VectorImage {
 
         let x = insert_pos[0];
         let mut y = insert_pos[1];
+        let render_cache = hayro_svg::RenderCache::new();
 
         // TODO: investigate if this can be parallelized with rayon's `par_iter()`
         let svgs = page_range
@@ -297,7 +298,12 @@ impl VectorImage {
                         }
                     }
                 };
-                let svg_data = hayro_svg::convert(page, &interpreter_settings, &render_settings);
+                let svg_data = hayro_svg::convert(
+                    page,
+                    &render_cache,
+                    &interpreter_settings,
+                    &render_settings,
+                );
                 let svg = Svg { svg_data, bounds };
 
                 Some(svg)

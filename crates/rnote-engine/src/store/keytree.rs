@@ -37,7 +37,7 @@ impl KeyTree {
     /// Return the keys that intersect with the given bounds.
     pub(crate) fn keys_intersecting_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.0
-            .locate_in_envelope_intersecting(&rstar::AABB::from_corners(
+            .locate_in_envelope_intersecting(rstar::AABB::from_corners(
                 [bounds.mins[0], bounds.mins[1]],
                 [bounds.maxs[0], bounds.maxs[1]],
             ))
@@ -48,7 +48,7 @@ impl KeyTree {
     /// Return the keys that are completely contained in the given bounds.
     pub(crate) fn keys_in_bounds(&self, bounds: Aabb) -> Vec<StrokeKey> {
         self.0
-            .locate_in_envelope(&rstar::AABB::from_corners(
+            .locate_in_envelope(rstar::AABB::from_corners(
                 [bounds.mins[0], bounds.mins[1]],
                 [bounds.maxs[0], bounds.maxs[1]],
             ))

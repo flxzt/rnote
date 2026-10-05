@@ -107,7 +107,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes">Select Color</property>
-                <property name="accelerator">&lt;ctrl&gt;KP_1 &lt;ctrl&gt;KP_9</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;alt&gt;1 &lt;ctrl&gt;&lt;alt&gt;9</property>
               </object>
             </child>
           </object>

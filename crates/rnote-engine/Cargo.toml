@@ -22,7 +22,7 @@ futures = { workspace = true }
 geo = { workspace = true }
 gio = { workspace = true }
 glib = { workspace = true }
-enchant = { workspace = true }
+enchant = { workspace = true, optional = true }
 hayro = { workspace = true }
 hayro-svg = { workspace = true }
 ijson = { workspace = true }
@@ -66,4 +66,5 @@ approx = { workspace = true }
 [features]
 cli = ["dep:clap"]
 default = []
+spellcheck = ["dep:enchant"]
 ui = ["dep:gtk4", "dep:rodio"]

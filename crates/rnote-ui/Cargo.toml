@@ -11,7 +11,7 @@ version.workspace = true
 
 [dependencies]
 rnote-compose = { workspace = true }
-rnote-engine = { workspace = true, features = ["ui"] }
+rnote-engine = { workspace = true, features = ["spellcheck", "ui"] }
 
 adw = { workspace = true }
 anyhow = { workspace = true }

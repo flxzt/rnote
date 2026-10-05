@@ -636,7 +636,7 @@ impl TextStroke {
         ))
     }
 
-    fn check_spelling_words(&mut self, words: Vec<(usize, String)>, dict: &enchant::Dict) {
+    fn check_spelling_words(&mut self, words: Vec<(usize, String)>, spellcheck: &Spellcheck) {
         for (word_start_index, word) in words {
             let word_end_index = word_start_index + word.len();
             let word_range = word_start_index..word_end_index;
@@ -646,7 +646,7 @@ impl TextStroke {
                 .errors
                 .retain(|key, _| !word_range.contains(key));
 
-            match dict.check(word.as_str()) {
+            match spellcheck.check(word.as_str()) {
                 Ok(false) => {
                     self.spellcheck_cache
                         .errors
@@ -664,13 +664,12 @@ impl TextStroke {
     pub fn ensure_spellchecked(&mut self, spellcheck: &Spellcheck) {
         let dirty = self.spellcheck_cache.dirty.take();
 
-        let Some(dict) = &spellcheck.dict else {
+        let Some(language) = spellcheck.language() else {
             self.spellcheck_cache.errors.clear();
             self.spellcheck_cache.language = None;
             return;
         };
 
-        let language = dict.get_lang();
         let language_changed = self
             .spellcheck_cache
             .language
@@ -687,10 +686,10 @@ impl TextStroke {
                 .map(|(index, word)| (index, word.to_owned()))
                 .collect_vec();
 
-            self.check_spelling_words(words, dict);
+            self.check_spelling_words(words, spellcheck);
         } else if let Some(dirty) = dirty {
             let words = self.get_surrounding_words(dirty.start, dirty.end);
-            self.check_spelling_words(words, dict);
+            self.check_spelling_words(words, spellcheck);
         }
     }
 
@@ -743,9 +742,8 @@ impl TextStroke {
         spellcheck: &Spellcheck,
         index: usize,
     ) -> Option<Vec<String>> {
-        let dict = spellcheck.dict.as_ref()?;
         let word = self.get_text_slice_for_range(self.error_at(index)?)?;
-        Some(dict.suggest(word))
+        spellcheck.suggest(word)
     }
 
     pub fn apply_spellcheck_correction_at_cursor(

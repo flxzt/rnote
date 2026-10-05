@@ -301,7 +301,7 @@ impl Image {
         .upcast();
         let transform_node = gsk::TransformNode::new(
             &texture_node,
-            &crate::utils::affine_to_gsk(&self.rectangle.affine),
+            Some(&crate::utils::affine_to_gsk(&self.rectangle.affine)),
         )
         .upcast();
 

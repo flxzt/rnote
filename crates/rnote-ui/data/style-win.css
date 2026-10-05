@@ -1,0 +1,22 @@
+.csd {
+    margin: -9px;
+    box-shadow: none;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+}
+
+popover {
+    margin: 0px;
+    box-shadow: none;
+}
+
+popover contents {
+    margin: -21px -23px -25px -23px;
+    border-radius: 0;
+    border: 1px solid var(--border-color);
+}
+
+popover arrow {
+    background: transparent;
+    border-color: transparent;
+}

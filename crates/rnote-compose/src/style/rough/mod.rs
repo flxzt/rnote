@@ -208,7 +208,7 @@ impl Composer<RoughOptions> for Polyline {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+        let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
         ))
@@ -233,7 +233,7 @@ impl Composer<RoughOptions> for Polygon {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+        let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
         ))

@@ -17,12 +17,12 @@ base64 = { workspace = true }
 cairo-rs = { workspace = true }
 chrono = { workspace = true }
 clap = { workspace = true, optional = true }
+enchant = { workspace = true, optional = true }
 flate2 = { workspace = true }
 futures = { workspace = true }
 geo = { workspace = true }
 gio = { workspace = true }
 glib = { workspace = true }
-enchant = { workspace = true, optional = true }
 hayro = { workspace = true }
 hayro-svg = { workspace = true }
 ijson = { workspace = true }

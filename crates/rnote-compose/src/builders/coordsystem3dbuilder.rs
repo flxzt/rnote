@@ -9,8 +9,8 @@ use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 /// 3D coordinate system builder.
 #[derive(Debug, Clone)]
@@ -70,16 +70,13 @@ impl Buildable for CoordSystem3DBuilder {
         )
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
-        cx.save().unwrap();
-
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         for line in self.state_as_lines() {
             line.draw_composed(cx, style);
         }
 
         indicators::draw_pos_indicator(cx, PenState::Up, self.tip_z, zoom);
         indicators::draw_pos_indicator(cx, PenState::Down, self.tip_y, zoom);
-        cx.restore().unwrap();
     }
 }
 

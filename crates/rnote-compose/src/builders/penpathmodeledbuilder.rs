@@ -13,9 +13,9 @@ use ink_stroke_modeler_rs::{
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
-use piet::RenderContext;
 use std::time::Instant;
 use tracing::{debug, error};
+use vello_cpu::RenderContext;
 
 /// Pen path modeled builder.
 pub struct PenPathModeledBuilder {
@@ -111,9 +111,7 @@ impl Buildable for PenPathModeledBuilder {
         .map(|pp| pp.composed_bounds(style))
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
-        cx.save().unwrap();
-
+    fn draw(&self, cx: &mut RenderContext, style: &Style, _zoom: f64) {
         let pen_path = PenPath::try_from_elements(
             self.buffer
                 .iter()
@@ -125,8 +123,6 @@ impl Buildable for PenPathModeledBuilder {
         if let Some(pen_path) = pen_path {
             pen_path.draw_composed(cx, style);
         }
-
-        cx.restore().unwrap();
     }
 }
 

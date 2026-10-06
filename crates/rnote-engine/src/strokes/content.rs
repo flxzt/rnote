@@ -16,7 +16,7 @@ pub enum GeneratedContentImages {
     Full(Vec<Image>),
 }
 
-pub(crate) const CONTENT_HIGHLIGHT_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(96);
+pub(crate) const CONTENT_HIGHLIGHT_COLOR: Color = color::GNOME_BLUES[1].with_a8(96);
 
 /// Types that are content.
 pub trait Content: Drawable + Shapeable

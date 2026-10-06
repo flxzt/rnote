@@ -7,9 +7,9 @@ use crate::style::Composer;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::Aabb;
-use piet::RenderContext;
 use std::collections::VecDeque;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 /// Pen path simple builder
@@ -71,14 +71,10 @@ impl Buildable for PenPathSimpleBuilder {
         Some(pen_path.composed_bounds(style))
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
-        cx.save().unwrap();
-
+    fn draw(&self, cx: &mut RenderContext, style: &Style, _zoom: f64) {
         if let Some(pen_path) = PenPath::try_from_elements(self.buffer.iter().copied()) {
             pen_path.draw_composed(cx, style);
         }
-
-        cx.restore().unwrap();
     }
 }
 

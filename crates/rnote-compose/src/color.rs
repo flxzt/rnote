@@ -108,6 +108,7 @@ impl Color {
         }
     }
 
+    /// From u8 rgb values, alpha value set to 1.0.
     pub const fn rgb8(r: u8, g: u8, b: u8) -> Self {
         Self {
             r: r as f64 / 256.,
@@ -117,6 +118,7 @@ impl Color {
         }
     }
 
+    /// From u8 rgba values.
     pub const fn rgba8(r: u8, g: u8, b: u8, a: u8) -> Self {
         Self {
             r: r as f64 / 256.,
@@ -126,6 +128,7 @@ impl Color {
         }
     }
 
+    /// With red value.
     pub const fn with_r(self, r: f64) -> Self {
         Self {
             r: r,
@@ -135,6 +138,7 @@ impl Color {
         }
     }
 
+    /// With green value.
     pub const fn with_g(self, g: f64) -> Self {
         Self {
             r: self.r,
@@ -144,6 +148,7 @@ impl Color {
         }
     }
 
+    /// With blue value.
     pub const fn with_b(self, b: f64) -> Self {
         Self {
             r: self.r,
@@ -153,6 +158,7 @@ impl Color {
         }
     }
 
+    /// With alpha value.
     pub const fn with_a(self, a: f64) -> Self {
         Self {
             r: self.r,
@@ -162,6 +168,7 @@ impl Color {
         }
     }
 
+    /// With u8 red value.
     pub const fn with_r8(self, r: u8) -> Self {
         Self {
             r: (r as f64) / 256.,
@@ -171,6 +178,7 @@ impl Color {
         }
     }
 
+    /// With u8 green value.
     pub const fn with_g8(self, g: u8) -> Self {
         Self {
             r: self.g,
@@ -180,6 +188,7 @@ impl Color {
         }
     }
 
+    /// With u8 blue value.
     pub const fn with_b8(self, b: u8) -> Self {
         Self {
             r: self.g,
@@ -189,6 +198,7 @@ impl Color {
         }
     }
 
+    /// With u8 alpha value.
     pub const fn with_a8(self, a: u8) -> Self {
         Self {
             r: self.g,

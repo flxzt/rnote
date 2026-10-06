@@ -10,8 +10,8 @@ use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Copy)]
 enum GridBuilderState {
@@ -119,9 +119,7 @@ impl Buildable for GridBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
-        cx.save().unwrap();
-
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         let mut style = style.clone();
 
         for line in self.state_as_lines() {
@@ -161,8 +159,6 @@ impl Buildable for GridBuilder {
                 }
             }
         }
-
-        cx.restore().unwrap();
     }
 }
 

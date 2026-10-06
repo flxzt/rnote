@@ -11,8 +11,8 @@ use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 /// Foci ellipse builder state.
@@ -142,8 +142,7 @@ impl Buildable for FociEllipseBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
-        cx.save().unwrap();
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         match &self.state {
             FociEllipseBuilderState::Start(first)
             | FociEllipseBuilderState::StartFinished(first) => {
@@ -164,6 +163,5 @@ impl Buildable for FociEllipseBuilder {
                 indicators::draw_pos_indicator(cx, PenState::Down, *point, zoom);
             }
         }
-        cx.restore().unwrap();
     }
 }

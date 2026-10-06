@@ -22,12 +22,10 @@ once_cell = { workspace = true }
 palette = { workspace = true }
 parry2d-f64 = { workspace = true }
 piet = { workspace = true }
-piet-cairo = { workspace = true }
 rand = { workspace = true }
 rand_distr = { workspace = true }
 rand_pcg = { workspace = true }
 regex = { workspace = true }
-rough_piet = { workspace = true }
 roughr = { workspace = true }
 serde = { workspace = true }
 svg = { workspace = true }

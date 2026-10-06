@@ -8,8 +8,8 @@ use crate::style::Composer;
 use crate::{Constraints, EventResult};
 use crate::{PenPath, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 pub(crate) enum PenPathCurvedBuilderState {
@@ -110,12 +110,10 @@ impl Buildable for PenPathCurvedBuilder {
         )
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
+    fn draw(&self, cx: &mut RenderContext, style: &Style, _zoom: f64) {
         if self.buffer.len().saturating_sub(1) < self.i {
             return;
         }
-
-        cx.save().unwrap();
 
         let pen_path = match &self.state {
             PenPathCurvedBuilderState::Start => {
@@ -131,8 +129,6 @@ impl Buildable for PenPathCurvedBuilder {
         if let Some(pen_path) = pen_path {
             pen_path.draw_composed(cx, style);
         }
-
-        cx.restore().unwrap();
     }
 }
 

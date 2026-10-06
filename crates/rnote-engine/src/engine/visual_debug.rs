@@ -178,17 +178,14 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
         let text_layout = piet_cx
             .text()
             .new_text_layout(statistics_text_string)
-            .text_color(piet::Color::rgba(0.8, 1.0, 1.0, 1.0))
+            .text_color(Color::new(0.8, 1.0, 1.0, 1.0))
             .max_width(text_bounds.extents()[0] - 20.0)
             .alignment(piet::TextAlignment::End)
             .font(piet::FontFamily::MONOSPACE, 10.0)
             .build()
             .map_err(|e| anyhow::anyhow!("{e:?}"))?;
 
-        piet_cx.fill(
-            text_bounds.to_kurbo_rect(),
-            &piet::Color::rgba(0.1, 0.1, 0.1, 0.8),
-        );
+        piet_cx.fill(text_bounds.to_kurbo_rect(), Color::new(0.1, 0.1, 0.1, 0.8));
         piet_cx.draw_text(
             &text_layout,
             (text_bounds.mins + Vector2::splat(10.0)).to_kurbo_point(),

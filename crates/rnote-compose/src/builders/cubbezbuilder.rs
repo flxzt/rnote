@@ -12,6 +12,7 @@ use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 enum CubBezBuilderState {
@@ -177,7 +178,7 @@ impl Buildable for CubBezBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         match &self.state {
             CubBezBuilderState::Cp1 { start, cp1 }
             | CubBezBuilderState::Cp1Finished { start, cp1 } => {

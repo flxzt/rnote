@@ -11,8 +11,8 @@ use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
 use p2d::shape::Cuboid;
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 /// Rectangle builder.
 #[derive(Debug, Clone)]
@@ -67,14 +67,12 @@ impl Buildable for RectangleBuilder {
         )
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
-        cx.save().unwrap();
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         let rect = self.state_as_rect();
         rect.draw_composed(cx, style);
 
         indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
         indicators::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
-        cx.restore().unwrap();
     }
 }
 

@@ -257,7 +257,7 @@ impl DrawableOnDoc for Typewriter {
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
-                        piet::Color::from(engine_view.document.config.background.color),
+                        engine_view.document.config.background.color,
                     );
 
                     // Draw the translate Node
@@ -285,7 +285,7 @@ impl DrawableOnDoc for Typewriter {
                             translate_node_state,
                             translate_node_bounds,
                             total_zoom,
-                            piet::Color::from(engine_view.document.config.background.color),
+                            engine_view.document.config.background.color,
                         );
                     }
                 }
@@ -599,7 +599,7 @@ impl Typewriter {
     /// The time for the cursor blink.
     const BLINK_TIME: Duration = Duration::from_millis(800);
     /// The outline color when drawing a text box outline
-    const TEXT_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
+    const TEXT_OUTLINE_COLOR: Color = color::GNOME_BRIGHTS[4].with_a8(240);
 
     pub(crate) fn toggle_cursor_visibility(&mut self) {
         self.cursor_visible = !self.cursor_visible;

@@ -10,8 +10,8 @@ use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 /// Polyline builder.
 #[derive(Debug, Clone)]
@@ -119,9 +119,7 @@ impl Buildable for PolylineBuilder {
         )
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
-        cx.save().unwrap();
-
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         let mut polyline = self.state_as_polyline();
         if !self.finish {
             polyline.path.push(self.current);
@@ -138,8 +136,6 @@ impl Buildable for PolylineBuilder {
                 indicators::draw_pos_indicator(cx, self.pen_state, self.current, zoom);
             }
         }
-
-        cx.restore().unwrap();
     }
 }
 

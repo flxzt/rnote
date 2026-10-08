@@ -139,6 +139,8 @@ mod imp {
 
         fn set_property(&self, _id: usize, value: &glib::Value, pspec: &glib::ParamSpec) {
             let obj = self.obj();
+            // Storing self.value before calling configure_spinner() to avoid issue #1777
+            let copied_value = self.value.get();
 
             match pspec.name() {
                 "value" => {
@@ -155,7 +157,7 @@ mod imp {
                     if unit != self.unit.get() {
                         self.configure_spinner(unit, self.dpi.get());
                         obj.set_value(MeasureUnit::convert_measurement(
-                            self.value.get(),
+                            copied_value,
                             self.unit.get(),
                             self.dpi.get(),
                             unit,
@@ -169,7 +171,7 @@ mod imp {
                     if dpi != self.dpi.get() {
                         self.configure_spinner(self.unit.get(), dpi);
                         obj.set_value(MeasureUnit::convert_measurement(
-                            self.value.get(),
+                            copied_value,
                             self.unit.get(),
                             self.dpi.get(),
                             self.unit.get(),

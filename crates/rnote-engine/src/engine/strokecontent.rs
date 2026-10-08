@@ -4,6 +4,7 @@ use crate::Svg;
 use crate::document::Background;
 use crate::store::chrono_comp::StrokeLayer;
 use crate::strokes::Stroke;
+use anyhow::Context;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use rnote_compose::shapes::Shapeable;
@@ -18,6 +19,17 @@ pub struct LayeredStroke {
     pub stroke: Arc<Stroke>,
     #[serde(rename = "layer")]
     pub layer: StrokeLayer,
+}
+
+/// Which layers of a [StrokeContent] are drawn by [StrokeContent::draw_to_cairo_scope].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum DrawScope {
+    /// Draw all layers. The highlighter layer is drawn with [cairo::Operator::Multiply].
+    All,
+    /// Draw the background and all strokes that are not on the highlighter layer.
+    NonHighlighter,
+    /// Draw only the strokes on the highlighter layer, with the default operator.
+    Highlighter,
 }
 
 /// Stroke content.
@@ -86,20 +98,53 @@ impl StrokeContent {
         let Some(bounds_loosened) = self.bounds().map(|b| b.loosened(margin)) else {
             return Ok(None);
         };
-        let mut svg = Svg::gen_with_cairo(
-            |cairo_cx| {
-                self.draw_to_cairo(
-                    cairo_cx,
-                    draw_background,
-                    draw_pattern,
-                    optimize_printing,
-                    margin,
-                    1.0,
-                )
-            },
-            bounds_loosened,
-        )?;
-        // The simplification also moves the bounds to mins: [0.0, 0.0], maxs: extents
+
+        let gen_fragment = |scope| {
+            Svg::gen_with_cairo(
+                |cairo_cx| {
+                    self.draw_to_cairo_scope(
+                        cairo_cx,
+                        draw_background,
+                        draw_pattern,
+                        optimize_printing,
+                        margin,
+                        1.0,
+                        scope,
+                    )
+                },
+                bounds_loosened,
+            )
+        };
+
+        let mut svg = gen_fragment(DrawScope::NonHighlighter)?;
+
+        if self
+            .strokes
+            .iter()
+            .any(|stroke_content_stroke| stroke_content_stroke.layer == StrokeLayer::Highlighter)
+        {
+            // cairo's Svg backend emulates blend operators with `feImage`-based filters that reference groups inside `<defs>`.
+            // Barely any Svg renderer is able to display that construct, and the usvg simplification below is unable to preserve it,
+            // which turns the exported Svg into a black/blank image in most applications.
+            //
+            // To work around this, the highlighter strokes are drawn into a separate Svg and blended multiplicatively with the content
+            // below through `mix-blend-mode`. This is widely supported instead and falls back to plain source-over compositing where it isn't.
+
+            let mut highlighter_svg = gen_fragment(DrawScope::Highlighter)?;
+
+            // each usvg pass assigns its own random id prefix (so ids can't collide) and puts both into the same coordinate space.
+            svg.simplify()
+                .context("simplifying the non-highlighter Svg fragment failed")?;
+            highlighter_svg
+                .simplify()
+                .context("simplifying the highlighter Svg fragment failed")?;
+
+            svg.svg_data = format!(
+                "{}\n<g style=\"mix-blend-mode:multiply\">{}</g>",
+                svg.svg_data, highlighter_svg.svg_data
+            );
+        }
+
         if let Err(e) = svg.simplify() {
             warn!("Simplifying Svg while generating StrokeContent Svg failed, Err: {e:?}");
         };
@@ -115,6 +160,27 @@ impl StrokeContent {
         margin: f64,
         image_scale: f64,
     ) -> anyhow::Result<()> {
+        self.draw_to_cairo_scope(
+            cairo_cx,
+            draw_background,
+            draw_pattern,
+            optimize_printing,
+            margin,
+            image_scale,
+            DrawScope::All,
+        )
+    }
+
+    fn draw_to_cairo_scope(
+        &self,
+        cairo_cx: &cairo::Context,
+        draw_background: bool,
+        draw_pattern: bool,
+        optimize_printing: bool,
+        margin: f64,
+        image_scale: f64,
+        scope: DrawScope,
+    ) -> anyhow::Result<()> {
         let Some(bounds) = self.bounds() else {
             return Ok(());
         };
@@ -129,7 +195,10 @@ impl StrokeContent {
         );
         cairo_cx.clip();
 
-        if draw_background && let Some(background) = &self.background {
+        if scope != DrawScope::Highlighter
+            && draw_background
+            && let Some(background) = &self.background
+        {
             background.draw_to_cairo(cairo_cx, bounds_loosened, draw_pattern, optimize_printing)?;
         }
 
@@ -184,19 +253,27 @@ impl StrokeContent {
             .iter()
             .partition(|stroke| stroke.layer != StrokeLayer::Highlighter);
 
-        for stroke in non_highlighter_strokes {
-            draw_stroke(stroke, cairo_cx)?;
+        if scope != DrawScope::Highlighter {
+            for stroke in non_highlighter_strokes {
+                draw_stroke(stroke, cairo_cx)?;
+            }
         }
 
-        if !highlighter_strokes.is_empty() {
-            cairo_cx.save()?;
-            cairo_cx.set_operator(cairo::Operator::Multiply);
+        if scope != DrawScope::NonHighlighter && !highlighter_strokes.is_empty() {
+            let multiply = scope == DrawScope::All;
+
+            if multiply {
+                cairo_cx.save()?;
+                cairo_cx.set_operator(cairo::Operator::Multiply);
+            }
 
             for stroke in highlighter_strokes {
                 draw_stroke(stroke, cairo_cx)?;
             }
 
-            cairo_cx.restore()?;
+            if multiply {
+                cairo_cx.restore()?;
+            }
         }
 
         cairo_cx.restore()?;

@@ -66,6 +66,10 @@ impl Svg {
 
     /// Simplify the Svg by passing it through [usvg].
     ///
+    /// The result is a fragment without Svg root (consumers wrap their own root with
+    /// [Svg::wrap_svg_root]), so the document never ends up with nested Svg roots, which
+    /// Svg Tiny 1.2 renderers (e.g. Qt) refuse to display.
+    ///
     /// Also moves the bounds to mins: [0., 0.], maxs: extents
     pub fn simplify(&mut self) -> anyhow::Result<()> {
         const COORDINATES_PREC: u8 = 3;
@@ -96,7 +100,8 @@ impl Svg {
             },
         )?;
 
-        self.svg_data = usvg_tree.to_string(&xml_options);
+        // usvg writes a complete document, but Svg.svg_data is a fragment
+        self.svg_data = rnote_compose::utils::remove_svg_root(&usvg_tree.to_string(&xml_options));
         self.bounds = bounds_simplified;
 
         Ok(())

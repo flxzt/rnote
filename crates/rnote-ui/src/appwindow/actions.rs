@@ -1191,6 +1191,7 @@ impl RnAppWindow {
         app.set_accels_for_action("win.save-doc-as", &["<Ctrl><Shift>s"]);
         app.set_accels_for_action("win.new-tab", &["<Ctrl>t"]);
         app.set_accels_for_action("win.snap-positions", &["<Ctrl><Shift>p"]);
+        app.set_accels_for_action("win.return-origin-page", &["<Ctrl>Home"]);
         app.set_accels_for_action("win.clear-doc", &["<Ctrl>l"]);
         app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);
         app.set_accels_for_action("win.add-page-to-doc", &["<Ctrl><Shift>a"]);

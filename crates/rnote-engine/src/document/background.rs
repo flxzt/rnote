@@ -500,8 +500,7 @@ impl Background {
         with_pattern: bool,
         optimize_printing: bool,
     ) -> anyhow::Result<()> {
-        let mut background_svg = self.gen_svg(bounds, with_pattern, optimize_printing)?;
-        background_svg.wrap_svg_root(Some(bounds), Some(bounds), false);
-        background_svg.draw_to_cairo(cx)
+        self.gen_svg(bounds, with_pattern, optimize_printing)?
+            .draw_to_cairo(cx)
     }
 }

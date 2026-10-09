@@ -163,10 +163,11 @@ impl Engine {
         snapshot: &gtk4::Snapshot,
         surface_bounds: p2d::bounding_volume::Aabb,
     ) -> anyhow::Result<()> {
-        use crate::drawable::DrawableOnDoc;
         use crate::engine::visual_debug;
         use crate::engine_view;
-        use gtk4::prelude::*;
+        use crate::store::chrono_comp::StrokeLayer;
+        use crate::{drawable::DrawableOnDoc, ext::GrapheneRectExt};
+        use gtk4::{graphene, prelude::*};
 
         let doc_bounds = self.document.bounds();
         let viewport = self.camera.viewport();
@@ -174,12 +175,47 @@ impl Engine {
 
         snapshot.save();
         snapshot.transform(Some(&camera_transform));
+
         self.draw_document_shadow_to_gtk_snapshot(snapshot);
+
+        let (non_highlighter_keys, highlighter_keys): (Vec<_>, Vec<_>) = self
+            .store
+            .stroke_keys_as_rendered_intersecting_bounds(viewport)
+            .iter()
+            .partition(|key| self.store.get_chrono_layer(**key) != StrokeLayer::Highlighter);
+
+        // push clip
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
+
+        // push blend mode for each highlighter stroke
+        for _ in highlighter_keys.iter() {
+            snapshot.push_blend(gtk4::gsk::BlendMode::Multiply);
+        }
+
         self.draw_background_to_gtk_snapshot(snapshot)?;
         self.draw_format_borders_to_gtk_snapshot(snapshot)?;
+
+        // bottom image in blend (regular content)
+        for &key in non_highlighter_keys.iter() {
+            self.store.draw_stroke_key_to_gtk_snapshot(snapshot, key);
+        }
+
+        // top image in blend (highlighter layer)
+        for &key in highlighter_keys.iter() {
+            // pop blend bottom image
+            snapshot.pop();
+
+            self.store.draw_stroke_key_to_gtk_snapshot(snapshot, key);
+
+            // pop blend top image
+            snapshot.pop();
+        }
+
+        // pop clip
+        snapshot.pop();
+
         self.draw_origin_indicator_to_gtk_snapshot(snapshot)?;
-        self.store
-            .draw_strokes_to_gtk_snapshot(snapshot, doc_bounds, viewport);
+
         snapshot.restore();
         /*
                let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));

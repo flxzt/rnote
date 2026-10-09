@@ -39,36 +39,18 @@ impl Svg {
         }
     }
 
-    pub fn wrap_svg_root(
-        &mut self,
-        bounds: Option<Aabb>,
-        viewbox: Option<Aabb>,
-        preserve_aspectratio: bool,
-    ) {
-        self.svg_data = rnote_compose::utils::wrap_svg_root(
+    /// Returns [Svg::svg_data] as a complete document, including xml headers and a svg
+    /// root element that uses the current bounds for both the viewport and the viewbox.
+    pub fn to_document(&self) -> String {
+        rnote_compose::utils::add_xml_header(&rnote_compose::utils::wrap_svg_root(
             self.svg_data.as_str(),
-            bounds,
-            viewbox,
-            preserve_aspectratio,
-        );
-        if let Some(bounds) = bounds {
-            self.bounds = bounds
-        }
-    }
-
-    pub fn add_xml_header(&mut self) {
-        self.svg_data = rnote_compose::utils::add_xml_header(&self.svg_data);
-    }
-
-    pub fn remove_xml_header(&mut self) {
-        self.svg_data = rnote_compose::utils::remove_xml_header(&self.svg_data);
+            Some(self.bounds),
+            Some(self.bounds),
+            false,
+        ))
     }
 
     /// Simplify the Svg by passing it through [usvg].
-    ///
-    /// The result is a fragment without Svg root (consumers wrap their own root with
-    /// [Svg::wrap_svg_root]), so the document never ends up with nested Svg roots, which
-    /// Svg Tiny 1.2 renderers (e.g. Qt) refuse to display.
     ///
     /// Also moves the bounds to mins: [0., 0.], maxs: extents
     pub fn simplify(&mut self) -> anyhow::Result<()> {
@@ -179,12 +161,7 @@ impl Svg {
     }
 
     pub fn draw_to_cairo(&self, cx: &cairo::Context) -> anyhow::Result<()> {
-        let svg_data = rnote_compose::utils::wrap_svg_root(
-            self.svg_data.as_str(),
-            Some(self.bounds),
-            Some(self.bounds),
-            false,
-        );
+        let svg_data = self.to_document();
         let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
         let handle = rsvg::Loader::new()
             .with_unlimited_size(true)
@@ -209,18 +186,9 @@ impl Svg {
     ///
     /// Using rsvg for rendering.
     pub fn gen_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
-        let mut bounds = self.bounds;
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
-        let svg_data = rnote_compose::utils::wrap_svg_root(
-            self.svg_data.as_str(),
-            Some(bounds),
-            Some(bounds),
-            false,
-        );
-        let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
+        let svg_data = self.to_document();
+        let width_scaled = (self.bounds.extents()[0] * image_scale).round() as u32;
+        let height_scaled = (self.bounds.extents()[1] * image_scale).round() as u32;
 
         let mut surface = cairo::ImageSurface::create(
                 cairo::Format::ARgb32,
@@ -238,7 +206,7 @@ impl Svg {
             let cx =
                 cairo::Context::new(&surface).context("creating new cairo::Context failed.")?;
             cx.scale(image_scale, image_scale);
-            cx.translate(-bounds.mins[0], -bounds.mins[1]);
+            cx.translate(-self.bounds.mins[0], -self.bounds.mins[1]);
 
             let stream =
                 gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
@@ -255,10 +223,10 @@ impl Svg {
                 .render_document(
                     &cx,
                     &cairo::Rectangle::new(
-                        bounds.mins[0],
-                        bounds.mins[1],
-                        bounds.extents()[0],
-                        bounds.extents()[1],
+                        self.bounds.mins[0],
+                        self.bounds.mins[1],
+                        self.bounds.extents()[0],
+                        self.bounds.extents()[1],
                     ),
                 )
                 .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
@@ -275,7 +243,7 @@ impl Svg {
                 height_scaled,
                 data,
             )),
-            rectangle: Rectangle::from_p2d_aabb(bounds),
+            rectangle: Rectangle::from_p2d_aabb(self.bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
             // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied

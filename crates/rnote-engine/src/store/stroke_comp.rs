@@ -747,7 +747,7 @@ impl StrokeStore {
             .into_iter()
             .map(|stroke_content_stroke| {
                 let LayeredStroke { stroke, layer } = stroke_content_stroke;
-                let offset = stroke.bounds().mins.coords - clipboard_bounds.mins.coords;
+                let offset = stroke.bounds().mins - clipboard_bounds.mins;
                 let key = self.insert_stroke((*stroke).clone(), Some(layer));
 
                 // position strokes without resizing
@@ -755,8 +755,8 @@ impl StrokeStore {
                 self.translate_strokes(&[key], offset);
 
                 // apply a rescale around a pivot
-                self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
-                self.scale_strokes_images_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+                self.scale_strokes_with_pivot(&[key], Vector2::new(ratio, ratio), pos);
+                self.scale_strokes_images_with_pivot(&[key], Vector2::new(ratio, ratio), pos);
 
                 // select keys
                 self.set_selected(key, true);

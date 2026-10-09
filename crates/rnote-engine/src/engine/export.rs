@@ -433,16 +433,7 @@ impl Engine {
                         DocExportPrefs::MARGIN,
                     )?
                     .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
-                Ok(rnote_compose::utils::add_xml_header(
-                    rnote_compose::utils::wrap_svg_root(
-                        doc_svg.svg_data.as_str(),
-                        Some(doc_svg.bounds),
-                        Some(doc_svg.bounds),
-                        false,
-                    )
-                    .as_str(),
-                )
-                .into_bytes())
+                Ok(doc_svg.to_document().into_bytes())
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -708,16 +699,7 @@ impl Engine {
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
                             ))?;
-                        Ok(rnote_compose::utils::add_xml_header(
-                            rnote_compose::utils::wrap_svg_root(
-                                page_svg.svg_data.as_str(),
-                                Some(page_svg.bounds),
-                                Some(page_svg.bounds),
-                                false,
-                            )
-                            .as_str(),
-                        )
-                        .into_bytes())
+                        Ok(page_svg.to_document().into_bytes())
                     })
                     .collect()
             };
@@ -831,18 +813,7 @@ impl Engine {
                     return Ok(None);
                 };
 
-                Ok(Some(
-                    rnote_compose::utils::add_xml_header(
-                        rnote_compose::utils::wrap_svg_root(
-                            svg.svg_data.as_str(),
-                            Some(svg.bounds),
-                            Some(svg.bounds),
-                            false,
-                        )
-                        .as_str(),
-                    )
-                    .into_bytes(),
-                ))
+                Ok(Some(svg.to_document().into_bytes()))
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(

@@ -1021,6 +1021,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "enchant"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dafd018f9ff5933b0cf9d89a095c31125890f2246952749cbaad230b537644db"
+dependencies = [
+ "enchant-sys",
+]
+
+[[package]]
+name = "enchant-sys"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97af59f7a6d8a217695598f23dc12051734322e60b58e5ca2f3a2fffa59ba34f"
+dependencies = [
+ "pkg-config",
+]
+
+[[package]]
 name = "encode_unicode"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4024,6 +4042,7 @@ dependencies = [
  "cairo-rs",
  "chrono",
  "clap",
+ "enchant",
  "flate2",
  "futures",
  "geo",

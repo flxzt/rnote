@@ -92,7 +92,7 @@ impl PenHolder {
         self.progress
     }
 
-    pub fn current_pen_ref(&mut self) -> &Pen {
+    pub fn current_pen_ref(&self) -> &Pen {
         &self.current_pen
     }
 

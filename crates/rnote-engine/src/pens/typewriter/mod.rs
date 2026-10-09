@@ -206,7 +206,7 @@ impl DrawableOnDoc for Typewriter {
                     {
                         textstroke.text_style.draw_text_selection(
                             cx,
-                            textstroke.text.clone(),
+                            textstroke.text.to_owned(),
                             cursor,
                             selection_cursor,
                             &textstroke.affine,
@@ -214,11 +214,20 @@ impl DrawableOnDoc for Typewriter {
                         );
                     }
 
+                    // Draw error ranges
+                    textstroke.text_style.draw_text_errors(
+                        cx,
+                        textstroke.text.to_owned(),
+                        textstroke.errors(),
+                        &textstroke.affine,
+                        engine_view.camera,
+                    );
+
                     // Draw the cursor
                     if self.cursor_visible {
                         textstroke.text_style.draw_cursor(
                             cx,
-                            textstroke.text.clone(),
+                            textstroke.text.to_owned(),
                             cursor,
                             &textstroke.affine,
                             engine_view.camera,
@@ -460,6 +469,7 @@ impl PenBehaviour for Typewriter {
                             // Current selection as clipboard text
                             let selection_text = textstroke
                                 .get_text_slice_for_range(selection_range)
+                                .unwrap_or_default()
                                 .to_string();
                             clipboard_content.push((
                                 selection_text.into_bytes(),
@@ -512,24 +522,15 @@ impl PenBehaviour for Typewriter {
                             // Current selection as clipboard text
                             let selection_text = textstroke
                                 .get_text_slice_for_range(selection_range)
+                                .unwrap_or_default()
                                 .to_string();
 
                             textstroke.replace_text_between_selection_cursors(
                                 cursor,
                                 selection_cursor,
-                                String::from("").as_str(),
+                                "",
                             );
-
-                            // Update stroke
-                            engine_view.store.update_geometry_for_stroke(*stroke_key);
-                            engine_view.store.regenerate_rendering_for_stroke(
-                                *stroke_key,
-                                engine_view.camera.viewport(),
-                                engine_view.camera.image_scale(),
-                            );
-                            widget_flags |= engine_view
-                                .document
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
+                            widget_flags |= finish_edit(engine_view, *stroke_key, true);
 
                             // Back to modifying state
                             self.state = TypewriterState::Modifying {
@@ -539,8 +540,6 @@ impl PenBehaviour for Typewriter {
                                 pen_down: false,
                             };
 
-                            widget_flags |= engine_view.store.record(Instant::now());
-                            widget_flags.store_modified = true;
                             widget_flags.redraw = true;
 
                             clipboard_content.push((
@@ -581,6 +580,39 @@ fn update_cursors_for_textstroke(
             true,
         );
     }
+}
+
+fn finish_edit(
+    engine_view: &mut EngineViewMut,
+    stroke_key: StrokeKey,
+    record_history_entry: bool,
+) -> WidgetFlags {
+    let mut widget_flags = WidgetFlags::default();
+    let Some(Stroke::TextStroke(textstroke)) = engine_view.store.get_stroke_mut(stroke_key) else {
+        return widget_flags;
+    };
+
+    textstroke.ensure_spellchecked(engine_view.spellcheck);
+
+    engine_view.store.update_geometry_for_stroke(stroke_key);
+    engine_view.store.regenerate_rendering_for_stroke(
+        stroke_key,
+        engine_view.camera.viewport(),
+        engine_view.camera.image_scale(),
+    );
+    widget_flags |= engine_view
+        .document
+        .resize_autoexpand(engine_view.store, engine_view.camera);
+    if record_history_entry {
+        widget_flags |= engine_view.store.record(Instant::now());
+    } else {
+        widget_flags |= engine_view
+            .store
+            .update_latest_history_entry(Instant::now());
+    }
+    widget_flags.store_modified = true;
+
+    widget_flags
 }
 
 impl Typewriter {
@@ -695,7 +727,10 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, pos, text_style);
+
+                let mut textstroke = TextStroke::new(text, pos, text_style);
+                textstroke.ensure_spellchecked(engine_view.spellcheck);
+
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -722,7 +757,10 @@ impl Typewriter {
                 let text_len = text.len();
                 text_style.ranged_text_attributes.clear();
                 text_style.set_max_width(Some(text_width));
-                let textstroke = TextStroke::new(text, *pos, text_style);
+
+                let mut textstroke = TextStroke::new(text, *pos, text_style);
+                textstroke.ensure_spellchecked(engine_view.spellcheck);
+
                 let cursor = GraphemeCursor::new(text_len, textstroke.text.len(), true);
 
                 let stroke_key = engine_view
@@ -762,15 +800,7 @@ impl Typewriter {
                             selection_cursor,
                             text.as_str(),
                         );
-                        engine_view.store.update_geometry_for_stroke(*stroke_key);
-                        engine_view.store.regenerate_rendering_for_stroke(
-                            *stroke_key,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        );
-                        widget_flags |= engine_view
-                            .document
-                            .resize_autoexpand(engine_view.store, engine_view.camera);
+                        widget_flags |= finish_edit(engine_view, *stroke_key, true);
 
                         self.state = TypewriterState::Modifying {
                             modify_state: ModifyState::Idle,
@@ -778,9 +808,6 @@ impl Typewriter {
                             cursor: cursor.clone(),
                             pen_down: false,
                         };
-
-                        widget_flags |= engine_view.store.record(Instant::now());
-                        widget_flags.store_modified = true;
                     }
                 }
                 _ => {
@@ -788,18 +815,7 @@ impl Typewriter {
                         engine_view.store.get_stroke_mut(*stroke_key)
                     {
                         textstroke.insert_text_after_cursor(text.as_str(), cursor);
-                        engine_view.store.update_geometry_for_stroke(*stroke_key);
-                        engine_view.store.regenerate_rendering_for_stroke(
-                            *stroke_key,
-                            engine_view.camera.viewport(),
-                            engine_view.camera.image_scale(),
-                        );
-                        widget_flags |= engine_view
-                            .document
-                            .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                        widget_flags |= engine_view.store.record(Instant::now());
-                        widget_flags.store_modified = true;
+                        widget_flags |= finish_edit(engine_view, *stroke_key, true);
                     }
                 }
             },
@@ -837,6 +853,54 @@ impl Typewriter {
             widget_flags |= engine_view.store.record(Instant::now());
             widget_flags.redraw = true;
             widget_flags.store_modified = true;
+        }
+
+        widget_flags
+    }
+
+    pub(crate) fn ensure_spellchecked_in_modifying_stroke(&self, engine_view: &mut EngineViewMut) {
+        if let TypewriterState::Modifying { stroke_key, .. } = self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+        {
+            textstroke.ensure_spellchecked(engine_view.spellcheck);
+        }
+    }
+
+    pub(crate) fn get_spellcheck_correction_in_modifying_stroke(
+        &self,
+        engine_view: &EngineView,
+    ) -> Option<Vec<String>> {
+        if let TypewriterState::Modifying {
+            stroke_key, cursor, ..
+        } = &self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_ref(*stroke_key)
+        {
+            return textstroke
+                .get_spellcheck_corrections_at_index(engine_view.spellcheck, cursor.cur_cursor());
+        }
+
+        None
+    }
+
+    pub(crate) fn apply_spellcheck_correction_in_modifying_stroke(
+        &mut self,
+        correction: &str,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let TypewriterState::Modifying {
+            stroke_key, cursor, ..
+        } = &mut self.state
+            && let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(*stroke_key)
+        {
+            textstroke.apply_spellcheck_correction_at_cursor(cursor, correction);
+            widget_flags |= finish_edit(engine_view, *stroke_key, true);
+
+            widget_flags.redraw = true;
         }
 
         widget_flags

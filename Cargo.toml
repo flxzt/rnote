@@ -30,6 +30,7 @@ cairo-rs = { version = "0.22.9", features = ["v1_18", "png", "svg", "pdf"] }
 chrono = "0.4.45"
 clap = { version = "4.6", features = ["derive"] }
 dialoguer = "0.12.0"
+enchant = "0.3.0"
 flate2 = "1.1"
 fs_extra = "1.3"
 futures = "0.3.34"

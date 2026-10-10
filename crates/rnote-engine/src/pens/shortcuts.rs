@@ -81,6 +81,20 @@ impl Default for Shortcuts {
             },
         );
         map.insert(
+            ShortcutKey::MouseBackwardButton,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Selector,
+                mode: ShortcutMode::Toggle,
+            },
+        );
+        map.insert(
+            ShortcutKey::MouseForwardButton,
+            ShortcutAction::ChangePenStyle {
+                style: PenStyle::Typewriter,
+                mode: ShortcutMode::Toggle,
+            },
+        );
+        map.insert(
             ShortcutKey::TouchTwoFingerLongPress,
             ShortcutAction::ChangePenStyle {
                 style: PenStyle::Eraser,

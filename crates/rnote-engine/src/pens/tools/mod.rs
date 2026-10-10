@@ -64,6 +64,7 @@ impl PenBehaviour for Tools {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         match engine_view.config.pens_config.tools_config.style {
             ToolStyle::VerticalSpace => {

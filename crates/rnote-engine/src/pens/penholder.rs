@@ -45,6 +45,15 @@ pub struct PenHolder {
     toggle_pen_style: Option<PenStyle>,
     #[serde(skip)]
     prev_shortcut_key: Option<ShortcutKey>,
+
+    /// indicates if we toggled a shortcut key
+    /// in temporary mode without changing
+    /// `PenMode` in the current sequence.
+    /// Used to tweak the behavior of tools
+    /// on exit so that we don't exit the tool
+    /// with the shortcut key pressed
+    #[serde(skip)]
+    temporary_style: bool,
 }
 
 impl Default for PenHolder {
@@ -57,6 +66,7 @@ impl Default for PenHolder {
             progress: PenProgress::Idle,
             toggle_pen_style: None,
             prev_shortcut_key: None,
+            temporary_style: false,
         }
     }
 }
@@ -110,6 +120,7 @@ impl PenHolder {
         // When the style is changed externally, the toggle mode / internal states are reset
         self.toggle_pen_style = None;
         self.prev_shortcut_key = None;
+        self.temporary_style = false;
 
         widget_flags
     }
@@ -147,6 +158,7 @@ impl PenHolder {
 
         if self.pen_mode_state.pen_mode() != new_pen_mode {
             self.pen_mode_state.set_pen_mode(new_pen_mode);
+            self.temporary_style = false;
             widget_flags |= self.reinstall_pen_current_style(engine_view);
             widget_flags.refresh_ui = true;
         }
@@ -163,7 +175,7 @@ impl PenHolder {
         // first cancel the current pen
         let (_, mut widget_flags) =
             self.current_pen
-                .handle_event(PenEvent::Cancel, Instant::now(), engine_view);
+                .handle_event(PenEvent::Cancel, Instant::now(), engine_view, false);
 
         // then reinstall a new pen instance
         let mut new_pen = new_pen(self.current_pen_style_w_override(&engine_view.as_im()));
@@ -193,16 +205,24 @@ impl PenHolder {
             widget_flags |= self.change_pen_mode(pen_mode, engine_view);
         }
 
+        if matches!(event, PenEvent::Cancel | PenEvent::Up { .. }) {
+            self.temporary_style = false;
+        }
+
         // Handle the event with the current pen
-        let (mut event_result, wf) = self
-            .current_pen
-            .handle_event(event.clone(), now, engine_view);
+        let (mut event_result, wf) =
+            self.current_pen
+                .handle_event(event.clone(), now, engine_view, self.temporary_style);
         widget_flags |= wf | self.handle_pen_progress(event_result.progress, engine_view);
 
         if !event_result.handled {
-            let (propagate, wf) = self.handle_pen_event_global(event, now, engine_view);
+            let (propagate, wf) = self.handle_pen_event_global(event.clone(), now, engine_view);
             event_result.propagate |= propagate;
             widget_flags |= wf;
+        }
+        // reset the cancelled state as we just handled a pen tool (and not a selection tool) event
+        if matches!(event, PenEvent::Up { .. }) {
+            engine_view.store.set_cancelled_state(false);
         }
 
         // Always redraw after handling a pen event.
@@ -238,6 +258,13 @@ impl PenHolder {
             match action {
                 ShortcutAction::ChangePenStyle { style, mode } => match mode {
                     ShortcutMode::Temporary => {
+                        if self
+                            .pen_mode_state
+                            .current_style_w_override(&engine_view.config.pens_config)
+                            == style
+                        {
+                            self.temporary_style = true;
+                        };
                         widget_flags |= self.change_style_override(Some(style), engine_view);
                     }
                     ShortcutMode::Permanent => {

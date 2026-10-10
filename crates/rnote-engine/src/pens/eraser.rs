@@ -55,13 +55,17 @@ impl PenBehaviour for Eraser {
         event: PenEvent,
         _now: Instant,
         engine_view: &mut EngineViewMut,
+        _temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
 
         let event_result = match (&mut self.state, event) {
             (EraserState::Up | EraserState::Proximity { .. }, PenEvent::Down { element, .. }) => {
-                widget_flags |= erase(element, engine_view);
-                self.state = EraserState::Down(element);
+                if !engine_view.store.get_cancelled_state() {
+                    widget_flags |= erase(element, engine_view);
+                    self.state = EraserState::Down(element);
+                    // this means we need one more up/down event here to activate the eraser after a selection cancellation
+                }
                 EventResult {
                     handled: true,
                     propagate: EventPropagation::Stop,

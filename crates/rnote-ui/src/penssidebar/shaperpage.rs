@@ -6,7 +6,8 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    Button, CompositeTemplate, ListBox, MenuButton, Popover, StringList, Widget, glib, glib::clone,
+    Button, CompositeTemplate, MenuButton, Popover, StringList, ToggleButton, Widget, glib,
+    glib::clone,
 };
 use num_traits::cast::ToPrimitive;
 use rnote_compose::builders::ShapeBuilderType;
@@ -38,11 +39,9 @@ mod imp {
         #[template_child]
         pub(crate) shapeconfig_popover_close_button: TemplateChild<Button>,
         #[template_child]
-        pub(crate) shaperstyle_listbox: TemplateChild<ListBox>,
+        pub(crate) shaperstyle_smooth_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub(crate) shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
-        pub(crate) shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
+        pub(crate) shaperstyle_rough_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) highlight_mode_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
@@ -129,19 +128,58 @@ impl RnShaperPage {
     }
 
     pub(crate) fn shaper_style(&self) -> Option<ShaperStyle> {
-        ShaperStyle::try_from(self.imp().shaperstyle_listbox.selected_row()?.index() as u32).ok()
+        if self.imp().shaperstyle_smooth_toggle.is_active() {
+            Some(ShaperStyle::Smooth)
+        } else if self.imp().shaperstyle_rough_toggle.is_active() {
+            Some(ShaperStyle::Rough)
+        } else {
+            None
+        }
     }
 
     pub(crate) fn set_shaper_style(&self, style: ShaperStyle) {
         match style {
-            ShaperStyle::Smooth => self
-                .imp()
-                .shaperstyle_listbox
-                .select_row(Some(&*self.imp().shaperstyle_smooth_row)),
-            ShaperStyle::Rough => self
-                .imp()
-                .shaperstyle_listbox
-                .select_row(Some(&*self.imp().shaperstyle_rough_row)),
+            ShaperStyle::Smooth => self.imp().shaperstyle_smooth_toggle.set_active(true),
+            ShaperStyle::Rough => self.imp().shaperstyle_rough_toggle.set_active(true),
+        }
+    }
+
+    fn apply_shaper_style_selection(&self, appwindow: &RnAppWindow, shaper_style: ShaperStyle) {
+        appwindow
+            .engine_config()
+            .write()
+            .pens_config
+            .shaper_config
+            .style = shaper_style;
+        self.stroke_width_picker().deselect_setters();
+
+        match shaper_style {
+            ShaperStyle::Smooth => {
+                let stroke_width = appwindow
+                    .engine_config()
+                    .read()
+                    .pens_config
+                    .shaper_config
+                    .smooth_options
+                    .stroke_width;
+                let page = self.imp();
+                page.roughstyle_group.set_visible(false);
+                page.smoothstyle_group.set_visible(true);
+                page.stroke_width_picker.set_stroke_width(stroke_width);
+            }
+            ShaperStyle::Rough => {
+                let stroke_width = appwindow
+                    .engine_config()
+                    .read()
+                    .pens_config
+                    .shaper_config
+                    .rough_options
+                    .stroke_width;
+                let page = self.imp();
+                page.smoothstyle_group.set_visible(false);
+                page.roughstyle_group.set_visible(true);
+                page.stroke_width_picker.set_stroke_width(stroke_width);
+            }
         }
     }
 
@@ -254,50 +292,39 @@ impl RnShaperPage {
         );
 
         // Shaper style
-        imp.shaperstyle_listbox.connect_row_selected(clone!(
+        imp.shaperstyle_smooth_toggle.connect_toggled(clone!(
             #[weak(rename_to=shaperpage)]
             self,
             #[weak]
             appwindow,
-            move |_, _| {
-                if let Some(shaper_style) = shaperpage.shaper_style() {
-                    appwindow
-                        .engine_config()
-                        .write()
-                        .pens_config
-                        .shaper_config
-                        .style = shaper_style;
-                    shaperpage.stroke_width_picker().deselect_setters();
-
-                    match shaper_style {
-                        ShaperStyle::Smooth => {
-                            let stroke_width = appwindow
-                                .engine_config()
-                                .read()
-                                .pens_config
-                                .shaper_config
-                                .smooth_options
-                                .stroke_width;
-                            let page = shaperpage.imp();
-                            page.roughstyle_group.set_visible(false);
-                            page.smoothstyle_group.set_visible(true);
-                            page.stroke_width_picker.set_stroke_width(stroke_width);
-                        }
-                        ShaperStyle::Rough => {
-                            let stroke_width = appwindow
-                                .engine_config()
-                                .read()
-                                .pens_config
-                                .shaper_config
-                                .rough_options
-                                .stroke_width;
-                            let page = shaperpage.imp();
-                            page.smoothstyle_group.set_visible(false);
-                            page.roughstyle_group.set_visible(true);
-                            page.stroke_width_picker.set_stroke_width(stroke_width);
-                        }
-                    }
+            move |toggle| {
+                if !toggle.is_active() {
+                    return;
                 }
+
+                let Some(shaper_style) = shaperpage.shaper_style() else {
+                    return;
+                };
+
+                shaperpage.apply_shaper_style_selection(&appwindow, shaper_style);
+            }
+        ));
+
+        imp.shaperstyle_rough_toggle.connect_toggled(clone!(
+            #[weak(rename_to=shaperpage)]
+            self,
+            #[weak]
+            appwindow,
+            move |toggle| {
+                if !toggle.is_active() {
+                    return;
+                }
+
+                let Some(shaper_style) = shaperpage.shaper_style() else {
+                    return;
+                };
+
+                shaperpage.apply_shaper_style_selection(&appwindow, shaper_style);
             }
         ));
 

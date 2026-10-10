@@ -112,6 +112,8 @@ mod imp {
         #[template_child]
         pub(crate) doc_show_origin_indicator_row: TemplateChild<adw::SwitchRow>,
         #[template_child]
+        pub(crate) doc_auto_export_svg: TemplateChild<adw::SwitchRow>,
+        #[template_child]
         pub(crate) background_pattern_invert_color_button: TemplateChild<Button>,
         #[template_child]
         pub(crate) penshortcut_stylus_button_primary_row: TemplateChild<RnPenShortcutRow>,
@@ -473,6 +475,7 @@ impl RnSettingsPanel {
                 .config
                 .format
                 .show_origin_indicator;
+            let auto_export_svg = canvas.engine_ref().document.config.auto_export_svg;
 
             imp.doc_show_format_borders_row
                 .set_active(show_format_borders);
@@ -492,6 +495,7 @@ impl RnSettingsPanel {
             self.set_document_layout(&document_layout);
             imp.doc_show_origin_indicator_row
                 .set_active(show_origin_indicator);
+            imp.doc_auto_export_svg.set_active(auto_export_svg);
         }
     }
 
@@ -1185,6 +1189,17 @@ impl RnSettingsPanel {
                     canvas.queue_draw();
                 }
             ));
+
+        imp.doc_auto_export_svg.connect_active_notify(clone!(
+            #[weak]
+            appwindow,
+            move |row| {
+                let Some(canvas) = appwindow.active_tab_canvas() else {
+                    return;
+                };
+                canvas.engine_mut().document.config.auto_export_svg = row.is_active();
+            }
+        ));
 
         imp.background_pattern_invert_color_button
             .get()

@@ -19,9 +19,9 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub(crate) struct RnBrushPage {
         #[template_child]
-        pub(crate) brushstyle_marker_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
         pub(crate) brushstyle_solid_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub(crate) brushstyle_marker_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub(crate) brushstyle_textured_toggle: TemplateChild<ToggleButton>,
         #[template_child]

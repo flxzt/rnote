@@ -12,10 +12,6 @@ use rnote_compose::shapes::{Rectangle, Shapeable};
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
 
-/// Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor.
-pub const PX_TO_POINT_CONV_FACTOR: f64 = 96.0 / 72.0;
-/// Point unit ( 72 DPI ) to Px unit (96 DPI ) conversion factor.
-pub const POINT_TO_PX_CONV_FACTOR: f64 = 72.0 / 96.0;
 /// The factor for which the rendering for the current viewport is extended by.
 /// For example:: 1.0 means the viewport is extended by its own extents on all sides.
 ///

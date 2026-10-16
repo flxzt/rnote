@@ -165,7 +165,6 @@ impl Engine {
     ) -> anyhow::Result<()> {
         use crate::engine::visual_debug;
         use crate::engine_view;
-        use crate::store::chrono_comp::StrokeLayer;
         use crate::{drawable::DrawableOnDoc, ext::GrapheneRectExt};
         use gtk4::{graphene, prelude::*};
 
@@ -178,11 +177,9 @@ impl Engine {
 
         self.draw_document_shadow_to_gtk_snapshot(snapshot);
 
-        let (non_highlighter_keys, highlighter_keys): (Vec<_>, Vec<_>) = self
+        let (non_highlighter_keys, highlighter_keys) = self
             .store
-            .stroke_keys_as_rendered_intersecting_bounds(viewport)
-            .iter()
-            .partition(|key| self.store.get_chrono_layer(**key) != StrokeLayer::Highlighter);
+            .stroke_keys_as_rendered_intersecting_bounds_partitioned(viewport);
 
         // push clip
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));

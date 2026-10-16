@@ -126,8 +126,8 @@ impl StrokeContent {
                 let mut fragment = Svg::gen_with_cairo(
                     |cairo_cx| {
                         cairo_cx.save()?;
-                        Self::clip(cairo_cx, bounds);
-                        let draw_res = Self::draw_stroke(
+                        cairo_clip_bounds(cairo_cx, bounds);
+                        let draw_res = Self::draw_layered_stroke_to_cairo(
                             stroke,
                             &image_bounds,
                             cairo_cx,
@@ -165,6 +165,10 @@ impl StrokeContent {
         margin: f64,
         image_scale: f64,
     ) -> anyhow::Result<()> {
+        let Some(bounds) = self.bounds() else {
+            return Ok(());
+        };
+
         self.draw_back_to_cairo(
             cairo_cx,
             draw_background,
@@ -174,12 +178,8 @@ impl StrokeContent {
             image_scale,
         )?;
 
-        let Some(bounds) = self.bounds() else {
-            return Ok(());
-        };
-
         cairo_cx.save()?;
-        Self::clip(cairo_cx, bounds);
+        cairo_clip_bounds(cairo_cx, bounds);
         cairo_cx.set_operator(cairo::Operator::Multiply);
 
         let image_bounds = self.image_bounds();
@@ -188,7 +188,7 @@ impl StrokeContent {
             .iter()
             .filter(|s| s.layer == StrokeLayer::Highlighter)
         {
-            Self::draw_stroke(
+            Self::draw_layered_stroke_to_cairo(
                 stroke,
                 &image_bounds,
                 cairo_cx,
@@ -202,7 +202,7 @@ impl StrokeContent {
         Ok(())
     }
 
-    /// Draw the background and all strokes that are not on the highlighter layer.
+    /// Draw the background and all strokes that are not on the highlighter layer to a cairo context.
     fn draw_back_to_cairo(
         &self,
         cairo_cx: &cairo::Context,
@@ -218,7 +218,7 @@ impl StrokeContent {
         let bounds_loosened = bounds.loosened(margin);
 
         cairo_cx.save()?;
-        Self::clip(cairo_cx, bounds_loosened);
+        cairo_clip_bounds(cairo_cx, bounds_loosened);
 
         if draw_background && let Some(background) = &self.background {
             background.draw_to_cairo(cairo_cx, bounds_loosened, draw_pattern, optimize_printing)?;
@@ -226,7 +226,7 @@ impl StrokeContent {
 
         cairo_cx.restore()?;
         cairo_cx.save()?;
-        Self::clip(cairo_cx, bounds);
+        cairo_clip_bounds(cairo_cx, bounds);
 
         let image_bounds = self.image_bounds();
         for stroke in self
@@ -234,7 +234,7 @@ impl StrokeContent {
             .iter()
             .filter(|s| s.layer != StrokeLayer::Highlighter)
         {
-            Self::draw_stroke(
+            Self::draw_layered_stroke_to_cairo(
                 stroke,
                 &image_bounds,
                 cairo_cx,
@@ -248,32 +248,8 @@ impl StrokeContent {
         Ok(())
     }
 
-    /// Clip to the given bounds.
-    fn clip(cairo_cx: &cairo::Context, bounds: Aabb) {
-        cairo_cx.rectangle(
-            bounds.mins[0],
-            bounds.mins[1],
-            bounds.extents()[0],
-            bounds.extents()[1],
-        );
-        cairo_cx.clip();
-    }
-
-    /// Bounds of the bitmap / vector image strokes.
-    fn image_bounds(&self) -> Vec<Aabb> {
-        self.strokes
-            .iter()
-            .filter_map(
-                |stroke_content_stroke| match stroke_content_stroke.stroke.as_ref() {
-                    Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
-                    Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
-                    _ => None,
-                },
-            )
-            .collect::<Vec<Aabb>>()
-    }
-
-    fn draw_stroke(
+    // Draw a single LayeredStroke to a cairo context.
+    fn draw_layered_stroke_to_cairo(
         stroke_content_stroke: &LayeredStroke,
         image_bounds: &[Aabb],
         cairo_cx: &cairo::Context,
@@ -300,4 +276,29 @@ impl StrokeContent {
                 .draw_to_cairo(cairo_cx, image_scale)
         }
     }
+
+    /// Bounds of the bitmap / vector image strokes.
+    fn image_bounds(&self) -> Vec<Aabb> {
+        self.strokes
+            .iter()
+            .filter_map(
+                |stroke_content_stroke| match stroke_content_stroke.stroke.as_ref() {
+                    Stroke::BitmapImage(image) => Some(image.rectangle.bounds()),
+                    Stroke::VectorImage(image) => Some(image.rectangle.bounds()),
+                    _ => None,
+                },
+            )
+            .collect::<Vec<Aabb>>()
+    }
+}
+
+/// Clip to the given bounds.
+fn cairo_clip_bounds(cairo_cx: &cairo::Context, bounds: Aabb) {
+    cairo_cx.rectangle(
+        bounds.mins[0],
+        bounds.mins[1],
+        bounds.extents()[0],
+        bounds.extents()[1],
+    );
+    cairo_cx.clip();
 }

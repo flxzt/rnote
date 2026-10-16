@@ -1,5 +1,6 @@
 // Imports
 use super::StrokeKey;
+use super::chrono_comp::StrokeLayer;
 use super::render_comp::RenderCompState;
 use crate::engine::{LayeredStroke, StrokeContent};
 use crate::strokes::{Content, Stroke};
@@ -94,6 +95,26 @@ impl StrokeStore {
             .into_iter()
             .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect::<Vec<StrokeKey>>()
+    }
+
+    /// Stroke keys intersecting the given bounds, in the order that they should be rendered.
+    /// partitioned into layers that need special handling during rendering.
+    ///
+    /// Returns a tuple of `(regular layer keys, highlighter layer keys)`.
+    #[allow(unused)]
+    pub(crate) fn stroke_keys_as_rendered_intersecting_bounds_partitioned(
+        &self,
+        bounds: Aabb,
+    ) -> (Vec<StrokeKey>, Vec<StrokeKey>) {
+        self.stroke_keys_as_rendered_intersecting_bounds(bounds)
+            .into_iter()
+            .partition(|key| {
+                self.chrono_components
+                    .get(*key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_default()
+                    != StrokeLayer::Highlighter
+            })
     }
 
     /// Clone the strokes for the given keys.

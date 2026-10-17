@@ -27,6 +27,29 @@ pub fn remove_xml_header(svg: &str) -> String {
     String::from(re.replace_all(svg, ""))
 }
 
+/// Remove the root svg element from a svg document, leaving only its content.
+/// Returns the (header-free) input unchanged if it does not contain a svg root element.
+pub fn remove_svg_root(svg: &str) -> String {
+    let svg = remove_xml_header(svg);
+    let svg = svg.trim_start();
+    let Some(root_open_end) = svg.find('>') else {
+        return String::from(svg);
+    };
+    let root_open = &svg[..root_open_end];
+    if !root_open.starts_with("<svg") {
+        return String::from(svg);
+    }
+    if root_open.ends_with('/') {
+        // self-closing root element without content
+        return String::new();
+    }
+    let content = &svg[root_open_end + 1..];
+    match content.rfind("</svg>") {
+        Some(root_close_start) => String::from(&content[..root_close_start]),
+        None => String::from(svg),
+    }
+}
+
 /// Wrap a Svg root element around the Svg string.
 pub fn wrap_svg_root(
     svg_data: &str,

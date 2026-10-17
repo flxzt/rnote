@@ -340,33 +340,30 @@ impl Engine {
         oneshot_receiver
     }
 
+    fn stroke_content_from_sorted_keys(&self, keys: Vec<crate::store::StrokeKey>) -> StrokeContent {
+        self.store
+            .fetch_stroke_content(&keys)
+            .with_background(self.document.config.background)
+    }
+
     pub fn extract_document_content(&self) -> StrokeContent {
-        StrokeContent::default()
-            .with_strokes(
-                self.store
-                    .get_strokes_arc(&self.store.stroke_keys_as_rendered()),
-            )
+        self.stroke_content_from_sorted_keys(self.store.stroke_keys_as_rendered())
             .with_bounds(
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
             )
-            .with_background(self.document.config.background)
     }
 
     pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
         self.pages_bounds_w_content(page_order)
             .into_iter()
             .map(|bounds| {
-                StrokeContent::default()
-                    .with_strokes(
-                        self.store.get_strokes_arc(
-                            &self
-                                .store
-                                .stroke_keys_as_rendered_intersecting_bounds(bounds),
-                        ),
-                    )
+                let keys = self
+                    .store
+                    .stroke_keys_as_rendered_intersecting_bounds(bounds);
+
+                self.stroke_content_from_sorted_keys(keys)
                     .with_bounds(bounds)
-                    .with_background(self.document.config.background)
             })
             .collect()
     }
@@ -376,11 +373,7 @@ impl Engine {
         if selection_keys.is_empty() {
             return None;
         }
-        Some(
-            StrokeContent::default()
-                .with_strokes(self.store.get_strokes_arc(&selection_keys))
-                .with_background(self.document.config.background),
-        )
+        Some(self.stroke_content_from_sorted_keys(selection_keys))
     }
 
     /// Extract thumbnail content.
@@ -391,10 +384,8 @@ impl Engine {
         let scale_factor = self.camera.scale_factor();
         let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
         let bounds = bounds.unwrap_or_else(|| self.document.bounds());
-        StrokeContent::default()
-            .with_strokes(self.store.get_strokes_arc(&keys))
+        self.stroke_content_from_sorted_keys(keys)
             .with_bounds(bounds)
-            .with_background(self.document.config.background)
     }
 
     /// Export the entire engine state as Json string.
@@ -442,16 +433,7 @@ impl Engine {
                         DocExportPrefs::MARGIN,
                     )?
                     .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
-                Ok(rnote_compose::utils::add_xml_header(
-                    rnote_compose::utils::wrap_svg_root(
-                        doc_svg.svg_data.as_str(),
-                        Some(doc_svg.bounds),
-                        Some(doc_svg.bounds),
-                        false,
-                    )
-                    .as_str(),
-                )
-                .into_bytes())
+                Ok(doc_svg.to_document().into_bytes())
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -573,8 +555,9 @@ impl Engine {
                         let xopp_strokestyles = page_content
                             .strokes
                             .into_iter()
-                            .filter_map(|mut stroke| {
-                                let mut stroke = Arc::make_mut(&mut stroke).clone();
+                            .filter_map(|mut stroke_content_stroke| {
+                                let mut stroke =
+                                    Arc::make_mut(&mut stroke_content_stroke.stroke).clone();
                                 stroke.translate(-page_bounds.mins);
                                 stroke.into_xopp(document.config.format.dpi())
                             })
@@ -716,16 +699,7 @@ impl Engine {
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
                             ))?;
-                        Ok(rnote_compose::utils::add_xml_header(
-                            rnote_compose::utils::wrap_svg_root(
-                                page_svg.svg_data.as_str(),
-                                Some(page_svg.bounds),
-                                Some(page_svg.bounds),
-                                false,
-                            )
-                            .as_str(),
-                        )
-                        .into_bytes())
+                        Ok(page_svg.to_document().into_bytes())
                     })
                     .collect()
             };
@@ -839,18 +813,7 @@ impl Engine {
                     return Ok(None);
                 };
 
-                Ok(Some(
-                    rnote_compose::utils::add_xml_header(
-                        rnote_compose::utils::wrap_svg_root(
-                            svg.svg_data.as_str(),
-                            Some(svg.bounds),
-                            Some(svg.bounds),
-                            false,
-                        )
-                        .as_str(),
-                    )
-                    .into_bytes(),
-                ))
+                Ok(Some(svg.to_document().into_bytes()))
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(

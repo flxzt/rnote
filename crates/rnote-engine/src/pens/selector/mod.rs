@@ -188,11 +188,10 @@ impl PenBehaviour for Selector {
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
                     if let Some(stroke_content_svg) = stroke_content_svg {
-                        // Add generated Svg
-                        clipboard_content.push((
-                            stroke_content_svg.svg_data.clone().into_bytes(),
-                            Svg::MIME_TYPE.to_string(),
-                        ));
+                        // Add generated Svg (complete document)
+                        let clipboard_svg = stroke_content_svg.to_document();
+                        clipboard_content
+                            .push((clipboard_svg.into_bytes(), Svg::MIME_TYPE.to_string()));
 
                         // Add rendered Png
                         let image = stroke_content_svg
@@ -249,11 +248,10 @@ impl PenBehaviour for Selector {
                         StrokeContent::MIME_TYPE.to_string(),
                     ));
                     if let Some(stroke_content_svg) = stroke_content_svg {
-                        // Add generated Svg
-                        clipboard_content.push((
-                            stroke_content_svg.svg_data.clone().into_bytes(),
-                            Svg::MIME_TYPE.to_string(),
-                        ));
+                        // Add generated Svg (complete document)
+                        let clipboard_svg = stroke_content_svg.to_document();
+                        clipboard_content
+                            .push((clipboard_svg.into_bytes(), Svg::MIME_TYPE.to_string()));
 
                         // Add rendered Png
                         let image = stroke_content_svg

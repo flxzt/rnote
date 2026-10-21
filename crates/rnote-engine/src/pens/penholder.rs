@@ -4,18 +4,18 @@ use super::shortcuts::ShortcutMode;
 use super::{
     Brush, Eraser, Pen, PenBehaviour, PenMode, PenStyle, Selector, Shaper, Tools, Typewriter,
 };
-use crate::DrawableOnDoc;
+use crate::Previewable;
 use crate::camera::NudgeDirection;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
-use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, Instant};
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename = "backlog_policy")]
@@ -475,20 +475,13 @@ impl PenHolder {
     }
 }
 
-impl DrawableOnDoc for PenHolder {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
-        self.current_pen.bounds_on_doc(engine_view)
+impl Previewable for PenHolder {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
+        self.current_pen.preview_bounds(engine_view)
     }
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
+        self.current_pen.preview_draw(cx, engine_view)?;
 
-        self.current_pen.draw_on_doc(cx, engine_view)?;
-
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

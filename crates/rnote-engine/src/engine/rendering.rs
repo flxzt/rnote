@@ -1,10 +1,10 @@
 // Imports
 use crate::Image;
 use crate::{Engine, WidgetFlags};
+use kurbo::{Cap, Stroke};
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
-use piet::RenderContext;
-use rnote_compose::color;
+use rnote_compose::{Color, color};
 use tracing::error;
 
 impl Engine {
@@ -164,8 +164,8 @@ impl Engine {
         surface_bounds: p2d::bounding_volume::Aabb,
     ) -> anyhow::Result<()> {
         use crate::engine::visual_debug;
-        use crate::engine_view;
-        use crate::{drawable::DrawableOnDoc, ext::GrapheneRectExt};
+        use crate::ext::GrapheneRectExt;
+        use crate::{Previewable, engine_view};
         use gtk4::{graphene, prelude::*};
 
         let doc_bounds = self.document.bounds();
@@ -214,19 +214,8 @@ impl Engine {
         self.draw_origin_indicator_to_gtk_snapshot(snapshot)?;
 
         snapshot.restore();
-        /*
-               let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
-               let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-               piet_cx.transform(self.camera.transform().to_kurbo());
-               self.store.draw_strokes_immediate(
-                   &mut piet_cx,
-                   doc_bounds,
-                   viewport,
-                   self.camera.image_scale(),
-               );
-        */
         self.penholder
-            .draw_on_doc_to_gtk_snapshot(snapshot, &engine_view!(self))?;
+            .preview_draw_to_gtk_snapshot(snapshot, &engine_view!(self))?;
 
         if self.config.read().visual_debug {
             snapshot.save();
@@ -378,12 +367,12 @@ fn origin_indicator_bounds() -> Aabb {
 }
 
 fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {
-    const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
+    const PATH_COLOR: Color = color::GNOME_GREENS[4];
     const PATH_WIDTH: f64 = 1.5;
     let bounds = origin_indicator_bounds();
 
-    Image::gen_with_piet(
-        |piet_cx| {
+    Image::gen_with_vello(
+        |cx| {
             let path = kurbo::BezPath::from_iter([
                 kurbo::PathEl::MoveTo(kurbo::Point::new(
                     bounds.mins[0] + PATH_WIDTH * 0.5,
@@ -402,12 +391,9 @@ fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {
                     bounds.mins[1] + PATH_WIDTH * 0.5,
                 )),
             ]);
-            piet_cx.stroke_styled(
-                path,
-                &PATH_COLOR,
-                PATH_WIDTH,
-                &piet::StrokeStyle::default().line_cap(piet::LineCap::Round),
-            );
+            cx.set_paint(PATH_COLOR);
+            cx.set_stroke(Stroke::new(PATH_WIDTH).with_caps(Cap::Round));
+            cx.stroke_path(&path);
             Ok(())
         },
         bounds,

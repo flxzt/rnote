@@ -137,8 +137,6 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
     use crate::ext::GrapheneRectExt;
     use gtk4::{graphene, prelude::*};
     use p2d::bounding_volume::Aabb;
-    use piet::{RenderContext, Text, TextLayoutBuilder};
-    use rnote_compose::ext::{AabbExt, Vector2Ext};
 
     // A statistics overlay
     {
@@ -153,7 +151,6 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
             ),
         );
         let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
-        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
         // Gather statistics
         let strokes_total = engine.store.keys_unordered();
@@ -175,25 +172,20 @@ pub(crate) fn draw_statistics_to_gtk_snapshot(
             trashed_strokes.len(),
             strokes_hold_image,
         );
-        let text_layout = piet_cx
-            .text()
-            .new_text_layout(statistics_text_string)
-            .text_color(piet::Color::rgba(0.8, 1.0, 1.0, 1.0))
-            .max_width(text_bounds.extents()[0] - 20.0)
-            .alignment(piet::TextAlignment::End)
-            .font(piet::FontFamily::MONOSPACE, 10.0)
-            .build()
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        piet_cx.fill(
-            text_bounds.to_kurbo_rect(),
-            &piet::Color::rgba(0.1, 0.1, 0.1, 0.8),
-        );
-        piet_cx.draw_text(
-            &text_layout,
-            (text_bounds.mins + Vector2::splat(10.0)).to_kurbo_point(),
-        );
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        cairo_cx.move_to(text_bounds.mins.x, text_bounds.mins.y);
+        cairo_cx.line_to(text_bounds.maxs.x, text_bounds.mins.y);
+        cairo_cx.line_to(text_bounds.maxs.x, text_bounds.maxs.y);
+        cairo_cx.line_to(text_bounds.mins.x, text_bounds.maxs.y);
+        cairo_cx.close_path();
+        cairo_cx.set_source_rgba(0.1, 0.1, 0.1, 0.8);
+        cairo_cx.fill()?;
+        cairo_cx.set_font_size(10.);
+        cairo_cx.set_font_face(&cairo::FontFace::toy_create(
+            "monospace",
+            cairo::FontSlant::Normal,
+            cairo::FontWeight::Normal,
+        )?);
+        cairo_cx.show_text(&statistics_text_string)?;
     }
     Ok(())
 }
@@ -205,7 +197,7 @@ pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
     engine: &crate::Engine,
     surface_bounds: p2d::bounding_volume::Aabb,
 ) -> anyhow::Result<()> {
-    use crate::drawable::DrawableOnDoc;
+    use crate::Previewable;
     use crate::engine_view;
     use p2d::bounding_volume::BoundingVolume;
 
@@ -230,7 +222,7 @@ pub(crate) fn draw_stroke_debug_to_gtk_snapshot(
         .draw_debug_to_gtk_snapshot(snapshot, engine, surface_bounds)?;
 
     // Draw the current pen bounds
-    if let Some(bounds) = engine.penholder.bounds_on_doc(&engine_view!(engine)) {
+    if let Some(bounds) = engine.penholder.preview_bounds(&engine_view!(engine)) {
         draw_bounds_to_gtk_snapshot(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
     }
 

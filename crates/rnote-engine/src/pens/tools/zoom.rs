@@ -1,15 +1,16 @@
 // Imports
 use super::ToolsState;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{Camera, DrawableOnDoc, WidgetFlags};
+use crate::{Camera, Previewable, WidgetFlags};
+use kurbo::{Shape, Stroke};
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
-use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::PenProgress;
-use rnote_compose::{EventResult, PenEvent, color};
+use rnote_compose::{Color, EventResult, PenEvent, color};
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Clone, Debug)]
 pub(super) struct ZoomTool {
@@ -31,8 +32,8 @@ impl Default for ZoomTool {
 impl ZoomTool {
     const CURSOR_RADIUS: f64 = 4.0;
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
-    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
-    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
+    const DARK_COLOR: Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: Color = color::GNOME_BRIGHTS[1].with_a8(240);
 
     pub(super) fn handle_event(
         &mut self,
@@ -166,8 +167,8 @@ impl ZoomTool {
     }
 }
 
-impl DrawableOnDoc for ZoomTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for ZoomTool {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         if matches!(self.state, ToolsState::Idle) {
             return None;
         }
@@ -191,12 +192,7 @@ impl DrawableOnDoc for ZoomTool {
         )
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         let total_zoom = engine_view.camera.total_zoom();
         let start_circle_center = engine_view
             .camera
@@ -212,28 +208,31 @@ impl DrawableOnDoc for ZoomTool {
             .to_kurbo_point();
 
         // start circle
-        cx.fill(
-            kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.8 / total_zoom),
-            &Self::LIGHT_COLOR,
+        cx.set_paint(Self::LIGHT_COLOR);
+        cx.fill_path(
+            &kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.8 / total_zoom)
+                .into_path(0.1),
         );
-        cx.fill(
-            kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.6 / total_zoom),
-            &Self::DARK_COLOR,
+        cx.set_paint(Self::DARK_COLOR);
+        cx.fill_path(
+            &kurbo::Circle::new(start_circle_center, Self::CURSOR_RADIUS * 0.6 / total_zoom)
+                .into_path(0.1),
         );
 
         // current circle
-        cx.stroke(
-            kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom),
-            &Self::LIGHT_COLOR,
-            Self::CURSOR_STROKE_WIDTH / total_zoom,
+        cx.set_paint(Self::LIGHT_COLOR);
+        cx.set_stroke(Stroke::new(Self::CURSOR_STROKE_WIDTH / total_zoom));
+        cx.stroke_path(
+            &kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom)
+                .into_path(0.1),
         );
-        cx.stroke(
-            kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom),
-            &Self::DARK_COLOR,
-            Self::CURSOR_STROKE_WIDTH * 0.7 / total_zoom,
+        cx.set_paint(Self::DARK_COLOR);
+        cx.set_stroke(Stroke::new(Self::CURSOR_STROKE_WIDTH * 0.7 / total_zoom));
+        cx.stroke_path(
+            &kurbo::Circle::new(current_circle_center, Self::CURSOR_RADIUS / total_zoom)
+                .into_path(0.1),
         );
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

@@ -10,8 +10,8 @@ use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 /// Polygon builder.
 #[derive(Debug, Clone)]
@@ -119,15 +119,13 @@ impl Buildable for PolygonBuilder {
         )
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
-        cx.save().unwrap();
-
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         let mut polygon = self.state_as_polygon();
         if !self.finish {
             polygon.path.push(self.current);
         }
 
-        polygon.draw_composed(cx, style);
+        polygon.composed_draw(cx, style);
         indicators::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
         if !self.finish {
             if self.pos_in_finish(self.pen_pos)
@@ -138,8 +136,6 @@ impl Buildable for PolygonBuilder {
                 indicators::draw_pos_indicator(cx, self.pen_state, self.current, zoom);
             }
         }
-
-        cx.restore().unwrap();
     }
 }
 

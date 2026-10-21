@@ -10,13 +10,12 @@ use crate::engine::{EngineView, EngineViewMut, StrokeContent};
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
 use crate::strokes::Content;
-use crate::{Camera, DrawableOnDoc, Engine, WidgetFlags};
+use crate::{Camera, Engine, Previewable, WidgetFlags};
 use futures::channel::oneshot;
-use kurbo::Shape;
+use kurbo::{Shape, Stroke};
 use p2d::bounding_volume::{Aabb, BoundingSphere, BoundingVolume};
 use p2d::math::Vector2;
 use p2d::query::PointQuery;
-use piet::RenderContext;
 use rnote_compose::EventResult;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
@@ -25,6 +24,7 @@ use rnote_compose::style::indicators;
 use rnote_compose::{Color, color};
 use std::time::Instant;
 use tracing::error;
+use vello_cpu::RenderContext;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ResizeCorner {
@@ -271,8 +271,8 @@ impl PenBehaviour for Selector {
     }
 }
 
-impl DrawableOnDoc for Selector {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for Selector {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
@@ -305,13 +305,11 @@ impl DrawableOnDoc for Selector {
         }
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         let total_zoom = engine_view.camera.total_zoom();
+        let dash_pattern = Self::SELECTING_DASH_PATTERN
+            .into_iter()
+            .map(|x| x / total_zoom);
 
         match &self.state {
             SelectorState::Idle => {}
@@ -323,66 +321,55 @@ impl DrawableOnDoc for Selector {
 
                         if let Some(first) = path_iter.next() {
                             bez_path.move_to(first.pos.to_kurbo_point());
-
                             for element in path_iter {
                                 bez_path.line_to(element.pos.to_kurbo_point());
                             }
-
                             bez_path.close_path();
 
-                            let mut stroke_style = piet::StrokeStyle::new();
-                            stroke_style.set_dash_pattern(
-                                Self::SELECTING_DASH_PATTERN
-                                    .into_iter()
-                                    .map(|x| x / total_zoom)
-                                    .collect::<Vec<f64>>(),
+                            cx.set_paint(Self::SELECTION_FILL_COLOR);
+                            cx.fill_path(&bez_path);
+                            cx.set_paint(Self::SELECTION_OUTLINE_COLOR);
+                            cx.set_stroke(
+                                Stroke::new(Self::OUTLINE_STROKE_WIDTH / total_zoom)
+                                    .with_dashes(0., dash_pattern),
                             );
-
-                            cx.fill(bez_path.clone(), &Self::SELECTION_FILL_COLOR);
-                            cx.stroke_styled(
-                                bez_path,
-                                &Self::SELECTION_OUTLINE_COLOR,
-                                Self::OUTLINE_STROKE_WIDTH / total_zoom,
-                                &stroke_style,
-                            );
+                            cx.stroke_path(&bez_path);
                         }
                     }
                     SelectorStyle::Rectangle => {
                         if let Some(first) = path.first()
                             && let Some(last) = path.last()
                         {
-                            let select_rect = kurbo::Rect::from_points(
+                            let bez_path = kurbo::Rect::from_points(
                                 first.pos.to_kurbo_point(),
                                 last.pos.to_kurbo_point(),
-                            );
+                            )
+                            .into_path(0.1);
 
-                            let mut stroke_style = piet::StrokeStyle::new();
-                            stroke_style.set_dash_pattern(
-                                Self::SELECTING_DASH_PATTERN
-                                    .into_iter()
-                                    .map(|x| x / total_zoom)
-                                    .collect::<Vec<f64>>(),
+                            cx.set_paint(Self::SELECTION_FILL_COLOR);
+                            cx.fill_path(&bez_path);
+                            cx.set_paint(Self::SELECTION_OUTLINE_COLOR);
+                            cx.set_stroke(
+                                Stroke::new(Self::OUTLINE_STROKE_WIDTH / total_zoom)
+                                    .with_dashes(0., dash_pattern),
                             );
-
-                            cx.fill(select_rect, &Self::SELECTION_FILL_COLOR);
-                            cx.stroke_styled(
-                                select_rect,
-                                &Self::SELECTION_OUTLINE_COLOR,
-                                Self::OUTLINE_STROKE_WIDTH / total_zoom,
-                                &stroke_style,
-                            );
+                            cx.stroke_path(&bez_path);
                         }
                     }
                     SelectorStyle::Single => {
                         if let Some(last) = path.last() {
-                            cx.stroke(
-                                kurbo::Circle::new(
-                                    last.pos.to_kurbo_point(),
-                                    Self::SELECTING_SINGLE_CIRCLE_RADIUS / total_zoom,
-                                ),
-                                &Self::SELECTION_OUTLINE_COLOR,
-                                Self::OUTLINE_STROKE_WIDTH / total_zoom,
+                            let bez_path = kurbo::Circle::new(
+                                last.pos.to_kurbo_point(),
+                                Self::SELECTING_SINGLE_CIRCLE_RADIUS / total_zoom,
+                            )
+                            .into_path(0.1);
+
+                            cx.set_paint(Self::SELECTION_OUTLINE_COLOR);
+                            cx.set_stroke(
+                                Stroke::new(Self::OUTLINE_STROKE_WIDTH / total_zoom)
+                                    .with_dashes(0., dash_pattern),
                             );
+                            cx.stroke_path(&bez_path);
                         }
                     }
                     SelectorStyle::IntersectingPath => {
@@ -391,25 +378,16 @@ impl DrawableOnDoc for Selector {
 
                         if let Some(first) = path_iter.next() {
                             bez_path.move_to(first.pos.to_kurbo_point());
-
                             for element in path_iter {
                                 bez_path.line_to(element.pos.to_kurbo_point());
                             }
 
-                            let mut stroke_style = piet::StrokeStyle::new();
-                            stroke_style.set_dash_pattern(
-                                Self::SELECTING_DASH_PATTERN
-                                    .into_iter()
-                                    .map(|x| x / total_zoom)
-                                    .collect::<Vec<f64>>(),
+                            cx.set_paint(Self::SELECTION_OUTLINE_COLOR);
+                            cx.set_stroke(
+                                Stroke::new(Self::OUTLINE_STROKE_WIDTH / total_zoom)
+                                    .with_dashes(0., dash_pattern),
                             );
-
-                            cx.stroke_styled(
-                                bez_path,
-                                &Self::SELECTION_OUTLINE_COLOR,
-                                Self::OUTLINE_STROKE_WIDTH / total_zoom,
-                                &stroke_style,
-                            );
+                            cx.stroke_path(&bez_path);
                         }
                     }
                 }
@@ -455,7 +433,6 @@ impl DrawableOnDoc for Selector {
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -476,9 +453,9 @@ impl Selector {
     /// Rotate node diameter, in surface coordinates.
     const ROTATE_NODE_DIAMETER: f64 = 18.0;
     /// The outline color when drawing a selection
-    const SELECTION_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
+    const SELECTION_OUTLINE_COLOR: Color = color::GNOME_BRIGHTS[4].with_a8(240);
     /// The fill color when drawing a selection
-    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(13);
+    const SELECTION_FILL_COLOR: Color = color::GNOME_BRIGHTS[2].with_a8(13);
 
     fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {
         match style {
@@ -540,14 +517,13 @@ impl Selector {
     }
 
     fn draw_selection_overlay(
-        piet_cx: &mut impl RenderContext,
+        cx: &mut RenderContext,
         selection_bounds: Aabb,
         modify_state: &ModifyState,
         pos: Option<Vector2>,
         camera: &Camera,
         background_color: Color,
     ) -> anyhow::Result<()> {
-        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         let total_zoom = camera.total_zoom();
 
         let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
@@ -646,8 +622,6 @@ impl Selector {
         // Selection rect
         let selection_rect = selection_bounds.to_kurbo_rect();
 
-        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
         let mut clip_path = kurbo::BezPath::new();
         clip_path.extend(
             indicators::rectangular_node_shape(
@@ -698,68 +672,67 @@ impl Selector {
             .path_elements(0.1),
         );
 
-        piet_cx.clip(clip_path);
+        cx.push_clip_path(&clip_path);
 
-        piet_cx.fill(selection_rect, &Self::SELECTION_FILL_COLOR);
-        piet_cx.stroke(
-            selection_rect,
-            &Self::SELECTION_OUTLINE_COLOR,
-            Self::OUTLINE_STROKE_WIDTH / total_zoom,
-        );
+        let bez_path = selection_rect.into_path(0.1);
+        cx.set_paint(Self::SELECTION_FILL_COLOR);
+        cx.fill_path(&bez_path);
+        cx.set_paint(Self::SELECTION_OUTLINE_COLOR);
+        cx.set_stroke(Stroke::new(Self::OUTLINE_STROKE_WIDTH / total_zoom));
+        cx.stroke_path(&bez_path);
 
-        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        cx.pop_clip_path();
 
         // Rotate Node
         indicators::draw_circular_node(
-            piet_cx,
+            cx,
             rotate_node_state,
             rotate_node_sphere,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
 
         // Resize Nodes
         indicators::draw_rectangular_node(
-            piet_cx,
+            cx,
             resize_tl_node_state,
             resize_tl_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
         indicators::draw_rectangular_node(
-            piet_cx,
+            cx,
             resize_tr_node_state,
             resize_tr_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
         indicators::draw_rectangular_node(
-            piet_cx,
+            cx,
             resize_bl_node_state,
             resize_bl_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
         indicators::draw_rectangular_node(
-            piet_cx,
+            cx,
             resize_br_node_state,
             resize_br_node_bounds,
             total_zoom,
-            piet::Color::from(background_color),
+            background_color,
         );
 
-        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 
     fn draw_rotation_indicator(
-        piet_cx: &mut impl RenderContext,
+        cx: &mut RenderContext,
         rotation_center: Vector2,
         start_rotation_angle: f64,
         current_rotation_angle: f64,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        piet_cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        let state = cx.save_current_state();
         const CENTER_CROSS_COLOR: Color = Color {
             r: 0.964,
             g: 0.380,
@@ -784,19 +757,16 @@ impl Selector {
             (rotation_center + Vector2::new(0.0, center_cross_half_extents)).to_kurbo_point(),
         );
 
-        piet_cx.transform(
+        cx.set_transform(
             kurbo::Affine::translate(rotation_center.to_kurbo_vec())
                 * kurbo::Affine::rotate(current_rotation_angle - start_rotation_angle)
                 * kurbo::Affine::translate(-rotation_center.to_kurbo_vec()),
         );
+        cx.set_paint(CENTER_CROSS_COLOR);
+        cx.set_stroke(Stroke::new(center_cross_path_width));
+        cx.stroke_path(&center_cross);
 
-        piet_cx.stroke(
-            center_cross,
-            &piet::Color::from(CENTER_CROSS_COLOR),
-            center_cross_path_width,
-        );
-        piet_cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
+        cx.restore_state(state);
         Ok(())
     }
 

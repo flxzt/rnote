@@ -1,9 +1,12 @@
 // Imports
 use crate::Image;
 use crate::{Drawable, Svg};
+use kurbo::{Cap, Join, Shape, Stroke};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use rnote_compose::Color;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::{color, shapes::Shapeable};
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 /// Generated content images.
@@ -16,7 +19,7 @@ pub enum GeneratedContentImages {
     Full(Vec<Image>),
 }
 
-pub(crate) const CONTENT_HIGHLIGHT_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(96);
+pub(crate) const CONTENT_HIGHLIGHT_COLOR: Color = color::GNOME_BLUES[1].with_a8(96);
 
 /// Types that are content.
 pub trait Content: Drawable + Shapeable
@@ -28,7 +31,17 @@ where
     /// Used for exporting.
     fn gen_svg(&self) -> Result<Svg, anyhow::Error> {
         let bounds = self.bounds();
-        Svg::gen_with_cairo(|cx| self.draw_to_cairo(cx, 1.0), bounds)
+        Svg::gen_with_cairo(
+            |cx| {
+                self.draw_to_cairo(
+                    cx,
+                    bounds.extents().x.ceil() as u16,
+                    bounds.extents().y.ceil() as u16,
+                    1.0,
+                )
+            },
+            bounds,
+        )
     }
 
     /// Generate bitmap images for rendering in the app.
@@ -43,15 +56,15 @@ where
         let bounds = self.bounds();
 
         if viewport.contains(&bounds) {
-            Ok(GeneratedContentImages::Full(vec![Image::gen_with_piet(
-                |piet_cx| self.draw(piet_cx, image_scale),
+            Ok(GeneratedContentImages::Full(vec![Image::gen_with_vello(
+                |cx| self.draw(cx, image_scale),
                 bounds,
                 image_scale,
             )?]))
         } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
             Ok(GeneratedContentImages::Partial {
-                images: vec![Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
+                images: vec![Image::gen_with_vello(
+                    |cx| self.draw(cx, image_scale),
                     intersection_bounds,
                     image_scale,
                 )?],
@@ -67,30 +80,25 @@ where
 
     /// Draw the content highlight. Used when indicating a selection.
     ///
-    /// The implementers are expected to save/restore the drawing context.
-    ///
+    /// The implementers are expected to save/restore the drawing context state themselves.
     /// `total_zoom` is the zoom-factor of the surface that the highlight gets drawn on.
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
+    fn draw_highlight(&self, cx: &mut RenderContext, total_zoom: f64) -> anyhow::Result<()> {
         const HIGHLIGHT_STROKE_WIDTH: f64 = 1.5;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
         let bounds = self.bounds();
         let bez_path = self.outline_path();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
-            cx.fill(bounds.to_kurbo_rect(), &CONTENT_HIGHLIGHT_COLOR);
+            cx.set_paint(CONTENT_HIGHLIGHT_COLOR);
+            cx.fill_path(&bounds.to_kurbo_rect().into_path(0.1));
         } else {
-            cx.stroke_styled(
-                bez_path,
-                &CONTENT_HIGHLIGHT_COLOR,
-                HIGHLIGHT_STROKE_WIDTH / total_zoom,
-                &piet::StrokeStyle::new()
-                    .line_join(piet::LineJoin::Round)
-                    .line_cap(piet::LineCap::Round),
+            cx.set_paint(CONTENT_HIGHLIGHT_COLOR);
+            cx.set_stroke(
+                Stroke::new(HIGHLIGHT_STROKE_WIDTH / total_zoom)
+                    .with_join(Join::Round)
+                    .with_caps(Cap::Round),
             );
+            cx.stroke_path(&bez_path);
         }
         Ok(())
     }
@@ -106,11 +114,7 @@ where
         format: image::ImageFormat,
         image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        Image::gen_with_piet(
-            |piet_cx| self.draw(piet_cx, image_scale),
-            self.bounds(),
-            image_scale,
-        )?
-        .into_encoded_bytes(format, None)
+        Image::gen_with_vello(|cx| self.draw(cx, image_scale), self.bounds(), image_scale)?
+            .into_encoded_bytes(format, None)
     }
 }

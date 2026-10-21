@@ -4,7 +4,7 @@ use gtk4::prelude::*;
 use gtk4::subclass::prelude::*;
 use gtk4::{gdk, glib};
 use once_cell::sync::Lazy;
-use rnote_compose::color;
+use rnote_compose::{Color, color};
 use rnote_engine::ext::GdkRGBAExt;
 use std::cell::RefCell;
 use std::path::PathBuf;
@@ -37,7 +37,7 @@ mod imp {
             Self {
                 dir,
                 icon: String::from("workspacelistentryicon-folder-symbolic"),
-                color: super::RnWorkspaceListEntry::COLOR_DEFAULT.as_rgba_u32(),
+                color: super::RnWorkspaceListEntry::COLOR_DEFAULT.into_rgba_u32(),
                 name: String::from("default"),
             }
         }
@@ -132,7 +132,7 @@ impl Default for RnWorkspaceListEntry {
 }
 
 impl RnWorkspaceListEntry {
-    pub(crate) const COLOR_DEFAULT: piet::Color = color::GNOME_BLUES[4];
+    pub(crate) const COLOR_DEFAULT: Color = color::GNOME_BLUES[4];
 
     pub(crate) fn new(inner: RnWorkspaceListEntryInner) -> Self {
         glib::Object::builder()

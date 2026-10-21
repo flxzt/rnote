@@ -55,6 +55,7 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 unicode-segmentation = { workspace = true }
 usvg = { workspace = true }
+vello_cpu = { workspace = true }
 xmlwriter = { workspace = true }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true, optional = true }

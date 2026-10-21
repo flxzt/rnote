@@ -6,7 +6,7 @@ use crate::Image;
 use crate::document::Format;
 use crate::engine::import::{PdfImportPageSpacing, PdfImportPrefs};
 use anyhow::anyhow;
-use hayro::{hayro_interpret, hayro_syntax, vello_cpu};
+use hayro::{hayro_interpret, hayro_syntax};
 use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
@@ -19,6 +19,7 @@ use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
@@ -47,26 +48,13 @@ impl Content for BitmapImage {
 }
 
 impl Drawable for BitmapImage {
-    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        let piet_image_format = piet::ImageFormat::from(self.image.memory_format);
+    fn draw(&self, cx: &mut RenderContext, image_scale: f64) -> anyhow::Result<()> {
+        let state = cx.save_current_state();
 
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        cx.transform(self.rectangle.affine.to_kurbo());
+        cx.set_transform(self.rectangle.affine.to_kurbo());
+        self.image.draw(cx, image_scale)?;
 
-        let piet_image = cx
-            .make_image(
-                self.image.pixel_width as usize,
-                self.image.pixel_height as usize,
-                &self.image.data,
-                piet_image_format,
-            )
-            .map_err(|e| {
-                anyhow::anyhow!("Make piet image in BitmapImage draw impl failed, Err: {e:?}")
-            })?;
-        let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
-        cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
+        cx.restore_state(state);
         Ok(())
     }
 }
@@ -81,7 +69,7 @@ impl Shapeable for BitmapImage {
     }
 
     fn outline_path(&self) -> kurbo::BezPath {
-        self.bounds().to_kurbo_rect().to_path(0.25)
+        self.bounds().to_kurbo_rect().into_path(0.1)
     }
 }
 

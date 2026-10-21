@@ -2,15 +2,16 @@
 use super::ToolsState;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
+use kurbo::{Shape, Stroke};
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
-use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::PenProgress;
-use rnote_compose::{EventResult, PenEvent, color};
+use rnote_compose::{Color, EventResult, PenEvent, color};
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Clone, Debug)]
 pub(super) struct VerticalSpaceTool {
@@ -36,12 +37,12 @@ impl Default for VerticalSpaceTool {
 impl VerticalSpaceTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
     const SNAP_START_POS_DIST: f64 = 10.;
-    const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
+    const OFFSET_LINE_COLOR: Color = color::GNOME_BLUES[3];
     const THRESHOLD_LINE_WIDTH: f64 = 3.0;
     const THRESHOLD_LINE_DASH_PATTERN: [f64; 2] = [9.0, 6.0];
     const OFFSET_LINE_WIDTH: f64 = 1.5;
-    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(23);
-    const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(240);
+    const FILL_COLOR: Color = color::GNOME_BRIGHTS[2].with_a8(23);
+    const THRESHOLD_LINE_COLOR: Color = color::GNOME_GREENS[4].with_a8(240);
 
     pub(super) fn handle_event(
         &mut self,
@@ -223,8 +224,8 @@ impl VerticalSpaceTool {
     }
 }
 
-impl DrawableOnDoc for VerticalSpaceTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for VerticalSpaceTool {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         if matches!(self.state, ToolsState::Idle) {
             return None;
         }
@@ -241,13 +242,7 @@ impl DrawableOnDoc for VerticalSpaceTool {
         Some(tool_bounds)
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         let total_zoom = engine_view.camera.total_zoom();
         let viewport = engine_view.camera.viewport();
         let x = if let Some(limit_x) = self.limit_x {
@@ -268,28 +263,30 @@ impl DrawableOnDoc for VerticalSpaceTool {
         let tool_bounds_rect = kurbo::Rect::from_points(
             tool_bounds.mins.to_kurbo_point(),
             tool_bounds.maxs.to_kurbo_point(),
-        );
-        cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
+        )
+        .into_path(0.1);
+        cx.set_paint(Self::FILL_COLOR);
+        cx.fill_path(&tool_bounds_rect);
 
         let threshold_line =
-            kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
-        cx.stroke_styled(
-            threshold_line,
-            &Self::THRESHOLD_LINE_COLOR,
-            Self::THRESHOLD_LINE_WIDTH / total_zoom,
-            &piet::StrokeStyle::new().dash_pattern(&Self::THRESHOLD_LINE_DASH_PATTERN),
+            kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y))
+                .into_path(0.1);
+        cx.set_paint(Self::THRESHOLD_LINE_COLOR);
+        cx.set_stroke(
+            Stroke::new(Self::THRESHOLD_LINE_WIDTH / total_zoom)
+                .with_dashes(0., Self::THRESHOLD_LINE_DASH_PATTERN),
         );
+        cx.stroke_path(&threshold_line);
 
         let offset_line = kurbo::Line::new(
             kurbo::Point::new(x, y + height),
             kurbo::Point::new(x + width, y + height),
-        );
-        cx.stroke(
-            offset_line,
-            &Self::OFFSET_LINE_COLOR,
-            Self::OFFSET_LINE_WIDTH / total_zoom,
-        );
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        )
+        .into_path(0.1);
+        cx.set_paint(Self::OFFSET_LINE_COLOR);
+        cx.set_stroke(Stroke::new(Self::OFFSET_LINE_WIDTH / total_zoom));
+        cx.stroke_path(&offset_line);
+
         Ok(())
     }
 }

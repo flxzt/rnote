@@ -23,6 +23,7 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::{Color, PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "stroke")]
@@ -64,11 +65,7 @@ impl Content for Stroke {
         }
     }
 
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
+    fn draw_highlight(&self, cx: &mut RenderContext, total_zoom: f64) -> anyhow::Result<()> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.draw_highlight(cx, total_zoom),
             Stroke::ShapeStroke(shapestroke) => shapestroke.draw_highlight(cx, total_zoom),
@@ -90,7 +87,7 @@ impl Content for Stroke {
 }
 
 impl Drawable for Stroke {
-    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
+    fn draw(&self, cx: &mut RenderContext, image_scale: f64) -> anyhow::Result<()> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.draw(cx, image_scale),
             Stroke::ShapeStroke(shapestroke) => shapestroke.draw(cx, image_scale),
@@ -100,13 +97,29 @@ impl Drawable for Stroke {
         }
     }
 
-    fn draw_to_cairo(&self, cx: &cairo::Context, image_scale: f64) -> anyhow::Result<()> {
+    fn draw_to_cairo(
+        &self,
+        cx: &cairo::Context,
+        width: u16,
+        height: u16,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
         match self {
-            Stroke::BrushStroke(brushstroke) => brushstroke.draw_to_cairo(cx, image_scale),
-            Stroke::ShapeStroke(shapestroke) => shapestroke.draw_to_cairo(cx, image_scale),
-            Stroke::TextStroke(textstroke) => textstroke.draw_to_cairo(cx, image_scale),
-            Stroke::VectorImage(vectorimage) => vectorimage.draw_to_cairo(cx, image_scale),
-            Stroke::BitmapImage(bitmapimage) => bitmapimage.draw_to_cairo(cx, image_scale),
+            Stroke::BrushStroke(brushstroke) => {
+                brushstroke.draw_to_cairo(cx, width, height, image_scale)
+            }
+            Stroke::ShapeStroke(shapestroke) => {
+                shapestroke.draw_to_cairo(cx, width, height, image_scale)
+            }
+            Stroke::TextStroke(textstroke) => {
+                textstroke.draw_to_cairo(cx, width, height, image_scale)
+            }
+            Stroke::VectorImage(vectorimage) => {
+                vectorimage.draw_to_cairo(cx, width, height, image_scale)
+            }
+            Stroke::BitmapImage(bitmapimage) => {
+                bitmapimage.draw_to_cairo(cx, width, height, image_scale)
+            }
         }
     }
 }
@@ -227,13 +240,13 @@ impl Stroke {
                 if let Some(color) = brush_stroke.style.stroke_color() {
                     brush_stroke
                         .style
-                        .set_stroke_color(color.to_inverted_brightness_color());
+                        .set_stroke_color(color.into_inverted_brightness_color());
                 }
 
                 if let Some(color) = brush_stroke.style.fill_color() {
                     brush_stroke
                         .style
-                        .set_fill_color(color.to_inverted_brightness_color());
+                        .set_fill_color(color.into_inverted_brightness_color());
                 }
 
                 true
@@ -242,20 +255,22 @@ impl Stroke {
                 if let Some(color) = shape_stroke.style.stroke_color() {
                     shape_stroke
                         .style
-                        .set_stroke_color(color.to_inverted_brightness_color());
+                        .set_stroke_color(color.into_inverted_brightness_color());
                 }
 
                 if let Some(color) = shape_stroke.style.fill_color() {
                     shape_stroke
                         .style
-                        .set_fill_color(color.to_inverted_brightness_color());
+                        .set_fill_color(color.into_inverted_brightness_color());
                 }
 
                 true
             }
             Stroke::TextStroke(text_stroke) => {
-                text_stroke.text_style.color =
-                    text_stroke.text_style.color.to_inverted_brightness_color();
+                text_stroke.text_style.color = text_stroke
+                    .text_style
+                    .color
+                    .into_inverted_brightness_color();
 
                 true
             }
@@ -273,11 +288,13 @@ impl Stroke {
                 if let Some(color) = brush_stroke.style.stroke_color() {
                     brush_stroke
                         .style
-                        .set_stroke_color(color.to_darkest_color());
+                        .set_stroke_color(color.into_darkest_color());
                 }
 
                 if let Some(color) = brush_stroke.style.fill_color() {
-                    brush_stroke.style.set_fill_color(color.to_darkest_color());
+                    brush_stroke
+                        .style
+                        .set_fill_color(color.into_darkest_color());
                 }
 
                 true
@@ -286,17 +303,19 @@ impl Stroke {
                 if let Some(color) = shape_stroke.style.stroke_color() {
                     shape_stroke
                         .style
-                        .set_stroke_color(color.to_darkest_color());
+                        .set_stroke_color(color.into_darkest_color());
                 }
 
                 if let Some(color) = shape_stroke.style.fill_color() {
-                    shape_stroke.style.set_fill_color(color.to_darkest_color());
+                    shape_stroke
+                        .style
+                        .set_fill_color(color.into_darkest_color());
                 }
 
                 true
             }
             Stroke::TextStroke(text_stroke) => {
-                text_stroke.text_style.color = text_stroke.text_style.color.to_darkest_color();
+                text_stroke.text_style.color = text_stroke.text_style.color.into_darkest_color();
 
                 true
             }

@@ -5,12 +5,13 @@ use core::fmt::Debug;
 use image::ImageReader;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use rnote_compose::Transformable;
-use rnote_compose::ext::{AabbExt, DAffine2Ext};
+use rnote_compose::ext::{AabbExt, DAffine2Ext, Vector2Ext};
 use rnote_compose::shapes::{Rectangle, Shapeable};
 use serde::{Deserialize, Serialize};
 use std::io::{self, Cursor};
+use std::sync::Arc;
+use vello_cpu::{RenderContext, peniko};
 
 /// Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor.
 pub const PX_TO_POINT_CONV_FACTOR: f64 = 96.0 / 72.0;
@@ -35,6 +36,14 @@ impl Default for ImageMemoryFormat {
     }
 }
 
+impl From<ImageMemoryFormat> for peniko::ImageFormat {
+    fn from(value: ImageMemoryFormat) -> Self {
+        match value {
+            ImageMemoryFormat::R8g8b8a8Premultiplied => Self::Rgba8,
+        }
+    }
+}
+
 #[cfg(feature = "ui")]
 impl TryFrom<gtk4::gdk::MemoryFormat> for ImageMemoryFormat {
     type Error = anyhow::Error;
@@ -56,14 +65,6 @@ impl From<ImageMemoryFormat> for gtk4::gdk::MemoryFormat {
             ImageMemoryFormat::R8g8b8a8Premultiplied => {
                 gtk4::gdk::MemoryFormat::R8g8b8a8Premultiplied
             }
-        }
-    }
-}
-
-impl From<ImageMemoryFormat> for piet::ImageFormat {
-    fn from(value: ImageMemoryFormat) -> Self {
-        match value {
-            ImageMemoryFormat::R8g8b8a8Premultiplied => piet::ImageFormat::RgbaPremul,
         }
     }
 }
@@ -137,30 +138,21 @@ impl From<image::DynamicImage> for Image {
 }
 
 impl Drawable for Image {
-    /// Draw itself on a [piet::RenderContext].
+    /// Draw itself on a [RenderContext].
     ///
-    /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
-    ///
-    /// `image_scale` has no meaning here, because the bitmap is already provided.
-    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        let piet_image_format = piet::ImageFormat::from(self.memory_format);
+    /// `image_scale` has no meaning here, because the pixmap is already provided.
+    fn draw(&self, cx: &mut RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        let state = cx.save_current_state();
+        let bounds = self.rectangle.cuboid.local_aabb();
 
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        let piet_image = cx
-            .make_image(
-                self.pixel_width as usize,
-                self.pixel_height as usize,
-                &self.data,
-                piet_image_format,
-            )
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?;
-        cx.transform(self.rectangle.affine.to_kurbo());
-        cx.draw_image(
-            &piet_image,
-            self.rectangle.cuboid.local_aabb().to_kurbo_rect(),
-            piet::InterpolationMode::Bilinear,
-        );
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+        cx.set_transform(self.rectangle.affine.to_kurbo());
+        cx.set_paint(vello_cpu::Image {
+            image: vello_cpu::ImageSource::Pixmap(Arc::new(self.to_vello_pixmap())),
+            sampler: peniko::ImageSampler::default(),
+        });
+        cx.fill_rect(&bounds.to_kurbo_rect());
+
+        cx.restore_state(state);
         Ok(())
     }
 }
@@ -182,17 +174,15 @@ impl Transformable for Image {
 impl Image {
     pub fn assert_valid(&self) -> anyhow::Result<()> {
         self.rectangle.bounds().assert_valid()?;
-
         if self.pixel_width == 0
             || self.pixel_height == 0
             || self.data.len() as u32 != 4 * self.pixel_width * self.pixel_height
         {
-            Err(anyhow::anyhow!(
+            return Err(anyhow::anyhow!(
                 "Asserting image validity failed, invalid size or data."
-            ))
-        } else {
-            Ok(())
+            ));
         }
+        Ok(())
     }
 
     pub fn try_from_encoded_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error> {
@@ -200,7 +190,7 @@ impl Image {
         Ok(Image::from(reader.decode()?))
     }
 
-    pub fn try_from_cairo_surface(
+    pub fn try_from_cairo_surface_argb(
         mut surface: cairo::ImageSurface,
         bounds: Aabb,
     ) -> anyhow::Result<Self> {
@@ -209,13 +199,47 @@ impl Image {
         let data = surface.data()?.to_vec();
 
         Ok(Image {
-            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(width, height, data)),
+            data: glib::Bytes::from_owned(convert_pixmap_argb_to_rgba(data)),
             rectangle: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width,
             pixel_height: height,
-            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
+            // cairo renders to argb-premultiplied, but we convert it to rgba-premultiplied
             memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
         })
+    }
+
+    pub fn from_vello_pixmap(value: vello_cpu::Pixmap, bounds: Aabb) -> Self {
+        let width = value.width();
+        let height = value.height();
+        let bytes: Vec<u8> = value
+            .take()
+            .into_iter()
+            .flat_map(|p| [p.r, p.g, p.b, p.a])
+            .collect();
+        let rectangle = Rectangle::from_p2d_aabb(bounds);
+        Self {
+            data: glib::Bytes::from_owned(bytes),
+            rectangle,
+            pixel_width: width as u32,
+            pixel_height: height as u32,
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
+        }
+    }
+
+    pub fn to_vello_pixmap(&self) -> vello_cpu::Pixmap {
+        let width = self.pixel_width as u16;
+        let height = self.pixel_height as u16;
+        let data = self
+            .data
+            .chunks_exact(4)
+            .map(|d| peniko::color::PremulRgba8 {
+                r: d[0],
+                g: d[1],
+                b: d[2],
+                a: d[3],
+            })
+            .collect();
+        vello_cpu::Pixmap::from_parts(data, width, height)
     }
 
     pub fn into_imgbuf(
@@ -315,84 +339,40 @@ impl Image {
         images.into_iter().map(|img| img.to_rendernode()).collect()
     }
 
-    /// Generates an image with a provided closure that draws onto a [cairo::Context].
-    pub fn gen_with_cairo<F>(
+    /// Generates an image with a provided closure that draws onto a [vello_cpu::RenderContext].
+    pub fn gen_with_vello<F>(
         draw_func: F,
         mut bounds: Aabb,
         image_scale: f64,
     ) -> anyhow::Result<Self>
     where
-        F: FnOnce(&cairo::Context) -> anyhow::Result<()>,
+        F: FnOnce(&mut vello_cpu::RenderContext) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
-        bounds.loosen(1.0);
+        bounds.loosen(1.);
         bounds.assert_valid()?;
+        let width = (bounds.extents().x * image_scale).ceil() as u16;
+        let height = (bounds.extents().y * image_scale).ceil() as u16;
+        let mut vello_target = vello_cpu::Pixmap::new(width, height);
+        let mut vello_resources = vello_cpu::Resources::new();
+        let mut vello_cx = RenderContext::new(width, height);
 
-        let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
+        vello_cx.set_transform(
+            kurbo::Affine::scale(image_scale)
+                * kurbo::Affine::translate(-bounds.mins.to_kurbo_vec())
+                * kurbo::Affine::IDENTITY,
+        );
+        draw_func(&mut vello_cx)?;
+        vello_cx.flush();
+        vello_cx.render(&mut vello_target, &mut vello_resources);
 
-        let mut image_surface = cairo::ImageSurface::create(
-            cairo::Format::ARgb32,
-            width_scaled as i32,
-            height_scaled as i32,
-        )
-        .map_err(|e| {
-            anyhow::anyhow!(
-                "creating image surface with dimensions ({}, {}) failed, Err: {e:?}",
-                width_scaled,
-                height_scaled,
-            )
-        })?;
-
-        {
-            let cairo_cx = cairo::Context::new(&image_surface)?;
-            cairo_cx.scale(image_scale, image_scale);
-            cairo_cx.translate(-bounds.mins[0], -bounds.mins[1]);
-            // Apply the draw function
-            draw_func(&cairo_cx)?;
-        }
-
-        let data = image_surface
-            .data()
-            .map_err(|e| anyhow::anyhow!("accessing image surface data failed, Err: {e:?}"))?
-            .to_vec();
-
-        Ok(Image {
-            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
-                width_scaled,
-                height_scaled,
-                data,
-            )),
-            rectangle: Rectangle::from_p2d_aabb(bounds),
-            pixel_width: width_scaled,
-            pixel_height: height_scaled,
-            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
-            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
-        })
-    }
-
-    /// Generates an image with a provided closure that draws onto a [piet_cairo::CairoRenderContext].
-    pub fn gen_with_piet<F>(draw_func: F, bounds: Aabb, image_scale: f64) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
-    {
-        let cairo_draw_fn = move |cairo_cx: &cairo::Context| -> anyhow::Result<()> {
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
-            // Apply the draw function
-            draw_func(&mut piet_cx)?;
-            piet_cx
-                .finish()
-                .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))?;
-            Ok(())
-        };
-
-        Self::gen_with_cairo(cairo_draw_fn, bounds, image_scale)
+        Ok(Self::from_vello_pixmap(vello_target, bounds))
     }
 }
 
-pub(super) fn convert_image_bgra_to_rgba(_width: u32, _height: u32, mut bytes: Vec<u8>) -> Vec<u8> {
+pub(super) fn convert_pixmap_argb_to_rgba(mut bytes: Vec<u8>) -> Vec<u8> {
     for src in bytes.as_chunks_mut::<4>().0 {
-        let (blue, green, red, alpha) = (src[0], src[1], src[2], src[3]);
+        let (alpha, red, green, blue) = (src[0], src[1], src[2], src[3]);
         src[0] = red;
         src[1] = green;
         src[2] = blue;

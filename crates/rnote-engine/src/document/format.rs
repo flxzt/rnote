@@ -196,7 +196,7 @@ impl Format {
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
 
-    pub const BORDER_COLOR_DEFAULT: piet::Color = color::GNOME_BRIGHTS[2];
+    pub const BORDER_COLOR_DEFAULT: Color = color::GNOME_BRIGHTS[2];
 
     pub fn width(&self) -> f64 {
         self.width

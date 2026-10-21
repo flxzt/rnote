@@ -1199,19 +1199,19 @@ impl RnSettingsPanel {
                             .config
                             .background
                             .color
-                            .to_inverted_brightness_color();
+                            .into_inverted_brightness_color();
                         engine.document.config.background.pattern_color = engine
                             .document
                             .config
                             .background
                             .pattern_color
-                            .to_inverted_brightness_color();
+                            .into_inverted_brightness_color();
                         engine.document.config.format.border_color = engine
                             .document
                             .config
                             .format
                             .border_color
-                            .to_inverted_brightness_color();
+                            .into_inverted_brightness_color();
                         engine.background_rendering_regenerate()
                     };
 

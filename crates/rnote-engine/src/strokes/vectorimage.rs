@@ -21,6 +21,7 @@ use rnote_compose::shapes::Shapeable;
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use std::sync::Arc;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -83,8 +84,8 @@ impl Content for VectorImage {
     ) -> Result<GeneratedContentImages, anyhow::Error> {
         let bounds = self.bounds();
         // always generate full stroke images for vectorimages, they are too expensive to be repeatedly rendered
-        Ok(GeneratedContentImages::Full(vec![Image::gen_with_piet(
-            |piet_cx| self.draw(piet_cx, image_scale),
+        Ok(GeneratedContentImages::Full(vec![Image::gen_with_vello(
+            |cx| self.draw(cx, image_scale),
             bounds,
             image_scale,
         )?]))
@@ -93,19 +94,26 @@ impl Content for VectorImage {
     fn update_geometry(&mut self) {}
 }
 
-// Because it is currently not possible to render SVGs directly with piet, the default gen_svg() implementation is
+// Because it is currently not possible to render SVGs directly with vello_cpu, the default gen_svg() implementation is
 // overwritten and called in `draw()` and `draw_to_cairo()`. There the rsvg renderer is used to generate bitmap
 // images. This way it is ensured that an actual Svg is generated when calling `gen_svg()`, but it is also possible to
-// to be drawn to piet.
+// to be drawn to vello_cpu.
 impl Drawable for VectorImage {
-    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
+    fn draw(&self, cx: &mut RenderContext, image_scale: f64) -> anyhow::Result<()> {
         let image = self.gen_svg()?.gen_image(image_scale)?;
         // image_scale does not have a meaning here
         image.draw(cx, image_scale)
     }
 
-    fn draw_to_cairo(&self, cx: &cairo::Context, _image_scale: f64) -> anyhow::Result<()> {
-        self.gen_svg()?.draw_to_cairo(cx)
+    fn draw_to_cairo(
+        &self,
+        cx: &cairo::Context,
+        width: u16,
+        height: u16,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        self.gen_svg()?
+            .draw_to_cairo(cx, width, height, image_scale)
     }
 }
 
@@ -119,7 +127,7 @@ impl Shapeable for VectorImage {
     }
 
     fn outline_path(&self) -> kurbo::BezPath {
-        self.bounds().to_kurbo_rect().to_path(0.25)
+        self.bounds().to_kurbo_rect().into_path(0.1)
     }
 }
 

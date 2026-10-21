@@ -1,6 +1,6 @@
 // Imports
-use crate::Image;
 use crate::Svg;
+use crate::{Drawable, Image};
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
@@ -81,7 +81,7 @@ fn gen_hline_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", 0_f64)
                     .set("y1", line_offset)
                     .set("x2", bounds.extents()[0])
@@ -123,7 +123,7 @@ fn gen_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", 0_f64)
                     .set("y1", line_offset)
                     .set("x2", column_spacing)
@@ -132,7 +132,7 @@ fn gen_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", line_offset)
                     .set("y1", 0_f64)
                     .set("x2", line_offset)
@@ -172,7 +172,7 @@ fn gen_dots_pattern(
             .add(
                 element::Rectangle::new()
                     .set("stroke", "none")
-                    .set("fill", color.to_css_color_attr())
+                    .set("fill", color.into_css_color_attr())
                     .set("x", 0_f64)
                     .set("y", 0_f64)
                     .set("width", dots_width)
@@ -222,7 +222,7 @@ fn gen_iso_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", line_offset)
                     .set("y1", 0_f64)
                     .set("x2", line_offset + pattern_width)
@@ -231,7 +231,7 @@ fn gen_iso_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", line_offset)
                     .set("y1", spacing)
                     .set("x2", line_offset + pattern_width)
@@ -240,7 +240,7 @@ fn gen_iso_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", line_offset + pattern_width * 0.5)
                     .set("y1", 0_f64)
                     .set("x2", line_offset + pattern_width * 0.5)
@@ -249,7 +249,7 @@ fn gen_iso_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color_attr())
+                    .set("stroke", color.into_css_color_attr())
                     .set("x1", line_offset)
                     .set("y1", 0_f64)
                     .set("x2", line_offset)
@@ -312,13 +312,13 @@ fn gen_iso_dots_pattern(
             .add(
                 element::Path::new()
                     .set("stroke", "none")
-                    .set("fill", color.to_css_color_attr())
+                    .set("fill", color.into_css_color_attr())
                     .set("d", hexagon_path(0.0, 0.0)),
             )
             .add(
                 element::Path::new()
                     .set("stroke", "none")
-                    .set("fill", color.to_css_color_attr())
+                    .set("fill", color.into_css_color_attr())
                     .set("d", hexagon_path(pattern_width * 0.5, spacing * 0.5)),
             ),
     );
@@ -416,7 +416,7 @@ impl Background {
                 // original background color is dark, invert pattern color
                 (
                     Color::WHITE,
-                    self.pattern_color.to_inverted_brightness_color(),
+                    self.pattern_color.into_inverted_brightness_color(),
                 )
             }
         } else {
@@ -424,7 +424,7 @@ impl Background {
         };
 
         // background color
-        let mut color_rect = element::Rectangle::new().set("fill", color.to_css_color_attr());
+        let mut color_rect = element::Rectangle::new().set("fill", color.into_css_color_attr());
         color_rect.assign("x", format!("{}px", bounds.mins[0]));
         color_rect.assign("y", format!("{}px", bounds.mins[1]));
         color_rect.assign("width", format!("{}px", bounds.extents()[0]));
@@ -501,6 +501,11 @@ impl Background {
         optimize_printing: bool,
     ) -> anyhow::Result<()> {
         self.gen_svg(bounds, with_pattern, optimize_printing)?
-            .draw_to_cairo(cx)
+            .draw_to_cairo(
+                cx,
+                bounds.extents().x.ceil() as u16,
+                bounds.extents().y.ceil() as u16,
+                1.0,
+            )
     }
 }

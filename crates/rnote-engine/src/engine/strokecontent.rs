@@ -257,6 +257,8 @@ impl StrokeContent {
         optimize_printing: bool,
     ) -> anyhow::Result<()> {
         let stroke_bounds = stroke_content_stroke.stroke.bounds();
+        let stroke_width = stroke_bounds.extents().x;
+        let stroke_height = stroke_bounds.extents().y;
 
         if optimize_printing
             && image_bounds
@@ -269,11 +271,19 @@ impl StrokeContent {
             let mut darkest_color_stroke = stroke_content_stroke.stroke.as_ref().clone();
             darkest_color_stroke.set_to_darkest_color();
 
-            darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)
+            darkest_color_stroke.draw_to_cairo(
+                cairo_cx,
+                stroke_width.ceil() as u16,
+                stroke_height.ceil() as u16,
+                image_scale,
+            )
         } else {
-            stroke_content_stroke
-                .stroke
-                .draw_to_cairo(cairo_cx, image_scale)
+            stroke_content_stroke.stroke.draw_to_cairo(
+                cairo_cx,
+                stroke_width.ceil() as u16,
+                stroke_height.ceil() as u16,
+                image_scale,
+            )
         }
     }
 

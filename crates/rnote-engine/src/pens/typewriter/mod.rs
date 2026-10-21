@@ -9,22 +9,23 @@ use crate::engine::{EngineTask, EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::{Camera, DrawableOnDoc, WidgetFlags};
+use crate::{Camera, Previewable, WidgetFlags};
 use futures::channel::oneshot;
+use kurbo::Shape;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
-use piet::RenderContext;
-use rnote_compose::EventResult;
 use rnote_compose::color;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
 use rnote_compose::penevent::{PenEvent, PenProgress, PenState};
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::indicators;
+use rnote_compose::{Color, EventResult};
 use std::ops::Range;
 use std::time::{Duration, Instant};
 use tracing::error;
 use unicode_segmentation::GraphemeCursor;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 pub(super) enum SelectionMode {
@@ -93,8 +94,8 @@ impl Default for Typewriter {
     }
 }
 
-impl DrawableOnDoc for Typewriter {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for Typewriter {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
@@ -136,28 +137,25 @@ impl DrawableOnDoc for Typewriter {
         }
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         let total_zoom = engine_view.camera.total_zoom();
 
-        let draw_text_outline = |cx: &mut piet_cairo::CairoRenderContext, bounds: Aabb| {
+        let draw_text_outline = |cx: &mut RenderContext, bounds: Aabb| {
             let stroke_width = Self::TEXT_OUTLINE_STROKE_WIDTH / total_zoom;
-
-            cx.stroke(
-                bounds.tightened(stroke_width * 0.5).to_kurbo_rect(),
-                &Self::TEXT_OUTLINE_COLOR,
-                stroke_width,
+            cx.set_paint(Self::TEXT_OUTLINE_COLOR);
+            cx.set_stroke(kurbo::Stroke::new(stroke_width));
+            cx.stroke_path(
+                &bounds
+                    .tightened(stroke_width * 0.5)
+                    .to_kurbo_rect()
+                    .into_path(0.1),
             );
         };
 
         match &self.state {
             TypewriterState::Idle => {}
             TypewriterState::Start(pos) => {
-                if let Some(bounds) = self.bounds_on_doc(engine_view) {
+                if let Some(bounds) = self.preview_bounds(engine_view) {
                     // Draw the initial outline
                     draw_text_outline(cx, bounds);
 
@@ -257,11 +255,11 @@ impl DrawableOnDoc for Typewriter {
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
-                        piet::Color::from(engine_view.document.config.background.color),
+                        engine_view.document.config.background.color,
                     );
 
                     // Draw the translate Node
-                    if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
+                    if let Some(typewriter_bounds) = self.preview_bounds(engine_view) {
                         let translate_node_bounds =
                             Self::translate_node_bounds(typewriter_bounds, engine_view.camera);
                         let translate_node_state = match modify_state {
@@ -285,14 +283,13 @@ impl DrawableOnDoc for Typewriter {
                             translate_node_state,
                             translate_node_bounds,
                             total_zoom,
-                            piet::Color::from(engine_view.document.config.background.color),
+                            engine_view.document.config.background.color,
                         );
                     }
                 }
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -599,7 +596,7 @@ impl Typewriter {
     /// The time for the cursor blink.
     const BLINK_TIME: Duration = Duration::from_millis(800);
     /// The outline color when drawing a text box outline
-    const TEXT_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(240);
+    const TEXT_OUTLINE_COLOR: Color = color::GNOME_BRIGHTS[4].with_a8(240);
 
     pub(crate) fn toggle_cursor_visibility(&mut self) {
         self.cursor_visible = !self.cursor_visible;

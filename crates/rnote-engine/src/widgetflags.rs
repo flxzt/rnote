@@ -18,6 +18,8 @@ pub struct WidgetFlags {
     pub zoomed: bool,
     /// Deselect the elements of the global color picker.
     pub deselect_color_setters: bool,
+    /// Toggle the focus mode in the UI.
+    pub toggle_focus_mode: bool,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed.
     pub hide_undo: Option<bool>,
     /// Is Some when redo button visibility should be changed. Is None if should not be changed.
@@ -39,6 +41,7 @@ impl Default for WidgetFlags {
             zoomed_temporarily: false,
             zoomed: false,
             deselect_color_setters: false,
+            toggle_focus_mode: false,
             hide_undo: None,
             hide_redo: None,
             enable_text_preprocessing: None,
@@ -65,6 +68,7 @@ impl std::ops::BitOrAssign for WidgetFlags {
         self.zoomed_temporarily |= rhs.zoomed_temporarily;
         self.zoomed |= rhs.zoomed;
         self.deselect_color_setters |= rhs.deselect_color_setters;
+        self.toggle_focus_mode |= rhs.toggle_focus_mode;
         if rhs.hide_undo.is_some() {
             self.hide_undo = rhs.hide_undo
         }

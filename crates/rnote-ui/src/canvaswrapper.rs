@@ -629,9 +629,7 @@ mod imp {
                 self.canvas_zoom_gesture.connect_cancel(clone!(
                     #[weak(rename_to=canvaswrapper)]
                     obj,
-                    move |gesture, _event_sequence| {
-                        gesture.set_state(EventSequenceState::Denied);
-
+                    move |_gesture, _event_sequence| {
                         // workaround for https://gitlab.gnome.org/GNOME/gtk/-/issues/187
                         canvaswrapper.imp().workaround_restore_kinetic_scrolling();
 

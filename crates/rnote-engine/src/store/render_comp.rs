@@ -1,10 +1,10 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
+use crate::Drawable;
 use crate::Image;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::Content;
 use crate::strokes::content::GeneratedContentImages;
-use crate::{Drawable, image};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shapeable;
@@ -12,6 +12,12 @@ use tracing::error;
 
 /// The tolerance where check between scale-factors are considered "equal".
 pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
+/// The factor for which the rendering for the current viewport is extended by.
+/// For example:: 1.0 means the viewport is extended by its own extents on all sides.
+///
+/// Used when checking rendering for new zooms or a moved viewport.
+/// There is a trade off: a larger value will consume more memory, a smaller value will mean more stuttering on zooms and when moving the view.
+pub const VIEWPORT_EXTENTS_MARGIN_FACTOR: f64 = 0.4;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
@@ -111,7 +117,7 @@ impl StrokeStore {
             }
 
             let viewport_extended =
-                viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                viewport.extend_by(viewport.extents() * VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             match stroke.gen_images(viewport_extended, image_scale) {
                 Ok(GeneratedContentImages::Partial { images, viewport }) => {
@@ -191,7 +197,7 @@ impl StrokeStore {
 
             let stroke = stroke.clone();
             let viewport_extended =
-                viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                viewport.extend_by(viewport.extents() * VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             // indicates that a task is now started rendering the stroke
             render_comp.state = RenderCompState::BusyRenderingInTask;
@@ -250,7 +256,7 @@ impl StrokeStore {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
                 let viewport_extended =
-                    viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                    viewport.extend_by(viewport.extents() * VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
                 // skip and clear image buffer if stroke is not in viewport
                 if !viewport_extended.intersects(&stroke_bounds) {
@@ -278,7 +284,7 @@ impl StrokeStore {
                             if old_viewport.contains(
                                 &(viewport.extend_by(
                                     viewport.extents()
-                                        * image::VIEWPORT_EXTENTS_MARGIN_FACTOR
+                                        * VIEWPORT_EXTENTS_MARGIN_FACTOR
                                         * VIEWPORT_EXTENTS_MARGIN_RERENDER_THRESHOLD,
                                 )),
                             ) {

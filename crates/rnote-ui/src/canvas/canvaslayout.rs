@@ -6,7 +6,7 @@ use gtk4::{
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use rnote_compose::ext::AabbExt;
-use rnote_engine::image;
+use rnote_engine::store::render_comp;
 use std::cell::Cell;
 
 mod imp {
@@ -87,8 +87,9 @@ mod imp {
             // start to get rendered. This avoids stutters, because while the rendering itself is on worker threads, we
             // still have to `integrate` the resulted textures, which can also take up quite some time on the main UI
             // thread.
-            let old_viewport_extended = old_viewport
-                .extend_by(old_viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
+            let old_viewport_extended = old_viewport.extend_by(
+                old_viewport.extents() * render_comp::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8,
+            );
 
             // always update the background rendering
             let _ = canvas

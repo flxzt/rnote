@@ -336,10 +336,27 @@ impl Document {
         )
     }
 
+    /// Returns the pattern snap step factor based on the current camera zoom level.
+    pub(crate) fn snap_step_factor(zoom: f64) -> f64 {
+        if zoom <= 0.25 {
+            5.0
+        } else if zoom <= 0.5 {
+            2.0
+        } else if zoom < 1.5 {
+            1.0
+        } else if zoom < 3.0 {
+            0.5
+        } else if zoom < 5.0 {
+            0.2
+        } else {
+            0.1
+        }
+    }
+
     /// Snap the position to the document and pattern grid when `snap_positions` is enabled.
     ///
     /// If not, the original coordinates are returned.
-    pub(crate) fn snap_position(&self, pos: Vector2, config: &EngineConfig) -> Vector2 {
+    pub(crate) fn snap_position(&self, pos: Vector2, config: &EngineConfig, zoom: f64) -> Vector2 {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
         let doc_format_size = self.config.format.size();
         let pattern_size = self.config.background.pattern_size;
@@ -349,23 +366,25 @@ impl Document {
             return pos;
         }
 
+        let effective_pattern_size = pattern_size * Self::snap_step_factor(zoom);
+
         let pos_snapped_document = snap_to_grid(pos, doc_format_size);
         let pos_snapped_pattern = match pattern_style {
             PatternStyle::None => pos,
-            PatternStyle::Lines => snap_to_line(pos, pattern_size[1]),
-            PatternStyle::Grid | PatternStyle::Dots => snap_to_grid(pos, pattern_size),
+            PatternStyle::Lines => snap_to_line(pos, effective_pattern_size[1]),
+            PatternStyle::Grid | PatternStyle::Dots => snap_to_grid(pos, effective_pattern_size),
             PatternStyle::IsometricGrid | PatternStyle::IsometricDots => {
-                snap_to_isometric_pattern(pos, pattern_size[1])
+                snap_to_isometric_pattern(pos, effective_pattern_size[1])
             }
         };
 
         let mut pos_snapped = pos_snapped_pattern;
 
         // If the position is close to the document edges, then it is instead snapped to them.
-        if (pos_snapped_document - pos)[0].abs() < DOCUMENT_SNAP_DIST {
+        if (pos_snapped_document - pos)[0].abs() < DOCUMENT_SNAP_DIST / zoom {
             pos_snapped[0] = pos_snapped_document[0];
         }
-        if (pos_snapped_document - pos)[1].abs() < DOCUMENT_SNAP_DIST {
+        if (pos_snapped_document - pos)[1].abs() < DOCUMENT_SNAP_DIST / zoom {
             pos_snapped[1] = pos_snapped_document[1];
         }
 

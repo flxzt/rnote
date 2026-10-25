@@ -336,18 +336,20 @@ impl Document {
         )
     }
 
-    /// Returns the snap subdivision factor based on current camera zoom level.
-    pub(crate) fn snap_subdivision_factor(zoom: f64) -> f64 {
-        if zoom >= 10.0 {
-            0.01
-        } else if zoom >= 5.0 {
-            0.05
-        } else if zoom >= 3.0 {
-            0.1
-        } else if zoom >= 1.5 {
-            0.5
-        } else {
+    /// Returns the pattern snap step factor based on the current camera zoom level.
+    pub(crate) fn snap_step_factor(zoom: f64) -> f64 {
+        if zoom <= 0.25 {
+            5.0
+        } else if zoom <= 0.5 {
+            2.0
+        } else if zoom < 1.5 {
             1.0
+        } else if zoom < 3.0 {
+            0.5
+        } else if zoom < 5.0 {
+            0.2
+        } else {
+            0.1
         }
     }
 
@@ -356,6 +358,7 @@ impl Document {
     /// If not, the original coordinates are returned.
     pub(crate) fn snap_position(&self, pos: Vector2, config: &EngineConfig, zoom: f64) -> Vector2 {
         const DOCUMENT_SNAP_DIST: f64 = 10.;
+        let doc_format_size = self.config.format.size();
         let pattern_size = self.config.background.pattern_size;
         let pattern_style = self.config.background.pattern;
 
@@ -363,12 +366,10 @@ impl Document {
             return pos;
         }
 
-        let zoom = zoom.max(0.001);
-        let doc_snap_dist = DOCUMENT_SNAP_DIST / zoom;
-        let step_factor = Self::snap_subdivision_factor(zoom);
-        let effective_pattern_size = pattern_size * step_factor;
+        let effective_pattern_size = pattern_size * Self::snap_step_factor(zoom);
 
-        let mut pos_snapped = match pattern_style {
+        let pos_snapped_document = snap_to_grid(pos, doc_format_size);
+        let pos_snapped_pattern = match pattern_style {
             PatternStyle::None => pos,
             PatternStyle::Lines => snap_to_line(pos, effective_pattern_size[1]),
             PatternStyle::Grid | PatternStyle::Dots => snap_to_grid(pos, effective_pattern_size),
@@ -377,25 +378,14 @@ impl Document {
             }
         };
 
-        // Snap to the actual document borders
-        let bounds = self.bounds();
+        let mut pos_snapped = pos_snapped_pattern;
 
-        let dist_min_x = (pos[0] - bounds.mins[0]).abs();
-        let dist_max_x = (pos[0] - bounds.maxs[0]).abs();
-
-        if dist_min_x < doc_snap_dist && dist_min_x < dist_max_x {
-            pos_snapped[0] = bounds.mins[0];
-        } else if dist_max_x < doc_snap_dist {
-            pos_snapped[0] = bounds.maxs[0];
+        // If the position is close to the document edges, then it is instead snapped to them.
+        if (pos_snapped_document - pos)[0].abs() < DOCUMENT_SNAP_DIST / zoom {
+            pos_snapped[0] = pos_snapped_document[0];
         }
-
-        let dist_min_y = (pos[1] - bounds.mins[1]).abs();
-        let dist_max_y = (pos[1] - bounds.maxs[1]).abs();
-
-        if dist_min_y < doc_snap_dist && dist_min_y < dist_max_y {
-            pos_snapped[1] = bounds.mins[1];
-        } else if dist_max_y < doc_snap_dist {
-            pos_snapped[1] = bounds.maxs[1];
+        if (pos_snapped_document - pos)[1].abs() < DOCUMENT_SNAP_DIST / zoom {
+            pos_snapped[1] = pos_snapped_document[1];
         }
 
         pos_snapped

@@ -32,9 +32,9 @@ jobs:
 
       - name: Install rust toolchain
         id: toolchain
-        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
         with:
-          toolchain: 1.95
+          toolchain: 1.99
 
       - name: Prerequisites
         run: |

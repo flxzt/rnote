@@ -50,9 +50,9 @@ jobs:
             just
 
       - name: Install rust toolchain
-        uses: dtolnay/rust-toolchain@3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9
+        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
         with:
-          toolchain: 1.95-gnu
+          toolchain: 1.99-gnu
 
       - name: Configure PATH
         run: echo "export PATH=$PATH:/c/Users/$USER/.cargo/bin:/c/Program\ Files\ \(x86\)/Inno\ Setup\ 6" > ~/.bashrc

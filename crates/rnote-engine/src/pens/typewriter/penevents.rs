@@ -32,11 +32,11 @@ impl Typewriter {
         let event_result = match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start { .. } => {
                 let mut refresh_state = false;
-                let mut new_state = TypewriterState::Start(
-                    engine_view
-                        .document
-                        .snap_position(element.pos, engine_view.config),
-                );
+                let mut new_state = TypewriterState::Start(engine_view.document.snap_position(
+                    element.pos,
+                    engine_view.config,
+                    engine_view.camera.total_zoom(),
+                ));
 
                 if let Some(&stroke_key) = engine_view
                     .store
@@ -292,6 +292,7 @@ impl Typewriter {
                             let offset = engine_view.document.snap_position(
                                 snap_corner_pos + (element.pos - *current_pos),
                                 engine_view.config,
+                                engine_view.camera.total_zoom(),
                             ) - snap_corner_pos;
 
                             if offset.length()

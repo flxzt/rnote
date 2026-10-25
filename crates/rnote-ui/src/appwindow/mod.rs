@@ -382,8 +382,8 @@ impl RnAppWindow {
                 .redo_button()
                 .set_sensitive(!hide_redo);
         }
-        if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
-            canvas.set_text_preprocessing(enable_text_preprocessing);
+        if let Some(enable_text_input) = widget_flags.enable_text_input {
+            canvas.enable_text_input(enable_text_input);
         }
     }
 

@@ -605,6 +605,11 @@ impl Typewriter {
         self.cursor_visible = !self.cursor_visible;
     }
 
+    /// Whether the typewriter handles text input.
+    pub fn is_handling_text_input(&self) -> bool {
+        !matches!(self.state, TypewriterState::Idle)
+    }
+
     /// The range of the current selection, if available.
     pub(crate) fn selection_range(&self) -> Option<(Range<usize>, StrokeKey)> {
         if let TypewriterState::Modifying {

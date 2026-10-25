@@ -452,17 +452,23 @@ impl Engine {
         title: String,
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
+        // PDF surface operates in points. 1 point == 1/72.0 inch
+        const PT_IN_INCH: f64 = 72.0;
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
         let format_size = self.document.config.format.size();
+        let format_dpi = self.document.config.format.dpi();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let target_surface =
-                    cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
-                        .context("Creating Pdf target surface failed.")?;
+                let target_surface = cairo::PdfSurface::for_stream(
+                    format_size[0] * (PT_IN_INCH / format_dpi),
+                    format_size[1] * (PT_IN_INCH / format_dpi),
+                    Vec::<u8>::new(),
+                )
+                .context("Creating Pdf target surface failed.")?;
 
                 target_surface
                     .set_metadata(cairo::PdfMetadata::Title, title.as_str())
@@ -478,6 +484,9 @@ impl Engine {
                 {
                     let cairo_cx = cairo::Context::new(&target_surface)
                         .context("Creating new cairo context for pdf target surface failed.")?;
+                    let mut scale_matrix = cairo::Matrix::identity();
+                    scale_matrix.scale(PT_IN_INCH / format_dpi, PT_IN_INCH / format_dpi);
+                    cairo_cx.transform(scale_matrix);
 
                     for (i, page_content) in pages_content.into_iter().enumerate() {
                         let Some(page_bounds) = page_content.bounds() else {

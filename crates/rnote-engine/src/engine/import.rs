@@ -2,7 +2,6 @@
 use super::StrokeContent;
 use crate::document::Layout;
 use crate::engine_view_mut;
-use crate::pens::Pen;
 use crate::pens::PenStyle;
 use crate::store::StrokeKey;
 use crate::store::chrono_comp::StrokeLayer;
@@ -350,9 +349,9 @@ impl Engine {
 
         widget_flags |= self.change_pen_style(PenStyle::Typewriter);
 
-        if let Pen::Typewriter(typewriter) = self.penholder.current_pen_mut() {
-            widget_flags |= typewriter.insert_text(text, pos, &mut engine_view_mut!(self));
-        }
+        widget_flags |= self
+            .penholder
+            .insert_text(text, pos, &mut engine_view_mut!(self));
 
         widget_flags |= self.store.record(Instant::now());
         widget_flags.redraw = true;

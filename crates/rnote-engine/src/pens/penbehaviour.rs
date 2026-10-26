@@ -30,6 +30,7 @@ pub trait PenBehaviour: DrawableOnDoc {
         event: PenEvent,
         now: Instant,
         engine_view: &mut EngineViewMut,
+        temporary_tool: bool,
     ) -> (EventResult<PenProgress>, WidgetFlags);
 
     /// Handle a requested animation frame.

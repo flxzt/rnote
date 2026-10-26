@@ -301,6 +301,9 @@ impl PenHolder {
                     }
                     ShortcutMode::Disabled => {}
                 },
+                ShortcutAction::ToggleFocusMode => {
+                    widget_flags.toggle_focus_mode = true;
+                }
             }
 
             propagate = EventPropagation::Stop;

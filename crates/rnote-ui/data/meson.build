@@ -121,12 +121,12 @@ install_data(
     install_dir: iconsdir / 'hicolor' / 'scalable' / 'mimetypes',
 )
 
+# Install the icon for Flatpak installations
 install_data(
     'icons/scalable/mimetypes/' + 'application-' + app_name + '.svg',
     install_dir: iconsdir / 'hicolor' / 'scalable' / 'mimetypes',
     rename: app_id + '-application-rnote.svg',
 )
-
 
 # MIME-Type
 message('Configuring MIME-type file')

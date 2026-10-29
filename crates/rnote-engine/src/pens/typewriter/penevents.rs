@@ -3,7 +3,7 @@ use super::{ModifyState, SelectionMode, Typewriter, TypewriterState};
 use crate::engine::EngineViewMut;
 use crate::pens::PenBehaviour;
 use crate::strokes::{Stroke, TextStroke};
-use crate::{DrawableOnDoc, StrokeStore, WidgetFlags};
+use crate::{Previewable, StrokeStore, WidgetFlags};
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenProgress};
 use rnote_compose::penpath::Element;
@@ -21,7 +21,7 @@ impl Typewriter {
         engine_view: &mut EngineViewMut,
     ) -> (EventResult<PenProgress>, WidgetFlags) {
         let mut widget_flags = WidgetFlags::default();
-        let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
+        let typewriter_bounds = self.preview_bounds(&engine_view.as_im());
         let text_width = engine_view
             .config
             .pens_config

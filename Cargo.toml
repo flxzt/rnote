@@ -65,6 +65,7 @@ numeric-sort = "0.1.5"
 once_cell = "1.21"
 open = "5.4"
 palette = "0.7.7"
+pangocairo = "0.22.9"
 parry2d-f64 = { version = "0.31.1", features = ["serde-serialize"] }
 path-absolutize = "4.0"
 piet = "0.8.0"

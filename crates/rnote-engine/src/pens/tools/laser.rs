@@ -1,12 +1,11 @@
 // Imports
 use super::ToolsState;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
+use kurbo::{Cap, Join, Stroke};
 use p2d::bounding_volume::Aabb;
 use p2d::bounding_volume::BoundingVolume;
 use p2d::math::Vector2;
-use piet::RenderContext;
-use rnote_compose::Constraints;
 use rnote_compose::PenPath;
 use rnote_compose::builders::PenPathCurvedBuilder;
 use rnote_compose::builders::buildable::Buildable;
@@ -19,8 +18,10 @@ use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use rnote_compose::penpath::Segment;
 use rnote_compose::shapes::Shapeable;
+use rnote_compose::{Color, Constraints};
 use std::time::Duration;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug)]
 pub struct LaserTool {
@@ -49,12 +50,8 @@ impl LaserTool {
     const OUTER_STROKE_WIDTH: f64 = 6.0;
     const INNER_STROKE_WIDTH: f64 = 1.0;
 
-    const INNER_STROKE_COLOR: piet::Color = color::GNOME_BRIGHTS[1];
-    const OUTER_STROKE_COLOR: piet::Color = color::GNOME_REDS[1];
-
-    const STYLE: piet::StrokeStyle = piet::StrokeStyle::new()
-        .line_join(piet::LineJoin::Round)
-        .line_cap(piet::LineCap::Round);
+    const INNER_STROKE_COLOR: Color = color::GNOME_BRIGHTS[1];
+    const OUTER_STROKE_COLOR: Color = color::GNOME_REDS[1];
 
     pub fn add_new_stroke(&mut self, element: Element) {
         self.pen_paths.push(PenPath::new(element));
@@ -207,8 +204,8 @@ impl LaserTool {
     }
 }
 
-impl DrawableOnDoc for LaserTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for LaserTool {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         if self.has_fully_faded() == Some(true) {
             return None;
         }
@@ -231,34 +228,29 @@ impl DrawableOnDoc for LaserTool {
             })
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         let total_zoom = engine_view.camera.total_zoom();
 
         for pen_path in &self.pen_paths {
             let bez_path = pen_path.to_kurbo_flattened(0.5);
 
-            cx.stroke_styled(
-                &bez_path,
-                &Self::OUTER_STROKE_COLOR.with_a8(self.opacity),
-                Self::OUTER_STROKE_WIDTH / total_zoom,
-                &LaserTool::STYLE,
+            cx.set_paint(Self::OUTER_STROKE_COLOR.with_a8(self.opacity));
+            cx.set_stroke(
+                Stroke::new(Self::OUTER_STROKE_WIDTH / total_zoom)
+                    .with_join(Join::Round)
+                    .with_caps(Cap::Round),
             );
+            cx.stroke_path(&bez_path);
 
-            cx.stroke_styled(
-                &bez_path,
-                &Self::INNER_STROKE_COLOR.with_a8(self.opacity),
-                Self::INNER_STROKE_WIDTH / total_zoom,
-                &LaserTool::STYLE,
+            cx.set_paint(Self::INNER_STROKE_COLOR.with_a8(self.opacity));
+            cx.set_stroke(
+                Stroke::new(Self::INNER_STROKE_WIDTH / total_zoom)
+                    .with_join(Join::Round)
+                    .with_caps(Cap::Round),
             );
+            cx.stroke_path(&bez_path);
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

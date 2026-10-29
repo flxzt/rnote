@@ -1,7 +1,7 @@
 // Imports
 use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
 use futures::channel::oneshot;
 use rnote_compose::EventResult;
 use rnote_compose::penevent::{PenEvent, PenProgress};
@@ -9,7 +9,7 @@ use std::time::Instant;
 use tracing::error;
 
 /// Types that are pens.
-pub trait PenBehaviour: DrawableOnDoc {
+pub trait PenBehaviour: Previewable {
     /// Init the pen.
     ///
     /// Should be called right after creating a new pen instance.

@@ -760,7 +760,7 @@ impl Engine {
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
                             ))?
-                            .gen_image(doc_pages_export_prefs.bitmap_scalefactor)?
+                            .export_as_image(doc_pages_export_prefs.bitmap_scalefactor)?
                             .into_encoded_bytes(
                                 image_format,
                                 Some(doc_pages_export_prefs.jpeg_quality),
@@ -872,7 +872,7 @@ impl Engine {
                 };
 
                 Ok(Some(
-                    svg.gen_image(selection_export_prefs.bitmap_scalefactor)?
+                    svg.export_as_image(selection_export_prefs.bitmap_scalefactor)?
                         .into_encoded_bytes(
                             image_format,
                             Some(selection_export_prefs.jpeg_quality),
@@ -924,7 +924,7 @@ impl Engine {
                     SelectionExportFormat::Jpeg => image::ImageFormat::Jpeg,
                 };
 
-                let image = svg.gen_image(1.0)?;
+                let image = svg.export_as_image(1.0)?;
                 let (resize_width, resize_height) = {
                     let width = image.pixel_width;
                     let height = image.pixel_height;

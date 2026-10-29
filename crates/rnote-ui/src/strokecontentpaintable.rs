@@ -15,6 +15,7 @@ use tracing::error;
 
 mod imp {
     use super::*;
+    use rnote_compose::Color;
 
     #[derive(Debug, Default)]
     pub(crate) struct StrokeContentPaintable {
@@ -229,7 +230,7 @@ mod imp {
                         0.,
                     ),
                     &[1.5; 4],
-                    &[gdk::RGBA::from_piet_color(Self::CONTENT_BORDER_COLOR); 4],
+                    &[gdk::RGBA::from_compose_color(Self::CONTENT_BORDER_COLOR); 4],
                 );
             }
         }
@@ -297,14 +298,14 @@ mod imp {
             )?;
         }
 
-        Image::try_from_cairo_surface(
+        Image::try_from_cairo_surface_argb(
             target_surface,
             Aabb::new(Vector2::ZERO, Vector2::new(width, height)),
         )
     }
 
     impl StrokeContentPaintable {
-        const CONTENT_BORDER_COLOR: piet::Color = rnote_compose::color::GNOME_BRIGHTS[4];
+        const CONTENT_BORDER_COLOR: Color = rnote_compose::color::GNOME_BRIGHTS[4];
     }
 }
 

@@ -15,12 +15,12 @@ use super::PenBehaviour;
 use super::PenStyle;
 use super::pensconfig::toolsconfig::ToolStyle;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
 use p2d::bounding_volume::Aabb;
-use piet::RenderContext;
 use rnote_compose::eventresult::EventResult;
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Copy)]
 enum ToolsState {
@@ -84,39 +84,31 @@ impl PenBehaviour for Tools {
     }
 }
 
-impl DrawableOnDoc for Tools {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for Tools {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         match engine_view.config.pens_config.tools_config.style {
-            ToolStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
-            ToolStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
-            ToolStyle::Zoom => self.zoom_tool.bounds_on_doc(engine_view),
-            ToolStyle::Laser => self.laser_tool.bounds_on_doc(engine_view),
+            ToolStyle::VerticalSpace => self.verticalspace_tool.preview_bounds(engine_view),
+            ToolStyle::OffsetCamera => self.offsetcamera_tool.preview_bounds(engine_view),
+            ToolStyle::Zoom => self.zoom_tool.preview_bounds(engine_view),
+            ToolStyle::Laser => self.laser_tool.preview_bounds(engine_view),
         }
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         match &engine_view.config.pens_config.tools_config.style {
             ToolStyle::VerticalSpace => {
-                self.verticalspace_tool.draw_on_doc(cx, engine_view)?;
+                self.verticalspace_tool.preview_draw(cx, engine_view)?;
             }
             ToolStyle::OffsetCamera => {
-                self.offsetcamera_tool.draw_on_doc(cx, engine_view)?;
+                self.offsetcamera_tool.preview_draw(cx, engine_view)?;
             }
             ToolStyle::Zoom => {
-                self.zoom_tool.draw_on_doc(cx, engine_view)?;
+                self.zoom_tool.preview_draw(cx, engine_view)?;
             }
             ToolStyle::Laser => {
-                self.laser_tool.draw_on_doc(cx, engine_view)?;
+                self.laser_tool.preview_draw(cx, engine_view)?;
             }
         }
-
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

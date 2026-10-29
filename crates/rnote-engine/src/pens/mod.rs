@@ -26,15 +26,15 @@ pub use typewriter::Typewriter;
 
 // Imports
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
 use core::fmt::Display;
 use futures::channel::oneshot;
-use piet_cairo::CairoRenderContext;
 use rnote_compose::EventResult;
 use rnote_compose::PenEvent;
 use rnote_compose::penevent::PenProgress;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug)]
 pub enum Pen {
@@ -153,30 +153,26 @@ impl PenBehaviour for Pen {
     }
 }
 
-impl DrawableOnDoc for Pen {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<p2d::bounding_volume::Aabb> {
+impl Previewable for Pen {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<p2d::bounding_volume::Aabb> {
         match self {
-            Pen::Brush(brush) => brush.bounds_on_doc(engine_view),
-            Pen::Shaper(shaper) => shaper.bounds_on_doc(engine_view),
-            Pen::Typewriter(typewriter) => typewriter.bounds_on_doc(engine_view),
-            Pen::Eraser(eraser) => eraser.bounds_on_doc(engine_view),
-            Pen::Selector(selector) => selector.bounds_on_doc(engine_view),
-            Pen::Tools(tools) => tools.bounds_on_doc(engine_view),
+            Pen::Brush(brush) => brush.preview_bounds(engine_view),
+            Pen::Shaper(shaper) => shaper.preview_bounds(engine_view),
+            Pen::Typewriter(typewriter) => typewriter.preview_bounds(engine_view),
+            Pen::Eraser(eraser) => eraser.preview_bounds(engine_view),
+            Pen::Selector(selector) => selector.preview_bounds(engine_view),
+            Pen::Tools(tools) => tools.preview_bounds(engine_view),
         }
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         match self {
-            Pen::Brush(brush) => brush.draw_on_doc(cx, engine_view),
-            Pen::Shaper(shaper) => shaper.draw_on_doc(cx, engine_view),
-            Pen::Typewriter(typewriter) => typewriter.draw_on_doc(cx, engine_view),
-            Pen::Eraser(eraser) => eraser.draw_on_doc(cx, engine_view),
-            Pen::Selector(selector) => selector.draw_on_doc(cx, engine_view),
-            Pen::Tools(tools) => tools.draw_on_doc(cx, engine_view),
+            Pen::Brush(brush) => brush.preview_draw(cx, engine_view),
+            Pen::Shaper(shaper) => shaper.preview_draw(cx, engine_view),
+            Pen::Typewriter(typewriter) => typewriter.preview_draw(cx, engine_view),
+            Pen::Eraser(eraser) => eraser.preview_draw(cx, engine_view),
+            Pen::Selector(selector) => selector.preview_draw(cx, engine_view),
+            Pen::Tools(tools) => tools.preview_draw(cx, engine_view),
         }
     }
 }

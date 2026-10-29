@@ -1,6 +1,5 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
-use crate::Drawable;
 use crate::Image;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::Content;
@@ -510,52 +509,13 @@ impl StrokeStore {
                 )
             {
                 snapshot.append_color(
-                    &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.13)),
+                    &gdk::RGBA::from_compose_color(color::GNOME_BRIGHTS[1].with_a(0.13)),
                     &graphene::Rect::from_p2d_aabb(stroke.bounds()),
                 );
             }
 
             for rendernode in render_comp.rendernodes.iter() {
                 snapshot.append_node(rendernode);
-            }
-        }
-    }
-
-    /// Draw the strokes for the given keys on the [piet::RenderContext].
-    ///
-    /// This always draws all strokes for the given keys, even trashed ones.
-    #[allow(unused)]
-    pub(crate) fn draw_keys_immediate(
-        &self,
-        keys: &[StrokeKey],
-        piet_cx: &mut impl piet::RenderContext,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        for &key in keys {
-            if let Some(stroke) = self.stroke_components.get(key) {
-                stroke.draw(piet_cx, image_scale)?;
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Draw all strokes intersecting the viewport on the [piet::RenderContext].
-    ///
-    /// Immediate without any cached images.
-    #[allow(unused)]
-    pub(crate) fn draw_strokes_immediate(
-        &self,
-        piet_cx: &mut impl piet::RenderContext,
-        _doc_bounds: Aabb,
-        viewport: Aabb,
-        image_scale: f64,
-    ) {
-        for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
-            if let Some(stroke) = self.stroke_components.get(key)
-                && let Err(e) = stroke.draw(piet_cx, image_scale)
-            {
-                error!("Drawing stroke immediate on piet RenderContext failed , Err: {e:?}");
             }
         }
     }

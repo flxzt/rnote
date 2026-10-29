@@ -4,7 +4,7 @@ The codebase is separated into multiple crates that have specific purposes and s
 
 - `rnote-compose` : the base crate that is only responsible for supplying basic types needed for a drawing application.
     Things like shapes, paths, pen-path builders, etc. In this crate is also the implementation for how to render
-    these primitives with `cairo` or rather the `piet` abstraction.
+    these primitives with `vello_cpu`.
     The dependencies should be kept minimal here. 
 - `rnote-engine` : the core crate of the drawing application.
     In it is the entire core logic of the drawing part of the Rnote application.

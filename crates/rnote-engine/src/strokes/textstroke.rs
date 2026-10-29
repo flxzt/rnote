@@ -6,15 +6,16 @@ use kurbo::Shape;
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
-use piet::{RenderContext, TextLayout, TextLayoutBuilder};
+use piet::{TextLayout, TextLayoutBuilder};
+use rnote_compose::Color;
 use rnote_compose::Transformable;
 use rnote_compose::ext::{AabbExt, DAffine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::{Color, color};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
 use tracing::error;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "font_style")]
@@ -144,9 +145,7 @@ impl TextAttribute {
             TextAttribute::FontWeight(font_weight) => Ok(piet::TextAttribute::Weight(
                 piet::FontWeight::new(font_weight),
             )),
-            TextAttribute::TextColor(color) => {
-                Ok(piet::TextAttribute::TextColor(piet::Color::from(color)))
-            }
+            TextAttribute::TextColor(color) => Ok(piet::TextAttribute::TextColor(color.into())),
             TextAttribute::Style(style) => {
                 Ok(piet::TextAttribute::Style(piet::FontStyle::from(style)))
             }
@@ -359,14 +358,15 @@ impl TextStyle {
     /// Draw the cursor.
     pub fn draw_cursor(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut RenderContext,
         text: String,
         cursor: &GraphemeCursor,
         affine: &DAffine2,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        const CURSOR_COLOR: piet::Color = color::GNOME_DARKS[2];
-        const CURSOR_OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[0];
+        /*
+        const CURSOR_COLOR: Color = color::GNOME_DARKS[2];
+        const CURSOR_OUTLINE_COLOR: Color = color::GNOME_BRIGHTS[0];
         let text_cursor_width = 2.0 / camera.total_zoom();
 
         if let Ok(cursor_line_metric) =
@@ -399,33 +399,36 @@ impl TextStyle {
                 &piet::StrokeStyle::default().line_cap(piet::LineCap::Butt),
             );
         }
+         */
 
         Ok(())
     }
 
     pub fn draw_text_selection(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut RenderContext,
         text: String,
         cursor: &GraphemeCursor,
         selection_cursor: &GraphemeCursor,
         affine: &DAffine2,
         camera: &Camera,
     ) {
-        const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[2];
-        const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(25);
+        /*
+        const OUTLINE_COLOR: Color = color::GNOME_BLUES[2];
+        const FILL_COLOR: Color = color::GNOME_BLUES[1].with_a8(25);
         let outline_width = 1.5 / camera.total_zoom();
 
         if let Ok(selection_rects) =
             self.get_selection_rects_for_cursors(text, cursor, selection_cursor)
         {
             for selection_rect in selection_rects {
-                let outline = affine.to_kurbo() * selection_rect.to_path(0.5);
+                let outline = affine.to_kurbo() * selection_rect.into_path(0.1);
 
                 cx.fill(&outline, &FILL_COLOR);
                 cx.stroke(&outline, &OUTLINE_COLOR, outline_width);
             }
         }
+         */
     }
 }
 
@@ -514,7 +517,7 @@ impl Shapeable for TextStroke {
     }
 
     fn outline_path(&self) -> kurbo::BezPath {
-        self.bounds().to_kurbo_rect().to_path(0.25)
+        self.bounds().to_kurbo_rect().into_path(0.1)
     }
 }
 
@@ -523,18 +526,25 @@ impl Content for TextStroke {
 }
 
 impl Drawable for TextStroke {
-    fn draw(&self, cx: &mut impl RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn pos(&self) -> Vector2 {
+        self.bounds().mins
+    }
 
+    fn draw(&self, cx: &mut RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        /*
         if let Ok(text_layout) = self
             .text_style
             .build_text_layout(cx.text(), self.text.clone())
         {
-            cx.transform(self.affine.to_kurbo());
-            cx.draw_text(&text_layout, kurbo::Point::ZERO)
-        }
+            let state = cx.save_current_state();
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+            cx.set_transform(self.affine.to_kurbo());
+            cx.draw_text(&text_layout, kurbo::Point::ZERO)
+
+            cx.restore_state(state);
+        }
+         */
+
         Ok(())
     }
 }

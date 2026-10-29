@@ -32,6 +32,7 @@ librsvg = { workspace = true }
 num-derive = { workspace = true }
 num-traits = { workspace = true }
 once_cell = { workspace = true }
+pangocairo = { workspace = true }
 parry2d-f64 = { workspace = true }
 piet = { workspace = true }
 piet-cairo = { workspace = true }
@@ -55,6 +56,7 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 unicode-segmentation = { workspace = true }
 usvg = { workspace = true }
+vello_cpu = { workspace = true }
 xmlwriter = { workspace = true }
 # the long-term plan is to remove the gtk4 dependency entirely after switching to another renderer.
 gtk4 = { workspace = true, optional = true }

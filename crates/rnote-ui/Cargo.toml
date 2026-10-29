@@ -39,14 +39,11 @@ open = { workspace = true }
 palette = { workspace = true }
 parry2d-f64 = { workspace = true }
 path-absolutize = { workspace = true }
-piet = { workspace = true }
-piet-cairo = { workspace = true }
 rand = { workspace = true }
 rand_distr = { workspace = true }
 rand_pcg = { workspace = true }
 rayon = { workspace = true }
 regex = { workspace = true }
-rough_piet = { workspace = true }
 roughr = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

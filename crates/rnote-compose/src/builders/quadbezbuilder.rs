@@ -12,6 +12,7 @@ use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone)]
 enum QuadBezBuilderState {
@@ -121,7 +122,7 @@ impl Buildable for QuadBezBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+    fn draw(&self, cx: &mut RenderContext, style: &Style, zoom: f64) {
         match &self.state {
             QuadBezBuilderState::Cp { start, cp }
             | QuadBezBuilderState::CpFinished { start, cp } => {
@@ -135,7 +136,7 @@ impl Buildable for QuadBezBuilder {
                     cp: *cp,
                     end: *end,
                 };
-                quadbez.draw_composed(cx, style);
+                quadbez.composed_draw(cx, style);
 
                 indicators::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
                 indicators::draw_pos_indicator(cx, PenState::Up, *start, zoom);

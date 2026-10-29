@@ -10,5 +10,5 @@ where
     fn composed_bounds(&self, options: &O) -> Aabb;
 
     /// Composes and draws the type onto the context, applying the style options to it.
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &O);
+    fn composed_draw(&self, cx: &mut vello_cpu::RenderContext, options: &O);
 }

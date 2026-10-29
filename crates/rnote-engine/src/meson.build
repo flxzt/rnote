@@ -29,6 +29,7 @@ rnote_engine_sources = files(
     'fileformats/xoppformat.rs',
     'image.rs',
     'lib.rs',
+    'previewable.rs',
     'pens/brush.rs',
     'pens/eraser.rs',
     'pens/mod.rs',

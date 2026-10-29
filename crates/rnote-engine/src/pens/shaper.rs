@@ -4,9 +4,8 @@ use super::PenStyle;
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
 use p2d::bounding_volume::Aabb;
-use piet::RenderContext;
 use rnote_compose::Shape;
 use rnote_compose::builders::buildable::{Buildable, BuilderCreator, BuilderProgress};
 use rnote_compose::builders::{ArrowBuilder, GridBuilder, PolygonBuilder, PolylineBuilder};
@@ -18,6 +17,7 @@ use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug)]
 enum ShaperState {
@@ -227,8 +227,8 @@ impl PenBehaviour for Shaper {
     }
 }
 
-impl DrawableOnDoc for Shaper {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for Shaper {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         let style = engine_view
             .config
             .pens_config
@@ -243,12 +243,7 @@ impl DrawableOnDoc for Shaper {
         }
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
         let style = engine_view
             .config
             .pens_config
@@ -258,11 +253,10 @@ impl DrawableOnDoc for Shaper {
         match &self.state {
             ShaperState::Idle => {}
             ShaperState::BuildShape { builder } => {
-                builder.draw_styled(cx, &style, engine_view.camera.total_zoom())
+                builder.draw(cx, &style, engine_view.camera.total_zoom())
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

@@ -1,15 +1,16 @@
 // Imports
 use super::ToolsState;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
+use kurbo::Stroke;
 use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
-use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::Vector2Ext;
 use rnote_compose::penevent::PenProgress;
-use rnote_compose::{EventResult, PenEvent, color};
+use rnote_compose::{Color, EventResult, PenEvent, color};
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Clone, Debug)]
 pub(super) struct OffsetCameraTool {
@@ -30,8 +31,8 @@ impl OffsetCameraTool {
     const CURSOR_SIZE: Vector2 = Vector2::splat(16.);
     const CURSOR_STROKE_WIDTH: f64 = 2.0;
     const CURSOR_PATH: &'static str = "m 8 1.078125 l -3 3 h 2 v 2.929687 h -2.960938 v -2 l -3 3 l 3 3 v -2 h 2.960938 v 2.960938 h -2 l 3 3 l 3 -3 h -2 v -2.960938 h 3.054688 v 2 l 3 -3 l -3 -3 v 2 h -3.054688 v -2.929687 h 2 z m 0 0";
-    const DARK_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(240);
-    const LIGHT_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(240);
+    const DARK_COLOR: Color = color::GNOME_DARKS[3].with_a8(240);
+    const LIGHT_COLOR: Color = color::GNOME_BRIGHTS[1].with_a8(240);
 
     pub(super) fn handle_event(
         &mut self,
@@ -140,8 +141,8 @@ impl OffsetCameraTool {
     }
 }
 
-impl DrawableOnDoc for OffsetCameraTool {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for OffsetCameraTool {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         if matches!(self.state, ToolsState::Idle) {
             return None;
         }
@@ -153,28 +154,25 @@ impl DrawableOnDoc for OffsetCameraTool {
         ))
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        if let Some(bounds) = self.bounds_on_doc(engine_view) {
-            cx.transform(kurbo::Affine::translate(bounds.mins.to_kurbo_vec()));
-            cx.transform(kurbo::Affine::scale(1.0 / engine_view.camera.total_zoom()));
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
+        if let Some(bounds) = self.preview_bounds(engine_view) {
+            let state = cx.save_current_state();
 
             let bez_path = kurbo::BezPath::from_svg(Self::CURSOR_PATH).unwrap();
 
-            cx.stroke(
-                bez_path.clone(),
-                &Self::LIGHT_COLOR,
-                Self::CURSOR_STROKE_WIDTH,
+            cx.set_transform(
+                kurbo::Affine::scale(1.0 / engine_view.camera.total_zoom())
+                    * kurbo::Affine::translate(bounds.mins.to_kurbo_vec()),
             );
-            cx.fill(bez_path, &Self::DARK_COLOR);
+            cx.set_paint(Self::LIGHT_COLOR);
+            cx.set_stroke(Stroke::new(Self::CURSOR_STROKE_WIDTH));
+            cx.stroke_path(&bez_path);
+            cx.set_paint(Self::DARK_COLOR);
+            cx.fill_path(&bez_path);
+
+            cx.restore_state(state);
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

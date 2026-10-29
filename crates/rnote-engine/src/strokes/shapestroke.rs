@@ -1,6 +1,8 @@
 // Imports
 use super::Content;
 use crate::{Drawable, strokes::content};
+use kurbo::Shape as _;
+use kurbo::{Cap, Join, Stroke};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use rnote_compose::Style;
@@ -10,6 +12,7 @@ use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::Shapeable;
 use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
+use vello_cpu::RenderContext;
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "shapestroke")]
@@ -24,28 +27,26 @@ pub struct ShapeStroke {
 }
 
 impl Content for ShapeStroke {
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
+    fn draw_highlight(&self, cx: &mut RenderContext, total_zoom: f64) -> anyhow::Result<()> {
         const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
         let bounds = self.bounds();
         let bez_path = self.shape.outline_path();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
-            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
+            cx.set_paint(content::CONTENT_HIGHLIGHT_COLOR);
+            cx.fill_path(&bounds.to_kurbo_rect().into_path(0.1));
         } else {
-            cx.stroke_styled(
-                bez_path,
-                &content::CONTENT_HIGHLIGHT_COLOR,
-                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
-                    .max(self.style.stroke_width() + 10.0 / total_zoom),
-                &piet::StrokeStyle::new()
-                    .line_join(piet::LineJoin::Round)
-                    .line_cap(piet::LineCap::Round),
+            cx.set_paint(content::CONTENT_HIGHLIGHT_COLOR);
+            cx.set_stroke(
+                Stroke::new(
+                    (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                        .max(self.style.stroke_width() + 10.0 / total_zoom),
+                )
+                .with_join(Join::Round)
+                .with_caps(Cap::Round),
             );
+            cx.stroke_path(&bez_path);
         }
 
         Ok(())
@@ -57,12 +58,12 @@ impl Content for ShapeStroke {
 }
 
 impl Drawable for ShapeStroke {
-    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn pos(&self) -> Vector2 {
+        self.bounds().mins
+    }
 
-        self.shape.draw_composed(cx, &self.style);
-
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn draw(&self, cx: &mut RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        self.shape.composed_draw(cx, &self.style);
         Ok(())
     }
 }

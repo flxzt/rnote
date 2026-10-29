@@ -105,7 +105,7 @@ mod imp {
         fn update_appearance(&self, color: Color) {
             let css = CssProvider::new();
 
-            let colorsetter_color = color.to_css_color_attr();
+            let colorsetter_color = color.into_css_color_attr();
             let colorsetter_fg_color = if color.a == 0.0 {
                 String::from("@window_fg_color")
             } else if color.luma() < color::FG_LUMINANCE_THRESHOLD {

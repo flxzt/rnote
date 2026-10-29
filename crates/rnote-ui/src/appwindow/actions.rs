@@ -556,12 +556,9 @@ impl RnAppWindow {
                 let Some(canvas) = appwindow.active_tab_canvas() else {
                     return;
                 };
-                let widget_flags =
-                    canvas
-                        .engine_mut()
-                        .text_selection_toggle_attribute(TextAttribute::FontWeight(
-                            piet::FontWeight::BOLD.to_raw(),
-                        ));
+                let widget_flags = canvas
+                    .engine_mut()
+                    .text_selection_toggle_attribute(TextAttribute::FontWeight(700));
                 appwindow.handle_widget_flags(widget_flags, &canvas)
             }
         ));

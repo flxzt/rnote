@@ -1,14 +1,13 @@
 // Imports
-use crate::image::{Image, ImageMemoryFormat, convert_image_bgra_to_rgba};
+use crate::{Drawable, Image};
 use anyhow::Context;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
-use piet::RenderContext;
 use rnote_compose::ext::AabbExt;
-use rnote_compose::shapes::Rectangle;
 use std::sync::Arc;
 use svg::Node;
+use vello_cpu::{RenderContext, peniko};
 
 /// Usvg font database
 pub static USVG_FONTDB: Lazy<Arc<usvg::fontdb::Database>> = Lazy::new(|| {
@@ -24,6 +23,106 @@ pub struct Svg {
     pub svg_data: String,
     /// Bounds of the Svg.
     pub bounds: Aabb,
+}
+
+impl Drawable for Svg {
+    fn pos(&self) -> Vector2 {
+        self.bounds.mins
+    }
+
+    /// Draws itself on a [RenderContext].
+    ///
+    /// Using rsvg for rendering.
+    fn draw(&self, cx: &mut RenderContext, image_scale: f64) -> anyhow::Result<()> {
+        let mut bounds = self.bounds;
+        bounds.ensure_positive();
+        bounds.assert_valid()?;
+
+        let svg_data = rnote_compose::utils::wrap_svg_root(
+            self.svg_data.as_str(),
+            Some(bounds),
+            Some(bounds),
+            false,
+        );
+        let surface_width = ((bounds.extents()[0]) * image_scale).round() as u32;
+        let surface_height = ((bounds.extents()[1]) * image_scale).round() as u32;
+        let surface = cairo::ImageSurface::create(
+                cairo::Format::ARgb32,
+                surface_width as i32,
+                surface_height as i32,
+            )
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "creating ImageSurface with dimensions ({surface_width}, {surface_height}) failed, Err: {e:?}"
+                )
+            })?;
+
+        // Context in new scope, else accessing the surface data fails with a borrow error
+        {
+            let cx =
+                cairo::Context::new(&surface).context("creating new cairo::Context failed.")?;
+            let stream =
+                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+            let handle = rsvg::Loader::new()
+                .with_unlimited_size(true)
+                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+                    &stream, None, None,
+                )
+                .context("read stream to rsvg loader failed.")?;
+            let renderer = rsvg::CairoRenderer::new(&handle);
+
+            cx.scale(image_scale, image_scale);
+            cx.translate(-bounds.mins[0], -bounds.mins[1]);
+            renderer
+                .render_document(
+                    &cx,
+                    &cairo::Rectangle::new(
+                        bounds.mins[0],
+                        bounds.mins[1],
+                        bounds.extents()[0],
+                        bounds.extents()[1],
+                    ),
+                )
+                .context("rendering rsvg document failed")?;
+        }
+        let pixmap = Image::try_from_cairo_surface_argb(surface, bounds)?.to_vello_pixmap();
+
+        cx.set_paint(vello_cpu::Image {
+            image: vello_cpu::ImageSource::Pixmap(Arc::new(pixmap)),
+            sampler: peniko::ImageSampler::default(),
+        });
+        cx.fill_rect(&bounds.to_kurbo_rect());
+
+        Ok(())
+    }
+
+    fn draw_to_cairo(
+        &self,
+        cx: &cairo::Context,
+        _width: u16,
+        _height: u16,
+        _image_scale: f64,
+    ) -> anyhow::Result<()> {
+        let svg_data = self.to_document();
+        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+        let handle = rsvg::Loader::new()
+            .with_unlimited_size(true)
+            .read_stream(&stream, None::<&gio::File>, None::<&gio::Cancellable>)
+            .context("reading stream to rsvg loader failed.")?;
+        let renderer = rsvg::CairoRenderer::new(&handle);
+        renderer
+            .render_document(
+                cx,
+                &cairo::Rectangle::new(
+                    self.bounds.mins[0],
+                    self.bounds.mins[1],
+                    self.bounds.extents()[0],
+                    self.bounds.extents()[1],
+                ),
+            )
+            .context("rendering rsvg document failed")?;
+        Ok(())
+    }
 }
 
 impl Svg {
@@ -99,12 +198,8 @@ impl Svg {
 
         let width = bounds.extents()[0];
         let height = bounds.extents()[1];
-        let mut svg_surface =
-            cairo::SvgSurface::for_stream(width, height, Vec::new()).map_err(|e| {
-                anyhow::anyhow!(
-                    "Creating svg surface with dimensions ({width}, {height}) failed, Err: {e:?}"
-                )
-            })?;
+        let mut svg_surface = cairo::SvgSurface::for_stream(width, height, Vec::new())
+            .context("Creating svg surface with dimensions ({width}, {height}) failed")?;
         svg_surface.set_document_unit(cairo::SvgUnit::Px);
 
         {
@@ -140,114 +235,8 @@ impl Svg {
         })
     }
 
-    /// Generate an Svg with piet, using the `piet_cairo` backend and cairo's SvgSurface.
-    ///
-    /// This might be preferable to the `piet_svg` backend, because especially text alignment and sizes can be different
-    /// with it.
-    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, bounds: Aabb) -> anyhow::Result<Self>
-    where
-        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
-    {
-        let cairo_draw_fn = |cairo_cx: &cairo::Context| {
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(cairo_cx);
-            // Apply the draw function
-            draw_func(&mut piet_cx)?;
-            piet_cx
-                .finish()
-                .map_err(|e| anyhow::anyhow!("finishing piet context failed, Err: {e:?}"))
-        };
-
-        Self::gen_with_cairo(cairo_draw_fn, bounds)
-    }
-
-    pub fn draw_to_cairo(&self, cx: &cairo::Context) -> anyhow::Result<()> {
-        let svg_data = self.to_document();
-        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
-        let handle = rsvg::Loader::new()
-            .with_unlimited_size(true)
-            .read_stream(&stream, None::<&gio::File>, None::<&gio::Cancellable>)
-            .context("reading stream to rsvg loader failed.")?;
-        let renderer = rsvg::CairoRenderer::new(&handle);
-        renderer
-            .render_document(
-                cx,
-                &cairo::Rectangle::new(
-                    self.bounds.mins[0],
-                    self.bounds.mins[1],
-                    self.bounds.extents()[0],
-                    self.bounds.extents()[1],
-                ),
-            )
-            .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
-        Ok(())
-    }
-
-    /// Generate an image from an Svg.
-    ///
-    /// Using rsvg for rendering.
-    pub fn gen_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
-        let svg_data = self.to_document();
-        let width_scaled = (self.bounds.extents()[0] * image_scale).round() as u32;
-        let height_scaled = (self.bounds.extents()[1] * image_scale).round() as u32;
-
-        let mut surface = cairo::ImageSurface::create(
-                cairo::Format::ARgb32,
-                width_scaled as i32,
-                height_scaled as i32,
-            )
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "creating ImageSurface with dimensions ({width_scaled}, {height_scaled}) failed, Err: {e:?}"
-                )
-            })?;
-
-        // Context in new scope, else accessing the surface data fails with a borrow error
-        {
-            let cx =
-                cairo::Context::new(&surface).context("creating new cairo::Context failed.")?;
-            cx.scale(image_scale, image_scale);
-            cx.translate(-self.bounds.mins[0], -self.bounds.mins[1]);
-
-            let stream =
-                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
-
-            let handle = rsvg::Loader::new()
-                .with_unlimited_size(true)
-                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                    &stream, None, None,
-                )
-                .context("read stream to rsvg loader failed.")?;
-
-            let renderer = rsvg::CairoRenderer::new(&handle);
-            renderer
-                .render_document(
-                    &cx,
-                    &cairo::Rectangle::new(
-                        self.bounds.mins[0],
-                        self.bounds.mins[1],
-                        self.bounds.extents()[0],
-                        self.bounds.extents()[1],
-                    ),
-                )
-                .map_err(|e| anyhow::anyhow!("rendering rsvg document failed, Err: {e:?}"))?;
-        }
-
-        let data = surface
-            .data()
-            .map_err(|e| anyhow::anyhow!("accessing imagesurface data failed, Err: {e:?}"))?
-            .to_vec();
-
-        Ok(Image {
-            data: glib::Bytes::from_owned(convert_image_bgra_to_rgba(
-                width_scaled,
-                height_scaled,
-                data,
-            )),
-            rectangle: Rectangle::from_p2d_aabb(self.bounds),
-            pixel_width: width_scaled,
-            pixel_height: height_scaled,
-            // cairo renders to bgra8-premultiplied, but we convert it to rgba8-premultiplied
-            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
-        })
+    /// Export as bitmap image.
+    pub fn export_as_image(&self, image_scale: f64) -> Result<Image, anyhow::Error> {
+        Image::gen_with_vello(|cx| self.draw(cx, 1.0), self.bounds, image_scale)
     }
 }

@@ -3,15 +3,16 @@ use super::PenBehaviour;
 use super::PenStyle;
 use super::pensconfig::eraserconfig::EraserStyle;
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawableOnDoc, WidgetFlags};
+use crate::{Previewable, WidgetFlags};
+use kurbo::{Shape, Stroke};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
-use piet::RenderContext;
-use rnote_compose::color;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::{PenEvent, PenProgress};
 use rnote_compose::penpath::Element;
+use rnote_compose::{Color, color};
 use std::time::Instant;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Copy)]
 pub enum EraserState {
@@ -159,8 +160,8 @@ impl PenBehaviour for Eraser {
     }
 }
 
-impl DrawableOnDoc for Eraser {
-    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<Aabb> {
+impl Previewable for Eraser {
+    fn preview_bounds(&self, engine_view: &EngineView) -> Option<Aabb> {
         match &self.state {
             EraserState::Up => None,
             EraserState::Proximity(current_element) | EraserState::Down(current_element) => Some(
@@ -173,16 +174,10 @@ impl DrawableOnDoc for Eraser {
         }
     }
 
-    fn draw_on_doc(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView,
-    ) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
-
-        const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(240);
-        const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(160);
-        const PROXIMITY_FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(51);
+    fn preview_draw(&self, cx: &mut RenderContext, engine_view: &EngineView) -> anyhow::Result<()> {
+        const OUTLINE_COLOR: Color = color::GNOME_REDS[2].with_a8(240);
+        const FILL_COLOR: Color = color::GNOME_REDS[0].with_a8(160);
+        const PROXIMITY_FILL_COLOR: Color = color::GNOME_REDS[0].with_a8(51);
         let outline_width = 2.0 / engine_view.camera.total_zoom();
 
         match &self.state {
@@ -194,11 +189,17 @@ impl DrawableOnDoc for Eraser {
                     .eraser_config
                     .eraser_bounds(*current_element);
 
-                let fill_rect = bounds.to_kurbo_rect();
-                let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
+                let fill_rect = bounds.to_kurbo_rect().into_path(0.1);
+                let outline_rect = bounds
+                    .tightened(outline_width * 0.5)
+                    .to_kurbo_rect()
+                    .into_path(0.1);
 
-                cx.fill(fill_rect, &PROXIMITY_FILL_COLOR);
-                cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+                cx.set_paint(PROXIMITY_FILL_COLOR);
+                cx.fill_path(&fill_rect);
+                cx.set_paint(OUTLINE_COLOR);
+                cx.set_stroke(Stroke::new(outline_width));
+                cx.stroke_path(&outline_rect);
             }
             EraserState::Down(current_element) => {
                 let bounds = engine_view
@@ -207,15 +208,19 @@ impl DrawableOnDoc for Eraser {
                     .eraser_config
                     .eraser_bounds(*current_element);
 
-                let fill_rect = bounds.to_kurbo_rect();
-                let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
+                let fill_rect = bounds.to_kurbo_rect().into_path(0.1);
+                let outline_rect = bounds
+                    .tightened(outline_width * 0.5)
+                    .to_kurbo_rect()
+                    .into_path(0.1);
 
-                cx.fill(fill_rect, &FILL_COLOR);
-                cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+                cx.set_paint(FILL_COLOR);
+                cx.fill_path(&fill_rect);
+                cx.set_stroke(Stroke::new(outline_width));
+                cx.stroke_path(&outline_rect);
             }
         }
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }

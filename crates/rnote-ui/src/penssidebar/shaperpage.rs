@@ -273,9 +273,7 @@ impl RnShaperPage {
                                 .pens_config
                                 .shaper_config
                                 .smooth_options;
-
                             smooth_options.stroke_width = stroke_width;
-                            smooth_options.update_piet_stroke_style();
                         }
                         ShaperStyle::Rough => {
                             appwindow

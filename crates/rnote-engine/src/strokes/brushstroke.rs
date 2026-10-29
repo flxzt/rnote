@@ -4,6 +4,7 @@ use super::content::GeneratedContentImages;
 use crate::Drawable;
 use crate::Image;
 use crate::strokes::content;
+use kurbo::{Cap, Join, Shape, Stroke};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use p2d::math::Vector2;
 use rnote_compose::Transformable;
@@ -14,6 +15,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::{PenPath, Style};
 use serde::{Deserialize, Serialize};
 use tracing::error;
+use vello_cpu::RenderContext;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "brushstroke")]
@@ -64,9 +66,9 @@ impl Content for BrushStroke {
             // generate a single image when bounds are smaller than threshold
             match &self.style {
                 Style::Smooth(options) => {
-                    let image = Image::gen_with_piet(
-                        |piet_cx| {
-                            self.path.draw_composed(piet_cx, options);
+                    let image = Image::gen_with_vello(
+                        |cx| {
+                            self.path.composed_draw(cx, options);
                             Ok(())
                         },
                         bounds,
@@ -86,9 +88,9 @@ impl Content for BrushStroke {
                     vec![]
                 }
                 Style::Textured(options) => {
-                    let image = Image::gen_with_piet(
-                        |piet_cx| {
-                            self.path.draw_composed(piet_cx, options);
+                    let image = Image::gen_with_vello(
+                        |cx| {
+                            self.path.composed_draw(cx, options);
                             Ok(())
                         },
                         bounds,
@@ -112,9 +114,9 @@ impl Content for BrushStroke {
                     let mut prev = self.path.start;
                     for seg in self.path.segments.iter() {
                         let seg_path = PenPath::new_w_segments(prev, [*seg]);
-                        let image = Image::gen_with_piet(
-                            |piet_cx| {
-                                seg_path.draw_composed(piet_cx, options);
+                        let image = Image::gen_with_vello(
+                            |cx| {
+                                seg_path.composed_draw(cx, options);
                                 Ok(())
                             },
                             seg_path.composed_bounds(options),
@@ -143,9 +145,9 @@ impl Content for BrushStroke {
                     let mut prev = self.path.start;
                     for seg in self.path.segments.iter() {
                         let seg_path = PenPath::new_w_segments(prev, [*seg]);
-                        let image = Image::gen_with_piet(
-                            |piet_cx| {
-                                seg_path.draw_composed(piet_cx, &options);
+                        let image = Image::gen_with_vello(
+                            |cx| {
+                                seg_path.composed_draw(cx, &options);
                                 Ok(())
                             },
                             seg_path.composed_bounds(&options),
@@ -175,28 +177,26 @@ impl Content for BrushStroke {
         }
     }
 
-    fn draw_highlight(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        total_zoom: f64,
-    ) -> anyhow::Result<()> {
+    fn draw_highlight(&self, cx: &mut RenderContext, total_zoom: f64) -> anyhow::Result<()> {
         const PATH_HIGHLIGHT_MIN_STROKE_WIDTH: f64 = 5.0;
         const DRAW_BOUNDS_THRESHOLD_AREA: f64 = 10_u32.pow(2) as f64;
 
         let bounds = self.bounds();
 
         if bounds.scale(total_zoom).volume() < DRAW_BOUNDS_THRESHOLD_AREA {
-            cx.fill(bounds.to_kurbo_rect(), &content::CONTENT_HIGHLIGHT_COLOR);
+            cx.set_paint(content::CONTENT_HIGHLIGHT_COLOR);
+            cx.fill_path(&bounds.to_kurbo_rect().into_path(0.1));
         } else {
-            cx.stroke_styled(
-                self.outline_path(),
-                &content::CONTENT_HIGHLIGHT_COLOR,
-                (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
-                    .max(self.style.stroke_width() + 3.0 / total_zoom),
-                &piet::StrokeStyle::new()
-                    .line_join(piet::LineJoin::Round)
-                    .line_cap(piet::LineCap::Round),
+            cx.set_paint(content::CONTENT_HIGHLIGHT_COLOR);
+            cx.set_stroke(
+                Stroke::new(
+                    (PATH_HIGHLIGHT_MIN_STROKE_WIDTH / total_zoom)
+                        .max(self.style.stroke_width() + 3.0 / total_zoom),
+                )
+                .with_join(Join::Round)
+                .with_caps(Cap::Round),
             );
+            cx.stroke_path(&self.outline_path());
         }
         Ok(())
     }
@@ -207,19 +207,20 @@ impl Content for BrushStroke {
 }
 
 impl Drawable for BrushStroke {
-    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        cx.save().map_err(|e| anyhow::anyhow!("{e:?}"))?;
+    fn pos(&self) -> Vector2 {
+        self.bounds().mins
+    }
 
+    fn draw(&self, cx: &mut RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         match &self.style {
-            Style::Smooth(options) => self.path.draw_composed(cx, options),
+            Style::Smooth(options) => self.path.composed_draw(cx, options),
             Style::Rough(_) => {
                 // Rough style currently unsupported for pen paths
                 unimplemented!()
             }
-            Style::Textured(options) => self.path.draw_composed(cx, options),
+            Style::Textured(options) => self.path.composed_draw(cx, options),
         };
 
-        cx.restore().map_err(|e| anyhow::anyhow!("{e:?}"))?;
         Ok(())
     }
 }
@@ -325,9 +326,9 @@ impl BrushStroke {
                         .copied(),
                 );
 
-                let image = Image::gen_with_piet(
-                    |piet_cx| {
-                        range_path.draw_composed(piet_cx, options);
+                let image = Image::gen_with_vello(
+                    |cx| {
+                        range_path.composed_draw(cx, options);
                         Ok(())
                     },
                     range_path.composed_bounds(options),
@@ -359,9 +360,9 @@ impl BrushStroke {
                         .copied(),
                 );
 
-                let image = Image::gen_with_piet(
-                    |piet_cx| {
-                        range_path.draw_composed(piet_cx, &options);
+                let image = Image::gen_with_vello(
+                    |cx| {
+                        range_path.composed_draw(cx, &options);
                         Ok(())
                     },
                     range_path.composed_bounds(&options),

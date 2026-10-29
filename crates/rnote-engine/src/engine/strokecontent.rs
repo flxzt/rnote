@@ -20,6 +20,46 @@ pub struct LayeredStroke {
     pub layer: StrokeLayer,
 }
 
+impl LayeredStroke {
+    fn draw_to_cairo(
+        &self,
+        image_bounds: &[Aabb],
+        cairo_cx: &cairo::Context,
+        image_scale: f64,
+        optimize_printing: bool,
+    ) -> anyhow::Result<()> {
+        let stroke_bounds = self.stroke.bounds();
+        let stroke_width = stroke_bounds.extents().x;
+        let stroke_height = stroke_bounds.extents().y;
+
+        if optimize_printing
+            && image_bounds
+                .iter()
+                .all(|bounds| !bounds.contains(&stroke_bounds))
+        {
+            // Using the stroke's bounds instead of hitboxes works for inclusion.
+            // If this is changed to intersection, all hitboxes must be checked individually.
+
+            let mut darkest_color_stroke = self.stroke.as_ref().clone();
+            darkest_color_stroke.set_to_darkest_color();
+
+            darkest_color_stroke.draw_to_cairo(
+                cairo_cx,
+                stroke_width.ceil() as u16,
+                stroke_height.ceil() as u16,
+                image_scale,
+            )
+        } else {
+            self.stroke.draw_to_cairo(
+                cairo_cx,
+                stroke_width.ceil() as u16,
+                stroke_height.ceil() as u16,
+                image_scale,
+            )
+        }
+    }
+}
+
 /// Stroke content.
 ///
 /// Used when exporting and pasting/copying/cutting from/into the clipboard.
@@ -127,13 +167,8 @@ impl StrokeContent {
                     |cairo_cx| {
                         cairo_cx.save()?;
                         cairo_clip_bounds(cairo_cx, bounds);
-                        let draw_res = Self::draw_layered_stroke_to_cairo(
-                            stroke,
-                            &image_bounds,
-                            cairo_cx,
-                            1.0,
-                            optimize_printing,
-                        );
+                        let draw_res =
+                            stroke.draw_to_cairo(&image_bounds, cairo_cx, 1.0, optimize_printing);
                         cairo_cx.restore()?;
                         draw_res
                     },
@@ -188,13 +223,7 @@ impl StrokeContent {
             .iter()
             .filter(|s| s.layer == StrokeLayer::Highlighter)
         {
-            Self::draw_layered_stroke_to_cairo(
-                stroke,
-                &image_bounds,
-                cairo_cx,
-                image_scale,
-                optimize_printing,
-            )?;
+            stroke.draw_to_cairo(&image_bounds, cairo_cx, image_scale, optimize_printing)?;
         }
 
         cairo_cx.restore()?;
@@ -234,47 +263,12 @@ impl StrokeContent {
             .iter()
             .filter(|s| s.layer != StrokeLayer::Highlighter)
         {
-            Self::draw_layered_stroke_to_cairo(
-                stroke,
-                &image_bounds,
-                cairo_cx,
-                image_scale,
-                optimize_printing,
-            )?;
+            stroke.draw_to_cairo(&image_bounds, cairo_cx, image_scale, optimize_printing)?;
         }
 
         cairo_cx.restore()?;
 
         Ok(())
-    }
-
-    // Draw a single LayeredStroke to a cairo context.
-    fn draw_layered_stroke_to_cairo(
-        stroke_content_stroke: &LayeredStroke,
-        image_bounds: &[Aabb],
-        cairo_cx: &cairo::Context,
-        image_scale: f64,
-        optimize_printing: bool,
-    ) -> anyhow::Result<()> {
-        let stroke_bounds = stroke_content_stroke.stroke.bounds();
-
-        if optimize_printing
-            && image_bounds
-                .iter()
-                .all(|bounds| !bounds.contains(&stroke_bounds))
-        {
-            // Using the stroke's bounds instead of hitboxes works for inclusion.
-            // If this is changed to intersection, all hitboxes must be checked individually.
-
-            let mut darkest_color_stroke = stroke_content_stroke.stroke.as_ref().clone();
-            darkest_color_stroke.set_to_darkest_color();
-
-            darkest_color_stroke.draw_to_cairo(cairo_cx, image_scale)
-        } else {
-            stroke_content_stroke
-                .stroke
-                .draw_to_cairo(cairo_cx, image_scale)
-        }
     }
 
     /// Bounds of the bitmap / vector image strokes.

@@ -272,7 +272,33 @@ impl RnCanvas {
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
 
+        self.cleanup_autosaves();
         Ok(true)
+    }
+
+    /// Saves a silent backup of the document to the given file path.
+    /// This does NOT reset `unsaved_changes` or set the active `output_file`.
+    pub(crate) async fn save_backup_to_file(&self, path: &std::path::Path) -> anyhow::Result<()> {
+        if self.save_in_progress() {
+            return Ok(());
+        }
+        self.set_save_in_progress(true);
+
+        let basename = path.file_name()
+            .ok_or_else(|| anyhow::anyhow!("Could not retrieve basename"))?;
+        
+        let rnote_bytes_receiver = self
+            .engine_ref()
+            .save_as_rnote_bytes(basename.to_string_lossy().to_string());
+
+        let file_write_operation = async {
+            let bytes = rnote_bytes_receiver.await??;
+            crate::utils::atomic_save_to_file_future(path, bytes).await
+        };
+
+        let res = file_write_operation.await;
+        self.set_save_in_progress(false);
+        res
     }
 
     pub(crate) async fn export_doc(

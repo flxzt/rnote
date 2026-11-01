@@ -22,6 +22,7 @@ use crate::Image;
 use crate::document::Layout;
 use crate::pens::PenMode;
 use crate::pens::{Pen, PenStyle};
+use crate::store::SearchResult;
 use crate::store::StrokeKey;
 use crate::store::render_comp::{self, RenderCompState};
 use crate::strokes::content::GeneratedContentImages;
@@ -191,6 +192,10 @@ pub struct Engine {
     pub camera: Camera,
     #[serde(rename = "penholder")]
     pub penholder: PenHolder,
+    #[serde(skip)]
+    pub active_search_results: Vec<SearchResult>,
+    #[serde(skip)]
+    pub current_search_index: usize,
 
     #[cfg(feature = "ui")]
     #[serde(skip)]
@@ -226,6 +231,8 @@ impl Default for Engine {
             store: StrokeStore::default(),
             camera: Camera::default(),
             penholder: PenHolder::default(),
+            active_search_results: Vec::new(),
+            current_search_index: 0,
 
             #[cfg(feature = "ui")]
             audioplayer: None,
@@ -909,5 +916,47 @@ impl Engine {
     pub fn current_pen_style_w_override(&self) -> PenStyle {
         self.penholder
             .current_pen_style_w_override(&engine_view!(self))
+    }
+
+    pub fn search_document(&self, query: &str) -> Vec<SearchResult> {
+        self.store.search(query)
+    }
+
+    pub fn set_search_results(&mut self, results: Vec<SearchResult>) {
+        self.active_search_results = results;
+        self.current_search_index = 0; // Reset index on new search
+    }
+    /// Jumps the camera to a specific search result by its index
+    pub fn focus_search_result_at_index(&mut self, index: usize) -> WidgetFlags {
+        if self.active_search_results.is_empty() || index >= self.active_search_results.len() {
+            return WidgetFlags::default();
+        }
+
+        self.current_search_index = index;
+        let target_bounds = self.active_search_results[self.current_search_index].bounds;
+
+        let center_x = target_bounds.mins.x + (target_bounds.maxs.x - target_bounds.mins.x) / 2.0;
+        let center_y = target_bounds.mins.y + (target_bounds.maxs.y - target_bounds.mins.y) / 2.0;
+
+        let zoom = self.camera.zoom();
+        let viewport_size = self.camera.size();
+
+        let new_offset = p2d::math::Vector2::new(
+            (center_x * zoom) - (viewport_size.x / 2.0),
+            (center_y * zoom) - (viewport_size.y / 2.0),
+        );
+
+        self.camera_set_offset_expand(new_offset)
+    }
+    /// jumps cam to the next search results
+    pub fn focus_next_search_result(&mut self) -> WidgetFlags {
+        if self.active_search_results.is_empty() {
+            return WidgetFlags::default();
+        }
+
+        self.current_search_index =
+            (self.current_search_index + 1) % self.active_search_results.len();
+
+        self.focus_search_result_at_index(self.current_search_index)
     }
 }

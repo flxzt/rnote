@@ -1,21 +1,28 @@
 // Imports
 use super::Content;
 use crate::{Camera, Drawable};
+use anyhow::anyhow;
 use itertools::Itertools;
-use kurbo::Shape;
+use kurbo::{Shape, Stroke};
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
+use parley::{FontContext, GenericFamily, LayoutContext, LineHeight, PositionedLayoutItem, RangedBuilder, StyleProperty};
 use piet::{TextLayout, TextLayoutBuilder};
-use rnote_compose::Color;
 use rnote_compose::Transformable;
 use rnote_compose::ext::{AabbExt, DAffine2Ext, Vector2Ext};
 use rnote_compose::shapes::Shapeable;
+use rnote_compose::{Color, color};
 use serde::{Deserialize, Serialize};
 use std::ops::Range;
+use std::sync::{LazyLock, RwLock};
 use tracing::error;
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
-use vello_cpu::RenderContext;
+use vello_cpu::{RenderContext, peniko};
+
+static FONT_CX: LazyLock<RwLock<FontContext>> = LazyLock::new(|| RwLock::new(FontContext::new()));
+static LAYOUT_CX: LazyLock<RwLock<LayoutContext>> =
+    LazyLock::new(|| RwLock::new(LayoutContext::new()));
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "font_style")]
@@ -413,7 +420,6 @@ impl TextStyle {
         affine: &DAffine2,
         camera: &Camera,
     ) {
-        /*
         const OUTLINE_COLOR: Color = color::GNOME_BLUES[2];
         const FILL_COLOR: Color = color::GNOME_BLUES[1].with_a8(25);
         let outline_width = 1.5 / camera.total_zoom();
@@ -424,11 +430,13 @@ impl TextStyle {
             for selection_rect in selection_rects {
                 let outline = affine.to_kurbo() * selection_rect.into_path(0.1);
 
-                cx.fill(&outline, &FILL_COLOR);
-                cx.stroke(&outline, &OUTLINE_COLOR, outline_width);
+                cx.set_paint(FILL_COLOR);
+                cx.fill_path(&outline);
+                cx.set_paint(OUTLINE_COLOR);
+                cx.set_stroke(Stroke::new(outline_width));
+                cx.stroke_path(&outline);
             }
         }
-         */
     }
 }
 
@@ -531,20 +539,59 @@ impl Drawable for TextStroke {
     }
 
     fn draw(&self, cx: &mut RenderContext, _image_scale: f64) -> anyhow::Result<()> {
-        /*
-        if let Ok(text_layout) = self
-            .text_style
-            .build_text_layout(cx.text(), self.text.clone())
-        {
-            let state = cx.save_current_state();
+        let mut layout_cx = LAYOUT_CX
+            .write()
+            .map_err(|_| anyhow!("Locking layout context failed"))?;
+        let mut font_cx = FONT_CX
+            .write()
+            .map_err(|_| anyhow!("Locking font context failed"))?;
+        let mut resources = vello_cpu::Resources::new();
+        let state = cx.save_current_state();
 
-            cx.set_transform(self.affine.to_kurbo());
-            cx.draw_text(&text_layout, kurbo::Point::ZERO)
+        cx.set_transform(self.affine.to_kurbo());
+        let mut builder = layout_cx.ranged_builder(&mut font_cx, &self.text, 1., true);
+        builder.push_default(GenericFamily::SystemUi);
+        builder.push_default(StyleProperty::FontSize(16.0));
+        builder.push_default(LineHeight::FontSizeRelative(1.3));
+        let layout = builder.build(&self.text);
 
-            cx.restore_state(state);
+        for line in layout.lines() {
+            for item in line.items() {
+                match item {
+                    PositionedLayoutItem::GlyphRun(glyph_run) => {
+                        let run = glyph_run.run();
+
+                        let normalized_coords = run
+                            .normalized_coords()
+                            .iter()
+                            .map(|c| c.to_bits())
+                            .collect::<Vec<i16>>();
+                        cx.set_paint(Color::RED);
+                        cx.glyph_run(&mut resources, run.font())
+                            .font_size(run.font_size())
+                            .hint(true)
+                            .normalized_coords(&normalized_coords)
+                            .fill_glyphs(glyph_run.positioned_glyphs().map(|glyph| {
+                                vello_cpu::Glyph {
+                                    id: glyph.id,
+                                    x: glyph.x,
+                                    y: glyph.y,
+                                }
+                            }));
+                    }
+                    PositionedLayoutItem::InlineBox(inline_box) => {
+                        cx.set_paint(Color::BLACK);
+                        let (x0, y0) = (inline_box.x as f64, inline_box.y as f64);
+                        let (x1, y1) =
+                            (x0 + inline_box.width as f64, y0 + inline_box.height as f64);
+                        cx.fill_rect(&kurbo::Rect::new(x0, y0, x1, y1));
+                    }
+                }
+            }
         }
-         */
 
+        cx.flush();
+        cx.restore_state(state);
         Ok(())
     }
 }

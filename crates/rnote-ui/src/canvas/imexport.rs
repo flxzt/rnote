@@ -6,7 +6,9 @@ use gtk4::{gio, prelude::*};
 use p2d::math::Vector2;
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::WidgetFlags;
-use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
+use rnote_engine::engine::export::{
+    DocExportFormat, DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs,
+};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
 use rnote_engine::strokes::resize::ImageSizeOption;
@@ -249,7 +251,21 @@ impl RnCanvas {
             let bytes = rnote_bytes_receiver.await??;
             // The `output_file_expect_write` should theoretically be reset to `false` by the file watcher later.
             self.set_output_file_expect_write(true);
-            crate::utils::atomic_save_to_file_future(&filepath, bytes).await
+            crate::utils::atomic_save_to_file_future(&filepath, bytes).await?;
+
+            if self.engine_ref().document.config.auto_export_svg {
+                self.export_doc(
+                    &gio::File::for_path(filepath.with_extension("svg")),
+                    crate::utils::default_file_title_for_export(Some(file.clone()), None, None),
+                    Some(DocExportPrefs {
+                        export_format: DocExportFormat::Svg,
+                        ..Default::default()
+                    }),
+                )
+                .await?;
+            }
+
+            Ok(())
         };
 
         if let Err(e) = file_write_operation.await {

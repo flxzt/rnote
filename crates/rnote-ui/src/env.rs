@@ -1,7 +1,11 @@
 // Imports
 use crate::config;
+use anyhow::Context;
+use path_absolutize::Absolutize;
 use std::ffi::OsStr;
 use std::path::{Component, Path, PathBuf};
+use std::{env, fs};
+use tracing::debug;
 
 pub(crate) fn lib_dir() -> anyhow::Result<PathBuf> {
     if cfg!(target_os = "windows") {
@@ -59,6 +63,56 @@ pub(crate) fn locale_dir() -> anyhow::Result<PathBuf> {
     } else {
         Ok(PathBuf::from(config::LOCALEDIR))
     }
+}
+
+pub(crate) fn cache_dir() -> anyhow::Result<PathBuf> {
+    let cache_dir = match env::var("XDG_CACHE_HOME") {
+        Ok(p) => PathBuf::from(p),
+        Err(_) => {
+            let home_dir = env::home_dir().context("Unable to retrieve home dir")?;
+            home_dir.join(".cache")
+        }
+    };
+    let cache_dir = cache_dir.absolutize()?.to_path_buf();
+    if !cache_dir.exists() {
+        debug!(
+            "Cache directory '{}' not yet present, creating..",
+            cache_dir.display()
+        );
+        fs::create_dir(&cache_dir)?;
+        debug!("Created cache directory '{}'", cache_dir.display());
+    }
+    Ok(cache_dir)
+}
+
+pub(crate) fn app_cache_dir() -> anyhow::Result<PathBuf> {
+    let app_cache_dir = cache_dir()?.join(config::APP_NAME);
+    if !app_cache_dir.exists() {
+        debug!(
+            "Application cache directory '{}' not yet present, creating..",
+            app_cache_dir.display()
+        );
+        fs::create_dir(&app_cache_dir)?;
+        debug!(
+            "Created application cache directory '{}'",
+            app_cache_dir.display()
+        );
+    }
+    Ok(app_cache_dir)
+}
+
+pub(crate) fn drafts_dir() -> anyhow::Result<PathBuf> {
+    let app_cache_dir = crate::env::app_cache_dir()?;
+    let drafts_dir = app_cache_dir.join("drafts");
+    if !drafts_dir.exists() {
+        debug!(
+            "Drafts directory '{}' not yet present, creating..",
+            drafts_dir.display()
+        );
+        fs::create_dir(&drafts_dir)?;
+        debug!("Created drafts directory '{}'", drafts_dir.display());
+    }
+    Ok(drafts_dir)
 }
 
 /// depending on the target platform we need to set some env vars on startup

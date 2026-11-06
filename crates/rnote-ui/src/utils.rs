@@ -7,8 +7,10 @@ use palette::convert::IntoColor;
 use path_absolutize::Absolutize;
 use rnote_compose::Color;
 use std::cell::Ref;
+use std::fs;
 use std::path::{Path, PathBuf};
 use std::slice::Iter;
+use tracing::error;
 
 /// The suffix delimiter when duplicating/renaming already existing files
 pub(crate) const FILE_DUP_SUFFIX_DELIM: &str = " - ";
@@ -23,6 +25,37 @@ where
     let filepath = filepath.as_ref().to_path_buf();
 
     blocking::unblock(move || rnote_engine::utils::atomic_save_to_file(filepath, bytes)).await
+}
+
+pub(crate) fn find_drafts() -> Vec<PathBuf> {
+    let drafts_dir = match crate::env::drafts_dir() {
+        Ok(d) => d,
+        Err(err) => {
+            error!("Unable to retrieve drafts directory: {err}");
+            return Vec::new();
+        }
+    };
+    let read_dir = match fs::read_dir(&drafts_dir) {
+        Ok(r) => r,
+        Err(err) => {
+            error!(
+                "Unable to list drafts in directory '{}': {err}",
+                drafts_dir.display()
+            );
+            return Vec::new();
+        }
+    };
+
+    read_dir
+        .into_iter()
+        .filter_map(|entry| {
+            let entry = entry.ok()?.path();
+            if !entry.is_file() || entry.ends_with("rnote") {
+                return None;
+            }
+            Some(entry)
+        })
+        .collect()
 }
 
 /// Create a new file or replace if it already exists, asynchronously.

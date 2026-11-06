@@ -10,6 +10,7 @@ pub(crate) use input::reject_pointer_input;
 // Imports
 use crate::boxed::WidgetFlagsBoxed;
 use crate::{RnAppWindow, config, env};
+use chrono::prelude::*;
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
@@ -32,6 +33,7 @@ use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::path::Path;
 use std::time::Duration;
 use tracing::{debug, error, warn};
+use uuid::Uuid;
 
 #[derive(Debug, Default)]
 struct Connections {
@@ -59,6 +61,8 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvas {
+        pub(super) id: Uuid,
+        pub(super) timestamp: DateTime<Utc>,
         pub(super) connections: RefCell<Connections>,
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
@@ -155,6 +159,8 @@ mod imp {
             let engine = Engine::default();
 
             Self {
+                id: Uuid::new_v4(),
+                timestamp: chrono::Utc::now(),
                 connections: RefCell::new(Connections::default()),
 
                 hadjustment: RefCell::new(None),
@@ -1050,6 +1056,17 @@ impl RnCanvas {
                     .unwrap_or_else(|| gettext("- invalid folder path -"))
             })
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+    }
+
+    /// The name of the file that should be used when the document is saved as draft.
+    pub(crate) fn draft_file_name(&self) -> String {
+        let imp = self.imp();
+        format!(
+            "{}-draft-{}.rnote",
+            imp.timestamp
+                .to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+            imp.id
+        )
     }
 
     pub(crate) fn clear_output_file_watcher(&self) {

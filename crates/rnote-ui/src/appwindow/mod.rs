@@ -319,11 +319,15 @@ impl RnAppWindow {
             .into_iter()
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
-            let _ = tab.canvas().engine_mut().set_active(false);
-            tab.canvas()
-                .engine_ref()
-                .engine_tasks_tx()
-                .send(EngineTask::Quit);
+            let canvas = tab.canvas();
+            if let Err(err) = canvas.discard_draft() {
+                error!(
+                    "Discarding draft '{}' failed: {err}",
+                    canvas.draft_file_name()
+                )
+            }
+            let _ = canvas.engine_mut().set_active(false);
+            canvas.engine_ref().engine_tasks_tx().send(EngineTask::Quit);
         }
 
         self.destroy();
@@ -614,42 +618,46 @@ impl RnAppWindow {
     ///
     /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened,
     /// or if it loads and overwrites the content of the current active one.
+    ///
+    /// Returns Ok(Some) if file was imported, Ok(None) if not, Err if the import failed.
     pub(crate) async fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
         target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
-    ) {
+    ) -> Option<RnCanvasWrapper> {
         self.overlays().progressbar_start_pulsing();
         match self
             .try_open_file(input_file, target_pos, rnote_file_new_tab)
             .await
         {
-            Ok(true) => {
+            Ok(Some(wrapper)) => {
                 self.overlays().progressbar_finish();
+                Some(wrapper)
             }
-            Ok(false) => {
+            Ok(None) => {
                 self.overlays().progressbar_abort();
+                None
             }
-            Err(e) => {
-                error!("Opening file with dialogs failed, Err: {e:?}");
-
+            Err(err) => {
+                error!("Opening file with dialogs failed, Err: {err:?}");
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));
                 self.overlays().progressbar_abort();
+                None
             }
         }
     }
 
     /// Internal method for opening/importing content from a file with a supported content type.
     ///
-    /// Returns Ok(true) if file was imported, Ok(false) if not, Err(_) if the import failed.
+    /// Returns Ok(Some) if file was imported, Ok(None) if not, Err if the import failed.
     async fn try_open_file(
         &self,
         input_file: gio::File,
         target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
-    ) -> anyhow::Result<bool> {
+    ) -> anyhow::Result<Option<RnCanvasWrapper>> {
         let file_imported = match FileType::lookup_file_type(&input_file) {
             FileType::RnoteFile => {
                 let input_file_path = input_file.path().ok_or_else(|| {
@@ -661,7 +669,7 @@ impl RnAppWindow {
                 // If the file is already opened in a tab, simply switch to it
                 if let Some(page) = self.tabs_query_file_opened(input_file_path) {
                     self.overlays().tabview().set_selected_page(&page);
-                    false
+                    None
                 } else {
                     let (rnote_file_new_tab, wrapper) =
                         match (rnote_file_new_tab, self.active_tab_wrapper()) {
@@ -688,58 +696,69 @@ impl RnAppWindow {
                         self.append_wrapper_new_tab(&wrapper);
                     }
                     self.handle_widget_flags(widget_flags, &wrapper.canvas());
-                    true
+                    Some(wrapper)
                 }
             }
             FileType::VectorImageFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
                 let (bytes, _) = input_file.load_bytes_future().await?;
-                canvas
+                wrapper
+                    .canvas()
                     .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
                     .await?;
-                true
+                Some(wrapper)
             }
             FileType::BitmapImageFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
                 let (bytes, _) = input_file.load_bytes_future().await?;
-                canvas
+                wrapper
+                    .canvas()
                     .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
                     .await?;
-                true
+                Some(wrapper)
             }
             FileType::XoppFile => {
                 // a new tab for xopp file import
                 let wrapper = self.new_canvas_wrapper();
-                let canvas = wrapper.canvas();
-                let file_imported =
-                    dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file).await?;
+                let file_imported = dialogs::import::dialog_import_xopp_w_prefs(
+                    self,
+                    &wrapper.canvas(),
+                    input_file,
+                )
+                .await?;
                 if file_imported {
                     self.append_wrapper_new_tab(&wrapper);
+                    Some(wrapper)
+                } else {
+                    None
                 }
-                file_imported
             }
             FileType::PdfFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
-                dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
-                    .await?
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
+                let file_imported = dialogs::import::dialog_import_pdf_w_prefs(
+                    self,
+                    &wrapper.canvas(),
+                    input_file,
+                    target_pos,
+                )
+                .await?;
+                if file_imported { Some(wrapper) } else { None }
             }
             FileType::PlaintextFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
                 let (bytes, _) = input_file.load_bytes_future().await?;
-                canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
-                true
+                wrapper
+                    .canvas()
+                    .load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                Some(wrapper)
             }
             FileType::Folder => {
                 if let Some(dir) = input_file.path() {
@@ -748,7 +767,7 @@ impl RnAppWindow {
                         .workspacesbar()
                         .set_selected_workspace_dir(dir);
                 }
-                false
+                None
             }
             FileType::Unsupported => {
                 return Err(anyhow::anyhow!("Tried to open unsupported file type"));

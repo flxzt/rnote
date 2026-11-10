@@ -997,6 +997,9 @@ impl RnCanvas {
         } else {
             // flush any pending composition before detaching
             self.imp().key_controller_im_context.reset();
+            // Focus must be removed so that the IME context can unregister its window message filter.
+            // On Windows, failing to do so causes a crash when switching from the Typewriter to the pen tool.
+            self.imp().key_controller_im_context.focus_out();
 
             self.imp()
                 .key_controller

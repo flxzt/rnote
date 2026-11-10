@@ -254,4 +254,4 @@ If you have drawn something cool in Rnote and want to share it, submit a PR to a
 
 ## Building
 
-Build instructions for Linux are documented in [BUILDING.md](./BUILDING.md) and for other platforms [here](./misc/building)
+Build instructions for Linux are documented in [BUILDING.md](./BUILDING.md) and for other platforms [here](./docs/)

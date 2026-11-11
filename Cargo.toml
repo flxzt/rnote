@@ -80,7 +80,7 @@ rodio = { version = "0.22.2", default-features = false, features = [
 rough_piet = "0.15.0"
 roughr = "0.14.0"
 roxmltree = "0.21.1"
-rstar = "0.13.0"
+rstar = "0.14.0"
 semver = { version = "1.0", features = ["serde"] }
 serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = "1.0"

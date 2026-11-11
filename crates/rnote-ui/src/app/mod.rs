@@ -2,6 +2,7 @@
 mod appactions;
 
 // Imports
+use crate::dialogs;
 use crate::{
     RnAppMenu, RnAppWindow, RnCanvas, RnCanvasMenu, RnCanvasWrapper, RnColorPicker, RnIconPicker,
     RnMainHeader, RnOverlays, RnPenPicker, RnPensSideBar, RnSettingsPanel, RnSidebar,
@@ -142,16 +143,21 @@ mod imp {
 
             appwindow.present();
 
-            // Loading in input file in the first tab, if Some
-            if let Some(input_file) = input_file {
-                glib::spawn_future_local(clone!(
-                    #[weak]
-                    appwindow,
-                    async move {
+            glib::spawn_future_local(clone!(
+                #[weak]
+                appwindow,
+                async move {
+                    // Loading in input file in the first tab, if supplied.
+                    if let Some(input_file) = input_file {
                         appwindow.open_file_w_dialogs(input_file, None, false).await;
                     }
-                ));
-            }
+                    // Recover drafts, if present.
+                    let drafts = crate::utils::find_drafts();
+                    if !drafts.is_empty() {
+                        dialogs::dialog_recover_drafts(&appwindow, drafts).await;
+                    }
+                }
+            ));
         }
 
         pub(crate) fn new_appwindow_init_return_tab(&self) -> adw::TabView {

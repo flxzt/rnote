@@ -94,6 +94,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 unicode-segmentation = "1.13"
 url = "2.5"
 usvg = "0.48.1"
+uuid = { version = "1.29.0", features = ["v4"] }
 winresource = "0.1.31"
 xmlwriter = "0.1.0"
 

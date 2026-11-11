@@ -17,7 +17,9 @@ use gtk4::{
     Builder, Button, CheckButton, ColorDialogButton, FileDialog, Label, MenuButton, StringList,
     gio, glib, glib::clone,
 };
-use tracing::{debug, error, warn};
+use std::fs;
+use std::path::PathBuf;
+use tracing::{debug, error, info, warn};
 
 // About Dialog
 pub(crate) fn dialog_about(appwindow: &RnAppWindow) {
@@ -419,6 +421,93 @@ pub(crate) async fn dialog_close_window(appwindow: &RnAppWindow) {
 
     if close {
         appwindow.close_force();
+    }
+}
+
+#[allow(unused)]
+pub(crate) async fn dialog_recover_drafts(appwindow: &RnAppWindow, found_drafts: Vec<PathBuf>) {
+    let builder = Builder::from_resource(
+        (String::from(config::APP_IDPATH) + "ui/dialogs/dialogs.ui").as_str(),
+    );
+    let dialog: adw::AlertDialog = builder.object("dialog_recover_drafts").unwrap();
+    let files_group: adw::PreferencesGroup = builder.object("recover_drafts_file_group").unwrap();
+
+    let mut rows = Vec::with_capacity(found_drafts.len());
+    for draft in found_drafts.iter() {
+        let draft_name = draft
+            .file_name()
+            .map(|f| f.to_string_lossy().to_string())
+            .unwrap_or_else(|| gettext("- invalid file name -"));
+        let drafts_folder_name = draft
+            .parent()
+            .map(|p| p.display().to_string())
+            .unwrap_or_else(|| gettext("- invalid save folder name -"));
+        let row = adw::ActionRow::builder()
+            .title(draft_name)
+            .subtitle(drafts_folder_name)
+            .subtitle_lines(2)
+            .build();
+        let check = CheckButton::builder().active(true).build();
+        let prefix_box = gtk4::Box::new(gtk4::Orientation::Horizontal, 6);
+        prefix_box.append(&check);
+        row.add_prefix(&prefix_box);
+        files_group.add(&row);
+        rows.push((draft, check))
+    }
+
+    match dialog.choose_future(Some(appwindow)).await.as_str() {
+        "recover" => {
+            debug!("Recovering drafts..");
+
+            for (draft, check) in rows {
+                if !check.is_active() {
+                    info!("Skipping recovering draft '{}'", draft.display());
+                    continue;
+                }
+                debug!("Recovering draft '{}'..", draft.display());
+                if let Some(wrapper) = appwindow
+                    .open_file_w_dialogs(gio::File::for_path(draft), None, true)
+                    .await
+                {
+                    let canvas = wrapper.canvas();
+                    canvas.set_unsaved_changes(true);
+                    canvas.set_output_file(None);
+
+                    #[allow(clippy::collapsible_if)]
+                    if appwindow.autosave() {
+                        if let Err(err) = canvas.save_draft().await {
+                            error!(
+                                "Saving recovered draft '{}' as new draft '{}' failed.",
+                                draft.display(),
+                                canvas.draft_file_name()
+                            );
+                        }
+                    }
+                    debug!("Removing recovered draft '{}'..", draft.display());
+                    if let Err(err) = fs::remove_file(draft) {
+                        error!("Removing recovered draft '{}' failed.", draft.display());
+                    } else {
+                        debug!("Removed recovered draft '{}'", draft.display());
+                    }
+                }
+                debug!("Draft '{}' recovered", draft.display());
+            }
+        }
+        "discard" => {
+            debug!("Discarding drafts..");
+            for draft in found_drafts {
+                debug!("Discarding draft '{}'", draft.display());
+                if let Err(err) = fs::remove_file(&draft) {
+                    appwindow.overlays().dispatch_toast_error(&gettext(format!(
+                        "Discarding draft '{}' failed.",
+                        draft.display()
+                    )));
+                }
+            }
+        }
+        _ => {
+            appwindow.close();
+        }
     }
 }
 

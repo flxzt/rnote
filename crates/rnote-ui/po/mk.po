@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-01 17:10+0200\n"
+"POT-Creation-Date: 2026-11-06 16:20+0100\n"
 "PO-Revision-Date: 2026-06-30 16:31+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/rnote/repo/mk/"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
-#: crates/rnote-ui/src/dialogs/mod.rs:33
+#: crates/rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
 msgstr "Скицирајте и пишувајте ракописни белешки"
 
@@ -82,7 +82,7 @@ msgid "Configure action shortcuts"
 msgstr "Копчиња-кратенки"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 #, fuzzy
 #| msgid "Clear document"
 msgid "Clear Document"
@@ -96,13 +96,14 @@ msgstr "Оваа акција го брише целиот документ. В�
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:74
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:213
-#: crates/rnote-ui/data/ui/dialogs/export.ui:14
-#: crates/rnote-ui/data/ui/dialogs/export.ui:183
-#: crates/rnote-ui/data/ui/dialogs/export.ui:423
-#: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:207
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:77
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:94
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:234
+#: crates/rnote-ui/data/ui/dialogs/export.ui:15
+#: crates/rnote-ui/data/ui/dialogs/export.ui:186
+#: crates/rnote-ui/data/ui/dialogs/export.ui:428
+#: crates/rnote-ui/data/ui/dialogs/import.ui:15
+#: crates/rnote-ui/data/ui/dialogs/import.ui:210
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "Одкажи"
@@ -113,7 +114,7 @@ msgstr "Избриши"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:730
+#: crates/rnote-ui/src/canvas/mod.rs:746
 msgid "New Document"
 msgstr "Нов документ"
 
@@ -174,78 +175,93 @@ msgid "Unsaved Documents"
 msgstr "Зачувај документ"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:78
 #, fuzzy
 #| msgid "Discard"
 msgid "Discard All"
 msgstr "Одфрли"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:66
+msgid "Recover Drafts"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
+msgid ""
+"Unsaved drafts were found.\n"
+"Should they be recovered?"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
+msgid "Recover"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:84
 #, fuzzy
 #| msgid "Edit workspace"
 msgid "Edit Workspace"
 msgstr "Уреди ја работната површина"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:100
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "Примени"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:140
 msgid "Workspace Name"
 msgstr "Име на работната површина"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:124
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
 msgid "Icon"
 msgstr "Икона"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:125
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:146
 msgid "Change the workspace icon"
 msgstr "Промени ја иконата на раб. површина"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:166
 #: crates/rnote-ui/data/ui/settingspanel.ui:345
 msgid "Color"
 msgstr "Боја"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:146
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:167
 msgid "Change the workspace color"
 msgstr "Смени ја бојата на раб. површина"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:160
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:181
 msgid "Directory"
 msgstr "Папка"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:161
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:182
 msgid "Change the workspace directory"
 msgstr "Промени ја папката на раб. површина"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:170
-#: crates/rnote-ui/data/ui/dialogs/export.ui:290
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:191
+#: crates/rnote-ui/data/ui/dialogs/export.ui:294
 #: crates/rnote-ui/src/dialogs/export.rs:485
 #: crates/rnote-ui/src/dialogs/export.rs:522
 #: crates/rnote-ui/src/dialogs/export.rs:530
-#: crates/rnote-ui/src/dialogs/mod.rs:542
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "- no directory selected -"
 msgstr "- не е одбрана ниту една папка -"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:185
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:206
 #, fuzzy
 #| msgid "Change the workspace directory"
 msgid "Change the directory"
 msgstr "Промени ја папката на раб. површина"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:229
 #, fuzzy
 #| msgid "Trash strokes"
 msgid "Trash File"
 msgstr "Расипани црти"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:230
 msgid "Are you sure you want to move this file to the trash?"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:235
 msgid "Trash"
 msgstr ""
 
@@ -256,31 +272,31 @@ msgstr ""
 msgid "Export Document"
 msgstr "Извади документ"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:19
-#: crates/rnote-ui/data/ui/dialogs/export.ui:188
-#: crates/rnote-ui/data/ui/dialogs/export.ui:428
+#: crates/rnote-ui/data/ui/dialogs/export.ui:21
+#: crates/rnote-ui/data/ui/dialogs/export.ui:192
+#: crates/rnote-ui/data/ui/dialogs/export.ui:434
 #: crates/rnote-ui/src/dialogs/export.rs:1257
 #: crates/rnote-ui/src/dialogs/export.rs:1318
 msgid "Export"
 msgstr "Извади"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:74
-#: crates/rnote-ui/data/ui/dialogs/export.ui:483
+#: crates/rnote-ui/data/ui/dialogs/export.ui:76
+#: crates/rnote-ui/data/ui/dialogs/export.ui:489
 #, fuzzy
 #| msgid "Import file"
 msgid "Export File"
 msgstr "Внеси датотека"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:75
-#: crates/rnote-ui/data/ui/dialogs/export.ui:484
+#: crates/rnote-ui/data/ui/dialogs/export.ui:77
+#: crates/rnote-ui/data/ui/dialogs/export.ui:490
 #, fuzzy
 #| msgid "Set the format width"
 msgid "Select the export file"
 msgstr "Одбери ја ширината на формата"
 
 #. force the user to pick another file
-#: crates/rnote-ui/data/ui/dialogs/export.ui:84
-#: crates/rnote-ui/data/ui/dialogs/export.ui:493
+#: crates/rnote-ui/data/ui/dialogs/export.ui:86
+#: crates/rnote-ui/data/ui/dialogs/export.ui:499
 #: crates/rnote-ui/src/dialogs/export.rs:136
 #: crates/rnote-ui/src/dialogs/export.rs:158
 #: crates/rnote-ui/src/dialogs/export.rs:165
@@ -294,145 +310,145 @@ msgstr "Одбери ја ширината на формата"
 msgid "- no file selected -"
 msgstr "- не е одбрана ниту една папка -"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:108
-#: crates/rnote-ui/data/ui/dialogs/export.ui:319
-#: crates/rnote-ui/data/ui/dialogs/export.ui:517
+#: crates/rnote-ui/data/ui/dialogs/export.ui:110
+#: crates/rnote-ui/data/ui/dialogs/export.ui:323
+#: crates/rnote-ui/data/ui/dialogs/export.ui:523
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Export Preferences"
 msgstr "Нагодувања при внес на PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:112
-#: crates/rnote-ui/data/ui/dialogs/export.ui:323
-#: crates/rnote-ui/data/ui/dialogs/export.ui:521
+#: crates/rnote-ui/data/ui/dialogs/export.ui:114
+#: crates/rnote-ui/data/ui/dialogs/export.ui:327
+#: crates/rnote-ui/data/ui/dialogs/export.ui:527
 #, fuzzy
 #| msgid "Document background"
 msgid "With Background"
 msgstr "Позадина на документ"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:113
-#: crates/rnote-ui/data/ui/dialogs/export.ui:324
-#: crates/rnote-ui/data/ui/dialogs/export.ui:522
+#: crates/rnote-ui/data/ui/dialogs/export.ui:115
+#: crates/rnote-ui/data/ui/dialogs/export.ui:328
+#: crates/rnote-ui/data/ui/dialogs/export.ui:528
 #, fuzzy
 #| msgid "Set the background color"
 msgid "Set whether the background should be exported"
 msgstr "Одреди ја позадинската боја"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:118
-#: crates/rnote-ui/data/ui/dialogs/export.ui:329
-#: crates/rnote-ui/data/ui/dialogs/export.ui:527
+#: crates/rnote-ui/data/ui/dialogs/export.ui:120
+#: crates/rnote-ui/data/ui/dialogs/export.ui:333
+#: crates/rnote-ui/data/ui/dialogs/export.ui:533
 #, fuzzy
 #| msgid "Pattern"
 msgid "With Pattern"
 msgstr "Шара"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:119
-#: crates/rnote-ui/data/ui/dialogs/export.ui:330
-#: crates/rnote-ui/data/ui/dialogs/export.ui:528
+#: crates/rnote-ui/data/ui/dialogs/export.ui:121
+#: crates/rnote-ui/data/ui/dialogs/export.ui:334
+#: crates/rnote-ui/data/ui/dialogs/export.ui:534
 #, fuzzy
 #| msgid "Set the background color"
 msgid "Set whether the background pattern should be exported"
 msgstr "Одреди ја позадинската боја"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:124
-#: crates/rnote-ui/data/ui/dialogs/export.ui:335
-#: crates/rnote-ui/data/ui/dialogs/export.ui:533
+#: crates/rnote-ui/data/ui/dialogs/export.ui:126
+#: crates/rnote-ui/data/ui/dialogs/export.ui:339
+#: crates/rnote-ui/data/ui/dialogs/export.ui:539
 msgid "Optimize for Printing"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:125
-#: crates/rnote-ui/data/ui/dialogs/export.ui:336
-#: crates/rnote-ui/data/ui/dialogs/export.ui:534
+#: crates/rnote-ui/data/ui/dialogs/export.ui:127
+#: crates/rnote-ui/data/ui/dialogs/export.ui:340
+#: crates/rnote-ui/data/ui/dialogs/export.ui:540
 #, fuzzy
 #| msgid "Set the background color"
 msgid "Set whether the content should be optimized for printing"
 msgstr "Одреди ја позадинската боја"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:130
-#: crates/rnote-ui/data/ui/dialogs/export.ui:341
-#: crates/rnote-ui/data/ui/dialogs/export.ui:539
+#: crates/rnote-ui/data/ui/dialogs/export.ui:132
+#: crates/rnote-ui/data/ui/dialogs/export.ui:345
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
 #, fuzzy
 #| msgid "Export document"
 msgid "Export Format"
 msgstr "Извади документ"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:131
-#: crates/rnote-ui/data/ui/dialogs/export.ui:342
+#: crates/rnote-ui/data/ui/dialogs/export.ui:133
+#: crates/rnote-ui/data/ui/dialogs/export.ui:346
 #, fuzzy
 #| msgid "Export document"
 msgid "The export format"
 msgstr "Извади документ"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/data/ui/dialogs/export.ui:346
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/export.ui:137
+#: crates/rnote-ui/data/ui/dialogs/export.ui:350
+#: crates/rnote-ui/data/ui/dialogs/export.ui:550
 #: crates/rnote-ui/src/dialogs/export.rs:368
 #: crates/rnote-ui/src/dialogs/export.rs:793
 #: crates/rnote-ui/src/dialogs/export.rs:1186
 msgid "Svg"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:136
+#: crates/rnote-ui/data/ui/dialogs/export.ui:138
 #: crates/rnote-ui/src/dialogs/export.rs:379
 msgid "Pdf"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:137
+#: crates/rnote-ui/data/ui/dialogs/export.ui:139
 #: crates/rnote-ui/src/dialogs/export.rs:390
 msgid "Xopp"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:145
-#: crates/rnote-ui/data/ui/dialogs/export.ui:356
+#: crates/rnote-ui/data/ui/dialogs/export.ui:147
+#: crates/rnote-ui/data/ui/dialogs/export.ui:360
 #, fuzzy
 #| msgid "Pages type"
 msgid "Page Order"
 msgstr "Вид на страници"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+#: crates/rnote-ui/data/ui/dialogs/export.ui:148
+#: crates/rnote-ui/data/ui/dialogs/export.ui:361
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
 "are cut into pages"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:152
-#: crates/rnote-ui/data/ui/dialogs/export.ui:363
+#: crates/rnote-ui/data/ui/dialogs/export.ui:154
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
 msgid "Horizontal First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:153
-#: crates/rnote-ui/data/ui/dialogs/export.ui:364
+#: crates/rnote-ui/data/ui/dialogs/export.ui:155
+#: crates/rnote-ui/data/ui/dialogs/export.ui:368
 msgid "Vertical First"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:174
+#: crates/rnote-ui/data/ui/dialogs/export.ui:176
 #: crates/rnote-ui/src/dialogs/export.rs:773
 #, fuzzy
 #| msgid "Export document as SVG"
 msgid "Export Document Pages"
 msgstr "Извади го документот во SVG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:260
+#: crates/rnote-ui/data/ui/dialogs/export.ui:264
 #, fuzzy
 #| msgid "Page spacing"
 msgid "Page Files Naming:"
 msgstr "Проред"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:280
+#: crates/rnote-ui/data/ui/dialogs/export.ui:284
 #, fuzzy
 #| msgid "Create Directory"
 msgid "Export Directory"
 msgstr "Создај папка"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:281
+#: crates/rnote-ui/data/ui/dialogs/export.ui:285
 #, fuzzy
 #| msgid "Set the format width"
 msgid "Select the export directory"
 msgstr "Одбери ја ширината на формата"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:312
+#: crates/rnote-ui/data/ui/dialogs/export.ui:316
 #, fuzzy
 #| msgid "Export engine state"
 msgctxt ""
@@ -440,58 +456,58 @@ msgctxt ""
 msgid "Export Files Stem Name"
 msgstr "Извади ја внатрешната состојба на програмот"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:347
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/export.ui:351
+#: crates/rnote-ui/data/ui/dialogs/export.ui:551
 #: crates/rnote-ui/src/dialogs/export.rs:804
 #: crates/rnote-ui/src/dialogs/export.rs:1197
 msgid "Png"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:348
-#: crates/rnote-ui/data/ui/dialogs/export.ui:546
+#: crates/rnote-ui/data/ui/dialogs/export.ui:352
+#: crates/rnote-ui/data/ui/dialogs/export.ui:552
 #: crates/rnote-ui/src/dialogs/export.rs:817
 #: crates/rnote-ui/src/dialogs/export.rs:1210
 msgid "Jpeg"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:372
-#: crates/rnote-ui/data/ui/dialogs/export.ui:554
-#: crates/rnote-ui/data/ui/dialogs/import.ui:160
+#: crates/rnote-ui/data/ui/dialogs/export.ui:376
+#: crates/rnote-ui/data/ui/dialogs/export.ui:560
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Bitmap Scale-Factor"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#: crates/rnote-ui/data/ui/dialogs/export.ui:377
+#: crates/rnote-ui/data/ui/dialogs/export.ui:561
+#: crates/rnote-ui/data/ui/dialogs/import.ui:163
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:381
-#: crates/rnote-ui/data/ui/dialogs/export.ui:563
+#: crates/rnote-ui/data/ui/dialogs/export.ui:385
+#: crates/rnote-ui/data/ui/dialogs/export.ui:569
 msgid "Jpeg Quality"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:382
-#: crates/rnote-ui/data/ui/dialogs/export.ui:564
+#: crates/rnote-ui/data/ui/dialogs/export.ui:386
+#: crates/rnote-ui/data/ui/dialogs/export.ui:570
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:414
+#: crates/rnote-ui/data/ui/dialogs/export.ui:418
 #: crates/rnote-ui/src/dialogs/export.rs:1165
 msgid "Export Selection"
 msgstr "Извади го одбраното"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:540
+#: crates/rnote-ui/data/ui/dialogs/export.ui:546
 msgid "The export image format"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:571
+#: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Margin"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:572
+#: crates/rnote-ui/data/ui/dialogs/export.ui:578
 msgid "Set the margin around the selected area"
 msgstr ""
 
@@ -501,214 +517,188 @@ msgstr ""
 msgid "Import Pdf"
 msgstr "Внеси PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/data/ui/dialogs/import.ui:21
+#: crates/rnote-ui/data/ui/dialogs/import.ui:216
 #: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "Внеси"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:63
+#: crates/rnote-ui/data/ui/dialogs/import.ui:65
 msgid "Info"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:81
+#: crates/rnote-ui/data/ui/dialogs/import.ui:83
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Pdf Import Preferences"
 msgstr "Нагодувања при внес на PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:85
+#: crates/rnote-ui/data/ui/dialogs/import.ui:87
 msgid "Start Page"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:94
+#: crates/rnote-ui/data/ui/dialogs/import.ui:96
 #, fuzzy
 msgid "End Page"
 msgstr "Додај страница"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:103
+#: crates/rnote-ui/data/ui/dialogs/import.ui:105
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Document"
 msgid "Adjust Document"
 msgstr "Документ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:104
+#: crates/rnote-ui/data/ui/dialogs/import.ui:106
 #, fuzzy
 #| msgid "Set the background color"
 msgid "Whether the document layout should be adjusted to the Pdf"
 msgstr "Одреди ја позадинската боја"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+#: crates/rnote-ui/data/ui/dialogs/import.ui:111
 #, fuzzy
 #| msgid "Page width (%)"
 msgid "Page Width (%)"
 msgstr "Ширина на страница (%)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+#: crates/rnote-ui/data/ui/dialogs/import.ui:112
 #, fuzzy
 #| msgid "Set the width of imported PDF's in percentage to the format width"
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "Одбери ја ширината на внесениот PDF во проценти од ширината на формата"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:117
+#: crates/rnote-ui/data/ui/dialogs/import.ui:119
 #, fuzzy
 #| msgid "Page spacing"
 msgid "Page Spacing"
 msgstr "Проред"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:118
+#: crates/rnote-ui/data/ui/dialogs/import.ui:120
 #, fuzzy
 #| msgid "How PDF pages are spaced"
 msgid "How Pdf pages are spaced"
 msgstr "Како се проредуваат страниците на PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:122
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
 msgid "Continuous"
 msgstr "Во продолжение"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+#: crates/rnote-ui/data/ui/dialogs/import.ui:125
 #, fuzzy
 #| msgid "One per document page"
 msgid "One per Document Page"
 msgstr "Еден документ по страница"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:131
+#: crates/rnote-ui/data/ui/dialogs/import.ui:133
 #, fuzzy
 #| msgid "Pages type"
 msgid "Pages Type"
 msgstr "Вид на страници"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:132
+#: crates/rnote-ui/data/ui/dialogs/import.ui:134
 #, fuzzy
 #| msgid "Set whether PDFs should be imported as vector or bitmap images"
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "Одреди дали PDF треба да се внесува како вектор или слика"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:144
+#: crates/rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Vector"
 msgstr "Вектор"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:151
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
 msgid "Bitmap"
 msgstr "Слика"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:200
 #, fuzzy
 #| msgid "Import file"
 msgid "Import Xournal++ File"
 msgstr "Внеси датотека"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:241
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 #, fuzzy
 #| msgid "PDF import preferences"
 msgid "Xournal++ File Import Preferences"
 msgstr "Нагодувања при внес на PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:245
+#: crates/rnote-ui/data/ui/dialogs/import.ui:249
 msgid "DPI"
 msgstr "ТПИ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:246
+#: crates/rnote-ui/data/ui/dialogs/import.ui:250
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:267
+#: crates/rnote-ui/data/ui/dialogs/import.ui:271
 msgid "is password protected"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:270
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "Encrypted PDF"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:277
 #, fuzzy
 #| msgid "Cancel"
 msgid "_Cancel"
 msgstr "Одкажи"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:274
+#: crates/rnote-ui/data/ui/dialogs/import.ui:278
 msgid "_Unlock"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:285
+#: crates/rnote-ui/data/ui/dialogs/import.ui:289
 msgid "Enter the PDF password"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
-#, fuzzy
-#| msgid "Brush style"
-msgid "Brush Style"
-msgstr "Вид на четка"
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:26
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
+msgid "Solid"
+msgstr "Полно"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:36
+msgid "Marker"
+msgstr "Означувач"
+
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:46
+msgid "Textured"
+msgstr "Текстурирано"
+
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:61
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:93
 #, fuzzy
 #| msgid "Brush configuration"
 msgid "Brush Configuration"
 msgstr "Нагодувања за четката"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
-#, fuzzy
-#| msgid "Brush styles"
-msgid "Brush Styles"
-msgstr "Видови на четки"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
-msgid "Marker"
-msgstr "Означувач"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
-#, fuzzy
-#| msgid "Mark underneath other brush strokes"
-msgid "Mark underneath other strokes"
-msgstr "Означи под другите потези со четка"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
-msgid "Solid"
-msgstr "Полно"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
-msgid "Draw solid color strokes"
-msgstr "Цртај полни обоени линии"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
-msgid "Textured"
-msgstr "Текстурирано"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
-msgid "Draw textured strokes"
-msgstr "Цртај текстурирани линии"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:114
 #, fuzzy
 #| msgid "Path modelling"
 msgid "Path Modelling"
 msgstr "Моделирање на патека"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:131
 msgid "Simple"
 msgstr "Едноставно"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:188
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:132
 msgid "Produces line segments from the raw input.\n"
 msgstr "Произведува линијски делчиња од суровиот внес.\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:138
 msgid "Curved"
 msgstr "Закривено"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:139
 msgid "Produces smooth, curved segments.\n"
 msgstr "Создава мазни, закривени делчиња.\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:145
 msgid "Modeled"
 msgstr "Моделирано"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:202
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:146
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
@@ -716,61 +706,61 @@ msgstr ""
 "Создава моделирана патека преку алгоритми базирани на физика.\n"
 "Резултира во најдобар ракопис."
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:155
 #, fuzzy
 #| msgid "Solid style"
 msgid "Solid Style"
 msgstr "Полна линија"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:158
 #, fuzzy
 #| msgid "Pressure curve"
 msgid "Pressure Curve"
 msgstr "Крива на притисок"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Choose a pressure curve"
 msgstr "Одбери крива на притисок"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Constant"
 msgstr "Постојана"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:220
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:164
 msgid "Linear"
 msgstr "Линеарна"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:221
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:165
 msgid "Square root"
 msgstr "Квадратен корен"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:222
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Cubic root"
 msgstr "Кубен корен"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:223
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Quadratic Parabola"
 msgstr "Квадратна парабола"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:224
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Cubic Parabola"
 msgstr "Кубна парабола"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:179
 #, fuzzy
 #| msgid "Textured style"
 msgid "Textured Style"
 msgstr "Вид на текстурирање"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid "Density"
 msgstr "Густина"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:239
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "Густината е бројот на точки на површина од 10х10"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:192
 #, fuzzy
 #| msgid "Stroke dots position distribution"
 msgctxt ""
@@ -778,32 +768,32 @@ msgctxt ""
 msgid "Stroke Dots Position Distribution"
 msgstr "Позиционен распоред на цртежните точки"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Choose a dots position probability distribution"
 msgstr "Одбери веројатносен распоред на позицијата на точките"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:197
 #, fuzzy
 #| msgid "Uniform"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "Воедначено"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:198
 #, fuzzy
 #| msgid "Normal"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "Нормално"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:199
 #, fuzzy
 #| msgid "Exponential"
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "Експоненцијално"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:200
 #, fuzzy
 #| msgid "Reverse Exponential"
 msgctxt "A variant of the textured pen texture distribution"
@@ -897,7 +887,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr ""
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:100
-#: crates/rnote-ui/data/ui/shortcuts.ui:260
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 #, fuzzy
 #| msgid "Duplicate selection"
 msgid "Duplicate Selection"
@@ -909,172 +899,166 @@ msgstr "Удвои го одбраното"
 msgid "Delete Selection"
 msgstr "Избриши го одбраното"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:20
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
 #, fuzzy
 #| msgid "Shape builders"
 msgid "Shape Builders"
 msgstr "Создавање на форма"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:41
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:80
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:48
+msgid "Smooth"
+msgstr "Мазно"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:58
+msgid "Rough"
+msgstr "Грубо"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:105
 #, fuzzy
 #| msgid "Shape configuration"
 msgid "Shape Configuration"
 msgstr "Распоред на форма"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:103
-#, fuzzy
-#| msgid "Shaper style"
-msgid "Shaper Style"
-msgstr "Вид на оформувач"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:113
-msgid "Smooth"
-msgstr "Мазно"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:124
-msgid "Rough"
-msgstr "Грубо"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:128
 msgid "Highlighting"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:144
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:131
 msgid "Highlight-Mode"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:145
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Fade active color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:150
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:137
 msgid "Highlight-Opacity"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:151
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:138
 msgid "Modify the highlight opacity (%)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:157
 #, fuzzy
 #| msgid "Solid style"
 msgid "Smooth Style"
 msgstr "Полна линија"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:160
 #, fuzzy
 #| msgid "Linear"
 msgid "Line Cap"
 msgstr "Линеарна"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a line cap"
 msgstr "Одбери форма"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
 #, fuzzy
 #| msgid "Height"
 msgid "Straight"
 msgstr "Висина"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:166
 msgid "Round"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 #, fuzzy
 #| msgid "Solid style"
 msgid "Line Style"
 msgstr "Полна линија"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:188
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a line style"
 msgstr "Одбери форма"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:193
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:180
 msgid "Dotted"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:194
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:181
 msgid "Dashed (narrow)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:182
 msgid "Dashed (equidistant)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
 msgid "Dashed (wide)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
 #, fuzzy
 #| msgid "Rough style"
 msgid "Rough Style"
 msgstr "Груб вид"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:198
 #, fuzzy
 #| msgid "Solid style"
 msgid "Fill Style"
 msgstr "Полна линија"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a fill style"
 msgstr "Одбери форма"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
 msgid "Hachure"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
 msgid "Zig-Zag"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:219
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
 msgid "Zig-Zag Line"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:220
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Crosshatch"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "Точки"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
 msgid "Dashed"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:230
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
 msgid "Hachure Angle"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:231
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
 #, fuzzy
 #| msgid "Set the drawing cursor"
 msgid "Set the angle of hachure fills"
 msgstr "Одбери го покажувачот за цртање"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:250
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:237
 msgid "Constraints"
 msgstr "Ограничувања"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:261
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Enabled"
 msgstr "Овозможено"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:262
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:249
 #, fuzzy
 #| msgid ""
 #| "Hold Ctrl to temporarily enable/disable constraints\n"
@@ -1086,45 +1070,45 @@ msgstr ""
 "Држи CTRL за да привремено овозможиш / оневозможиш \n"
 "ограничувања кога оваа опција е исклучена / вклучена"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:268
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "1:1"
 msgstr "1:1"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:273
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:260
 msgid "3:2"
 msgstr "3:2"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:278
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:265
 #, fuzzy
 #| msgid "Golden ratio (1:1.618)"
 msgid "Golden Ratio (1:1.618)"
 msgstr "Златен пресек (1:1,618)"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:21
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:22
 #, fuzzy
 #| msgid "Insert vertical space"
 msgid "Insert Vertical Space"
 msgstr "Внеси вертикален простор"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:32
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:102
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:103
 #, fuzzy
 #| msgid "Shape configuration"
 msgid "Vertical-Space Tool Configuration"
 msgstr "Распоред на форма"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:48
-#: crates/rnote-ui/data/ui/shortcuts.ui:114
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
+#: crates/rnote-ui/data/ui/shortcuts.ui:120
 msgid "Move View"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:63
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:64
 #, fuzzy
 #| msgid "Zoom out"
 msgid "Zoom In/Out"
 msgstr "Оддалечи"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:78
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:79
 #, fuzzy
 #| msgid "Eraser"
 msgid "Laser"
@@ -1151,17 +1135,17 @@ msgid "Reset Text Attributes"
 msgstr "Врати ги оригиналните одлики на текстот"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Bold"
 msgstr "Задебелено"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:87
-#: crates/rnote-ui/data/ui/shortcuts.ui:227
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Italic"
 msgstr "Закосено"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
-#: crates/rnote-ui/data/ui/shortcuts.ui:233
+#: crates/rnote-ui/data/ui/shortcuts.ui:245
 msgid "Underline"
 msgstr "Подцртано"
 
@@ -1441,9 +1425,9 @@ msgid "C_lear Document"
 msgstr "Избриши го документот"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:85
-#: crates/rnote-ui/data/ui/shortcuts.ui:138
 #: crates/rnote-ui/data/ui/shortcuts.ui:144
 #: crates/rnote-ui/data/ui/shortcuts.ui:150
+#: crates/rnote-ui/data/ui/shortcuts.ui:156
 msgid "Zoom out"
 msgstr "Оддалечи"
 
@@ -1454,9 +1438,9 @@ msgid "Reset Zoom"
 msgstr "Далечина на 100%"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:101
-#: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
+#: crates/rnote-ui/data/ui/shortcuts.ui:138
 msgid "Zoom in"
 msgstr "Доближи"
 
@@ -1527,43 +1511,43 @@ msgid "Duplicate"
 msgstr "Удвои"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:732
+#: crates/rnote-ui/src/canvas/mod.rs:748
 msgid "Draft"
 msgstr "Урнек"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:40
-#: crates/rnote-ui/data/ui/mainheader.ui:81
+#: crates/rnote-ui/data/ui/mainheader.ui:41
+#: crates/rnote-ui/data/ui/mainheader.ui:83
 msgid "Show/Hide Sidebar"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/mainheader.ui:47
+#: crates/rnote-ui/data/ui/mainheader.ui:48
 #: crates/rnote-ui/data/ui/shortcuts.ui:26
 msgid "New Tab"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/mainheader.ui:54
+#: crates/rnote-ui/data/ui/mainheader.ui:55
 msgid "View Open Tabs"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/mainheader.ui:61
+#: crates/rnote-ui/data/ui/mainheader.ui:62
 msgid "Focus Mode"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/mainheader.ui:73
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/mainheader.ui:75
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 #, fuzzy
 #| msgid "Save document"
 msgid "Save Document"
 msgstr "Зачувај документ"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:89
+#: crates/rnote-ui/data/ui/mainheader.ui:91
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Open the canvas menu"
 msgid "Canvas Menu"
 msgstr "Отвори го менито за платното"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:94
+#: crates/rnote-ui/data/ui/mainheader.ui:96
 msgid "App Menu"
 msgstr ""
 
@@ -1581,6 +1565,12 @@ msgstr ""
 #| msgid "Close the active window"
 msgid "_Close"
 msgstr "Затвори го активниот прозорец"
+
+#: crates/rnote-ui/data/ui/overlays.ui:114
+#, fuzzy
+#| msgid "New Window"
+msgid "_Move to New Window"
+msgstr "Нов прозорец"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
@@ -1610,7 +1600,9 @@ msgid "Autosave"
 msgstr "Авто-зачувување"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:45
-msgid "Enable or disable autosave"
+#, fuzzy
+#| msgid "Enable or disable autosave"
+msgid "Enable or disable autosave for documents and drafts"
 msgstr "Овозможи или поништи авто-зачувување"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
@@ -1790,8 +1782,8 @@ msgid "Revert"
 msgstr "Врати"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:277
-#: crates/rnote-ui/data/ui/shortcuts.ui:164
-#: crates/rnote-ui/src/dialogs/mod.rs:705
+#: crates/rnote-ui/data/ui/shortcuts.ui:176
+#: crates/rnote-ui/src/dialogs/mod.rs:794
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Document"
@@ -1872,7 +1864,7 @@ msgid "Lines"
 msgstr "Линии"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:373
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:677
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:704
 msgid "Grid"
 msgstr "Мрежа"
 
@@ -2052,6 +2044,30 @@ msgid ""
 "on a drawing pad"
 msgstr ""
 
+#: crates/rnote-ui/data/ui/settingspanel.ui:583
+msgid "Stylus pen modes"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:586
+msgid "Tool for the pen action"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:587
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid "Set/lock the action for the pen"
+msgstr "Одреди ја акцијата на второто копче на глувчето"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:598
+msgid "Tool for the eraser action"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:599
+#, fuzzy
+#| msgid "Set the action for the secondary mouse button"
+msgid "Set/lock the action for the eraser"
+msgstr "Одреди ја акцијата на второто копче на глувчето"
+
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
 #, fuzzy
 #| msgctxt "shortcut window"
@@ -2122,107 +2138,119 @@ msgstr ""
 msgid "Switch to the 'Tools'"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:111
+#: crates/rnote-ui/data/ui/shortcuts.ui:109
+#, fuzzy
+#| msgid "Selector"
+msgid "Select Color"
+msgstr "Одбирач"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:117
 msgid "View"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:115
+#: crates/rnote-ui/data/ui/shortcuts.ui:121
 msgid "Alt + Drag"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:156
+#: crates/rnote-ui/data/ui/shortcuts.ui:162
 #, fuzzy
 #| msgid "Zoom out"
 msgid "Zoom in/out"
 msgstr "Оддалечи"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:157
+#: crates/rnote-ui/data/ui/shortcuts.ui:163
 msgid "Alt + Shift + Drag"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:167
+#: crates/rnote-ui/data/ui/shortcuts.ui:168
+#, fuzzy
+#| msgid "Return to the origin page"
+msgid "Return to Origin Page"
+msgstr "Врати се на почетната страница"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Open document"
 msgid "Open Document"
 msgstr "Отвори документ"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 #: crates/rnote-ui/src/dialogs/export.rs:41
 #, fuzzy
 #| msgid "Save document as"
 msgid "Save Document As"
 msgstr "Зачувај го документот како"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 #, fuzzy
 #| msgid "Shape configuration"
 msgid "Snap Positions"
 msgstr "Распоред на форма"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:215
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:209
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Print document"
 msgid "Print Document"
 msgstr "Испечати документ"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:215
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 #: crates/rnote-ui/src/dialogs/import.rs:93
 #, fuzzy
 #| msgid "Import file"
 msgid "Import File"
 msgstr "Внеси датотека"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:239
+#: crates/rnote-ui/data/ui/shortcuts.ui:251
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Drawing"
 msgid "Drawing"
 msgstr "Цртање"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Copy into clipboard"
 msgid "Copy to Clipboard"
 msgstr "Копирај кај привремена меморија"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Copy into clipboard"
 msgid "Cut to Clipboard"
 msgstr "Копирај кај привремена меморија"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 #, fuzzy
 #| msgctxt "shortcut window"
 #| msgid "Paste clipboard"
 msgid "Paste Clipboard"
 msgstr "Налепи од привремената меморија"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:266
+#: crates/rnote-ui/data/ui/shortcuts.ui:278
 msgid "Undo"
 msgstr "Поврати"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:272
+#: crates/rnote-ui/data/ui/shortcuts.ui:284
 msgid "Redo"
 msgstr "Повтори"
 
-#: crates/rnote-ui/data/ui/sidebar.ui:50
+#: crates/rnote-ui/data/ui/sidebar.ui:52
 msgid "Workspace"
 msgstr "Работна површина"
 
-#: crates/rnote-ui/data/ui/sidebar.ui:61
+#: crates/rnote-ui/data/ui/sidebar.ui:63
 msgid "Settings"
 msgstr "Поставки"
 
@@ -2262,104 +2290,113 @@ msgstr "Создај папка"
 msgid "Open Workspace Folder"
 msgstr "Име на работната површина"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:845
-#: crates/rnote-ui/src/appwindow/imp.rs:425
+#: crates/rnote-ui/src/appwindow/actions.rs:881
+#: crates/rnote-ui/src/appwindow/imp.rs:462
 #: crates/rnote-ui/src/dialogs/export.rs:82
-#: crates/rnote-ui/src/dialogs/mod.rs:127
-#: crates/rnote-ui/src/dialogs/mod.rs:257
-#: crates/rnote-ui/src/dialogs/mod.rs:407
+#: crates/rnote-ui/src/dialogs/mod.rs:129
+#: crates/rnote-ui/src/dialogs/mod.rs:259
+#: crates/rnote-ui/src/dialogs/mod.rs:409
 #, fuzzy
 #| msgid "Saving document failed."
 msgid "Saving document failed"
 msgstr "Зачувувањето на документот беше неуспешно."
 
-#: crates/rnote-ui/src/appwindow/actions.rs:936
+#: crates/rnote-ui/src/appwindow/actions.rs:972
 msgid "Printing document failed"
 msgstr "Печатењето на документот беше неуспешно"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:1013
+#: crates/rnote-ui/src/appwindow/actions.rs:1049
 #, fuzzy
 #| msgid "Export selection as SVG failed."
 msgid "Exporting selection failed, nothing selected"
 msgstr "Неуспешно вадење на одбраното како SVG."
 
-#: crates/rnote-ui/src/appwindow/imp.rs:377
+#: crates/rnote-ui/src/appwindow/imp.rs:411
 msgid "Saves are in progress, waiting before closing..."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:447
+#: crates/rnote-ui/src/appwindow/imp.rs:490
 msgid "Button 1"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:454
+#: crates/rnote-ui/src/appwindow/imp.rs:497
 msgid "Button 2"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:461
+#: crates/rnote-ui/src/appwindow/imp.rs:504
 msgid "Button 3"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/imp.rs:468
+#: crates/rnote-ui/src/appwindow/imp.rs:511
 msgid "Button 4"
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:224
+#: crates/rnote-ui/src/appwindow/mod.rs:97
+msgid "Tool Locked"
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/mod.rs:98
+msgid "Unlock"
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/mod.rs:276
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
 
-#: crates/rnote-ui/src/appwindow/mod.rs:572
+#: crates/rnote-ui/src/appwindow/mod.rs:645
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Opening file failed"
 msgstr "Отворањето на датотеката беше неуспешно."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1005
-#: crates/rnote-ui/src/dialogs/mod.rs:205
-#: crates/rnote-ui/src/dialogs/mod.rs:338
+#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/dialogs/mod.rs:207
+#: crates/rnote-ui/src/dialogs/mod.rs:340
+#: crates/rnote-ui/src/dialogs/mod.rs:440
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid file name -"
 msgstr "- нема име на датотека -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1018
+#: crates/rnote-ui/src/canvas/mod.rs:1056
 msgid "- invalid folder path -"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1042
+#: crates/rnote-ui/src/canvas/mod.rs:1091
 msgid "Opened file was modified on disk"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1092
 msgid "Reload"
 msgstr ""
 
-#: crates/rnote-ui/src/canvas/mod.rs:1059
+#: crates/rnote-ui/src/canvas/mod.rs:1108
 #, fuzzy
 #| msgid "Opening .rnote file failed."
 msgid "Reloading .rnote file from disk failed"
 msgstr "Неуспешно отворање на .rnote датотеката."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1134
+#: crates/rnote-ui/src/canvas/mod.rs:1183
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Opened file was renamed or moved."
 msgstr "Отворањето на датотеката беше неуспешно."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1153
+#: crates/rnote-ui/src/canvas/mod.rs:1202
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Opened file was removed."
 msgstr "Отворањето на датотеката беше неуспешно."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1383
+#: crates/rnote-ui/src/canvas/mod.rs:1432
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Inserting file failed"
 msgstr "Отворањето на датотеката беше неуспешно."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1395
+#: crates/rnote-ui/src/canvas/mod.rs:1444
 #, fuzzy
 #| msgid "Printing document failed"
 msgid "Inserting text failed"
@@ -2418,7 +2455,7 @@ msgstr "Неуспех: Неподдржан датотечен вид."
 #: crates/rnote-ui/src/dialogs/export.rs:351
 #: crates/rnote-ui/src/dialogs/export.rs:775
 #: crates/rnote-ui/src/dialogs/export.rs:1167
-#: crates/rnote-ui/src/dialogs/mod.rs:524
+#: crates/rnote-ui/src/dialogs/mod.rs:613
 msgid "Select"
 msgstr "Одбери"
 
@@ -2508,457 +2545,458 @@ msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr ""
 
 #: crates/rnote-ui/src/dialogs/import.rs:187
-#: crates/rnote-ui/src/dialogs/import.rs:419
+#: crates/rnote-ui/src/dialogs/import.rs:414
 msgid "- no file name -"
 msgstr "- нема име на датотека -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:426
+#: crates/rnote-ui/src/dialogs/import.rs:421
 msgid "- no title -"
 msgstr "- нема наслов -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no author -"
 msgstr "- нема автор -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:438
+#: crates/rnote-ui/src/dialogs/import.rs:433
 #, fuzzy
 #| msgid "Modification date:"
 msgid "- no modification date -"
 msgstr "Датум на промена:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:439
 msgid "File name:"
 msgstr "Име на датотека:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:440
 msgid "Title:"
 msgstr "Наслов:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:441
 msgid "Author:"
 msgstr "Автор:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:442
 msgid "Modification date:"
 msgstr "Датум на промена:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:448
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "Pages:"
 msgstr "Страници:"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: crates/rnote-ui/src/dialogs/mod.rs:40
+#: crates/rnote-ui/src/dialogs/mod.rs:42
 msgid "translator-credits"
 msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:212
-#: crates/rnote-ui/src/dialogs/mod.rs:345
+#: crates/rnote-ui/src/dialogs/mod.rs:214
+#: crates/rnote-ui/src/dialogs/mod.rs:347
+#: crates/rnote-ui/src/dialogs/mod.rs:444
 #, fuzzy
 #| msgid "- no file name -"
 msgid "- invalid save folder name -"
 msgstr "- нема име на датотека -"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:228
-#: crates/rnote-ui/src/dialogs/mod.rs:360
+#: crates/rnote-ui/src/dialogs/mod.rs:230
+#: crates/rnote-ui/src/dialogs/mod.rs:362
 msgid "The changes will be saved"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:233
-#: crates/rnote-ui/src/dialogs/mod.rs:365
+#: crates/rnote-ui/src/dialogs/mod.rs:235
+#: crates/rnote-ui/src/dialogs/mod.rs:367
 #, fuzzy
 #| msgid "- no directory selected -"
 msgid "A new file will be created"
 msgstr "- не е одбрана ниту една папка -"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:522
+#: crates/rnote-ui/src/dialogs/mod.rs:611
 #, fuzzy
 #| msgid "Change workspace directory"
 msgid "Change Workspace Directory"
 msgstr "Промени ја папката на раб. површина"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:707
 #, fuzzy
 #| msgid "Opening file failed."
 msgid "Trashing file failed"
 msgstr "Отворањето на датотеката беше неуспешно."
 
-#: crates/rnote-ui/src/dialogs/mod.rs:692
+#: crates/rnote-ui/src/dialogs/mod.rs:781
 msgid "Band-Aid"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:693
+#: crates/rnote-ui/src/dialogs/mod.rs:782
 msgid "Bank"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:694
+#: crates/rnote-ui/src/dialogs/mod.rs:783
 msgid "Bookmark"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:695
+#: crates/rnote-ui/src/dialogs/mod.rs:784
 msgid "Book"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:696
+#: crates/rnote-ui/src/dialogs/mod.rs:785
 msgid "Bread"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:697
+#: crates/rnote-ui/src/dialogs/mod.rs:786
 msgid "Calendar"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:698
+#: crates/rnote-ui/src/dialogs/mod.rs:787
 msgid "Camera"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:699
+#: crates/rnote-ui/src/dialogs/mod.rs:788
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:700
+#: crates/rnote-ui/src/dialogs/mod.rs:789
 msgid "Clock"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:701
+#: crates/rnote-ui/src/dialogs/mod.rs:790
 msgid "Code"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:702
+#: crates/rnote-ui/src/dialogs/mod.rs:791
 msgid "Compose"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:703
+#: crates/rnote-ui/src/dialogs/mod.rs:792
 msgctxt "as in plant"
 msgid "Crop"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:704
+#: crates/rnote-ui/src/dialogs/mod.rs:793
 msgid "Dictionary"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:706
+#: crates/rnote-ui/src/dialogs/mod.rs:795
 msgid "Drinks"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:707
+#: crates/rnote-ui/src/dialogs/mod.rs:796
 msgid "Flag"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:708
+#: crates/rnote-ui/src/dialogs/mod.rs:797
 #, fuzzy
 #| msgid "File name:"
 msgid "Folder"
 msgstr "Име на датотека:"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:709
+#: crates/rnote-ui/src/dialogs/mod.rs:798
 #, fuzzy
 #| msgid "Constraints"
 msgid "Footprints"
 msgstr "Ограничувања"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:710
+#: crates/rnote-ui/src/dialogs/mod.rs:799
 msgid "Gamepad"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:711
+#: crates/rnote-ui/src/dialogs/mod.rs:800
 msgid "Gear"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:712
+#: crates/rnote-ui/src/dialogs/mod.rs:801
 msgid "Globe"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:713
+#: crates/rnote-ui/src/dialogs/mod.rs:802
 msgid "Hammer"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:714
+#: crates/rnote-ui/src/dialogs/mod.rs:803
 msgid "Heart"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:715
+#: crates/rnote-ui/src/dialogs/mod.rs:804
 msgid "Hourglass"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:716
+#: crates/rnote-ui/src/dialogs/mod.rs:805
 msgid "Key"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:717
+#: crates/rnote-ui/src/dialogs/mod.rs:806
 msgid "Language"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:718
+#: crates/rnote-ui/src/dialogs/mod.rs:807
 msgid "Library"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:719
+#: crates/rnote-ui/src/dialogs/mod.rs:808
 msgid "Lightbulb"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:720
+#: crates/rnote-ui/src/dialogs/mod.rs:809
 msgid "Mathematics"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:721
+#: crates/rnote-ui/src/dialogs/mod.rs:810
 #, fuzzy
 #| msgid "Settings"
 msgid "Meeting"
 msgstr "Поставки"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:722
+#: crates/rnote-ui/src/dialogs/mod.rs:811
 msgid "Money"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:723
+#: crates/rnote-ui/src/dialogs/mod.rs:812
 msgid "Musical Note"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:724
+#: crates/rnote-ui/src/dialogs/mod.rs:813
 msgid "Nature"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:725
+#: crates/rnote-ui/src/dialogs/mod.rs:814
 #, fuzzy
 #| msgid "Open"
 msgid "Open Book"
 msgstr "Отвори"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:726
+#: crates/rnote-ui/src/dialogs/mod.rs:815
 msgid "Paintbrush"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:727
+#: crates/rnote-ui/src/dialogs/mod.rs:816
 msgid "Pencil and Paper"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:728
+#: crates/rnote-ui/src/dialogs/mod.rs:817
 msgid "People"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:729
+#: crates/rnote-ui/src/dialogs/mod.rs:818
 msgid "Person"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:730
+#: crates/rnote-ui/src/dialogs/mod.rs:819
 #, fuzzy
 #| msgid "Directory"
 msgid "Projector"
 msgstr "Папка"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:731
+#: crates/rnote-ui/src/dialogs/mod.rs:820
 msgid "Science"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:732
+#: crates/rnote-ui/src/dialogs/mod.rs:821
 msgid "Scratchpad"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:733
+#: crates/rnote-ui/src/dialogs/mod.rs:822
 #, fuzzy
 #| msgid "Shaper"
 msgid "Shapes"
 msgstr "Оформувач"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:734
+#: crates/rnote-ui/src/dialogs/mod.rs:823
 msgid "Shopping"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:735
+#: crates/rnote-ui/src/dialogs/mod.rs:824
 msgid "Speech Bubble"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:736
+#: crates/rnote-ui/src/dialogs/mod.rs:825
 msgid "Speedometer"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:737
+#: crates/rnote-ui/src/dialogs/mod.rs:826
 msgid "Star"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:739
+#: crates/rnote-ui/src/dialogs/mod.rs:828
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:741
+#: crates/rnote-ui/src/dialogs/mod.rs:830
 #, fuzzy
 #| msgid "Textured"
 msgid "Text"
 msgstr "Текстурирано"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:742
+#: crates/rnote-ui/src/dialogs/mod.rs:831
 msgid "Travel"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:743
+#: crates/rnote-ui/src/dialogs/mod.rs:832
 msgid "Weather"
 msgstr ""
 
-#: crates/rnote-ui/src/dialogs/mod.rs:744
+#: crates/rnote-ui/src/dialogs/mod.rs:833
 #, fuzzy
 #| msgid "Height"
 msgid "Weight"
 msgstr "Висина"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:635
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:662
 msgid "Miscellaneous"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:644
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:671
 msgid "Coordinate Systems"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:652
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
 #, fuzzy
 #| msgid "Ellipse"
 msgid "Ellipses"
 msgstr "Елипса"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:659
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
 #, fuzzy
 #| msgid "Curved"
 msgid "Curves & Paths"
 msgstr "Закривено"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:674
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:701
 msgid "Arrow"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:675
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:702
 msgid "Line"
 msgstr "Линија"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:676
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:703
 msgid "Rectangle"
 msgstr "Правоаголник"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:678
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:705
 msgid "2D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:706
 msgid "3D coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:680
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:707
 msgid "2D single quadrant coordinate system"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:681
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:708
 msgid "Ellipse"
 msgstr "Елипса"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:682
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:709
 msgid "Ellipse with foci"
 msgstr "Елипса со фокус"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:683
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:710
 msgid "Quadratic bezier curve"
 msgstr "Квадратна безиерна кривула"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:684
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:711
 msgid "Cubic bezier curve"
 msgstr "Кубна безиерна кривула"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:685
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:712
 msgid "Polyline"
 msgstr ""
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:713
 msgid "Polygon"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:660
+#: crates/rnote-ui/src/settingspanel/mod.rs:684
 msgid "Application restart is required"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1460
+#: crates/rnote-ui/src/settingspanel/mod.rs:1584
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1461
+#: crates/rnote-ui/src/settingspanel/mod.rs:1585
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1462
+#: crates/rnote-ui/src/settingspanel/mod.rs:1586
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1463
+#: crates/rnote-ui/src/settingspanel/mod.rs:1587
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1464
+#: crates/rnote-ui/src/settingspanel/mod.rs:1588
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1465
+#: crates/rnote-ui/src/settingspanel/mod.rs:1589
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1466
+#: crates/rnote-ui/src/settingspanel/mod.rs:1590
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1467
+#: crates/rnote-ui/src/settingspanel/mod.rs:1591
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1468
+#: crates/rnote-ui/src/settingspanel/mod.rs:1592
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1469
+#: crates/rnote-ui/src/settingspanel/mod.rs:1593
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1470
+#: crates/rnote-ui/src/settingspanel/mod.rs:1594
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1471
+#: crates/rnote-ui/src/settingspanel/mod.rs:1595
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1472
+#: crates/rnote-ui/src/settingspanel/mod.rs:1596
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1473
+#: crates/rnote-ui/src/settingspanel/mod.rs:1597
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1474
+#: crates/rnote-ui/src/settingspanel/mod.rs:1598
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1475
+#: crates/rnote-ui/src/settingspanel/mod.rs:1599
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1476
+#: crates/rnote-ui/src/settingspanel/mod.rs:1600
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr ""
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1477
+#: crates/rnote-ui/src/settingspanel/mod.rs:1601
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr ""
@@ -3005,143 +3043,169 @@ msgstr "Име на датотека:"
 msgid "New Folder"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:169
+#: crates/rnote-ui/src/utils.rs:202
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:171 crates/rnote-ui/src/utils.rs:206
+#: crates/rnote-ui/src/utils.rs:204 crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "rose"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:173
+#: crates/rnote-ui/src/utils.rs:206
 #, fuzzy
 #| msgid "Curved"
 msgctxt "part of string representation of a color"
 msgid "red"
 msgstr "Закривено"
 
-#: crates/rnote-ui/src/utils.rs:176
+#: crates/rnote-ui/src/utils.rs:209
 msgctxt "part of string representation of a color"
 msgid "orange"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:179
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "yellow"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:183
+#: crates/rnote-ui/src/utils.rs:216
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:186
+#: crates/rnote-ui/src/utils.rs:219
 msgctxt "part of string representation of a color"
 msgid "green"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:189
+#: crates/rnote-ui/src/utils.rs:222
 msgctxt "part of string representation of a color"
 msgid "spring-green"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:192
+#: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "cyan"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:195
+#: crates/rnote-ui/src/utils.rs:228
 msgctxt "part of string representation of a color"
 msgid "azure"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:198
+#: crates/rnote-ui/src/utils.rs:231
 msgctxt "part of string representation of a color"
 msgid "blue"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:201
+#: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "violet"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:204
+#: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "magenta"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:211
+#: crates/rnote-ui/src/utils.rs:244
 msgctxt "part of string representation of a color"
 msgid "greyish"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:214
+#: crates/rnote-ui/src/utils.rs:247
 msgctxt "part of string representation of a color"
 msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:216
+#: crates/rnote-ui/src/utils.rs:249
 msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:220
+#: crates/rnote-ui/src/utils.rs:253
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:222
+#: crates/rnote-ui/src/utils.rs:255
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:258
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:227
+#: crates/rnote-ui/src/utils.rs:260
 #, fuzzy
 #| msgid "Height"
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "Висина"
 
-#: crates/rnote-ui/src/utils.rs:231
+#: crates/rnote-ui/src/utils.rs:264
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:233
+#: crates/rnote-ui/src/utils.rs:266
 #, fuzzy
 #| msgid "translator-credits"
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "Андреј Дам. | Andrej Dam. <andrejdam@protonmail.com>"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:270
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:246
+#: crates/rnote-ui/src/utils.rs:279
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:249
+#: crates/rnote-ui/src/utils.rs:282
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:251
+#: crates/rnote-ui/src/utils.rs:284
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr ""
+
+#, fuzzy
+#~| msgid "Brush style"
+#~ msgid "Brush Style"
+#~ msgstr "Вид на четка"
+
+#, fuzzy
+#~| msgid "Brush styles"
+#~ msgid "Brush Styles"
+#~ msgstr "Видови на четки"
+
+#, fuzzy
+#~| msgid "Mark underneath other brush strokes"
+#~ msgid "Mark underneath other strokes"
+#~ msgstr "Означи под другите потези со четка"
+
+#~ msgid "Draw solid color strokes"
+#~ msgstr "Цртај полни обоени линии"
+
+#~ msgid "Draw textured strokes"
+#~ msgstr "Цртај текстурирани линии"
+
+#, fuzzy
+#~| msgid "Shaper style"
+#~ msgid "Shaper Style"
+#~ msgstr "Вид на оформувач"
 
 #, fuzzy
 #~| msgid "Pages type"

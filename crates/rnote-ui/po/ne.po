@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-01 17:10+0200\n"
+"POT-Creation-Date: 2026-11-06 16:20+0100\n"
 "PO-Revision-Date: 2026-06-30 16:30+0000\n"
 "Last-Translator: tezz karki <ngr112001@gmail.com>\n"
 "Language-Team: Nepali <https://hosted.weblate.org/projects/rnote/repo/ne/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
-#: crates/rnote-ui/src/dialogs/mod.rs:33
+#: crates/rnote-ui/src/dialogs/mod.rs:35
 msgid "Sketch and take handwritten notes"
 msgstr "रेखाचित्र कोर्नुहोस् र हस्तलिखित नोटहरू लिनुहोस्।"
 
@@ -79,7 +79,7 @@ msgid "Configure action shortcuts"
 msgstr "कार्य सर्टकटहरू स्थापित गर्नुहोस्"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:5
-#: crates/rnote-ui/data/ui/shortcuts.ui:191
+#: crates/rnote-ui/data/ui/shortcuts.ui:203
 msgid "Clear Document"
 msgstr "कागजात रित्तो गर्नुहोस्"
 
@@ -91,13 +91,14 @@ msgstr "येसले कागजात रित्तो पार्छ।
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:22
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:40
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:58
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:74
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:213
-#: crates/rnote-ui/data/ui/dialogs/export.ui:14
-#: crates/rnote-ui/data/ui/dialogs/export.ui:183
-#: crates/rnote-ui/data/ui/dialogs/export.ui:423
-#: crates/rnote-ui/data/ui/dialogs/import.ui:14
-#: crates/rnote-ui/data/ui/dialogs/import.ui:207
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:77
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:94
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:234
+#: crates/rnote-ui/data/ui/dialogs/export.ui:15
+#: crates/rnote-ui/data/ui/dialogs/export.ui:186
+#: crates/rnote-ui/data/ui/dialogs/export.ui:428
+#: crates/rnote-ui/data/ui/dialogs/import.ui:15
+#: crates/rnote-ui/data/ui/dialogs/import.ui:210
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:31
 msgid "Cancel"
 msgstr "रद्द गर्नुहोस्"
@@ -108,7 +109,7 @@ msgstr "खाली गर्नुहोस्"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:16
 #: crates/rnote-ui/data/ui/mainheader.ui:22
-#: crates/rnote-ui/src/canvas/mod.rs:730
+#: crates/rnote-ui/src/canvas/mod.rs:746
 msgid "New Document"
 msgstr "नयाँ कागजात"
 
@@ -161,72 +162,87 @@ msgid "Unsaved Documents"
 msgstr "बचत नगरिएका कागजातहरू"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:59
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:78
 msgid "Discard All"
 msgstr "सबै खारेज गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:65
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:66
+msgid "Recover Drafts"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
+msgid ""
+"Unsaved drafts were found.\n"
+"Should they be recovered?"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
+msgid "Recover"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:84
 msgid "Edit Workspace"
 msgstr "कार्यक्षेत्र सम्पादन गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:100
 #: crates/rnote-ui/data/ui/settingspanel.ui:264
 #: crates/rnote-ui/src/workspacebrowser/widgethelper.rs:36
 msgid "Apply"
 msgstr "लागू गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:119
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:140
 msgid "Workspace Name"
 msgstr "कार्यक्षेत्र नाम"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:124
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
 msgid "Icon"
 msgstr "चिन्ह"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:125
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:146
 msgid "Change the workspace icon"
 msgstr "कार्यक्षेत्र चिन्ह फेर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:145
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:166
 #: crates/rnote-ui/data/ui/settingspanel.ui:345
 msgid "Color"
 msgstr "रङ्ग"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:146
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:167
 msgid "Change the workspace color"
 msgstr "कार्यक्षेत्र रङ्ग फेर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:160
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:181
 msgid "Directory"
 msgstr "डाइरेक्टरी"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:161
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:182
 msgid "Change the workspace directory"
 msgstr "कार्यक्षेत्र डाइरेक्टरी फेर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:170
-#: crates/rnote-ui/data/ui/dialogs/export.ui:290
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:191
+#: crates/rnote-ui/data/ui/dialogs/export.ui:294
 #: crates/rnote-ui/src/dialogs/export.rs:485
 #: crates/rnote-ui/src/dialogs/export.rs:522
 #: crates/rnote-ui/src/dialogs/export.rs:530
-#: crates/rnote-ui/src/dialogs/mod.rs:542
+#: crates/rnote-ui/src/dialogs/mod.rs:631
 msgid "- no directory selected -"
 msgstr "- कुनैपनि डाइरेक्टरी रोजिएको छैन -"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:185
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:206
 msgid "Change the directory"
 msgstr "डाइरेक्टरी फेर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:208
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:229
 #, fuzzy
 #| msgid "Trash Strokes"
 msgid "Trash File"
 msgstr "ट्र्यास धर्काहरू"
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:209
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:230
 msgid "Are you sure you want to move this file to the trash?"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:214
+#: crates/rnote-ui/data/ui/dialogs/dialogs.ui:235
 msgid "Trash"
 msgstr ""
 
@@ -235,27 +251,27 @@ msgstr ""
 msgid "Export Document"
 msgstr "कागजात निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:19
-#: crates/rnote-ui/data/ui/dialogs/export.ui:188
-#: crates/rnote-ui/data/ui/dialogs/export.ui:428
+#: crates/rnote-ui/data/ui/dialogs/export.ui:21
+#: crates/rnote-ui/data/ui/dialogs/export.ui:192
+#: crates/rnote-ui/data/ui/dialogs/export.ui:434
 #: crates/rnote-ui/src/dialogs/export.rs:1257
 #: crates/rnote-ui/src/dialogs/export.rs:1318
 msgid "Export"
 msgstr "निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:74
-#: crates/rnote-ui/data/ui/dialogs/export.ui:483
+#: crates/rnote-ui/data/ui/dialogs/export.ui:76
+#: crates/rnote-ui/data/ui/dialogs/export.ui:489
 msgid "Export File"
 msgstr "फाइल निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:75
-#: crates/rnote-ui/data/ui/dialogs/export.ui:484
+#: crates/rnote-ui/data/ui/dialogs/export.ui:77
+#: crates/rnote-ui/data/ui/dialogs/export.ui:490
 msgid "Select the export file"
 msgstr "निर्यात गर्ने फाइल छान्नुहोस्"
 
 #. force the user to pick another file
-#: crates/rnote-ui/data/ui/dialogs/export.ui:84
-#: crates/rnote-ui/data/ui/dialogs/export.ui:493
+#: crates/rnote-ui/data/ui/dialogs/export.ui:86
+#: crates/rnote-ui/data/ui/dialogs/export.ui:499
 #: crates/rnote-ui/src/dialogs/export.rs:136
 #: crates/rnote-ui/src/dialogs/export.rs:158
 #: crates/rnote-ui/src/dialogs/export.rs:165
@@ -267,85 +283,85 @@ msgstr "निर्यात गर्ने फाइल छान्नुह
 msgid "- no file selected -"
 msgstr "- कुनैपनि फाइल रोजिएको छैन -"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:108
-#: crates/rnote-ui/data/ui/dialogs/export.ui:319
-#: crates/rnote-ui/data/ui/dialogs/export.ui:517
+#: crates/rnote-ui/data/ui/dialogs/export.ui:110
+#: crates/rnote-ui/data/ui/dialogs/export.ui:323
+#: crates/rnote-ui/data/ui/dialogs/export.ui:523
 msgid "Export Preferences"
 msgstr "प्राथमिकतासूची निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:112
-#: crates/rnote-ui/data/ui/dialogs/export.ui:323
-#: crates/rnote-ui/data/ui/dialogs/export.ui:521
+#: crates/rnote-ui/data/ui/dialogs/export.ui:114
+#: crates/rnote-ui/data/ui/dialogs/export.ui:327
+#: crates/rnote-ui/data/ui/dialogs/export.ui:527
 msgid "With Background"
 msgstr "पृष्ठभूमि संगै"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:113
-#: crates/rnote-ui/data/ui/dialogs/export.ui:324
-#: crates/rnote-ui/data/ui/dialogs/export.ui:522
+#: crates/rnote-ui/data/ui/dialogs/export.ui:115
+#: crates/rnote-ui/data/ui/dialogs/export.ui:328
+#: crates/rnote-ui/data/ui/dialogs/export.ui:528
 msgid "Set whether the background should be exported"
 msgstr "पृष्ठभूमि निर्यात गर्ने कि नगर्ने"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:118
-#: crates/rnote-ui/data/ui/dialogs/export.ui:329
-#: crates/rnote-ui/data/ui/dialogs/export.ui:527
+#: crates/rnote-ui/data/ui/dialogs/export.ui:120
+#: crates/rnote-ui/data/ui/dialogs/export.ui:333
+#: crates/rnote-ui/data/ui/dialogs/export.ui:533
 msgid "With Pattern"
 msgstr "खाका संगै"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:119
-#: crates/rnote-ui/data/ui/dialogs/export.ui:330
-#: crates/rnote-ui/data/ui/dialogs/export.ui:528
+#: crates/rnote-ui/data/ui/dialogs/export.ui:121
+#: crates/rnote-ui/data/ui/dialogs/export.ui:334
+#: crates/rnote-ui/data/ui/dialogs/export.ui:534
 msgid "Set whether the background pattern should be exported"
 msgstr "पृष्ठभूमि खाका निर्यात गर्ने कि नगर्ने"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:124
-#: crates/rnote-ui/data/ui/dialogs/export.ui:335
-#: crates/rnote-ui/data/ui/dialogs/export.ui:533
+#: crates/rnote-ui/data/ui/dialogs/export.ui:126
+#: crates/rnote-ui/data/ui/dialogs/export.ui:339
+#: crates/rnote-ui/data/ui/dialogs/export.ui:539
 msgid "Optimize for Printing"
 msgstr "छाप्नका लागि अनुकूलन गर्नु"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:125
-#: crates/rnote-ui/data/ui/dialogs/export.ui:336
-#: crates/rnote-ui/data/ui/dialogs/export.ui:534
+#: crates/rnote-ui/data/ui/dialogs/export.ui:127
+#: crates/rnote-ui/data/ui/dialogs/export.ui:340
+#: crates/rnote-ui/data/ui/dialogs/export.ui:540
 msgid "Set whether the content should be optimized for printing"
 msgstr "छाप्नका लागि अनुकूलित छ कि छैन"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:130
-#: crates/rnote-ui/data/ui/dialogs/export.ui:341
-#: crates/rnote-ui/data/ui/dialogs/export.ui:539
+#: crates/rnote-ui/data/ui/dialogs/export.ui:132
+#: crates/rnote-ui/data/ui/dialogs/export.ui:345
+#: crates/rnote-ui/data/ui/dialogs/export.ui:545
 msgid "Export Format"
 msgstr "निर्यात स्वरूप"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:131
-#: crates/rnote-ui/data/ui/dialogs/export.ui:342
+#: crates/rnote-ui/data/ui/dialogs/export.ui:133
+#: crates/rnote-ui/data/ui/dialogs/export.ui:346
 msgid "The export format"
 msgstr "निर्यात स्वरूप"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:135
-#: crates/rnote-ui/data/ui/dialogs/export.ui:346
-#: crates/rnote-ui/data/ui/dialogs/export.ui:544
+#: crates/rnote-ui/data/ui/dialogs/export.ui:137
+#: crates/rnote-ui/data/ui/dialogs/export.ui:350
+#: crates/rnote-ui/data/ui/dialogs/export.ui:550
 #: crates/rnote-ui/src/dialogs/export.rs:368
 #: crates/rnote-ui/src/dialogs/export.rs:793
 #: crates/rnote-ui/src/dialogs/export.rs:1186
 msgid "Svg"
 msgstr "SVG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:136
+#: crates/rnote-ui/data/ui/dialogs/export.ui:138
 #: crates/rnote-ui/src/dialogs/export.rs:379
 msgid "Pdf"
 msgstr "PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:137
+#: crates/rnote-ui/data/ui/dialogs/export.ui:139
 #: crates/rnote-ui/src/dialogs/export.rs:390
 msgid "Xopp"
 msgstr "XOPP"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:145
-#: crates/rnote-ui/data/ui/dialogs/export.ui:356
+#: crates/rnote-ui/data/ui/dialogs/export.ui:147
+#: crates/rnote-ui/data/ui/dialogs/export.ui:360
 msgid "Page Order"
 msgstr "पृष्ठक्रम"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:146
-#: crates/rnote-ui/data/ui/dialogs/export.ui:357
+#: crates/rnote-ui/data/ui/dialogs/export.ui:148
+#: crates/rnote-ui/data/ui/dialogs/export.ui:361
 msgid ""
 "The page order when documents with layouts\n"
 "that expand in horizontal and vertical directions\n"
@@ -355,91 +371,91 @@ msgstr ""
 "पृष्ठहरूमा छुट्टयाउदा खेरीको\n"
 "पृष्ठक्रम"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:152
-#: crates/rnote-ui/data/ui/dialogs/export.ui:363
+#: crates/rnote-ui/data/ui/dialogs/export.ui:154
+#: crates/rnote-ui/data/ui/dialogs/export.ui:367
 msgid "Horizontal First"
 msgstr "तेर्सो पहिले"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:153
-#: crates/rnote-ui/data/ui/dialogs/export.ui:364
+#: crates/rnote-ui/data/ui/dialogs/export.ui:155
+#: crates/rnote-ui/data/ui/dialogs/export.ui:368
 msgid "Vertical First"
 msgstr "ठाडो पहिले"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:174
+#: crates/rnote-ui/data/ui/dialogs/export.ui:176
 #: crates/rnote-ui/src/dialogs/export.rs:773
 msgid "Export Document Pages"
 msgstr "कागजात पृष्ठहरू निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:260
+#: crates/rnote-ui/data/ui/dialogs/export.ui:264
 msgid "Page Files Naming:"
 msgstr "पृष्ठ फाइलको नामकरण:"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:280
+#: crates/rnote-ui/data/ui/dialogs/export.ui:284
 msgid "Export Directory"
 msgstr "निर्यात डाइरेक्टरी"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:281
+#: crates/rnote-ui/data/ui/dialogs/export.ui:285
 msgid "Select the export directory"
 msgstr "निर्यात डाइरेक्टरी छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:312
+#: crates/rnote-ui/data/ui/dialogs/export.ui:316
 msgctxt ""
 "When pages are exported this is the base name, followed by: - Page 0,1,.."
 msgid "Export Files Stem Name"
 msgstr "फाईलहरूको स्टेम नाम निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:347
-#: crates/rnote-ui/data/ui/dialogs/export.ui:545
+#: crates/rnote-ui/data/ui/dialogs/export.ui:351
+#: crates/rnote-ui/data/ui/dialogs/export.ui:551
 #: crates/rnote-ui/src/dialogs/export.rs:804
 #: crates/rnote-ui/src/dialogs/export.rs:1197
 msgid "Png"
 msgstr "PNG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:348
-#: crates/rnote-ui/data/ui/dialogs/export.ui:546
+#: crates/rnote-ui/data/ui/dialogs/export.ui:352
+#: crates/rnote-ui/data/ui/dialogs/export.ui:552
 #: crates/rnote-ui/src/dialogs/export.rs:817
 #: crates/rnote-ui/src/dialogs/export.rs:1210
 msgid "Jpeg"
 msgstr "JPEG"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:372
-#: crates/rnote-ui/data/ui/dialogs/export.ui:554
-#: crates/rnote-ui/data/ui/dialogs/import.ui:160
+#: crates/rnote-ui/data/ui/dialogs/export.ui:376
+#: crates/rnote-ui/data/ui/dialogs/export.ui:560
+#: crates/rnote-ui/data/ui/dialogs/import.ui:162
 msgid "Bitmap Scale-Factor"
 msgstr "बिटम्याप आकार वृद्धिदर"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:373
-#: crates/rnote-ui/data/ui/dialogs/export.ui:555
-#: crates/rnote-ui/data/ui/dialogs/import.ui:161
+#: crates/rnote-ui/data/ui/dialogs/export.ui:377
+#: crates/rnote-ui/data/ui/dialogs/export.ui:561
+#: crates/rnote-ui/data/ui/dialogs/import.ui:163
 msgid ""
 "Set the bitmap scale factor in relation\n"
 "to the actual size on the document"
 msgstr "कागजातको वास्तविक आकारको तुलनामा बिटम्याप आकार वृद्धिदर निश्चित गर्नुहोस् "
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:381
-#: crates/rnote-ui/data/ui/dialogs/export.ui:563
+#: crates/rnote-ui/data/ui/dialogs/export.ui:385
+#: crates/rnote-ui/data/ui/dialogs/export.ui:569
 msgid "Jpeg Quality"
 msgstr "JPEG गुणस्तर"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:382
-#: crates/rnote-ui/data/ui/dialogs/export.ui:564
+#: crates/rnote-ui/data/ui/dialogs/export.ui:386
+#: crates/rnote-ui/data/ui/dialogs/export.ui:570
 msgid "Set the quality of the Jpeg image (1 - 100)"
 msgstr "JPEG तस्वीरको गुणस्तर मिलाउनुहोस् (१ - १००)"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:414
+#: crates/rnote-ui/data/ui/dialogs/export.ui:418
 #: crates/rnote-ui/src/dialogs/export.rs:1165
 msgid "Export Selection"
 msgstr "छनोट निर्यात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:540
+#: crates/rnote-ui/data/ui/dialogs/export.ui:546
 msgid "The export image format"
 msgstr "निर्यात तस्वीरको स्वरूप/प्रकार"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:571
+#: crates/rnote-ui/data/ui/dialogs/export.ui:577
 msgid "Margin"
 msgstr "सीमा"
 
-#: crates/rnote-ui/data/ui/dialogs/export.ui:572
+#: crates/rnote-ui/data/ui/dialogs/export.ui:578
 msgid "Set the margin around the selected area"
 msgstr "चयन गरिएको क्षेत्र वरिपरि सीमाङ्कन गर्नुहोस्"
 
@@ -447,176 +463,156 @@ msgstr "चयन गरिएको क्षेत्र वरिपरि �
 msgid "Import Pdf"
 msgstr "PDF आयात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:19
-#: crates/rnote-ui/data/ui/dialogs/import.ui:212
+#: crates/rnote-ui/data/ui/dialogs/import.ui:21
+#: crates/rnote-ui/data/ui/dialogs/import.ui:216
 #: crates/rnote-ui/src/dialogs/import.rs:95
 msgid "Import"
 msgstr "आयात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:63
+#: crates/rnote-ui/data/ui/dialogs/import.ui:65
 msgid "Info"
 msgstr "जानकारी"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:81
+#: crates/rnote-ui/data/ui/dialogs/import.ui:83
 msgid "Pdf Import Preferences"
 msgstr "PDF प्राथमिकतासूची आयात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:85
+#: crates/rnote-ui/data/ui/dialogs/import.ui:87
 msgid "Start Page"
 msgstr "सुरुवात पृष्ठ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:94
+#: crates/rnote-ui/data/ui/dialogs/import.ui:96
 msgid "End Page"
 msgstr "अन्तिम पृष्ठ"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:103
+#: crates/rnote-ui/data/ui/dialogs/import.ui:105
 msgid "Adjust Document"
 msgstr "कागजातको मिलाउनुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:104
+#: crates/rnote-ui/data/ui/dialogs/import.ui:106
 msgid "Whether the document layout should be adjusted to the Pdf"
 msgstr "कागजात खाकालाई PDFमा मिलाउने कि नमिलाउने"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:109
+#: crates/rnote-ui/data/ui/dialogs/import.ui:111
 msgid "Page Width (%)"
 msgstr "पृष्ठ चौडाई (%)"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:110
+#: crates/rnote-ui/data/ui/dialogs/import.ui:112
 msgid "Set the width of imported Pdf's in percentage to the format width"
 msgstr "आयातित Pdfको चौडाइ ढाँचा चौडाइको प्रतिशतमा राख्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:117
+#: crates/rnote-ui/data/ui/dialogs/import.ui:119
 msgid "Page Spacing"
 msgstr "पृष्ठ बीचको खालीस्थान"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:118
+#: crates/rnote-ui/data/ui/dialogs/import.ui:120
 msgid "How Pdf pages are spaced"
 msgstr "PDF पृष्ठहरू कसरी छुट्याउने?"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:122
+#: crates/rnote-ui/data/ui/dialogs/import.ui:124
 msgid "Continuous"
 msgstr "एकपछि अर्को"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:123
+#: crates/rnote-ui/data/ui/dialogs/import.ui:125
 msgid "One per Document Page"
 msgstr "प्रति कागजात पृष्ठ एक"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:131
+#: crates/rnote-ui/data/ui/dialogs/import.ui:133
 msgid "Pages Type"
 msgstr "पृष्ठ प्रकार"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:132
+#: crates/rnote-ui/data/ui/dialogs/import.ui:134
 msgid "Set whether Pdf's should be imported as vector or bitmap images"
 msgstr "PDF कुन रूपमा आयात गर्ने - भेक्टर वा बिटम्याप?"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:144
+#: crates/rnote-ui/data/ui/dialogs/import.ui:146
 msgid "Vector"
 msgstr "भेक्टर"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:151
+#: crates/rnote-ui/data/ui/dialogs/import.ui:153
 msgid "Bitmap"
 msgstr "बिटम्याप"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:198
+#: crates/rnote-ui/data/ui/dialogs/import.ui:200
 msgid "Import Xournal++ File"
 msgstr "Xournal++ फाइल आयात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:241
+#: crates/rnote-ui/data/ui/dialogs/import.ui:245
 msgid "Xournal++ File Import Preferences"
 msgstr "Xournal++ फाइल आयात प्राथमिकताहरू"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:245
+#: crates/rnote-ui/data/ui/dialogs/import.ui:249
 msgid "DPI"
 msgstr "DPI"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:246
+#: crates/rnote-ui/data/ui/dialogs/import.ui:250
 msgid "Set the preferred DPI for the Xournal++ file"
 msgstr "Xournal++ फाइलको DPI राख्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:267
+#: crates/rnote-ui/data/ui/dialogs/import.ui:271
 msgid "is password protected"
 msgstr "पासवर्डले सुरक्षित छ।"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:270
+#: crates/rnote-ui/data/ui/dialogs/import.ui:274
 msgid "Encrypted PDF"
 msgstr "गुप्तिकृत PDF"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:273
+#: crates/rnote-ui/data/ui/dialogs/import.ui:277
 msgid "_Cancel"
 msgstr "_रद्द गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:274
+#: crates/rnote-ui/data/ui/dialogs/import.ui:278
 msgid "_Unlock"
 msgstr "_खोल्नुहोस्"
 
-#: crates/rnote-ui/data/ui/dialogs/import.ui:285
+#: crates/rnote-ui/data/ui/dialogs/import.ui:289
 msgid "Enter the PDF password"
 msgstr "PDF पासवर्ड हाल्नुहोस्।"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:18
-msgid "Brush Style"
-msgstr "बुरुस शैली"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:33
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:149
-msgid "Brush Configuration"
-msgstr "बुरुस विन्यास"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:66
-msgid "Brush Styles"
-msgstr "बुरुस शैलीहरू"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:95
-msgid "Marker"
-msgstr "मार्कर"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:96
-msgid "Mark underneath other strokes"
-msgstr "अन्य धर्काहरु मुनि चिन्ह लगाउनुहोस्"
-
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:107
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:192
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:216
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:26
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
 msgid "Solid"
 msgstr "ठोस"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:108
-msgid "Draw solid color strokes"
-msgstr "ठोस रङ्गित धर्काहरु कोर्नुहोस्"
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:36
+msgid "Marker"
+msgstr "मार्कर"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:119
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:46
 msgid "Textured"
 msgstr "बनावटी"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:120
-msgid "Draw textured strokes"
-msgstr "बनावटी धर्काहरु कोर्नुहोस्"
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:61
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:93
+msgid "Brush Configuration"
+msgstr "बुरुस विन्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:114
 msgid "Path Modelling"
 msgstr "मार्ग मोडेलिङ"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:131
 msgid "Simple"
 msgstr "सादा"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:188
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:132
 msgid "Produces line segments from the raw input.\n"
 msgstr "कच्चा इनपुटबाट रेखा खण्डहरू उत्पादन गर्दछ।\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:194
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:138
 msgid "Curved"
 msgstr "वक्रगामी"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:139
 msgid "Produces smooth, curved segments.\n"
 msgstr "वक्रगामी चिल्लो खण्डहरू उत्पादन गर्दछ।\n"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:201
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:145
 msgid "Modeled"
 msgstr "नमुना"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:202
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:146
 msgid ""
 "Produces a modeled path with physics based algorithms.\n"
 "Results in the best looking handwriting."
@@ -624,80 +620,80 @@ msgstr ""
 "भौतिक विज्ञानमा आधारित एल्गोरिदमको साथ मोडेल गरिएको मार्ग उत्पादन गर्दछ।\n"
 "सबैभन्दा राम्रो देखिने हस्तलेखन दिन्छ।"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:155
 msgid "Solid Style"
 msgstr "ठोस शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:214
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Pressure Curve"
 msgstr "चाप वक्र"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:215
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Choose a pressure curve"
 msgstr "चाप वक्र छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:219
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:163
 msgid "Constant"
 msgstr "अचल"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:220
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:164
 msgid "Linear"
 msgstr "रेखीय"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:221
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:165
 msgid "Square root"
 msgstr "वर्गमूल"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:222
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:166
 msgid "Cubic root"
 msgstr "घनमूल"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:223
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:167
 msgid "Quadratic Parabola"
 msgstr "द्विघात पाराबोला"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:224
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:168
 msgid "Cubic Parabola"
 msgstr "क्यूबिक Parabola"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:235
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:179
 msgid "Textured Style"
 msgstr "बनावट शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:238
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:182
 msgid "Density"
 msgstr "घनत्व"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:239
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:183
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "घनत्व भनेको प्रति १०x१० क्षेत्रमा थोप्लाहरूको मात्रा हो"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:248
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:192
 msgctxt ""
 "Drawing with a textured pen, how the dots of the texture are distributed"
 msgid "Stroke Dots Position Distribution"
 msgstr "धर्को बिन्दु स्थान वितरण"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:249
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:193
 msgid "Choose a dots position probability distribution"
 msgstr "बिन्दु स्थान सम्भाव्यता वितरण छनौट गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:253
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:197
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Uniform"
 msgstr "समान"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:254
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:198
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Normal"
 msgstr "सामान्य"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:255
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:199
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Exponential"
 msgstr "घाताङ्किय"
 
-#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:256
+#: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:200
 msgctxt "A variant of the textured pen texture distribution"
 msgid "Reverse Exponential"
 msgstr "उल्टो घाताङ्किय"
@@ -775,7 +771,7 @@ msgid "Invert Color Brightness of All Selected Strokes"
 msgstr "चयन गरिएका धर्काहरूको रङ्ग उज्यालोपन उल्टाउनुहोस्"
 
 #: crates/rnote-ui/data/ui/penssidebar/selectorpage.ui:100
-#: crates/rnote-ui/data/ui/shortcuts.ui:260
+#: crates/rnote-ui/data/ui/shortcuts.ui:272
 msgid "Duplicate Selection"
 msgstr "चयन नक्कल गर्नुहोस्"
 
@@ -783,163 +779,159 @@ msgstr "चयन नक्कल गर्नुहोस्"
 msgid "Delete Selection"
 msgstr "चयन मेटाउनुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:19
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:20
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
 msgid "Shape Builders"
 msgstr "आकार निर्माता"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:41
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:80
-msgid "Shape Configuration"
-msgstr "आकार विन्यास"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:103
-msgid "Shaper Style"
-msgstr "आकार दिनेको शैली"
-
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:113
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:48
 msgid "Smooth"
 msgstr "सम्म"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:124
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:58
 msgid "Rough"
 msgstr "खस्रो"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:141
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:105
+msgid "Shape Configuration"
+msgstr "आकार विन्यास"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:128
 msgid "Highlighting"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:144
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:131
 msgid "Highlight-Mode"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:145
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
 msgid "Fade active color"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:150
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:137
 msgid "Highlight-Opacity"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:151
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:138
 msgid "Modify the highlight opacity (%)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:170
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:157
 #, fuzzy
 #| msgid "Solid Style"
 msgid "Smooth Style"
 msgstr "ठोस शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:173
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:160
 #, fuzzy
 #| msgid "Linear"
 msgid "Line Cap"
 msgstr "रेखीय"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
 #, fuzzy
 #| msgid "Choose a format"
 msgid "Choose a line cap"
 msgstr "प्रकार छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:178
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
 #, fuzzy
 #| msgctxt "part of string representation of a color"
 #| msgid "bright"
 msgid "Straight"
 msgstr "उज्यालो"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:166
 msgid "Round"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:187
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
 #, fuzzy
 #| msgid "Fill Style"
 msgid "Line Style"
 msgstr "शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:188
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:175
 #, fuzzy
 #| msgid "Choose a fill style"
 msgid "Choose a line style"
 msgstr "भर्ने शैली छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:193
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:180
 msgid "Dotted"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:194
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:181
 msgid "Dashed (narrow)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:182
 msgid "Dashed (equidistant)"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:196
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
 #, fuzzy
 #| msgid "Dashed"
 msgid "Dashed (wide)"
 msgstr "ड्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
 #, fuzzy
 #| msgid "Rough style"
 msgid "Rough Style"
 msgstr "खस्रो शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:211
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:198
 msgid "Fill Style"
 msgstr "शैली"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:212
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
 msgid "Choose a fill style"
 msgstr "भर्ने शैली छान्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
 msgid "Hachure"
 msgstr "रेखा छायाङ्कन"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
 msgid "Zig-Zag"
 msgstr "बाङ्गोटिङ्गो"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:219
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
 msgid "Zig-Zag Line"
 msgstr "बाङ्गोटिङ्गो धर्को"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:220
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
 msgid "Crosshatch"
 msgstr "क्रसह्याच"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:221
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "बिन्दुहरू"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
 msgid "Dashed"
 msgstr "ड्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:230
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
 msgid "Hachure Angle"
 msgstr "रेखा छायाङ्कन कोण"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:231
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
 msgid "Set the angle of hachure fills"
 msgstr "रेखा छायाङ्कन भरणको कोण राख्नुहोस् "
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:250
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:237
 msgid "Constraints"
 msgstr "बाधाहरू"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:261
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
 msgid "Enabled"
 msgstr "सक्षम"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:262
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:249
 #, fuzzy
 #| msgid ""
 #| "Hold Ctrl to temporarily\n"
@@ -953,39 +945,39 @@ msgstr ""
 "अवरोधहरू सक्षम/असक्षम गर्न\n"
 "Ctrl थिच्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:268
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
 msgid "1:1"
 msgstr "१:१"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:273
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:260
 msgid "3:2"
 msgstr "३:२"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:278
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:265
 msgid "Golden Ratio (1:1.618)"
 msgstr "सुनौलो अनुपात(१:१.६१८)"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:21
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:22
 msgid "Insert Vertical Space"
 msgstr "ठाडो ठाउँ हाल्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:32
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:102
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:33
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:103
 #, fuzzy
 #| msgid "Shape Configuration"
 msgid "Vertical-Space Tool Configuration"
 msgstr "आकार विन्यास"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:48
-#: crates/rnote-ui/data/ui/shortcuts.ui:114
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:49
+#: crates/rnote-ui/data/ui/shortcuts.ui:120
 msgid "Move View"
 msgstr "दृश्य सार्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:63
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:64
 msgid "Zoom In/Out"
 msgstr "ठूलो/सानो पार्नुहोस्"
 
-#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:78
+#: crates/rnote-ui/data/ui/penssidebar/toolspage.ui:79
 #, fuzzy
 #| msgid "Eraser"
 msgid "Laser"
@@ -1008,17 +1000,17 @@ msgid "Reset Text Attributes"
 msgstr "पाठ विशेषताहरू रिसेट गर्नुहोस्"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:77
-#: crates/rnote-ui/data/ui/shortcuts.ui:221
+#: crates/rnote-ui/data/ui/shortcuts.ui:233
 msgid "Bold"
 msgstr "गाढा"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:87
-#: crates/rnote-ui/data/ui/shortcuts.ui:227
+#: crates/rnote-ui/data/ui/shortcuts.ui:239
 msgid "Italic"
 msgstr "ढल्किएको"
 
 #: crates/rnote-ui/data/ui/penssidebar/typewriterpage.ui:97
-#: crates/rnote-ui/data/ui/shortcuts.ui:233
+#: crates/rnote-ui/data/ui/shortcuts.ui:245
 msgid "Underline"
 msgstr "तल धर्को तान्नु"
 
@@ -1219,9 +1211,9 @@ msgid "C_lear Document"
 msgstr "कागजात _रित्तो गर्नुहोस्"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:85
-#: crates/rnote-ui/data/ui/shortcuts.ui:138
 #: crates/rnote-ui/data/ui/shortcuts.ui:144
 #: crates/rnote-ui/data/ui/shortcuts.ui:150
+#: crates/rnote-ui/data/ui/shortcuts.ui:156
 msgid "Zoom out"
 msgstr "सानो पार्नुहोस्"
 
@@ -1230,9 +1222,9 @@ msgid "Reset Zoom"
 msgstr "जुम रिसेट गर्नुहोस्"
 
 #: crates/rnote-ui/data/ui/canvasmenu.ui:101
-#: crates/rnote-ui/data/ui/shortcuts.ui:120
 #: crates/rnote-ui/data/ui/shortcuts.ui:126
 #: crates/rnote-ui/data/ui/shortcuts.ui:132
+#: crates/rnote-ui/data/ui/shortcuts.ui:138
 msgid "Zoom in"
 msgstr "ठूलो पार्नुहोस्"
 
@@ -1297,40 +1289,40 @@ msgid "Duplicate"
 msgstr "नक्कल गर्नुहोस्"
 
 #: crates/rnote-ui/data/ui/mainheader.ui:23
-#: crates/rnote-ui/src/canvas/mod.rs:732
+#: crates/rnote-ui/src/canvas/mod.rs:748
 msgid "Draft"
 msgstr "मस्यौदा"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:40
-#: crates/rnote-ui/data/ui/mainheader.ui:81
+#: crates/rnote-ui/data/ui/mainheader.ui:41
+#: crates/rnote-ui/data/ui/mainheader.ui:83
 msgid "Show/Hide Sidebar"
 msgstr "साइडबार देखाउने कि लुकाउने"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:47
+#: crates/rnote-ui/data/ui/mainheader.ui:48
 #: crates/rnote-ui/data/ui/shortcuts.ui:26
 msgid "New Tab"
 msgstr "नयाँ ट्याब"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:54
+#: crates/rnote-ui/data/ui/mainheader.ui:55
 msgid "View Open Tabs"
 msgstr ""
 
-#: crates/rnote-ui/data/ui/mainheader.ui:61
+#: crates/rnote-ui/data/ui/mainheader.ui:62
 msgid "Focus Mode"
 msgstr "एकाग्र शैली"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:73
-#: crates/rnote-ui/data/ui/shortcuts.ui:173
+#: crates/rnote-ui/data/ui/mainheader.ui:75
+#: crates/rnote-ui/data/ui/shortcuts.ui:185
 msgid "Save Document"
 msgstr "कागजात बचत गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:89
+#: crates/rnote-ui/data/ui/mainheader.ui:91
 #, fuzzy
 #| msgid "Open the Canvas-Menu"
 msgid "Canvas Menu"
 msgstr "क्यानभास मेनु खोल्नुहोस्"
 
-#: crates/rnote-ui/data/ui/mainheader.ui:94
+#: crates/rnote-ui/data/ui/mainheader.ui:96
 msgid "App Menu"
 msgstr ""
 
@@ -1345,6 +1337,12 @@ msgstr "दायाँ _सार्नुहोस्"
 #: crates/rnote-ui/data/ui/overlays.ui:108
 msgid "_Close"
 msgstr "_बन्द गर्नुहोस्"
+
+#: crates/rnote-ui/data/ui/overlays.ui:114
+#, fuzzy
+#| msgid "New Window"
+msgid "_Move to New Window"
+msgstr "नयाँ विन्डो"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
@@ -1372,7 +1370,9 @@ msgid "Autosave"
 msgstr "स्वतः बचत"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:45
-msgid "Enable or disable autosave"
+#, fuzzy
+#| msgid "Enable or disable autosave"
+msgid "Enable or disable autosave for documents and drafts"
 msgstr "स्वतः बचत खुला वा बन्द"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
@@ -1540,8 +1540,8 @@ msgid "Revert"
 msgstr "पहिले को अवस्थामा फर्कनु"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:277
-#: crates/rnote-ui/data/ui/shortcuts.ui:164
-#: crates/rnote-ui/src/dialogs/mod.rs:705
+#: crates/rnote-ui/data/ui/shortcuts.ui:176
+#: crates/rnote-ui/src/dialogs/mod.rs:794
 msgid "Document"
 msgstr "कागजात"
 
@@ -1606,7 +1606,7 @@ msgid "Lines"
 msgstr "रेखाहरू"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:373
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:677
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:704
 msgid "Grid"
 msgstr "जाल"
 
@@ -1780,6 +1780,38 @@ msgstr ""
 "रेखाचित्र प्याड बटन ४ को\n"
 "लागि कार्य सेट गर्नुहोस्"
 
+#: crates/rnote-ui/data/ui/settingspanel.ui:583
+msgid "Stylus pen modes"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:586
+msgid "Tool for the pen action"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:587
+#, fuzzy
+#| msgid ""
+#| "Set the action for the\n"
+#| "secondary mouse button"
+msgid "Set/lock the action for the pen"
+msgstr ""
+"माध्यमिक माउस बटनको\n"
+"लागि कार्य सेट गर्नुहोस्"
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:598
+msgid "Tool for the eraser action"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/settingspanel.ui:599
+#, fuzzy
+#| msgid ""
+#| "Set the action for the\n"
+#| "secondary mouse button"
+msgid "Set/lock the action for the eraser"
+msgstr ""
+"माध्यमिक माउस बटनको\n"
+"लागि कार्य सेट गर्नुहोस्"
+
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
 msgstr "किबोर्ड सर्टकटहरू देखाउनुहोस्"
@@ -1832,81 +1864,93 @@ msgstr "'चयनकर्ता'मा परिणत गर्नुहो�
 msgid "Switch to the 'Tools'"
 msgstr "'औजारहरू'मा परिणत गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:111
+#: crates/rnote-ui/data/ui/shortcuts.ui:109
+#, fuzzy
+#| msgid "Selector"
+msgid "Select Color"
+msgstr "चयनकर्ता"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:117
 msgid "View"
 msgstr "दृश्य"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:115
+#: crates/rnote-ui/data/ui/shortcuts.ui:121
 msgid "Alt + Drag"
 msgstr "Alt + तान्नु"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:156
+#: crates/rnote-ui/data/ui/shortcuts.ui:162
 msgid "Zoom in/out"
 msgstr "ठूलो/सानो पार्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:157
+#: crates/rnote-ui/data/ui/shortcuts.ui:163
 msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + तान्नु"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:167
+#: crates/rnote-ui/data/ui/shortcuts.ui:168
+#, fuzzy
+#| msgid "_Return to Origin Page"
+msgid "Return to Origin Page"
+msgstr "_मूल पृष्ठमा फर्कनुहोस्"
+
+#: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Open Document"
 msgstr "कागजात खोल्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:179
+#: crates/rnote-ui/data/ui/shortcuts.ui:191
 #: crates/rnote-ui/src/dialogs/export.rs:41
 msgid "Save Document As"
 msgstr "कागजातलाई यस रूपमा बचत गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:185
+#: crates/rnote-ui/data/ui/shortcuts.ui:197
 msgid "Snap Positions"
 msgstr "स्थानहरू स्न्याप गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:197
+#: crates/rnote-ui/data/ui/shortcuts.ui:209
 msgid "Add Page (When in Fixed-Size Layout)"
 msgstr "पृष्ठ थप्नुहोस् (निश्चित-आकार खाकामा हुँदाखेरी )"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:203
+#: crates/rnote-ui/data/ui/shortcuts.ui:215
 msgid "Remove Last Page (When in Fixed-Size Layout)"
 msgstr "अन्तिम पृष्ठ हटाउनुहोस् (निश्चित-आकार खाकामा हुँदाखेरी )"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:209
+#: crates/rnote-ui/data/ui/shortcuts.ui:221
 msgid "Print Document"
 msgstr "कागजात छाप्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:215
+#: crates/rnote-ui/data/ui/shortcuts.ui:227
 #: crates/rnote-ui/src/dialogs/import.rs:93
 msgid "Import File"
 msgstr "फाइल आयात गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:239
+#: crates/rnote-ui/data/ui/shortcuts.ui:251
 msgid "Drawing"
 msgstr "रेखाङ्कन"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:242
+#: crates/rnote-ui/data/ui/shortcuts.ui:254
 msgid "Copy to Clipboard"
 msgstr "क्लिपबोर्डमा जस्ताको तस्तै राख्ने"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:248
+#: crates/rnote-ui/data/ui/shortcuts.ui:260
 msgid "Cut to Clipboard"
 msgstr "यहाँबाट हटाएर क्लिपबोर्डमा राख्ने"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:254
+#: crates/rnote-ui/data/ui/shortcuts.ui:266
 msgid "Paste Clipboard"
 msgstr "क्लिपबोर्डमा भएको जस्ताको तस्तै यता राख्ने"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:266
+#: crates/rnote-ui/data/ui/shortcuts.ui:278
 msgid "Undo"
 msgstr "पूर्वस्थिति"
 
-#: crates/rnote-ui/data/ui/shortcuts.ui:272
+#: crates/rnote-ui/data/ui/shortcuts.ui:284
 msgid "Redo"
 msgstr "पुनः गर्नुहोस्"
 
-#: crates/rnote-ui/data/ui/sidebar.ui:50
+#: crates/rnote-ui/data/ui/sidebar.ui:52
 msgid "Workspace"
 msgstr "कार्यक्षेत्र"
 
-#: crates/rnote-ui/data/ui/sidebar.ui:61
+#: crates/rnote-ui/data/ui/sidebar.ui:63
 msgid "Settings"
 msgstr "मापदण्डहरू"
 
@@ -1938,91 +1982,102 @@ msgstr "नयाँ फोल्डर बनाउनुहोस्"
 msgid "Open Workspace Folder"
 msgstr "कार्यक्षेत्र नाम"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:845
-#: crates/rnote-ui/src/appwindow/imp.rs:425
+#: crates/rnote-ui/src/appwindow/actions.rs:881
+#: crates/rnote-ui/src/appwindow/imp.rs:462
 #: crates/rnote-ui/src/dialogs/export.rs:82
-#: crates/rnote-ui/src/dialogs/mod.rs:127
-#: crates/rnote-ui/src/dialogs/mod.rs:257
-#: crates/rnote-ui/src/dialogs/mod.rs:407
+#: crates/rnote-ui/src/dialogs/mod.rs:129
+#: crates/rnote-ui/src/dialogs/mod.rs:259
+#: crates/rnote-ui/src/dialogs/mod.rs:409
 msgid "Saving document failed"
 msgstr "कागजात बचत गर्न असफल"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:936
+#: crates/rnote-ui/src/appwindow/actions.rs:972
 msgid "Printing document failed"
 msgstr "कागजात छाप्न असफल"
 
-#: crates/rnote-ui/src/appwindow/actions.rs:1013
+#: crates/rnote-ui/src/appwindow/actions.rs:1049
 msgid "Exporting selection failed, nothing selected"
 msgstr "चयन निर्यात असफल, केहीपनि छानिएको छैन"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:377
+#: crates/rnote-ui/src/appwindow/imp.rs:411
 #, fuzzy
 #| msgid "Saves are in progress, waiting before closing.."
 msgid "Saves are in progress, waiting before closing..."
 msgstr "बचत हुँदै छ, बन्द गर्नअघि पर्खनुहोस्।"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:447
+#: crates/rnote-ui/src/appwindow/imp.rs:490
 msgid "Button 1"
 msgstr "बटन १"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:454
+#: crates/rnote-ui/src/appwindow/imp.rs:497
 msgid "Button 2"
 msgstr "बटन २"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:461
+#: crates/rnote-ui/src/appwindow/imp.rs:504
 msgid "Button 3"
 msgstr "बटन ३"
 
-#: crates/rnote-ui/src/appwindow/imp.rs:468
+#: crates/rnote-ui/src/appwindow/imp.rs:511
 msgid "Button 4"
 msgstr "बटन ४"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:224
+#: crates/rnote-ui/src/appwindow/mod.rs:97
+msgid "Tool Locked"
+msgstr ""
+
+#: crates/rnote-ui/src/appwindow/mod.rs:98
+#, fuzzy
+#| msgid "_Unlock"
+msgid "Unlock"
+msgstr "_खोल्नुहोस्"
+
+#: crates/rnote-ui/src/appwindow/mod.rs:276
 msgid ""
 "Settings schema is not installed. App settings could not be loaded and won't "
 "be saved."
 msgstr ""
 "मापदण्ड ढाँचा स्थापना गरिएको छैन। एप मापदण्डहरू लोड गर्न सकिएन र सुरक्षित गरिने छैन।"
 
-#: crates/rnote-ui/src/appwindow/mod.rs:572
+#: crates/rnote-ui/src/appwindow/mod.rs:645
 msgid "Opening file failed"
 msgstr "फाइल खोल्न असफल"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1005
-#: crates/rnote-ui/src/dialogs/mod.rs:205
-#: crates/rnote-ui/src/dialogs/mod.rs:338
+#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/dialogs/mod.rs:207
+#: crates/rnote-ui/src/dialogs/mod.rs:340
+#: crates/rnote-ui/src/dialogs/mod.rs:440
 msgid "- invalid file name -"
 msgstr "- अवैध फाइल नाम -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1018
+#: crates/rnote-ui/src/canvas/mod.rs:1056
 msgid "- invalid folder path -"
 msgstr "- अवैध फोल्डर मार्ग -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1042
+#: crates/rnote-ui/src/canvas/mod.rs:1091
 msgid "Opened file was modified on disk"
 msgstr "खोलिएको फाइल डिस्कमा हेरफेर गरिएको थियो।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1092
 msgid "Reload"
 msgstr "पुन: लोड गर्नुहोस्"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1059
+#: crates/rnote-ui/src/canvas/mod.rs:1108
 msgid "Reloading .rnote file from disk failed"
 msgstr "डिस्कबाट .rnote फाइल पुन: लोड गर्न असफल"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1134
+#: crates/rnote-ui/src/canvas/mod.rs:1183
 msgid "Opened file was renamed or moved."
 msgstr "खोलिएको फाइलको नाम फेरियो वा सारियो।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1153
+#: crates/rnote-ui/src/canvas/mod.rs:1202
 msgid "Opened file was removed."
 msgstr "खोलिएको फाइल हटाइयो।"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1383
+#: crates/rnote-ui/src/canvas/mod.rs:1432
 msgid "Inserting file failed"
 msgstr "फाइल छिराउन असफल"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1395
+#: crates/rnote-ui/src/canvas/mod.rs:1444
 msgid "Inserting text failed"
 msgstr "पाठ छिराउन असफल"
 
@@ -2067,7 +2122,7 @@ msgstr "फाइल म्यानेजरमा फाइल खोल्न
 #: crates/rnote-ui/src/dialogs/export.rs:351
 #: crates/rnote-ui/src/dialogs/export.rs:775
 #: crates/rnote-ui/src/dialogs/export.rs:1167
-#: crates/rnote-ui/src/dialogs/mod.rs:524
+#: crates/rnote-ui/src/dialogs/mod.rs:613
 msgid "Select"
 msgstr "चयन गर्नुहोस्"
 
@@ -2133,429 +2188,430 @@ msgid "Jpg, Pdf, Png, Svg, Xopp, Txt"
 msgstr "JPG, PDF, PNG, SVG, XOPP, TXT"
 
 #: crates/rnote-ui/src/dialogs/import.rs:187
-#: crates/rnote-ui/src/dialogs/import.rs:419
+#: crates/rnote-ui/src/dialogs/import.rs:414
 msgid "- no file name -"
 msgstr "- फाइलको नाम छैन -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:426
+#: crates/rnote-ui/src/dialogs/import.rs:421
 msgid "- no title -"
 msgstr "- कुनै शीर्षक छैन -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:431
+#: crates/rnote-ui/src/dialogs/import.rs:426
 msgid "- no author -"
 msgstr "- कुनै लेखक छैन -"
 
-#: crates/rnote-ui/src/dialogs/import.rs:438
+#: crates/rnote-ui/src/dialogs/import.rs:433
 #, fuzzy
 #| msgid "Modification date:"
 msgid "- no modification date -"
 msgstr "परिमार्जित मिति:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:444
+#: crates/rnote-ui/src/dialogs/import.rs:439
 msgid "File name:"
 msgstr "फाइलको नाम:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:445
+#: crates/rnote-ui/src/dialogs/import.rs:440
 msgid "Title:"
 msgstr "शीर्षक:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:446
+#: crates/rnote-ui/src/dialogs/import.rs:441
 msgid "Author:"
 msgstr "लेखक:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:447
+#: crates/rnote-ui/src/dialogs/import.rs:442
 msgid "Modification date:"
 msgstr "परिमार्जित मिति:"
 
-#: crates/rnote-ui/src/dialogs/import.rs:448
+#: crates/rnote-ui/src/dialogs/import.rs:443
 msgid "Pages:"
 msgstr "पृष्ठ:"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: crates/rnote-ui/src/dialogs/mod.rs:40
+#: crates/rnote-ui/src/dialogs/mod.rs:42
 msgid "translator-credits"
 msgstr "Manish Goyal <manishgoyal016@gmail.com>"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:212
-#: crates/rnote-ui/src/dialogs/mod.rs:345
+#: crates/rnote-ui/src/dialogs/mod.rs:214
+#: crates/rnote-ui/src/dialogs/mod.rs:347
+#: crates/rnote-ui/src/dialogs/mod.rs:444
 msgid "- invalid save folder name -"
 msgstr "-बचत फोल्डरको नाम अवैध छ।-"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:228
-#: crates/rnote-ui/src/dialogs/mod.rs:360
+#: crates/rnote-ui/src/dialogs/mod.rs:230
+#: crates/rnote-ui/src/dialogs/mod.rs:362
 msgid "The changes will be saved"
 msgstr "परिवर्तनहरू बचत हुनेछन्।"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:233
-#: crates/rnote-ui/src/dialogs/mod.rs:365
+#: crates/rnote-ui/src/dialogs/mod.rs:235
+#: crates/rnote-ui/src/dialogs/mod.rs:367
 msgid "A new file will be created"
 msgstr "नयाँ फाइल सिर्जना हुनेछ।"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:522
+#: crates/rnote-ui/src/dialogs/mod.rs:611
 msgid "Change Workspace Directory"
 msgstr "कार्यक्षेत्र डाइरेक्टरी फेर्नुहोस्"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:618
+#: crates/rnote-ui/src/dialogs/mod.rs:707
 msgid "Trashing file failed"
 msgstr "कागजात मेटाउन असफल"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:692
+#: crates/rnote-ui/src/dialogs/mod.rs:781
 msgid "Band-Aid"
 msgstr "पट्टी"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:693
+#: crates/rnote-ui/src/dialogs/mod.rs:782
 msgid "Bank"
 msgstr "बैंक"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:694
+#: crates/rnote-ui/src/dialogs/mod.rs:783
 msgid "Bookmark"
 msgstr "पुस्तकचिनो"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:695
+#: crates/rnote-ui/src/dialogs/mod.rs:784
 msgid "Book"
 msgstr "पुस्तक"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:696
+#: crates/rnote-ui/src/dialogs/mod.rs:785
 msgid "Bread"
 msgstr "रोटी"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:697
+#: crates/rnote-ui/src/dialogs/mod.rs:786
 msgid "Calendar"
 msgstr "पात्रो"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:698
+#: crates/rnote-ui/src/dialogs/mod.rs:787
 msgid "Camera"
 msgstr "क्यामेरा"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:699
+#: crates/rnote-ui/src/dialogs/mod.rs:788
 msgctxt "as in computer chip"
 msgid "Chip"
 msgstr "चिप"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:700
+#: crates/rnote-ui/src/dialogs/mod.rs:789
 msgid "Clock"
 msgstr "घडी"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:701
+#: crates/rnote-ui/src/dialogs/mod.rs:790
 msgid "Code"
 msgstr "कोड"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:702
+#: crates/rnote-ui/src/dialogs/mod.rs:791
 msgid "Compose"
 msgstr "लेख्नुहोस्"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:703
+#: crates/rnote-ui/src/dialogs/mod.rs:792
 msgctxt "as in plant"
 msgid "Crop"
 msgstr "बाली"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:704
+#: crates/rnote-ui/src/dialogs/mod.rs:793
 msgid "Dictionary"
 msgstr "शब्दकोश"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:706
+#: crates/rnote-ui/src/dialogs/mod.rs:795
 msgid "Drinks"
 msgstr "पिइने पदार्थहरू"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:707
+#: crates/rnote-ui/src/dialogs/mod.rs:796
 msgid "Flag"
 msgstr "झण्डा"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:708
+#: crates/rnote-ui/src/dialogs/mod.rs:797
 msgid "Folder"
 msgstr "फोल्डर"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:709
+#: crates/rnote-ui/src/dialogs/mod.rs:798
 msgid "Footprints"
 msgstr "पदचाप"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:710
+#: crates/rnote-ui/src/dialogs/mod.rs:799
 msgid "Gamepad"
 msgstr "गेमप्याड"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:711
+#: crates/rnote-ui/src/dialogs/mod.rs:800
 msgid "Gear"
 msgstr "गियर"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:712
+#: crates/rnote-ui/src/dialogs/mod.rs:801
 msgid "Globe"
 msgstr "ग्लोब"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:713
+#: crates/rnote-ui/src/dialogs/mod.rs:802
 msgid "Hammer"
 msgstr "हतौडी"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:714
+#: crates/rnote-ui/src/dialogs/mod.rs:803
 msgid "Heart"
 msgstr "मुटु"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:715
+#: crates/rnote-ui/src/dialogs/mod.rs:804
 msgid "Hourglass"
 msgstr "बालुवा घडी"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:716
+#: crates/rnote-ui/src/dialogs/mod.rs:805
 msgid "Key"
 msgstr "साँचो"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:717
+#: crates/rnote-ui/src/dialogs/mod.rs:806
 msgid "Language"
 msgstr "भाषा"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:718
+#: crates/rnote-ui/src/dialogs/mod.rs:807
 msgid "Library"
 msgstr "पुस्तकालय"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:719
+#: crates/rnote-ui/src/dialogs/mod.rs:808
 msgid "Lightbulb"
 msgstr "बल्ब"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:720
+#: crates/rnote-ui/src/dialogs/mod.rs:809
 msgid "Mathematics"
 msgstr "गणित"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:721
+#: crates/rnote-ui/src/dialogs/mod.rs:810
 msgid "Meeting"
 msgstr "बैठक"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:722
+#: crates/rnote-ui/src/dialogs/mod.rs:811
 msgid "Money"
 msgstr "पैसा"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:723
+#: crates/rnote-ui/src/dialogs/mod.rs:812
 msgid "Musical Note"
 msgstr "साङ्गीतिक प्रतीक"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:724
+#: crates/rnote-ui/src/dialogs/mod.rs:813
 msgid "Nature"
 msgstr "प्रकृति"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:725
+#: crates/rnote-ui/src/dialogs/mod.rs:814
 msgid "Open Book"
 msgstr "खुल्ला किताब"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:726
+#: crates/rnote-ui/src/dialogs/mod.rs:815
 msgid "Paintbrush"
 msgstr "तूलिका"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:727
+#: crates/rnote-ui/src/dialogs/mod.rs:816
 msgid "Pencil and Paper"
 msgstr "सिसाकलम र कागज"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:728
+#: crates/rnote-ui/src/dialogs/mod.rs:817
 msgid "People"
 msgstr "मानिसहरू"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:729
+#: crates/rnote-ui/src/dialogs/mod.rs:818
 msgid "Person"
 msgstr "मान्छे"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:730
+#: crates/rnote-ui/src/dialogs/mod.rs:819
 msgid "Projector"
 msgstr "प्रोजेक्टर"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:731
+#: crates/rnote-ui/src/dialogs/mod.rs:820
 msgid "Science"
 msgstr "विज्ञान"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:732
+#: crates/rnote-ui/src/dialogs/mod.rs:821
 msgid "Scratchpad"
 msgstr "स्क्र्याचप्याड"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:733
+#: crates/rnote-ui/src/dialogs/mod.rs:822
 msgid "Shapes"
 msgstr "आकारहरू"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:734
+#: crates/rnote-ui/src/dialogs/mod.rs:823
 msgid "Shopping"
 msgstr "किनमेल"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:735
+#: crates/rnote-ui/src/dialogs/mod.rs:824
 msgid "Speech Bubble"
 msgstr "बोली बबल"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:736
+#: crates/rnote-ui/src/dialogs/mod.rs:825
 msgid "Speedometer"
 msgstr "स्पीडोमीटर"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:737
+#: crates/rnote-ui/src/dialogs/mod.rs:826
 msgid "Star"
 msgstr "तारा"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:739
+#: crates/rnote-ui/src/dialogs/mod.rs:828
 msgctxt "as in terminal software"
 msgid "Terminal"
 msgstr "टर्मिनल"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:741
+#: crates/rnote-ui/src/dialogs/mod.rs:830
 msgid "Text"
 msgstr "पाठ"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:742
+#: crates/rnote-ui/src/dialogs/mod.rs:831
 msgid "Travel"
 msgstr "यात्रा"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:743
+#: crates/rnote-ui/src/dialogs/mod.rs:832
 msgid "Weather"
 msgstr "मौसम"
 
-#: crates/rnote-ui/src/dialogs/mod.rs:744
+#: crates/rnote-ui/src/dialogs/mod.rs:833
 msgid "Weight"
 msgstr "परिमाण"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:635
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:662
 msgid "Miscellaneous"
 msgstr "थरीथरीको"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:644
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:671
 msgid "Coordinate Systems"
 msgstr "निर्देशांक प्रणालीहरू"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:652
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
 msgid "Ellipses"
 msgstr "दीर्घवृत्तहरू"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:659
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
 msgid "Curves & Paths"
 msgstr "वक्रहरू र मार्गहरू"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:674
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:701
 msgid "Arrow"
 msgstr "तीर"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:675
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:702
 msgid "Line"
 msgstr "रेखा"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:676
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:703
 msgid "Rectangle"
 msgstr "आयत"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:678
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:705
 msgid "2D coordinate system"
 msgstr "2D निर्देशांक प्रणाली"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:706
 msgid "3D coordinate system"
 msgstr "3D निर्देशांक प्रणाली"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:680
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:707
 msgid "2D single quadrant coordinate system"
 msgstr "2D निर्देशांक प्रणालीको चौथाई"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:681
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:708
 msgid "Ellipse"
 msgstr "दीर्घवृत्त"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:682
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:709
 msgid "Ellipse with foci"
 msgstr "फोकसहरू भएको दीर्घवृत्त"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:683
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:710
 msgid "Quadratic bezier curve"
 msgstr "द्विघात बेजियर वक्र"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:684
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:711
 msgid "Cubic bezier curve"
 msgstr "क्यूबिक बेजियर वक्र"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:685
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:712
 msgid "Polyline"
 msgstr "बहुरेखा"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:713
 msgid "Polygon"
 msgstr "बहुभुज"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:660
+#: crates/rnote-ui/src/settingspanel/mod.rs:684
 msgid "Application restart is required"
 msgstr "एप्लिकेसन फेरी सुरु गर्न आवश्यक छ।"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1460
+#: crates/rnote-ui/src/settingspanel/mod.rs:1584
 msgctxt "a cursor type"
 msgid "Crosshair (Small)"
 msgstr "क्रसहेयर (सानो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1461
+#: crates/rnote-ui/src/settingspanel/mod.rs:1585
 msgctxt "a cursor type"
 msgid "Crosshair (Medium)"
 msgstr "क्रसहेयर (ठीकको)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1462
+#: crates/rnote-ui/src/settingspanel/mod.rs:1586
 msgctxt "a cursor type"
 msgid "Crosshair (Large)"
 msgstr "क्रसहेयर (ठूलो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1463
+#: crates/rnote-ui/src/settingspanel/mod.rs:1587
 msgctxt "a cursor type"
 msgid "Dot (Small)"
 msgstr "बिन्दु (सानो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1464
+#: crates/rnote-ui/src/settingspanel/mod.rs:1588
 msgctxt "a cursor type"
 msgid "Dot (Medium)"
 msgstr "बिन्दु (ठीकको)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1465
+#: crates/rnote-ui/src/settingspanel/mod.rs:1589
 msgctxt "a cursor type"
 msgid "Dot (Large)"
 msgstr "बिन्दु (ठूलो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1466
+#: crates/rnote-ui/src/settingspanel/mod.rs:1590
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Small)"
 msgstr "आँसुको थोपा उत्तर-पश्चिम (सानो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1467
+#: crates/rnote-ui/src/settingspanel/mod.rs:1591
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Medium)"
 msgstr "आँसुको थोपा उत्तर-पश्चिम (ठीकको)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1468
+#: crates/rnote-ui/src/settingspanel/mod.rs:1592
 msgctxt "a cursor type"
 msgid "Teardrop North-West (Large)"
 msgstr "आँसुको थोपा उत्तर-पश्चिम (ठूलो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1469
+#: crates/rnote-ui/src/settingspanel/mod.rs:1593
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Small)"
 msgstr "आँसुको थोपा उत्तर-पूर्व (सानो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1470
+#: crates/rnote-ui/src/settingspanel/mod.rs:1594
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Medium)"
 msgstr "आँसुको थोपा उत्तर-पूर्व (ठीकको)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1471
+#: crates/rnote-ui/src/settingspanel/mod.rs:1595
 msgctxt "a cursor type"
 msgid "Teardrop North-East (Large)"
 msgstr "आँसुको थोपा उत्तर-पूर्व (ठूलो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1472
+#: crates/rnote-ui/src/settingspanel/mod.rs:1596
 msgctxt "a cursor type"
 msgid "Teardrop North (Small)"
 msgstr "आँसुको थोपा उत्तर (सानो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1473
+#: crates/rnote-ui/src/settingspanel/mod.rs:1597
 msgctxt "a cursor type"
 msgid "Teardrop North (Medium)"
 msgstr "आँसुको थोपा उत्तर (ठीकको)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1474
+#: crates/rnote-ui/src/settingspanel/mod.rs:1598
 msgctxt "a cursor type"
 msgid "Teardrop North (Large)"
 msgstr "आँसुको थोपा उत्तर (ठूलो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1475
+#: crates/rnote-ui/src/settingspanel/mod.rs:1599
 msgctxt "a cursor type"
 msgid "Beam (Small)"
 msgstr "रातो लेजर (सानो)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1476
+#: crates/rnote-ui/src/settingspanel/mod.rs:1600
 msgctxt "a cursor type"
 msgid "Beam (Medium)"
 msgstr "रातो लेजर (ठीकको)"
 
-#: crates/rnote-ui/src/settingspanel/mod.rs:1477
+#: crates/rnote-ui/src/settingspanel/mod.rs:1601
 msgctxt "a cursor type"
 msgid "Beam (Large)"
 msgstr "रातो लेजर (ठूलो)"
@@ -2592,135 +2648,153 @@ msgstr "फोल्डरको नाम"
 msgid "New Folder"
 msgstr "नयाँ फोल्डर"
 
-#: crates/rnote-ui/src/utils.rs:169
+#: crates/rnote-ui/src/utils.rs:202
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
 msgstr "खरानी"
 
-#: crates/rnote-ui/src/utils.rs:171 crates/rnote-ui/src/utils.rs:206
+#: crates/rnote-ui/src/utils.rs:204 crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "rose"
 msgstr "गुलाफी"
 
-#: crates/rnote-ui/src/utils.rs:173
+#: crates/rnote-ui/src/utils.rs:206
 msgctxt "part of string representation of a color"
 msgid "red"
 msgstr "रातो"
 
-#: crates/rnote-ui/src/utils.rs:176
+#: crates/rnote-ui/src/utils.rs:209
 msgctxt "part of string representation of a color"
 msgid "orange"
 msgstr "सुन्तले"
 
-#: crates/rnote-ui/src/utils.rs:179
+#: crates/rnote-ui/src/utils.rs:212
 msgctxt "part of string representation of a color"
 msgid "yellow"
 msgstr "पहेँलो"
 
-#: crates/rnote-ui/src/utils.rs:183
+#: crates/rnote-ui/src/utils.rs:216
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
 msgstr "हरियो"
 
-#: crates/rnote-ui/src/utils.rs:186
+#: crates/rnote-ui/src/utils.rs:219
 msgctxt "part of string representation of a color"
 msgid "green"
 msgstr "हरियो"
 
-#: crates/rnote-ui/src/utils.rs:189
+#: crates/rnote-ui/src/utils.rs:222
 msgctxt "part of string representation of a color"
 msgid "spring-green"
 msgstr "दुबो"
 
-#: crates/rnote-ui/src/utils.rs:192
+#: crates/rnote-ui/src/utils.rs:225
 msgctxt "part of string representation of a color"
 msgid "cyan"
 msgstr "आकाशे"
 
-#: crates/rnote-ui/src/utils.rs:195
+#: crates/rnote-ui/src/utils.rs:228
 msgctxt "part of string representation of a color"
 msgid "azure"
 msgstr "निलो"
 
-#: crates/rnote-ui/src/utils.rs:198
+#: crates/rnote-ui/src/utils.rs:231
 msgctxt "part of string representation of a color"
 msgid "blue"
 msgstr "निलो"
 
-#: crates/rnote-ui/src/utils.rs:201
+#: crates/rnote-ui/src/utils.rs:234
 msgctxt "part of string representation of a color"
 msgid "violet"
 msgstr "बैजनी"
 
-#: crates/rnote-ui/src/utils.rs:204
+#: crates/rnote-ui/src/utils.rs:237
 msgctxt "part of string representation of a color"
 msgid "magenta"
 msgstr "मजेन्टा"
 
-#: crates/rnote-ui/src/utils.rs:211
+#: crates/rnote-ui/src/utils.rs:244
 msgctxt "part of string representation of a color"
 msgid "greyish"
 msgstr "खरानी जस्तो"
 
-#: crates/rnote-ui/src/utils.rs:214
+#: crates/rnote-ui/src/utils.rs:247
 msgctxt "part of string representation of a color"
 msgid "strong"
 msgstr ""
 
-#: crates/rnote-ui/src/utils.rs:216
+#: crates/rnote-ui/src/utils.rs:249
 msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "चम्किलो"
 
-#: crates/rnote-ui/src/utils.rs:220
+#: crates/rnote-ui/src/utils.rs:253
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "अति गाढा"
 
-#: crates/rnote-ui/src/utils.rs:222
+#: crates/rnote-ui/src/utils.rs:255
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "गाढा"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:258
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "मध्यम"
 
-#: crates/rnote-ui/src/utils.rs:227
+#: crates/rnote-ui/src/utils.rs:260
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "उज्यालो"
 
-#: crates/rnote-ui/src/utils.rs:231
+#: crates/rnote-ui/src/utils.rs:264
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "पारदर्शी"
 
-#: crates/rnote-ui/src/utils.rs:233
+#: crates/rnote-ui/src/utils.rs:266
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "अर्धपारदर्शी"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:270
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "थोरै अर्धपारदर्शी"
 
-#: crates/rnote-ui/src/utils.rs:246
+#: crates/rnote-ui/src/utils.rs:279
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "पूर्ण पारदर्शी"
 
-#: crates/rnote-ui/src/utils.rs:249
+#: crates/rnote-ui/src/utils.rs:282
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "कालो"
 
-#: crates/rnote-ui/src/utils.rs:251
+#: crates/rnote-ui/src/utils.rs:284
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "सेतो"
+
+#~ msgid "Brush Style"
+#~ msgstr "बुरुस शैली"
+
+#~ msgid "Brush Styles"
+#~ msgstr "बुरुस शैलीहरू"
+
+#~ msgid "Mark underneath other strokes"
+#~ msgstr "अन्य धर्काहरु मुनि चिन्ह लगाउनुहोस्"
+
+#~ msgid "Draw solid color strokes"
+#~ msgstr "ठोस रङ्गित धर्काहरु कोर्नुहोस्"
+
+#~ msgid "Draw textured strokes"
+#~ msgstr "बनावटी धर्काहरु कोर्नुहोस्"
+
+#~ msgid "Shaper Style"
+#~ msgstr "आकार दिनेको शैली"
 
 #~ msgid "Page Borders"
 #~ msgstr "पृष्ठ सीमाना"

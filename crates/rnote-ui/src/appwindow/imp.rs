@@ -446,7 +446,10 @@ impl RnAppWindow {
 
                     for (i, tab) in tabs.iter().enumerate() {
                         let canvas = tab.canvas();
-                        if canvas.unsaved_changes() && let Some(output_file) = canvas.output_file() {
+                        if !canvas.unsaved_changes() {
+                            continue;
+                        }
+                        if let Some(output_file) = canvas.output_file() {
                             trace!(
                                 "there are unsaved changes on the tab {:?} with a file on disk, saving",i
                             );
@@ -458,6 +461,12 @@ impl RnAppWindow {
                                         .overlays()
                                         .dispatch_toast_error(&gettext("Saving document failed"));
                                 };
+                            }));
+                        } else {
+                            glib::spawn_future_local(clone!(#[weak] canvas, async move {
+                            if let Err(err) = canvas.save_draft().await {
+                                error!("Saving draft failed: {err}");
+                            }
                             }));
                         }
                     }

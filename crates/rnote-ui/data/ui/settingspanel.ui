@@ -42,7 +42,7 @@
                     <child>
                       <object class="AdwSwitchRow" id="general_autosave_row">
                         <property name="title" translatable="yes">Autosave</property>
-                        <property name="subtitle" translatable="yes">Enable or disable autosave</property>
+                        <property name="subtitle" translatable="yes">Enable or disable autosave for documents and drafts</property>
                       </object>
                     </child>
                     <child>

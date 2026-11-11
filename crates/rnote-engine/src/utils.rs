@@ -137,23 +137,26 @@ where
     // We first create the named temporary file, specifically in the parent
     // directory of the target filepath, as `.persist()` will not work
     // if the temporary file is in a different filesystem than the target.
-    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory)
-        .with_context(|| "Failed to create a temporary file")?;
+    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory).context(format!(
+        "Failed to create a temporary file at '{}'",
+        parent_directory.display()
+    ))?;
 
     // We then write all of our bytes to the temporary file before syncing its contents.
-    temp_file
-        .write_all(bytes)
-        .with_context(|| "Failed to write to the temporary file")?;
-    temp_file
-        .as_file()
-        .sync_all()
-        .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
+    temp_file.write_all(bytes).context(format!(
+        "Failed to write to temporary file '{}'",
+        parent_directory.display()
+    ))?;
+    temp_file.as_file().sync_all().context(format!(
+        "Failed to sync the contents and metadata of temporary file '{temp_file:?}'",
+    ))?;
 
     // Finally, we persist the temporary file to the target filepath, if a file
     // preexists at this location, it will be atomically replaced by our new file.
-    let _ = temp_file
-        .persist(filepath)
-        .with_context(|| "Failed to persist the temporary file to the target filepath")?;
+    let _ = temp_file.persist(filepath).context(format!(
+        "Failed to persist temporary file to '{}'",
+        filepath.display()
+    ))?;
 
     #[cfg(unix)]
     {
@@ -161,9 +164,15 @@ where
         // Not required for Windows systems, not possible either (you can't open directories as files in the first place).
         // Note that this might not even be enough, file management on UNIX seems to be a bit of a nightmare.
         std::fs::File::open(parent_directory)
-            .with_context(|| "Failed to open the parent directory")?
+            .context(format!(
+                "Failed to open parent directory '{}'",
+                parent_directory.display()
+            ))?
             .sync_all()
-            .with_context(|| "Failed to sync the contents and metadata of the parent directory")?;
+            .context(format!(
+                "Failed to sync the contents and metadata of parent directory '{}'",
+                parent_directory.display()
+            ))?;
     }
 
     Ok(())

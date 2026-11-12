@@ -85,7 +85,7 @@ impl PenBehaviour for Eraser {
                 progress: PenProgress::Idle,
             },
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
-                widget_flags |= erase(element, Some(current_element.clone()), engine_view);
+                widget_flags |= erase(element, Some(*current_element), engine_view);
                 *current_element = element;
                 EventResult {
                     handled: true,
@@ -236,14 +236,12 @@ fn erase(
                     .pens_config
                     .eraser_config
                     .eraser_bounds(element),
-                previous_element.and_then(|element| {
-                    Some(
-                        engine_view
-                            .config
-                            .pens_config
-                            .eraser_config
-                            .eraser_bounds(element),
-                    )
+                previous_element.map(|element| {
+                    engine_view
+                        .config
+                        .pens_config
+                        .eraser_config
+                        .eraser_bounds(element)
                 }),
                 engine_view.camera.viewport(),
             );
@@ -255,14 +253,12 @@ fn erase(
                     .pens_config
                     .eraser_config
                     .eraser_bounds(element),
-                previous_element.and_then(|element| {
-                    Some(
-                        engine_view
-                            .config
-                            .pens_config
-                            .eraser_config
-                            .eraser_bounds(element),
-                    )
+                previous_element.map(|element| {
+                    engine_view
+                        .config
+                        .pens_config
+                        .eraser_config
+                        .eraser_bounds(element)
                 }),
                 engine_view.camera.viewport(),
             );

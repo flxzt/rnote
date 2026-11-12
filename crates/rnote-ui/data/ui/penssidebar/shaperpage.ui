@@ -113,7 +113,7 @@
                 </object>
               </child>
               <child>
-                <object class="GtkButton" id="popover_close_button">
+                <object class="GtkButton" id="shapeconfig_popover_close_button">
                   <property name="icon-name">window-close-symbolic</property>
                   <style>
                         <class name="flat" />
@@ -140,29 +140,6 @@
                       <property name="margin-end">6</property>
                       <property name="spacing">12</property>
                       <property name="width-request">330</property>
-                      <child>
-                        <object class="GtkBox">
-                          <child>
-                            <object class="GtkLabel">
-                              <property name="label" translatable="yes">Shape Configuration</property>
-                              <property name="hexpand">true</property>
-                              <property name="halign">center</property>
-                              <style>
-                                <class name="title-3" />
-                              </style>
-                            </object>
-                          </child>
-                          <child>
-                            <object class="GtkButton" id="shapeconfig_popover_close_button">
-                              <property name="icon-name">window-close-symbolic</property>
-                              <style>
-                                <class name="flat" />
-                                <class name="circular" />
-                              </style>
-                            </object>
-                          </child>
-                        </object>
-                      </child>
 
                       <!-- Highlighting -->
                       <child>

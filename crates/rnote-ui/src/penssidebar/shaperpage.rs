@@ -72,8 +72,6 @@ mod imp {
 
         // tabbed shape popover properties
         #[template_child]
-        pub(crate) popover_close_button: TemplateChild<Button>, // TODO
-        #[template_child]
         pub(crate) stack: TemplateChild<adw::ViewStack>,
         #[template_child]
         pub(crate) switcher_bar: TemplateChild<adw::ViewSwitcherBar>,

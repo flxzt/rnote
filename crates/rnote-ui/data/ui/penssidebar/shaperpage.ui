@@ -127,7 +127,7 @@
             <object class="AdwViewStack" id="stack">
               <child>
                 <object class="AdwViewStackPage">
-                  <property name="name">page1</property>
+                  <property name="name">style_options</property>
                   <property name="title" translatable="yes">_Style _Options</property>
                   <property name="icon-name">settings-symbolic</property>
                   <property name="use-underline">True</property>
@@ -249,6 +249,25 @@
                           </child>
                         </object>
                       </child>
+                    </object>
+                  </property>
+                </object>
+              </child>
+              <child>
+                <object class="AdwViewStackPage">
+                  <property name="name">constraints</property>
+                  <property name="title" translatable="yes">_Constraints</property>
+                  <property name="icon-name">settings-symbolic</property>
+                  <property name="use-underline">True</property>
+                  <property name="child">
+                    <object class="GtkBox">
+                      <property name="orientation">vertical</property>
+                      <property name="margin-top">6</property>
+                      <property name="margin-bottom">6</property>
+                      <property name="margin-start">6</property>
+                      <property name="margin-end">6</property>
+                      <property name="spacing">12</property>
+                      <property name="width-request">330</property>
 
                       <!-- Constraints -->
                       <child>

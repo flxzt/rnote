@@ -3,9 +3,9 @@ use super::chrono_comp::StrokeLayer;
 use super::{StrokeKey, StrokeStore};
 use crate::WidgetFlags;
 use crate::strokes::{BrushStroke, Stroke};
-use geo::ConvexHull;
 use geo::intersects::Intersects;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::PenPath;
 use rnote_compose::Style::Textured;
 use rnote_compose::shapes::Shapeable;
@@ -80,6 +80,89 @@ impl StrokeStore {
             .collect()
     }
 
+    pub fn get_sliding_polygon(
+        &self,
+        previous_eraser_bounds: Option<Aabb>,
+        eraser_bounds: Aabb,
+    ) -> Option<geo::Polygon> {
+        if let Some(previous_bounds) = previous_eraser_bounds {
+            use geo::polygon;
+
+            let previous_center = previous_bounds.center();
+            let new_center = eraser_bounds.center();
+            let half_extents = eraser_bounds.half_extents();
+            // note : the eraser has a constant size so we can do a
+            // simplified convex hull computation
+
+            let delta = new_center - previous_center;
+            if delta.length() > 0.0 {
+                let quadrant = (((Vector2::X.angle_to(delta)) / std::f64::consts::PI) + 1.0)
+                    .floor()
+                    .clamp(0.0, 3.0) as u32;
+
+                match quadrant {
+                    0 => {
+                        // -pi, -pi/2
+                        Some(polygon![
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] + half_extents[1]),
+                            (x: new_center[0] - half_extents[0], y:new_center[1] + half_extents[1]),
+                            (x: new_center[0] - half_extents[0], y:new_center[1] - half_extents[1]),
+                            (x: new_center[0] + half_extents[0], y:new_center[1] - half_extents[1]),
+                            (x: previous_center[0] + half_extents[0],y:previous_center[1] - half_extents[1]),
+                            (x: previous_center[0] + half_extents[0],y:previous_center[1] + half_extents[1]),
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] + half_extents[1]),
+                        ])
+                    }
+                    1 => {
+                        //-pi/2, 0
+                        Some(polygon![
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] - half_extents[1]),
+                            (x: new_center[0] - half_extents[0], y:new_center[1] - half_extents[1]),
+                            (x: new_center[0] + half_extents[0], y:new_center[1] - half_extents[1]),
+                            (x: new_center[0] + half_extents[0], y:new_center[1] + half_extents[1]),
+                            (x: previous_center[0] + half_extents[0],y:previous_center[1] + half_extents[1]),
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] + half_extents[1]),
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] - half_extents[1]),
+                        ])
+                    }
+                    2 => {
+                        // 0, pi/2
+                        //   x --  x new
+                        //  /     /
+                        // /     /
+                        // x -- x previous
+                        Some(polygon![
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] - half_extents[1]),
+                            (x: previous_center[0] + half_extents[0],y:previous_center[1] - half_extents[1]),
+                            (x: new_center[0] + half_extents[0], y:new_center[1] - half_extents[1]),
+                            (x: new_center[0] + half_extents[0], y:new_center[1] + half_extents[1]),
+                            (x: new_center[0] - half_extents[0], y:new_center[1] + half_extents[1]),
+                            (x: previous_center[0] - half_extents[0], y:previous_center[1] + half_extents[1]),
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] - half_extents[1]),
+                        ])
+                    }
+                    3 => {
+                        //pi/2, pi
+                        Some(polygon![
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] - half_extents[1]),
+                            (x: new_center[0] - half_extents[0], y:new_center[1] - half_extents[1]),
+                            (x: new_center[0] - half_extents[0], y:new_center[1] + half_extents[1]),
+                            (x: new_center[0] + half_extents[0], y:new_center[1] + half_extents[1]),
+                            (x: previous_center[0] + half_extents[0],y:previous_center[1] + half_extents[1]),
+                            (x: previous_center[0] + half_extents[0],y:previous_center[1] - half_extents[1]),
+                            (x: previous_center[0] - half_extents[0],y:previous_center[1] - half_extents[1]),
+                        ])
+                    }
+                    _ => None,
+                }
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
     /// Trash strokes that collide with the given bounds.
     pub(crate) fn trash_colliding_strokes(
         &mut self,
@@ -89,17 +172,7 @@ impl StrokeStore {
     ) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
 
-        let sliding_polygon = if let Some(previous_bounds) = previous_eraser_bounds {
-            Some(
-                geo::MultiPolygon::new(vec![
-                    crate::utils::p2d_aabb_to_geo_polygon(previous_bounds),
-                    crate::utils::p2d_aabb_to_geo_polygon(eraser_bounds),
-                ])
-                .convex_hull(),
-            )
-        } else {
-            None
-        };
+        let sliding_polygon = self.get_sliding_polygon(previous_eraser_bounds, eraser_bounds);
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
@@ -169,17 +242,7 @@ impl StrokeStore {
         let mut widget_flags = WidgetFlags::default();
         let mut modified_keys = vec![];
 
-        let sliding_polygon = if let Some(previous_bounds) = previous_eraser_bounds {
-            Some(
-                geo::MultiPolygon::new(vec![
-                    crate::utils::p2d_aabb_to_geo_polygon(previous_bounds),
-                    crate::utils::p2d_aabb_to_geo_polygon(eraser_bounds),
-                ])
-                .convex_hull(),
-            )
-        } else {
-            None
-        };
+        let sliding_polygon = self.get_sliding_polygon(previous_eraser_bounds, eraser_bounds);
 
         let new_strokes = self
             .stroke_keys_as_rendered_intersecting_bounds(viewport)

@@ -99,7 +99,7 @@ usvg = "0.48.1"
 uuid = { version = "1.29.0", features = ["v4"] }
 winresource = "0.1.31"
 xmlwriter = "0.1.0"
-zstd = "0.13"
+zstd = "0.14"
 
 [patch.crates-io]
 piet = { git = "https://github.com/linebender/piet", rev = "22210f03b8a2b203e2ad5ba9b600ed17f4a9407a" }

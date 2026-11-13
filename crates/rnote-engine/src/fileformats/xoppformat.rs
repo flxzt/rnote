@@ -1,6 +1,7 @@
 // Imports
 use super::FromXmlAttributeValue;
 use super::{FileFormatLoader, FileFormatSaver, ToXmlAttributeValue, XmlLoadable, XmlWritable};
+use p2d::math::Vector2;
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
@@ -690,7 +691,7 @@ pub struct XoppStroke {
     /// The stroke coordinates.
     ///
     /// As points where the vector (1.0, 0.0) has length 1/72 inch.
-    pub coords: Vec<na::Vector2<f64>>,
+    pub coords: Vec<Vector2>,
     /// Optional timestamp.
     pub timestamp: Option<u64>,
     /// Optional audio filename.
@@ -766,8 +767,8 @@ impl XmlLoadable for XoppStroke {
                 .clone()
                 .zip(coords.clone().skip(1))
                 .step_by(2)
-                .map(|(x, y)| na::vector![x, y])
-                .collect::<Vec<na::Vector2<f64>>>();
+                .map(|(x, y)| Vector2::new(x, y))
+                .collect::<Vec<Vector2>>();
         }
 
         Ok(())

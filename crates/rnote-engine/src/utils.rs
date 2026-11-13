@@ -4,6 +4,9 @@ use anyhow::Context;
 use geo::line_string;
 use hayro::hayro_syntax;
 use p2d::bounding_volume::Aabb;
+#[cfg(feature = "ui")]
+use p2d::glamx::DAffine2;
+use p2d::math::Vector2;
 use rnote_compose::Color;
 use std::{io::Write, ops::Range};
 
@@ -62,23 +65,20 @@ pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {
     (value / current_dpi) * target_dpi
 }
 
-pub fn convert_coord_dpi(
-    coord: na::Vector2<f64>,
-    current_dpi: f64,
-    target_dpi: f64,
-) -> na::Vector2<f64> {
+pub fn convert_coord_dpi(coord: Vector2, current_dpi: f64, target_dpi: f64) -> Vector2 {
     (coord / current_dpi) * target_dpi
 }
 
 #[cfg(feature = "ui")]
-pub fn transform_to_gsk(transform: &rnote_compose::Transform) -> gtk4::gsk::Transform {
+pub fn affine_to_gsk(affine: &DAffine2) -> gtk4::gsk::Transform {
+    let array = affine.to_cols_array_2d();
     gtk4::gsk::Transform::new().matrix(&gtk4::graphene::Matrix::from_2d(
-        transform.affine[(0, 0)],
-        transform.affine[(1, 0)],
-        transform.affine[(0, 1)],
-        transform.affine[(1, 1)],
-        transform.affine[(0, 2)],
-        transform.affine[(1, 2)],
+        array[0][0],
+        array[0][1],
+        array[1][0],
+        array[1][1],
+        array[2][0],
+        array[2][1],
     ))
 }
 
@@ -137,23 +137,26 @@ where
     // We first create the named temporary file, specifically in the parent
     // directory of the target filepath, as `.persist()` will not work
     // if the temporary file is in a different filesystem than the target.
-    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory)
-        .with_context(|| "Failed to create a temporary file")?;
+    let mut temp_file = tempfile::NamedTempFile::new_in(parent_directory).context(format!(
+        "Failed to create a temporary file at '{}'",
+        parent_directory.display()
+    ))?;
 
     // We then write all of our bytes to the temporary file before syncing its contents.
-    temp_file
-        .write_all(bytes)
-        .with_context(|| "Failed to write to the temporary file")?;
-    temp_file
-        .as_file()
-        .sync_all()
-        .with_context(|| "Failed to sync the contents and metadata of the temporary file")?;
+    temp_file.write_all(bytes).context(format!(
+        "Failed to write to temporary file '{}'",
+        parent_directory.display()
+    ))?;
+    temp_file.as_file().sync_all().context(format!(
+        "Failed to sync the contents and metadata of temporary file '{temp_file:?}'",
+    ))?;
 
     // Finally, we persist the temporary file to the target filepath, if a file
     // preexists at this location, it will be atomically replaced by our new file.
-    let _ = temp_file
-        .persist(filepath)
-        .with_context(|| "Failed to persist the temporary file to the target filepath")?;
+    let _ = temp_file.persist(filepath).context(format!(
+        "Failed to persist temporary file to '{}'",
+        filepath.display()
+    ))?;
 
     #[cfg(unix)]
     {
@@ -161,9 +164,15 @@ where
         // Not required for Windows systems, not possible either (you can't open directories as files in the first place).
         // Note that this might not even be enough, file management on UNIX seems to be a bit of a nightmare.
         std::fs::File::open(parent_directory)
-            .with_context(|| "Failed to open the parent directory")?
+            .context(format!(
+                "Failed to open parent directory '{}'",
+                parent_directory.display()
+            ))?
             .sync_all()
-            .with_context(|| "Failed to sync the contents and metadata of the parent directory")?;
+            .context(format!(
+                "Failed to sync the contents and metadata of parent directory '{}'",
+                parent_directory.display()
+            ))?;
     }
 
     Ok(())

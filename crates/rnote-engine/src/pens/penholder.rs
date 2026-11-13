@@ -11,6 +11,7 @@ use crate::pens::shortcuts::ShortcutAction;
 use crate::widgetflags::WidgetFlags;
 use futures::channel::oneshot;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenProgress, ShortcutKey};
@@ -90,6 +91,14 @@ impl PenHolder {
     /// The current pen progress.
     pub fn current_pen_progress(&self) -> PenProgress {
         self.progress
+    }
+
+    /// Whether the currently selected pen is handling text input.
+    pub fn is_handling_text_input(&self) -> bool {
+        match &self.current_pen {
+            Pen::Typewriter(t) => t.is_handling_text_input(),
+            _ => false,
+        }
     }
 
     pub fn current_pen_ref(&mut self) -> &Pen {
@@ -172,6 +181,9 @@ impl PenHolder {
         widget_flags |= self.handle_changed_pen_style(engine_view);
         self.progress = PenProgress::Idle;
 
+        // Report the current text input state.
+        widget_flags.enable_text_input = Some(self.is_handling_text_input());
+
         widget_flags
     }
 
@@ -205,6 +217,9 @@ impl PenHolder {
             widget_flags |= wf;
         }
 
+        // Report the current text input state.
+        widget_flags.enable_text_input = Some(self.is_handling_text_input());
+
         // Always redraw after handling a pen event.
         //
         // This is also needed because pens might have claimed/requested an animation frame.
@@ -218,6 +233,25 @@ impl PenHolder {
     /// Can request another frame using `EngineViewMut#animation.claim_frame()`.
     pub fn handle_animation_frame(&mut self, engine_view: &mut EngineViewMut) {
         self.current_pen.handle_animation_frame(engine_view);
+    }
+
+    /// Insert text using the current pen, if possible.
+    pub fn insert_text(
+        &mut self,
+        text: String,
+        preferred_pos: Option<Vector2>,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        if let Pen::Typewriter(t) = &mut self.current_pen {
+            widget_flags |= t.insert_text(text, preferred_pos, engine_view);
+        }
+
+        // Report the current text input state.
+        widget_flags.enable_text_input = Some(self.is_handling_text_input());
+
+        widget_flags
     }
 
     /// Handle a pressed shortcut key.
@@ -467,8 +501,8 @@ impl PenHolder {
             PenStyle::Tools => BacklogPolicy::Disable,
         };
 
-        // Enable text preprocessing for typewriter
-        widget_flags.enable_text_preprocessing = Some(current_style == PenStyle::Typewriter);
+        // Report the current text input state.
+        widget_flags.enable_text_input = Some(self.is_handling_text_input());
         widget_flags.redraw = true;
 
         widget_flags

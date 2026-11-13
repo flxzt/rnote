@@ -22,10 +22,8 @@ pub struct WidgetFlags {
     pub hide_undo: Option<bool>,
     /// Is Some when redo button visibility should be changed. Is None if should not be changed.
     pub hide_redo: Option<bool>,
-    /// Changes whether text preprocessing in the UI toolkit should be enabled.
-    /// Meaning, when enabled instead of key events, text events are then emitted
-    /// for regular unicode text. Used when writing text with the typewriter.
-    pub enable_text_preprocessing: Option<bool>,
+    /// Changes whether text input in the UI toolkit should be enabled.
+    pub enable_text_input: Option<bool>,
 }
 
 impl Default for WidgetFlags {
@@ -41,7 +39,7 @@ impl Default for WidgetFlags {
             deselect_color_setters: false,
             hide_undo: None,
             hide_redo: None,
-            enable_text_preprocessing: None,
+            enable_text_input: None,
         }
     }
 }
@@ -71,8 +69,8 @@ impl std::ops::BitOrAssign for WidgetFlags {
         if rhs.hide_redo.is_some() {
             self.hide_redo = rhs.hide_redo;
         }
-        if rhs.enable_text_preprocessing.is_some() {
-            self.enable_text_preprocessing = rhs.enable_text_preprocessing;
+        if rhs.enable_text_input.is_some() {
+            self.enable_text_input = rhs.enable_text_input;
         }
     }
 }

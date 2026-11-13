@@ -11,6 +11,7 @@ use gtk4::{Builder, Button, FileDialog, FileFilter, Label, ToggleButton, gio, gl
 use gtk4::{graphene, gsk};
 use hayro::hayro_syntax;
 use num_traits::ToPrimitive;
+use p2d::math::Vector2;
 use rnote_engine::engine::import::{PdfImportPageSpacing, PdfImportPagesType};
 use std::sync::Arc;
 use tracing::{debug, error};
@@ -242,7 +243,7 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     appwindow: &RnAppWindow,
     canvas: &RnCanvas,
     input_file: gio::File,
-    target_pos: Option<na::Vector2<f64>>,
+    target_pos: Option<Vector2>,
 ) -> anyhow::Result<bool> {
     let (password, cancel) = pdf_encryption_check_and_dialog(appwindow, &input_file).await;
     if cancel {
@@ -272,11 +273,6 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
 
     pdf_import_adjust_document_row
         .bind_property("active", &pdf_import_width_row, "sensitive")
-        .invert_boolean()
-        .sync_create()
-        .build();
-    pdf_import_adjust_document_row
-        .bind_property("active", &pdf_import_page_spacing_row, "sensitive")
         .invert_boolean()
         .sync_create()
         .build();
@@ -440,11 +436,11 @@ pub(crate) async fn dialog_import_pdf_w_prefs(
     // pdf info
     pdf_info_label.set_label(
             &format!("<b>{}  </b>{file_name}\n<b>{}  </b>{title}\n<b>{}  </b>{author}\n<b>{}  </b>{mod_date}\n<b>{}  </b>{n_pages}\n",
-                &gettext("File name:"),
-                &gettext("Title:"),
-                &gettext("Author:"),
-                &gettext("Modification date:"),
-                &gettext("Pages:"))
+                gettext("File name:"),
+                gettext("Title:"),
+                gettext("Author:"),
+                gettext("Modification date:"),
+                gettext("Pages:"))
         );
 
     // Configure pages spinners

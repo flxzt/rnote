@@ -1,5 +1,6 @@
 // Imports
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rnote_compose::penpath::Element;
 use serde::{Deserialize, Serialize};
 
@@ -54,6 +55,6 @@ impl EraserConfig {
     pub const WIDTH_DEFAULT: f64 = 12.0;
 
     pub(crate) fn eraser_bounds(&self, element: Element) -> Aabb {
-        Aabb::from_half_extents(element.pos.into(), na::Vector2::repeat(self.width * 0.5))
+        Aabb::from_half_extents(element.pos, Vector2::splat(self.width * 0.5))
     }
 }

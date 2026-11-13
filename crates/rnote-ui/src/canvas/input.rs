@@ -1,6 +1,7 @@
 // Imports
 use super::RnCanvas;
 use gtk4::{Native, gdk, glib, graphene, prelude::*};
+use p2d::math::Vector2;
 use rnote_compose::penevent::{KeyboardKey, ModifierKey, PenEvent, PenState, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_engine::WidgetFlags;
@@ -12,12 +13,19 @@ use std::collections::HashSet;
 use std::time::{Duration, Instant};
 use tracing::trace;
 
-// Returns whether the event should be inhibited from propagating, and the new pen state
+/// Handles a pointer controller event.
+///
+/// Returns:
+/// - the propagation of the event, which is `glib::Propagation::Stop` when the event
+///   should be inhibited from propagating
+/// - the new pen state
+/// - whether a stylus input session is active
 pub(crate) fn handle_pointer_controller_event(
     canvas: &RnCanvas,
     event: &gdk::Event,
     mut pen_state: PenState,
-) -> (glib::Propagation, PenState) {
+    mut stylus_active: bool,
+) -> (glib::Propagation, PenState, bool) {
     let now = Instant::now();
     let mut widget_flags = WidgetFlags::default();
     let touch_drawing = canvas.touch_drawing();
@@ -31,7 +39,22 @@ pub(crate) fn handle_pointer_controller_event(
     //super::input::debug_gdk_event(event);
 
     if reject_pointer_input(event, touch_drawing) {
-        return (glib::Propagation::Proceed, pen_state);
+        return (glib::Propagation::Proceed, pen_state, stylus_active);
+    }
+
+    // GTK can deliver mouse motion events while a stylus is hovering or drawing.
+    // They must not reuse the stylus state, otherwise the pen position jumps to
+    // the last mouse position and generates an unwanted pen event.
+    if is_stylus {
+        stylus_active = gdk_event_type != gdk::EventType::ProximityOut;
+    } else if stylus_active {
+        // A deliberate mouse click hands control back to the mouse.
+        match gdk_event_type {
+            gdk::EventType::ButtonPress | gdk::EventType::ButtonRelease => {
+                stylus_active = false;
+            }
+            _ => return (glib::Propagation::Proceed, pen_state, stylus_active),
+        }
     }
 
     let mut handle_pen_event = false;
@@ -158,7 +181,7 @@ pub(crate) fn handle_pointer_controller_event(
 
     if handle_pen_event {
         let Some(elements) = retrieve_pointer_elements(canvas, now, event, backlog_policy) else {
-            return (glib::Propagation::Proceed, pen_state);
+            return (glib::Propagation::Proceed, pen_state, stylus_active);
         };
         let modifier_keys = retrieve_modifier_keys(event.modifier_state());
         let pen_mode = retrieve_pen_mode(event);
@@ -227,7 +250,7 @@ pub(crate) fn handle_pointer_controller_event(
     }
 
     canvas.emit_handle_widget_flags(widget_flags);
-    (propagation, pen_state)
+    (propagation, pen_state, stylus_active)
 }
 
 pub(crate) fn handle_key_controller_key_pressed(
@@ -341,16 +364,21 @@ fn retrieve_pointer_elements(
     let mut elements = Vec::with_capacity(1);
 
     // Transforms the pos given in surface coordinate space to the canvas document coordinate space
-    let transform_pos = |pos: na::Vector2<f64>| -> na::Vector2<f64> {
+    let transform_pos = |pos: Vector2| -> Vector2 {
         event_native
             .compute_point(
                 canvas,
-                &graphene::Point::from_na_vec(pos - na::vector![surface_trans_x, surface_trans_y]),
+                &graphene::Point::from_p2d_vec(
+                    pos - Vector2::new(surface_trans_x, surface_trans_y),
+                ),
             )
             .map(|p| {
-                (canvas.engine_ref().camera.transform().inverse()
-                    * na::point![p.x() as f64, p.y() as f64])
-                .coords
+                canvas
+                    .engine_ref()
+                    .camera
+                    .transform()
+                    .inverse()
+                    .transform_point2(p.to_p2d_vec())
             })
             .unwrap()
     };
@@ -385,10 +413,10 @@ fn retrieve_pointer_elements(
             prev_delta = entry_delta;
 
             let axes = entry.axes();
-            let pos = transform_pos(na::vector![
+            let pos = transform_pos(Vector2::new(
                 axes[crate::utils::axis_use_idx(gdk::AxisUse::X)],
-                axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)]
-            ]);
+                axes[crate::utils::axis_use_idx(gdk::AxisUse::Y)],
+            ));
             let pressure = if is_stylus {
                 axes[crate::utils::axis_use_idx(gdk::AxisUse::Pressure)]
             } else {
@@ -403,7 +431,7 @@ fn retrieve_pointer_elements(
 
     let pos = event
         .position()
-        .map(|(x, y)| transform_pos(na::vector![x, y]))?;
+        .map(|(x, y)| transform_pos(Vector2::new(x, y)))?;
 
     let pressure = if is_stylus {
         event.axis(gdk::AxisUse::Pressure).unwrap()

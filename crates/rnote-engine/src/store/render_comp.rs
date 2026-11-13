@@ -1,10 +1,10 @@
 // Imports
 use super::{Stroke, StrokeKey, StrokeStore};
+use crate::Drawable;
 use crate::Image;
 use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::Content;
 use crate::strokes::content::GeneratedContentImages;
-use crate::{Drawable, image};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
 use rnote_compose::ext::AabbExt;
 use rnote_compose::shapes::Shapeable;
@@ -12,6 +12,12 @@ use tracing::error;
 
 /// The tolerance where check between scale-factors are considered "equal".
 pub(crate) const RENDER_IMAGE_SCALE_TOLERANCE: f64 = 0.01;
+/// The factor for which the rendering for the current viewport is extended by.
+/// For example:: 1.0 means the viewport is extended by its own extents on all sides.
+///
+/// Used when checking rendering for new zooms or a moved viewport.
+/// There is a trade off: a larger value will consume more memory, a smaller value will mean more stuttering on zooms and when moving the view.
+pub const VIEWPORT_EXTENTS_MARGIN_FACTOR: f64 = 0.4;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
@@ -111,7 +117,7 @@ impl StrokeStore {
             }
 
             let viewport_extended =
-                viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                viewport.extend_by(viewport.extents() * VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             match stroke.gen_images(viewport_extended, image_scale) {
                 Ok(GeneratedContentImages::Partial { images, viewport }) => {
@@ -191,7 +197,7 @@ impl StrokeStore {
 
             let stroke = stroke.clone();
             let viewport_extended =
-                viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                viewport.extend_by(viewport.extents() * VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
             // indicates that a task is now started rendering the stroke
             render_comp.state = RenderCompState::BusyRenderingInTask;
@@ -250,7 +256,7 @@ impl StrokeStore {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
                 let viewport_extended =
-                    viewport.extend_by(viewport.extents() * image::VIEWPORT_EXTENTS_MARGIN_FACTOR);
+                    viewport.extend_by(viewport.extents() * VIEWPORT_EXTENTS_MARGIN_FACTOR);
 
                 // skip and clear image buffer if stroke is not in viewport
                 if !viewport_extended.intersects(&stroke_bounds) {
@@ -278,7 +284,7 @@ impl StrokeStore {
                             if old_viewport.contains(
                                 &(viewport.extend_by(
                                     viewport.extents()
-                                        * image::VIEWPORT_EXTENTS_MARGIN_FACTOR
+                                        * VIEWPORT_EXTENTS_MARGIN_FACTOR
                                         * VIEWPORT_EXTENTS_MARGIN_RERENDER_THRESHOLD,
                                 )),
                             ) {
@@ -483,43 +489,36 @@ impl StrokeStore {
 
     /// Draw all strokes on the gtk snapshot.
     #[cfg(feature = "ui")]
-    pub(crate) fn draw_strokes_to_gtk_snapshot(
+    pub(crate) fn draw_stroke_key_to_gtk_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
-        doc_bounds: Aabb,
-        viewport: Aabb,
+        key: StrokeKey,
     ) {
         use crate::ext::{GdkRGBAExt, GrapheneRectExt};
         use gtk4::{gdk, graphene, prelude::*};
         use rnote_compose::color;
 
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
-
-        for key in self.stroke_keys_as_rendered_intersecting_bounds(viewport) {
-            if let Some(stroke) = self.stroke_components.get(key)
-                && let Some(render_comp) = self.render_components.get(key)
+        if let Some(stroke) = self.stroke_components.get(key)
+            && let Some(render_comp) = self.render_components.get(key)
+        {
+            // if the stroke currently does not have a rendering and is will create one,
+            // draw a placeholder filled rect
+            if render_comp.rendernodes.is_empty()
+                && matches!(
+                    render_comp.state,
+                    RenderCompState::Dirty | RenderCompState::BusyRenderingInTask
+                )
             {
-                // if the stroke currently does not have a rendering and is will create one,
-                // draw a placeholder filled rect
-                if render_comp.rendernodes.is_empty()
-                    && matches!(
-                        render_comp.state,
-                        RenderCompState::Dirty | RenderCompState::BusyRenderingInTask
-                    )
-                {
-                    snapshot.append_color(
-                        &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.13)),
-                        &graphene::Rect::from_p2d_aabb(stroke.bounds()),
-                    );
-                }
+                snapshot.append_color(
+                    &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_alpha(0.13)),
+                    &graphene::Rect::from_p2d_aabb(stroke.bounds()),
+                );
+            }
 
-                for rendernode in render_comp.rendernodes.iter() {
-                    snapshot.append_node(rendernode);
-                }
+            for rendernode in render_comp.rendernodes.iter() {
+                snapshot.append_node(rendernode);
             }
         }
-
-        snapshot.pop();
     }
 
     /// Draw the strokes for the given keys on the [piet::RenderContext].
@@ -604,7 +603,7 @@ impl StrokeStore {
                     render_comp.images.iter().for_each(|image| {
                         visual_debug::draw_bounds_to_gtk_snapshot(
                             // a little tightened not to overlap with other bounds
-                            image.rect.bounds().tightened(2.0 * border_widths),
+                            image.rectangle.bounds().tightened(2.0 * border_widths),
                             visual_debug::COLOR_IMAGE_BOUNDS,
                             snapshot,
                             border_widths,

@@ -4,6 +4,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{DrawableOnDoc, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::eventresult::EventPropagation;
 use rnote_compose::ext::{AabbExt, Vector2Ext};
@@ -113,7 +114,7 @@ impl VerticalSpaceTool {
                     self.start_pos_y - self.pos_y
                 } else {
                     engine_view.document.snap_position(
-                        element.pos - na::vector![0., self.pos_y],
+                        element.pos - Vector2::new(0., self.pos_y),
                         engine_view.config,
                     )[1]
                 };
@@ -121,10 +122,10 @@ impl VerticalSpaceTool {
                 if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {
                     engine_view
                         .store
-                        .translate_strokes(&self.strokes_below, na::vector![0.0, y_offset]);
+                        .translate_strokes(&self.strokes_below, Vector2::new(0.0, y_offset));
                     engine_view
                         .store
-                        .translate_strokes_images(&self.strokes_below, na::vector![0.0, y_offset]);
+                        .translate_strokes_images(&self.strokes_below, Vector2::new(0.0, y_offset));
                     self.pos_y += y_offset;
 
                     widget_flags.store_modified = true;
@@ -234,7 +235,8 @@ impl DrawableOnDoc for VerticalSpaceTool {
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
         let height = self.pos_y - self.start_pos_y;
-        let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let tool_bounds =
+            Aabb::new_positive(Vector2::new(x, y), Vector2::new(x + width, y + height));
 
         Some(tool_bounds)
     }
@@ -260,11 +262,12 @@ impl DrawableOnDoc for VerticalSpaceTool {
             viewport.extents()[0]
         };
         let height = self.pos_y - self.start_pos_y;
-        let tool_bounds = Aabb::new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let tool_bounds =
+            Aabb::new_positive(Vector2::new(x, y), Vector2::new(x + width, y + height));
 
         let tool_bounds_rect = kurbo::Rect::from_points(
-            tool_bounds.mins.coords.to_kurbo_point(),
-            tool_bounds.maxs.coords.to_kurbo_point(),
+            tool_bounds.mins.to_kurbo_point(),
+            tool_bounds.maxs.to_kurbo_point(),
         );
         cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
 

@@ -17,64 +17,63 @@ pub mod f64_dp3 {
     }
 }
 
-/// (De)Serialize a [`na::Vector2<f64>`] rounded to 3 decimal places
-pub mod na_vector2_f64_dp3 {
+/// (De)Serialize a [`Vector2`] rounded to 3 decimal places
+pub mod glam_vector2_dp3 {
+    use p2d::math::Vector2;
     use serde::{Deserialize, Serialize};
     use serde::{Deserializer, Serializer};
 
-    /// Serialize a [`na::Vector2<f64>`] rounded to 3 decimal places
-    pub fn serialize<S: Serializer>(v: &na::Vector2<f64>, s: S) -> Result<S::Ok, S::Error> {
-        const D: f64 = (10_u32.pow(3)) as f64;
-        let mut a = v * D;
-        a = na::vector![a[0].round(), a[1].round()];
-        (a / D).serialize(s)
+    /// Serialize a [`Vector2`] rounded to 3 decimal places
+    pub fn serialize<S: Serializer>(v: &Vector2, s: S) -> Result<S::Ok, S::Error> {
+        const SCALE: f64 = (10_u32.pow(3)) as f64;
+        let r: p2d::math::Vec2 = (v * SCALE).round() / SCALE;
+        r.serialize(s)
     }
 
-    /// Deserialize a [`na::Vector2<f64>`]
-    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<na::Vector2<f64>, D::Error> {
-        na::Vector2::<f64>::deserialize(d)
+    /// Deserialize a [`Vector2`]
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vector2, D::Error> {
+        Vector2::deserialize(d)
     }
 }
 
-/// (De)Serialize a [`na::Affine2<f64>`] rounded to 3 decimal places
-pub mod na_affine2_f64_dp3 {
+/// (De)Serialize a [`p2d::glamx::DAffine2`] rounded to 3 decimal places
+pub mod glam_daffine2_f64_dp3 {
+    use p2d::glamx::DAffine2;
+    use p2d::math::Vector2;
     use serde::{Deserialize, Serialize};
     use serde::{Deserializer, Serializer};
 
-    /// Serialize a [`na::Vector2<f64>`] rounded to 3 decimal places
-    pub fn serialize<S: Serializer>(v: &na::Affine2<f64>, s: S) -> Result<S::Ok, S::Error> {
-        const D: f64 = (10_u32.pow(3)) as f64;
-        let mut a = v.into_inner() * D;
-        a = na::matrix![
-        a[(0, 0)].round(), a[(0, 1)].round(), a[(0, 2)].round();
-        a[(1, 0)].round(), a[(1, 1)].round(), a[(1, 2)].round();
-        a[(2, 0)].round(), a[(2, 1)].round(), a[(2, 2)].round();
-        ];
-        na::Affine2::<f64>::from_matrix_unchecked(a / D).serialize(s)
+    /// Serialize a [`DAffine2`] rounded to 3 decimal places
+    pub fn serialize<S: Serializer>(v: &DAffine2, serializer: S) -> Result<S::Ok, S::Error> {
+        const SCALE: Vector2 = Vector2::splat(10_u32.pow(3) as f64);
+        let x_axis = (v.x_axis * SCALE).round() / SCALE;
+        let y_axis = (v.y_axis * SCALE).round() / SCALE;
+        let z_axis = (v.z_axis * SCALE).round() / SCALE;
+        DAffine2::from_cols(x_axis, y_axis, z_axis).serialize(serializer)
     }
 
-    /// Deserialize a [`na::Vector2<f64>`]
-    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<na::Affine2<f64>, D::Error> {
-        na::Affine2::<f64>::deserialize(d)
+    /// Deserialize a [`DAffine2`]
+    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<DAffine2, D::Error> {
+        DAffine2::deserialize(deserializer)
     }
 }
 
-/// (De)Serialize a [p2d::shape::Cuboid] rounded to 3 decimal places
+/// (De)Serialize a [Cuboid] rounded to 3 decimal places
 pub mod p2d_cuboid_dp3 {
+    use p2d::shape::Cuboid;
     use serde::{Deserialize, Serialize};
     use serde::{Deserializer, Serializer};
 
-    /// Serialize a [p2d::shape::Cuboid] rounded to 3 decimal places
-    pub fn serialize<S: Serializer>(v: &p2d::shape::Cuboid, s: S) -> Result<S::Ok, S::Error> {
+    /// Serialize a [Cuboid] rounded to 3 decimal places
+    pub fn serialize<S: Serializer>(v: &Cuboid, s: S) -> Result<S::Ok, S::Error> {
         const D: f64 = (10_u32.pow(3)) as f64;
-        let mut a = v.half_extents * D;
-        a = na::vector![a[0].round(), a[1].round()];
-        p2d::shape::Cuboid::new(a / D).serialize(s)
+        let a = (v.half_extents * D).round();
+        Cuboid::new(a / D).serialize(s)
     }
 
-    /// Deserialize a [p2d::shape::Cuboid]
-    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<p2d::shape::Cuboid, D::Error> {
-        p2d::shape::Cuboid::deserialize(d)
+    /// Deserialize a [Cuboid]
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Cuboid, D::Error> {
+        Cuboid::deserialize(d)
     }
 }
 

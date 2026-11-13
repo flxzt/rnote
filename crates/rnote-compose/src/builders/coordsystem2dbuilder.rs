@@ -8,6 +8,7 @@ use crate::style::{Composer, indicators};
 use crate::{Constraints, EventResult};
 use crate::{Shape, Style};
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use piet::RenderContext;
 use std::time::Instant;
 
@@ -15,9 +16,9 @@ use std::time::Instant;
 #[derive(Debug, Clone)]
 pub struct CoordSystem2DBuilder {
     /// the tip of the y axis
-    tip_y: na::Vector2<f64>,
+    tip_y: Vector2,
     /// the tip of the x axis
-    tip_x: na::Vector2<f64>,
+    tip_x: Vector2,
 }
 
 impl BuilderCreator for CoordSystem2DBuilder {
@@ -85,8 +86,7 @@ impl Buildable for CoordSystem2DBuilder {
 impl CoordSystem2DBuilder {
     /// The current state as four individual lines.
     pub fn state_as_lines(&self) -> Vec<Line> {
-        let center = na::vector!(self.tip_y.x, self.tip_x.y);
-
+        let center = Vector2::new(self.tip_y.x, self.tip_x.y);
         let up_axis = Line {
             start: center,
             end: self.tip_y,
@@ -94,7 +94,7 @@ impl CoordSystem2DBuilder {
 
         let down_axis = Line {
             start: center,
-            end: na::vector![center.x, 2.0 * self.tip_x.y - self.tip_y.y],
+            end: Vector2::new(center.x, 2.0 * self.tip_x.y - self.tip_y.y),
         };
 
         let right_axis = Line {
@@ -104,7 +104,7 @@ impl CoordSystem2DBuilder {
 
         let left_axis = Line {
             start: center,
-            end: na::vector![2.0 * self.tip_y.x - self.tip_x.x, center.y],
+            end: Vector2::new(2.0 * self.tip_y.x - self.tip_x.x, center.y),
         };
 
         vec![up_axis, down_axis, right_axis, left_axis]

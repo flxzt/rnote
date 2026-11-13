@@ -4,9 +4,10 @@ use crate::fileformats::rnoteformat;
 use crate::fileformats::{FileFormatSaver, xoppformat};
 use anyhow::Context;
 use futures::channel::oneshot;
+use p2d::math::Vector2;
 use rayon::prelude::*;
 use rnote_compose::SplitOrder;
-use rnote_compose::transform::Transformable;
+use rnote_compose::Transformable;
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 use std::sync::Arc;
@@ -341,33 +342,30 @@ impl Engine {
         oneshot_receiver
     }
 
+    fn stroke_content_from_sorted_keys(&self, keys: Vec<crate::store::StrokeKey>) -> StrokeContent {
+        self.store
+            .fetch_stroke_content(&keys)
+            .with_background(self.document.config.background)
+    }
+
     pub fn extract_document_content(&self) -> StrokeContent {
-        StrokeContent::default()
-            .with_strokes(
-                self.store
-                    .get_strokes_arc(&self.store.stroke_keys_as_rendered()),
-            )
+        self.stroke_content_from_sorted_keys(self.store.stroke_keys_as_rendered())
             .with_bounds(
                 self.bounds_w_content_extended()
                     .unwrap_or(self.document.bounds()),
             )
-            .with_background(self.document.config.background)
     }
 
     pub fn extract_pages_content(&self, page_order: SplitOrder) -> Vec<StrokeContent> {
         self.pages_bounds_w_content(page_order)
             .into_iter()
             .map(|bounds| {
-                StrokeContent::default()
-                    .with_strokes(
-                        self.store.get_strokes_arc(
-                            &self
-                                .store
-                                .stroke_keys_as_rendered_intersecting_bounds(bounds),
-                        ),
-                    )
+                let keys = self
+                    .store
+                    .stroke_keys_as_rendered_intersecting_bounds(bounds);
+
+                self.stroke_content_from_sorted_keys(keys)
                     .with_bounds(bounds)
-                    .with_background(self.document.config.background)
             })
             .collect()
     }
@@ -377,25 +375,19 @@ impl Engine {
         if selection_keys.is_empty() {
             return None;
         }
-        Some(
-            StrokeContent::default()
-                .with_strokes(self.store.get_strokes_arc(&selection_keys))
-                .with_background(self.document.config.background),
-        )
+        Some(self.stroke_content_from_sorted_keys(selection_keys))
     }
 
     /// Extract thumbnail content.
     ///
     /// It is ensureed this [StrokeContent] has bounds and a background.
     /// Therefore it is ensured generating a SVG from it will never return `Ok(None)`.
-    pub fn extract_thumbnail_content(&self, size: na::Vector2<f64>) -> StrokeContent {
+    pub fn extract_thumbnail_content(&self, size: Vector2) -> StrokeContent {
         let scale_factor = self.camera.scale_factor();
         let (keys, bounds) = self.store.thumbnail_keys_as_rendered(size * scale_factor);
         let bounds = bounds.unwrap_or_else(|| self.document.bounds());
-        StrokeContent::default()
-            .with_strokes(self.store.get_strokes_arc(&keys))
+        self.stroke_content_from_sorted_keys(keys)
             .with_bounds(bounds)
-            .with_background(self.document.config.background)
     }
 
     /// Export the entire engine state as Json string.
@@ -443,16 +435,7 @@ impl Engine {
                         DocExportPrefs::MARGIN,
                     )?
                     .ok_or(anyhow::anyhow!("Generating doc svg failed, returned None."))?;
-                Ok(rnote_compose::utils::add_xml_header(
-                    rnote_compose::utils::wrap_svg_root(
-                        doc_svg.svg_data.as_str(),
-                        Some(doc_svg.bounds),
-                        Some(doc_svg.bounds),
-                        false,
-                    )
-                    .as_str(),
-                )
-                .into_bytes())
+                Ok(doc_svg.to_document().into_bytes())
             };
 
             if oneshot_sender.send(result()).is_err() {
@@ -471,17 +454,23 @@ impl Engine {
         title: String,
         doc_export_prefs_override: Option<DocExportPrefs>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
+        // PDF surface operates in points. 1 point == 1/72.0 inch
+        const PT_IN_INCH: f64 = 72.0;
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
         let doc_export_prefs =
             doc_export_prefs_override.unwrap_or(self.config.read().export_prefs.doc_export_prefs);
         let pages_content = self.extract_pages_content(doc_export_prefs.page_order);
         let format_size = self.document.config.format.size();
+        let format_dpi = self.document.config.format.dpi();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<u8>> {
-                let target_surface =
-                    cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
-                        .context("Creating Pdf target surface failed.")?;
+                let target_surface = cairo::PdfSurface::for_stream(
+                    format_size[0] * (PT_IN_INCH / format_dpi),
+                    format_size[1] * (PT_IN_INCH / format_dpi),
+                    Vec::<u8>::new(),
+                )
+                .context("Creating Pdf target surface failed.")?;
 
                 target_surface
                     .set_metadata(cairo::PdfMetadata::Title, title.as_str())
@@ -497,6 +486,9 @@ impl Engine {
                 {
                     let cairo_cx = cairo::Context::new(&target_surface)
                         .context("Creating new cairo context for pdf target surface failed.")?;
+                    let mut scale_matrix = cairo::Matrix::identity();
+                    scale_matrix.scale(PT_IN_INCH / format_dpi, PT_IN_INCH / format_dpi);
+                    cairo_cx.transform(scale_matrix);
 
                     for (i, page_content) in pages_content.into_iter().enumerate() {
                         let Some(page_bounds) = page_content.bounds() else {
@@ -574,9 +566,10 @@ impl Engine {
                         let xopp_strokestyles = page_content
                             .strokes
                             .into_iter()
-                            .filter_map(|mut stroke| {
-                                let mut stroke = Arc::make_mut(&mut stroke).clone();
-                                stroke.translate(-page_bounds.mins.coords);
+                            .filter_map(|mut stroke_content_stroke| {
+                                let mut stroke =
+                                    Arc::make_mut(&mut stroke_content_stroke.stroke).clone();
+                                stroke.translate(-page_bounds.mins);
                                 stroke.into_xopp(document.config.format.dpi())
                             })
                             .collect::<Vec<xoppformat::XoppStrokeType>>();
@@ -717,16 +710,7 @@ impl Engine {
                             .ok_or(anyhow::anyhow!(
                                 "Generating Svg for page {i} failed, returned None."
                             ))?;
-                        Ok(rnote_compose::utils::add_xml_header(
-                            rnote_compose::utils::wrap_svg_root(
-                                page_svg.svg_data.as_str(),
-                                Some(page_svg.bounds),
-                                Some(page_svg.bounds),
-                                false,
-                            )
-                            .as_str(),
-                        )
-                        .into_bytes())
+                        Ok(page_svg.to_document().into_bytes())
                     })
                     .collect()
             };
@@ -840,18 +824,7 @@ impl Engine {
                     return Ok(None);
                 };
 
-                Ok(Some(
-                    rnote_compose::utils::add_xml_header(
-                        rnote_compose::utils::wrap_svg_root(
-                            svg.svg_data.as_str(),
-                            Some(svg.bounds),
-                            Some(svg.bounds),
-                            false,
-                        )
-                        .as_str(),
-                    )
-                    .into_bytes(),
-                ))
+                Ok(Some(svg.to_document().into_bytes()))
             };
             if oneshot_sender.send(result()).is_err() {
                 error!(
@@ -934,7 +907,7 @@ impl Engine {
             ..Default::default()
         };
 
-        let content = self.extract_thumbnail_content(na::vector![size as f64, size as f64]);
+        let content = self.extract_thumbnail_content(Vector2::new(size as f64, size as f64));
         rayon::spawn(move || {
             let result = || -> Result<Option<Vec<u8>>, anyhow::Error> {
                 let svg = content

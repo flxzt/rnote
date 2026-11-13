@@ -27,6 +27,8 @@ mod imp {
         #[template_child]
         pub(crate) zoom_fit_width_button: TemplateChild<Button>,
         #[template_child]
+        pub(crate) zoom_real_width_button: TemplateChild<Button>,
+        #[template_child]
         pub(crate) fixedsize_quickactions_box: TemplateChild<gtk4::Box>,
     }
 

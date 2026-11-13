@@ -11,16 +11,19 @@ use crate::{
 use adw::{prelude::*, subclass::prelude::*};
 use core::cell::{Ref, RefMut};
 use gettextrs::gettext;
-use gtk4::{Application, IconTheme, Widget, gdk, gio, glib};
+use gtk4::{Application, IconTheme, Widget, gdk, gio, glib, glib::clone};
+use p2d::math::Vector2;
 use rnote_compose::Color;
 use rnote_engine::document::DocumentConfig;
 use rnote_engine::engine::{EngineConfig, EngineConfigShared};
 use rnote_engine::ext::GdkRGBAExt;
+use rnote_engine::pens::PenMode;
 use rnote_engine::pens::PenStyle;
 use rnote_engine::pens::pensconfig::brushconfig::BrushStyle;
 use rnote_engine::pens::pensconfig::shaperconfig::ShaperStyle;
 use rnote_engine::{WidgetFlags, engine::EngineTask};
 use std::path::Path;
+use std::time::Duration;
 use tracing::{debug, error};
 
 glib::wrapper! {
@@ -78,6 +81,42 @@ impl RnAppWindow {
     #[allow(unused)]
     pub(crate) fn set_pen_style(&self, pen_style: PenStyle) {
         self.set_property("pen-style", pen_style.to_variant().to_value());
+    }
+
+    /// sets the pen style on the appwindow only if the penmode does
+    /// not hold a lock
+    pub(crate) fn set_pen_style_with_lock(&self, pen_style: PenStyle) {
+        if let Some(canvas) = self.active_tab_canvas() {
+            let current_penstyle = canvas.engine_ref().current_pen_style_w_override();
+            let current_penmode = canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+
+            let locked = self.lock_pen_state(current_penmode);
+            if current_penstyle != pen_style {
+                if locked {
+                    self.overlays().dispatch_toast_w_button_singleton(
+                        &gettext("Tool Locked"),
+                        &gettext("Unlock"),
+                        clone!(
+                            #[weak(rename_to=appwindow)]
+                            self,
+                            #[weak]
+                            canvas,
+                            move |_reload_toast| {
+                                let current_penmode =
+                                    canvas.engine_ref().penholder.pen_mode_state().pen_mode();
+                                appwindow.set_lock_pen_state(current_penmode, false);
+                                appwindow.refresh_ui();
+                            }
+                        ),
+                        Some(Duration::from_secs(2)),
+                        &canvas.imp().locked_tool_toast_singleton,
+                    );
+                    self.refresh_ui();
+                } else {
+                    self.set_pen_style(pen_style);
+                }
+            }
+        }
     }
 
     #[allow(unused)]
@@ -180,6 +219,20 @@ impl RnAppWindow {
         self.set_property("save-in-progress", save_in_progress.to_value());
     }
 
+    pub(crate) fn lock_pen_state(&self, pen_mode: PenMode) -> bool {
+        match pen_mode {
+            PenMode::Pen => self.property::<bool>("lock-pen"),
+            PenMode::Eraser => self.property::<bool>("lock-eraser"),
+        }
+    }
+
+    pub(crate) fn set_lock_pen_state(&self, pen_mode: PenMode, lock: bool) {
+        match pen_mode {
+            PenMode::Pen => self.set_property("lock-pen", lock.to_value()),
+            PenMode::Eraser => self.set_property("lock-eraser", lock.to_value()),
+        }
+    }
+
     pub(crate) fn app(&self) -> RnApp {
         self.application().unwrap().downcast::<RnApp>().unwrap()
     }
@@ -205,7 +258,7 @@ impl RnAppWindow {
     }
 
     /// Must be called after application is associated with the window else the init will panic
-    pub(crate) fn init(&self) {
+    pub(crate) fn init(&self, add_initial_tab: bool) {
         let imp = self.imp();
 
         imp.overlays.get().init(self);
@@ -235,7 +288,9 @@ impl RnAppWindow {
         }
 
         // An initial tab (canvas).
-        self.add_initial_tab();
+        if add_initial_tab {
+            self.add_initial_tab();
+        }
 
         // Anything that needs to be done right before showing the appwindow
 
@@ -264,11 +319,15 @@ impl RnAppWindow {
             .into_iter()
             .map(|p| p.child().downcast::<RnCanvasWrapper>().unwrap())
         {
-            let _ = tab.canvas().engine_mut().set_active(false);
-            tab.canvas()
-                .engine_ref()
-                .engine_tasks_tx()
-                .send(EngineTask::Quit);
+            let canvas = tab.canvas();
+            if let Err(err) = canvas.discard_draft() {
+                error!(
+                    "Discarding draft '{}' failed: {err}",
+                    canvas.draft_file_name()
+                )
+            }
+            let _ = canvas.engine_mut().set_active(false);
+            canvas.engine_ref().engine_tasks_tx().send(EngineTask::Quit);
         }
 
         self.destroy();
@@ -327,14 +386,26 @@ impl RnAppWindow {
                 .redo_button()
                 .set_sensitive(!hide_redo);
         }
-        if let Some(enable_text_preprocessing) = widget_flags.enable_text_preprocessing {
-            canvas.set_text_preprocessing(enable_text_preprocessing);
+        if let Some(enable_text_input) = widget_flags.enable_text_input {
+            canvas.enable_text_input(enable_text_input);
         }
     }
 
     /// Get the active (selected) tab page.
     pub(crate) fn active_tab_page(&self) -> Option<adw::TabPage> {
         self.imp().overlays.tabview().selected_page()
+    }
+
+    pub(crate) fn transfer_page(
+        &self,
+        page: &adw::TabPage,
+        other_view: &adw::TabView,
+        position: i32,
+    ) {
+        self.imp()
+            .overlays
+            .tabview()
+            .transfer_page(page, other_view, position);
     }
 
     pub(crate) fn n_tabs_open(&self) -> usize {
@@ -512,6 +583,17 @@ impl RnAppWindow {
     ///
     /// Closes the given tab when confirm is true, else reverts so that close_tab_request() can be called again.
     pub(crate) fn close_tab_finish(&self, tab_page: &adw::TabPage, confirm: bool) {
+        let canvas = tab_page
+            .child()
+            .downcast::<RnCanvasWrapper>()
+            .unwrap()
+            .canvas();
+        if confirm && let Err(err) = canvas.discard_draft() {
+            error!(
+                "Discarding draft '{}' failed: {err}",
+                canvas.draft_file_name()
+            );
+        }
         self.overlays()
             .tabview()
             .close_page_finish(tab_page, confirm);
@@ -547,42 +629,47 @@ impl RnAppWindow {
     ///
     /// When the file is a rnote save file, `rnote_file_new_tab` determines if a new tab is opened,
     /// or if it loads and overwrites the content of the current active one.
+    ///
+    /// When import was successful, returns `Some(RnCanvasWrapper)` to which the file was imported to.
+    /// If failed returns `None`.
     pub(crate) async fn open_file_w_dialogs(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
-    ) {
+    ) -> Option<RnCanvasWrapper> {
         self.overlays().progressbar_start_pulsing();
         match self
             .try_open_file(input_file, target_pos, rnote_file_new_tab)
             .await
         {
-            Ok(true) => {
+            Ok(Some(wrapper)) => {
                 self.overlays().progressbar_finish();
+                Some(wrapper)
             }
-            Ok(false) => {
+            Ok(None) => {
                 self.overlays().progressbar_abort();
+                None
             }
-            Err(e) => {
-                error!("Opening file with dialogs failed, Err: {e:?}");
-
+            Err(err) => {
+                error!("Opening file with dialogs failed, Err: {err:?}");
                 self.overlays()
                     .dispatch_toast_error(&gettext("Opening file failed"));
                 self.overlays().progressbar_abort();
+                None
             }
         }
     }
 
     /// Internal method for opening/importing content from a file with a supported content type.
     ///
-    /// Returns Ok(true) if file was imported, Ok(false) if not, Err(_) if the import failed.
+    /// Returns Ok(Some) if file was imported, Ok(None) if not, Err if the import failed.
     async fn try_open_file(
         &self,
         input_file: gio::File,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         rnote_file_new_tab: bool,
-    ) -> anyhow::Result<bool> {
+    ) -> anyhow::Result<Option<RnCanvasWrapper>> {
         let file_imported = match FileType::lookup_file_type(&input_file) {
             FileType::RnoteFile => {
                 let input_file_path = input_file.path().ok_or_else(|| {
@@ -594,7 +681,7 @@ impl RnAppWindow {
                 // If the file is already opened in a tab, simply switch to it
                 if let Some(page) = self.tabs_query_file_opened(input_file_path) {
                     self.overlays().tabview().set_selected_page(&page);
-                    false
+                    None
                 } else {
                     let (rnote_file_new_tab, wrapper) =
                         match (rnote_file_new_tab, self.active_tab_wrapper()) {
@@ -621,58 +708,69 @@ impl RnAppWindow {
                         self.append_wrapper_new_tab(&wrapper);
                     }
                     self.handle_widget_flags(widget_flags, &wrapper.canvas());
-                    true
+                    Some(wrapper)
                 }
             }
             FileType::VectorImageFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
                 let (bytes, _) = input_file.load_bytes_future().await?;
-                canvas
+                wrapper
+                    .canvas()
                     .load_in_vectorimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
                     .await?;
-                true
+                Some(wrapper)
             }
             FileType::BitmapImageFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
                 let (bytes, _) = input_file.load_bytes_future().await?;
-                canvas
+                wrapper
+                    .canvas()
                     .load_in_bitmapimage_bytes(bytes.to_vec(), target_pos, self.respect_borders())
                     .await?;
-                true
+                Some(wrapper)
             }
             FileType::XoppFile => {
                 // a new tab for xopp file import
                 let wrapper = self.new_canvas_wrapper();
-                let canvas = wrapper.canvas();
-                let file_imported =
-                    dialogs::import::dialog_import_xopp_w_prefs(self, &canvas, input_file).await?;
+                let file_imported = dialogs::import::dialog_import_xopp_w_prefs(
+                    self,
+                    &wrapper.canvas(),
+                    input_file,
+                )
+                .await?;
                 if file_imported {
                     self.append_wrapper_new_tab(&wrapper);
+                    Some(wrapper)
+                } else {
+                    None
                 }
-                file_imported
             }
             FileType::PdfFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
-                dialogs::import::dialog_import_pdf_w_prefs(self, &canvas, input_file, target_pos)
-                    .await?
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
+                let file_imported = dialogs::import::dialog_import_pdf_w_prefs(
+                    self,
+                    &wrapper.canvas(),
+                    input_file,
+                    target_pos,
+                )
+                .await?;
+                if file_imported { Some(wrapper) } else { None }
             }
             FileType::PlaintextFile => {
-                let canvas = self
+                let wrapper = self
                     .active_tab_wrapper()
-                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?
-                    .canvas();
+                    .ok_or_else(|| anyhow::anyhow!("No active tab to import into"))?;
                 let (bytes, _) = input_file.load_bytes_future().await?;
-                canvas.load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
-                true
+                wrapper
+                    .canvas()
+                    .load_in_text(String::from_utf8(bytes.to_vec())?, target_pos)?;
+                Some(wrapper)
             }
             FileType::Folder => {
                 if let Some(dir) = input_file.path() {
@@ -681,7 +779,7 @@ impl RnAppWindow {
                         .workspacesbar()
                         .set_selected_workspace_dir(dir);
                 }
-                false
+                None
             }
             FileType::Unsupported => {
                 return Err(anyhow::anyhow!("Tried to open unsupported file type"));

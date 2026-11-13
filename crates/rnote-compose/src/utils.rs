@@ -27,6 +27,29 @@ pub fn remove_xml_header(svg: &str) -> String {
     String::from(re.replace_all(svg, ""))
 }
 
+/// Remove the root svg element from a svg document, leaving only its content.
+/// Returns the (header-free) input unchanged if it does not contain a svg root element.
+pub fn remove_svg_root(svg: &str) -> String {
+    let svg = remove_xml_header(svg);
+    let svg = svg.trim_start();
+    let Some(root_open_end) = svg.find('>') else {
+        return String::from(svg);
+    };
+    let root_open = &svg[..root_open_end];
+    if !root_open.starts_with("<svg") {
+        return String::from(svg);
+    }
+    if root_open.ends_with('/') {
+        // self-closing root element without content
+        return String::new();
+    }
+    let content = &svg[root_open_end + 1..];
+    match content.rfind("</svg>") {
+        Some(root_close_start) => String::from(&content[..root_close_start]),
+        None => String::from(svg),
+    }
+}
+
 /// Wrap a Svg root element around the Svg string.
 pub fn wrap_svg_root(
     svg_data: &str,
@@ -35,11 +58,10 @@ pub fn wrap_svg_root(
     preserve_aspectratio: bool,
 ) -> String {
     let (x, y, width, height) = if let Some(bounds) = bounds {
-        let x = format!("{:.3}", bounds.mins[0]);
-        let y = format!("{:.3}", bounds.mins[1]);
-        let width = format!("{:.3}", bounds.extents()[0]);
-        let height = format!("{:.3}", bounds.extents()[1]);
-
+        let x = format!("{:.3}", bounds.mins.x);
+        let y = format!("{:.3}", bounds.mins.y);
+        let width = format!("{:.3}", bounds.extents().x);
+        let height = format!("{:.3}", bounds.extents().y);
         (x, y, width, height)
     } else {
         (
@@ -53,10 +75,10 @@ pub fn wrap_svg_root(
     let viewbox = if let Some(viewbox) = viewbox {
         format!(
             "{:.3} {:.3} {:.3} {:.3}",
-            viewbox.mins[0],
-            viewbox.mins[1],
-            viewbox.extents()[0],
-            viewbox.extents()[1]
+            viewbox.mins.x,
+            viewbox.mins.y,
+            viewbox.extents().x,
+            viewbox.extents().y
         )
     } else {
         String::from("")

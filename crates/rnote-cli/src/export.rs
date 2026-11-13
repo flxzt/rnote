@@ -3,6 +3,7 @@ use crate::cli::{self, OnConflict};
 use crate::validators;
 use anyhow::Context;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rnote_compose::SplitOrder;
 use rnote_engine::engine::export::{
     DocExportFormat, DocExportPrefs, DocPagesExportFormat, DocPagesExportPrefs,
@@ -640,9 +641,9 @@ fn select_strokes_for_selection_args(
             width,
             height,
         } => {
-            let mins = na::vector![*x, *y];
-            let maxs = mins + na::vector![*width, *height];
-            let bounds = Aabb::new(mins.into(), maxs.into());
+            let mins = Vector2::new(*x, *y);
+            let maxs = mins + Vector2::new(*width, *height);
+            let bounds = Aabb::new(mins, maxs);
             let _ = engine.select_with_bounds(bounds, selection_collision);
         }
         cli::SelectionCommand::All => {

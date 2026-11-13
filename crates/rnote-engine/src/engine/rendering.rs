@@ -2,6 +2,7 @@
 use crate::Image;
 use crate::{Engine, WidgetFlags};
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use piet::RenderContext;
 use rnote_compose::color;
 use tracing::error;
@@ -75,8 +76,7 @@ impl Engine {
                     gsk::TextureNode::new(
                         &new_texture,
                         &graphene::Rect::from_p2d_aabb(
-                            origin_indicator_bounds()
-                                .scaled(&na::Vector2::repeat(1.0 / total_zoom)),
+                            origin_indicator_bounds().scaled(Vector2::splat(1.0 / total_zoom)),
                         ),
                     )
                     .upcast(),
@@ -163,10 +163,10 @@ impl Engine {
         snapshot: &gtk4::Snapshot,
         surface_bounds: p2d::bounding_volume::Aabb,
     ) -> anyhow::Result<()> {
-        use crate::drawable::DrawableOnDoc;
         use crate::engine::visual_debug;
         use crate::engine_view;
-        use gtk4::prelude::*;
+        use crate::{drawable::DrawableOnDoc, ext::GrapheneRectExt};
+        use gtk4::{graphene, prelude::*};
 
         let doc_bounds = self.document.bounds();
         let viewport = self.camera.viewport();
@@ -174,12 +174,45 @@ impl Engine {
 
         snapshot.save();
         snapshot.transform(Some(&camera_transform));
+
         self.draw_document_shadow_to_gtk_snapshot(snapshot);
+
+        let (non_highlighter_keys, highlighter_keys) = self
+            .store
+            .stroke_keys_as_rendered_intersecting_bounds_partitioned(viewport);
+
+        // push clip
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
+
+        // push blend mode for each highlighter stroke
+        for _ in highlighter_keys.iter() {
+            snapshot.push_blend(gtk4::gsk::BlendMode::Multiply);
+        }
+
         self.draw_background_to_gtk_snapshot(snapshot)?;
         self.draw_format_borders_to_gtk_snapshot(snapshot)?;
+
+        // bottom image in blend (regular content)
+        for &key in non_highlighter_keys.iter() {
+            self.store.draw_stroke_key_to_gtk_snapshot(snapshot, key);
+        }
+
+        // top image in blend (highlighter layer)
+        for &key in highlighter_keys.iter() {
+            // pop blend bottom image
+            snapshot.pop();
+
+            self.store.draw_stroke_key_to_gtk_snapshot(snapshot, key);
+
+            // pop blend top image
+            snapshot.pop();
+        }
+
+        // pop clip
+        snapshot.pop();
+
         self.draw_origin_indicator_to_gtk_snapshot(snapshot)?;
-        self.store
-            .draw_strokes_to_gtk_snapshot(snapshot, doc_bounds, viewport);
+
         snapshot.restore();
         /*
                let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
@@ -340,8 +373,8 @@ impl Engine {
 
 /// Origin indicator bounds in document coordinate space.
 fn origin_indicator_bounds() -> Aabb {
-    const SIZE: na::Vector2<f64> = na::vector![17., 17.];
-    Aabb::from_half_extents(na::Vector2::zeros().into(), SIZE * 0.5)
+    const SIZE: Vector2 = Vector2::splat(17.);
+    Aabb::from_half_extents(Vector2::ZERO, SIZE * 0.5)
 }
 
 fn gen_origin_indicator_image(scale_factor: f64) -> anyhow::Result<Image> {

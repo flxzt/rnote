@@ -26,6 +26,8 @@ rnote_engine_sources = files(
     'fileformats/rnoteformat/legacy/maj0min5patch9.rs',
     'fileformats/rnoteformat/legacy/maj0min6.rs',
     'fileformats/rnoteformat/legacy/maj0min9.rs',
+    'fileformats/rnoteformat/legacy/maj0min13.rs',
+    'fileformats/rnoteformat/legacy/maj0min15.rs',
     'fileformats/rnoteformat/legacy/mod.rs',
     'fileformats/rnoteformat/mod.rs',
     'fileformats/rnoteformat/prelude.rs',

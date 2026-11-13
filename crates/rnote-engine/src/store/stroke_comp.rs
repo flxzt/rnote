@@ -1,16 +1,18 @@
 // Imports
 use super::StrokeKey;
+use super::chrono_comp::StrokeLayer;
 use super::render_comp::RenderCompState;
-use crate::engine::StrokeContent;
+use crate::engine::{LayeredStroke, StrokeContent};
 use crate::strokes::{Content, Stroke};
 use crate::{StrokeStore, WidgetFlags};
 use geo::intersects::Intersects;
 use geo::prelude::Contains;
 use p2d::bounding_volume::{Aabb, BoundingVolume};
+use p2d::math::Vector2;
 use rnote_compose::Color;
+use rnote_compose::Transformable;
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::Shapeable;
-use rnote_compose::transform::Transformable;
 use std::sync::Arc;
 #[cfg(feature = "ui")]
 use tracing::error;
@@ -43,6 +45,7 @@ impl StrokeStore {
     }
 
     /// Gets the strokes by cloning the Arc's that are wrapped around them.
+    #[allow(unused)]
     pub(crate) fn get_strokes_arc(&self, keys: &[StrokeKey]) -> Vec<Arc<Stroke>> {
         keys.iter()
             .filter_map(|&key| self.stroke_components.get(key).cloned())
@@ -92,6 +95,26 @@ impl StrokeStore {
             .into_iter()
             .filter(|&key| !(self.trashed(key).unwrap_or(false)))
             .collect::<Vec<StrokeKey>>()
+    }
+
+    /// Stroke keys intersecting the given bounds, in the order that they should be rendered.
+    /// partitioned into layers that need special handling during rendering.
+    ///
+    /// Returns a tuple of `(regular layer keys, highlighter layer keys)`.
+    #[allow(unused)]
+    pub(crate) fn stroke_keys_as_rendered_intersecting_bounds_partitioned(
+        &self,
+        bounds: Aabb,
+    ) -> (Vec<StrokeKey>, Vec<StrokeKey>) {
+        self.stroke_keys_as_rendered_intersecting_bounds(bounds)
+            .into_iter()
+            .partition(|key| {
+                self.chrono_components
+                    .get(*key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_default()
+                    != StrokeLayer::Highlighter
+            })
     }
 
     /// Clone the strokes for the given keys.
@@ -179,7 +202,7 @@ impl StrokeStore {
             .collect::<Vec<Aabb>>()
     }
 
-    pub(crate) fn set_stroke_pos(&mut self, key: StrokeKey, pos: na::Vector2<f64>) {
+    pub(crate) fn set_stroke_pos(&mut self, key: StrokeKey, pos: Vector2) {
         let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
             .get_mut(key)
             .map(Arc::make_mut)
@@ -192,7 +215,7 @@ impl StrokeStore {
     /// Translate the strokes by the offset.
     ///
     /// The strokes then need to update their geometry and rendering.
-    pub(crate) fn translate_strokes(&mut self, keys: &[StrokeKey], offset: na::Vector2<f64>) {
+    pub(crate) fn translate_strokes(&mut self, keys: &[StrokeKey], offset: Vector2) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
@@ -210,11 +233,7 @@ impl StrokeStore {
     /// Translate the stroke rendering images.
     ///
     /// The strokes then need to update their rendering.
-    pub(crate) fn translate_strokes_images(
-        &mut self,
-        keys: &[StrokeKey],
-        offset: na::Vector2<f64>,
-    ) {
+    pub(crate) fn translate_strokes_images(&mut self, keys: &[StrokeKey], offset: Vector2) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
                 for image in render_comp.images.iter_mut() {
@@ -237,12 +256,7 @@ impl StrokeStore {
     /// Rotate the stroke by the given angle (in radians) around the center.
     ///
     /// Strokes then need to update their rendering.
-    pub(crate) fn rotate_strokes(
-        &mut self,
-        keys: &[StrokeKey],
-        angle: f64,
-        center: na::Point2<f64>,
-    ) {
+    pub(crate) fn rotate_strokes(&mut self, keys: &[StrokeKey], angle: f64, center: Vector2) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
@@ -371,7 +385,7 @@ impl StrokeStore {
         &mut self,
         keys: &[StrokeKey],
         angle: f64,
-        center: na::Point2<f64>,
+        center: Vector2,
     ) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -397,7 +411,7 @@ impl StrokeStore {
     /// Scale the strokes with the factor.
     ///
     /// The strokes then need to update their rendering.
-    pub(crate) fn scale_strokes(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
+    pub(crate) fn scale_strokes(&mut self, keys: &[StrokeKey], scale: Vector2) {
         keys.iter().for_each(|&key| {
             if let Some(stroke) = Arc::make_mut(&mut self.stroke_components)
                 .get_mut(key)
@@ -415,7 +429,7 @@ impl StrokeStore {
     /// Scale the stroke rendering images.
     ///
     /// The strokes then need to update their rendering.
-    pub(crate) fn scale_strokes_images(&mut self, keys: &[StrokeKey], scale: na::Vector2<f64>) {
+    pub(crate) fn scale_strokes_images(&mut self, keys: &[StrokeKey], scale: Vector2) {
         keys.iter().for_each(|&key| {
             if let Some(render_comp) = self.render_components.get_mut(key) {
                 render_comp.state = RenderCompState::Dirty;
@@ -443,8 +457,8 @@ impl StrokeStore {
     pub(crate) fn scale_strokes_with_pivot(
         &mut self,
         keys: &[StrokeKey],
-        scale: na::Vector2<f64>,
-        pivot: na::Vector2<f64>,
+        scale: Vector2,
+        pivot: Vector2,
     ) {
         self.translate_strokes(keys, -pivot);
         self.scale_strokes(keys, scale);
@@ -457,8 +471,8 @@ impl StrokeStore {
     pub(crate) fn scale_strokes_images_with_pivot(
         &mut self,
         strokes: &[StrokeKey],
-        scale: na::Vector2<f64>,
-        pivot: na::Vector2<f64>,
+        scale: Vector2,
+        pivot: Vector2,
     ) {
         self.translate_strokes_images(strokes, -pivot);
         self.scale_strokes_images(strokes, scale);
@@ -473,7 +487,7 @@ impl StrokeStore {
     ) -> Vec<StrokeKey> {
         let mut bounds = viewport;
         for p in path {
-            bounds.take_point(p.pos.into());
+            bounds.take_point(p.pos);
         }
 
         let path_polygon = {
@@ -528,7 +542,7 @@ impl StrokeStore {
     ) -> Vec<StrokeKey> {
         let mut bounds = viewport;
         for p in path {
-            bounds.take_point(p.pos.into());
+            bounds.take_point(p.pos);
         }
 
         let path_linestring = {
@@ -608,10 +622,10 @@ impl StrokeStore {
     pub(crate) fn stroke_hitboxes_contain_coord(
         &self,
         viewport: Aabb,
-        coord: na::Vector2<f64>,
+        coord: Vector2,
     ) -> Vec<StrokeKey> {
         let mut bounds = viewport;
-        bounds.take_point(coord.into());
+        bounds.take_point(coord);
 
         self.stroke_keys_as_rendered_intersecting_bounds(bounds)
             .into_iter()
@@ -620,7 +634,7 @@ impl StrokeStore {
                     stroke
                         .hitboxes()
                         .into_iter()
-                        .any(|hitbox| hitbox.contains_local_point(&coord.into()))
+                        .any(|hitbox| hitbox.contains_local_point(coord))
                 } else {
                     false
                 }
@@ -651,15 +665,15 @@ impl StrokeStore {
         limit_movement_horizontal_border: bool,
     ) -> Vec<StrokeKey> {
         self.key_tree.keys_intersecting_bounds(Aabb::new(
-            na::point![
+            Vector2::new(
                 if limit_movement_vertical_border {
                     x_lims.0
                 } else {
                     f64::NEG_INFINITY
                 },
-                y_start
-            ],
-            na::point![
+                y_start,
+            ),
+            Vector2::new(
                 if limit_movement_vertical_border {
                     x_lims.1
                 } else {
@@ -669,8 +683,8 @@ impl StrokeStore {
                     y_end
                 } else {
                     f64::INFINITY
-                }
-            ],
+                },
+            ),
         ))
     }
 
@@ -690,22 +704,41 @@ impl StrokeStore {
     pub(crate) fn fetch_stroke_content(&self, keys: &[StrokeKey]) -> StrokeContent {
         let strokes = keys
             .iter()
-            .filter_map(|k| self.stroke_components.get(*k).cloned())
-            .collect();
+            .filter_map(|&key| {
+                let stroke = self.stroke_components.get(key).cloned()?;
+                let layer = self
+                    .chrono_components
+                    .get(key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_else(|| stroke.extract_default_layer());
+
+                Some(LayeredStroke { stroke, layer })
+            })
+            .collect::<Vec<LayeredStroke>>();
 
         StrokeContent::default().with_strokes(strokes)
     }
 
     /// Cut the strokes for the given keys and return them as stroke content.
     pub(crate) fn cut_stroke_content(&mut self, keys: &[StrokeKey]) -> StrokeContent {
+        for &key in keys {
+            self.set_selected(key, false);
+            self.set_trashed(key, true);
+        }
+
         let strokes = keys
             .iter()
-            .filter_map(|k| {
-                self.set_selected(*k, false);
-                self.set_trashed(*k, true);
-                self.stroke_components.get(*k).cloned()
+            .filter_map(|&key| {
+                let stroke = self.stroke_components.get(key).cloned()?;
+                let layer = self
+                    .chrono_components
+                    .get(key)
+                    .map(|chrono_comp| chrono_comp.layer)
+                    .unwrap_or_else(|| stroke.extract_default_layer());
+
+                Some(LayeredStroke { stroke, layer })
             })
-            .collect();
+            .collect::<Vec<LayeredStroke>>();
 
         StrokeContent::default().with_strokes(strokes)
     }
@@ -719,29 +752,32 @@ impl StrokeStore {
         &mut self,
         clipboard_content: StrokeContent,
         ratio: f64,
-        pos: na::Vector2<f64>,
+        pos: Vector2,
     ) -> Vec<StrokeKey> {
         if clipboard_content.strokes.is_empty() {
             return vec![];
         }
+
         let clipboard_bounds = clipboard_content
             .strokes
             .iter()
-            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.bounds()));
+            .fold(Aabb::new_invalid(), |acc, s| acc.merged(&s.stroke.bounds()));
 
         clipboard_content
             .strokes
             .into_iter()
-            .map(|s| {
-                let offset = s.bounds().mins.coords - clipboard_bounds.mins.coords;
-                let key = self.insert_stroke((*s).clone(), None);
+            .map(|stroke_content_stroke| {
+                let LayeredStroke { stroke, layer } = stroke_content_stroke;
+                let offset = stroke.bounds().mins - clipboard_bounds.mins;
+                let key = self.insert_stroke((*stroke).clone(), Some(layer));
+
                 // position strokes without resizing
                 self.set_stroke_pos(key, pos);
                 self.translate_strokes(&[key], offset);
 
                 // apply a rescale around a pivot
-                self.scale_strokes_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
-                self.scale_strokes_images_with_pivot(&[key], na::Vector2::new(ratio, ratio), pos);
+                self.scale_strokes_with_pivot(&[key], Vector2::new(ratio, ratio), pos);
+                self.scale_strokes_images_with_pivot(&[key], Vector2::new(ratio, ratio), pos);
 
                 // select keys
                 self.set_selected(key, true);

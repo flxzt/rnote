@@ -114,7 +114,7 @@ impl Typewriter {
                                 engine_view.store.get_stroke_ref(*stroke_key)
                         {
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
-                                .contains_local_point(&element.pos.into())
+                                .contains_local_point(element.pos)
                             {
                                 // switch to translating state
                                 self.state = TypewriterState::Modifying {
@@ -126,11 +126,11 @@ impl Typewriter {
                                     pen_down: true,
                                 };
                             } else if Self::adjust_text_width_node_bounds(
-                                Self::text_rect_bounds(text_width, textstroke).mins.coords,
+                                Self::text_rect_bounds(text_width, textstroke).mins,
                                 text_width,
                                 engine_view.camera,
                             )
-                            .contains_local_point(&element.pos.into())
+                            .contains_local_point(element.pos)
                             {
                                 // switch to adjust text width
                                 self.state = TypewriterState::Modifying {
@@ -144,7 +144,7 @@ impl Typewriter {
                                     pen_down: true,
                                 };
                             // This is intentionally **not** the textstroke hitboxes
-                            } else if typewriter_bounds.contains_local_point(&element.pos.into())
+                            } else if typewriter_bounds.contains_local_point(element.pos)
                                 && let Some(Stroke::TextStroke(textstroke)) =
                                     engine_view.store.get_stroke_ref(*stroke_key)
                             {
@@ -192,7 +192,7 @@ impl Typewriter {
                         if let Some(typewriter_bounds) = typewriter_bounds {
                             // Clicking on the translate node
                             if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
-                                .contains_local_point(&element.pos.into())
+                                .contains_local_point(element.pos)
                             {
                                 self.state = TypewriterState::Modifying {
                                     modify_state: ModifyState::Translating {
@@ -202,7 +202,7 @@ impl Typewriter {
                                     cursor: cursor.clone(),
                                     pen_down: true,
                                 };
-                            } else if typewriter_bounds.contains_local_point(&element.pos.into()) {
+                            } else if typewriter_bounds.contains_local_point(element.pos) {
                                 if let Some(Stroke::TextStroke(textstroke)) =
                                     engine_view.store.get_stroke_ref(*stroke_key)
                                 {
@@ -288,13 +288,13 @@ impl Typewriter {
                             .get_stroke_ref(*stroke_key)
                             .map(|s| s.bounds())
                         {
-                            let snap_corner_pos = textstroke_bounds.mins.coords;
+                            let snap_corner_pos = textstroke_bounds.mins;
                             let offset = engine_view.document.snap_position(
                                 snap_corner_pos + (element.pos - *current_pos),
                                 engine_view.config,
                             ) - snap_corner_pos;
 
-                            if offset.magnitude()
+                            if offset.length()
                                 > Self::TRANSLATE_OFFSET_THRESHOLD / engine_view.camera.total_zoom()
                             {
                                 // move text

@@ -3,12 +3,14 @@ use super::RnCanvas;
 use crate::RnAppWindow;
 use futures::channel::oneshot;
 use gtk4::{gio, prelude::*};
+use p2d::math::Vector2;
 use rnote_compose::ext::Vector2Ext;
 use rnote_engine::WidgetFlags;
 use rnote_engine::engine::export::{DocExportPrefs, DocPagesExportPrefs, SelectionExportPrefs};
 use rnote_engine::engine::{EngineSnapshot, StrokeContent};
 use rnote_engine::strokes::Stroke;
 use rnote_engine::strokes::resize::ImageSizeOption;
+use std::fs;
 use std::ops::Range;
 use std::path::Path;
 use tracing::{debug, error};
@@ -86,7 +88,7 @@ impl RnCanvas {
     pub(crate) async fn load_in_vectorimage_bytes(
         &self,
         bytes: Vec<u8>,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
@@ -111,7 +113,7 @@ impl RnCanvas {
     pub(crate) async fn load_in_bitmapimage_bytes(
         &self,
         bytes: Vec<u8>,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         respect_borders: bool,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
@@ -135,7 +137,7 @@ impl RnCanvas {
         &self,
         appwindow: &RnAppWindow,
         bytes: Vec<u8>,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
         page_range: Option<Range<usize>>,
         password: Option<String>,
     ) -> anyhow::Result<()> {
@@ -165,7 +167,7 @@ impl RnCanvas {
     pub(crate) fn load_in_text(
         &self,
         text: String,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
     ) -> anyhow::Result<()> {
         let pos = self.determine_stroke_import_pos(target_pos);
 
@@ -182,7 +184,7 @@ impl RnCanvas {
         &self,
         json_string: String,
         resize_option: ImageSizeOption,
-        target_pos: Option<na::Vector2<f64>>,
+        target_pos: Option<Vector2>,
     ) -> anyhow::Result<()> {
         let (oneshot_sender, oneshot_receiver) =
             oneshot::channel::<anyhow::Result<StrokeContent>>();
@@ -207,6 +209,64 @@ impl RnCanvas {
         Ok(())
     }
 
+    /// Saves the document as draft to the given app cache directory.
+    ///
+    /// Returns:
+    /// - `Ok(true)` if saving was successful
+    /// - `Ok(false)` if a save was already in progress (and thus this function didn't do anything)
+    /// - `Err(e)` when saving failed in any way
+    #[tracing::instrument(skip_all, fields(app_cache_dir))]
+    pub(crate) async fn save_draft(&self) -> anyhow::Result<bool> {
+        let drafts_dir = crate::env::drafts_dir()?;
+        let draft_name = self.draft_file_name();
+        let draft_file = drafts_dir.join(&draft_name);
+
+        if self.save_in_progress() {
+            debug!("Saving draft is already in progress, skipping..");
+            return Ok(false);
+        }
+        self.set_save_in_progress(true);
+        debug!("Saving draft to '{}'..", drafts_dir.display());
+
+        let rnote_bytes_receiver = self.engine_ref().save_as_rnote_bytes(draft_name);
+        let file_write_operation = async {
+            let bytes = rnote_bytes_receiver.await??;
+            crate::utils::atomic_save_to_file_future(&draft_file, bytes).await
+        };
+
+        if let Err(err) = file_write_operation.await {
+            self.set_save_in_progress(false);
+            debug!("Saving draft aborted");
+            return Err(err);
+        }
+        debug!("Saving draft has finished successfully");
+        self.set_save_in_progress(false);
+
+        Ok(true)
+    }
+
+    /// Discard the document draft, if present.
+    #[tracing::instrument(skip_all, fields(app_cache_dir))]
+    pub(crate) fn discard_draft(&self) -> anyhow::Result<bool> {
+        let drafts_dir = crate::env::drafts_dir()?;
+        let draft_name = self.draft_file_name();
+        let draft_file = drafts_dir.join(&draft_name);
+        if !draft_file.exists() {
+            debug!(
+                "Unable to discard draft, '{}' not found.",
+                draft_file.display()
+            );
+            return Ok(false);
+        }
+        debug!("Discarding draft '{}'..", draft_file.display());
+
+        fs::remove_file(&draft_file)?;
+
+        debug!("Discarded draft '{}'", draft_file.display());
+
+        Ok(true)
+    }
+
     /// Saves the document to the given file.
     ///
     /// Returns:
@@ -215,18 +275,17 @@ impl RnCanvas {
     /// - `Err(e)` when saving failed in any way
     #[tracing::instrument(skip_all, fields(path = format!("{:?}", file.path())))]
     pub(crate) async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<bool> {
-        // skip saving when it is already in progress
+        let filepath = file
+            .path()
+            .ok_or_else(|| anyhow::anyhow!("Could not get a path for file: `{file:?}`."))?;
+
         if self.save_in_progress() {
-            debug!("Returning early, saving file is already in progress");
+            debug!("Saving document is already in progress, skipping..");
             return Ok(false);
         }
         self.set_save_in_progress(true);
-        debug!("Saving file is now in progress");
+        debug!("Saving document to {}..", filepath.display());
 
-        let filepath = file.path().ok_or_else(|| {
-            self.set_save_in_progress(false);
-            anyhow::anyhow!("Could not get a path for file: `{file:?}`.")
-        })?;
         let basename = file.basename().ok_or_else(|| {
             self.set_save_in_progress(false);
             anyhow::anyhow!("Could not retrieve basename for file: `{file:?}`.")
@@ -251,15 +310,16 @@ impl RnCanvas {
             crate::utils::atomic_save_to_file_future(&filepath, bytes).await
         };
 
-        if let Err(e) = file_write_operation.await {
+        if let Err(err) = file_write_operation.await {
             self.set_save_in_progress(false);
             // If the file operations failed in any way, we make sure to clear the expect_write flag
             // because we can't know for sure if the output-file watcher will be able to.
             self.set_output_file_expect_write(false);
-            return Err(e);
+            debug!("Saving document aborted");
+            return Err(err);
         }
 
-        debug!("Saving file has finished successfully");
+        debug!("Saving document has finished successfully");
 
         if !skip_set_output_file {
             // We only create/replace the file watcher once we are sure the file was successfully saved.
@@ -270,6 +330,12 @@ impl RnCanvas {
         }
         self.set_unsaved_changes(false);
         self.set_save_in_progress(false);
+        if let Err(err) = self.discard_draft() {
+            error!(
+                "Document draft '{}' could not be discarded: {err}",
+                self.draft_file_name()
+            );
+        };
 
         Ok(true)
     }
@@ -363,21 +429,17 @@ impl RnCanvas {
         Ok(())
     }
 
-    fn determine_stroke_import_pos(
-        &self,
-        target_pos: Option<na::Vector2<f64>>,
-    ) -> na::Vector2<f64> {
+    fn determine_stroke_import_pos(&self, target_pos: Option<Vector2>) -> Vector2 {
         target_pos.unwrap_or_else(|| {
             self.engine_ref()
                 .camera
                 .transform()
                 .inverse()
-                .transform_point(&na::Point2::from(Stroke::IMPORT_OFFSET_DEFAULT))
-                .coords
-                .maxs(&na::vector![
+                .transform_point2(Stroke::IMPORT_OFFSET_DEFAULT)
+                .maxs(&Vector2::new(
                     self.engine_ref().document.x,
-                    self.engine_ref().document.y
-                ])
+                    self.engine_ref().document.y,
+                ))
         })
     }
 }

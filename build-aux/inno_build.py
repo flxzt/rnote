@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
-import sys
-import os
-import shutil
 import glob
 import itertools
+import os
+import shutil
+import subprocess
+import sys
+from subprocess import CalledProcessError
 
 source_root = sys.argv[1]
 build_root = sys.argv[2]
@@ -15,6 +17,7 @@ app_name_capitalized = sys.argv[5]
 app_id = sys.argv[6]
 ui_output = sys.argv[7]
 inno_script = sys.argv[8]
+cli_name = sys.argv[9]
 
 print(f"""
 ### executing Inno-Setup installer build script with arguments: ###
@@ -26,12 +29,14 @@ print(f"""
     app_id: {app_id}
     ui_output: {ui_output}
     inno_script: {inno_script}
+    cli_name: {cli_name} (empty if not packaged)
 """, file=sys.stderr)
 
 def run_command(command, error_message):
-    res = os.system(command)
-    if res != 0:
-        print(f"{error_message}, code: {res}", file=sys.stderr)
+    try:
+        subprocess.run(command, shell=True, check=True)
+    except CalledProcessError as e:
+        print(f"{error_message}: {e}", file=sys.stderr)
         print(f"command: {command}", file=sys.stderr)
         sys.exit(1)
 
@@ -47,13 +52,13 @@ os.mkdir(dlls_dir)
 
 # Don't use os.path.join here, because that uses the wrong separators which breaks wildcard expansion.
 run_command(
-    f"ldd {build_root}/{ui_output} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+    f"ldd {build_root}/{ui_output} | grep '\\/ucrt64.*\\.dll' -o | xargs -i cp {{}} {dlls_dir}",
     "Collecting app DLLs failed"
 )
 
 for loader in glob.glob(f"{build_environment_path}/lib/gdk-pixbuf-2.0/2.10.0/loaders/*.dll"):
     run_command(
-        f"ldd {loader} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"ldd {loader} | grep '\\/ucrt64.*\\.dll' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting pixbuf-loader ({loader}) DLLs failed"
     )
 
@@ -66,7 +71,7 @@ for angle_dll in itertools.chain(
         f"Collecting angle ({angle_dll}) DLLs failed",
     )
     run_command(
-        f"ldd {angle_dll} | grep '\\/mingw.*\.dll' -o | xargs -i cp {{}} {dlls_dir}",
+        f"ldd {angle_dll} | grep '\\/ucrt64.*\\.dll' -o | xargs -i cp {{}} {dlls_dir}",
         f"Collecting angle dependency ({angle_dll}) DLLs failed",
     )
 
@@ -137,8 +142,15 @@ for file in os.listdir(app_mo_dir):
 # Build installer
 print("Running ISCC...", file=sys.stderr)
 
+# the inno script will package the cli if the variable MyAppCliExeName
+# is defined. This is done with an additional /DMyAppCliExeName=cli_name.exe
+# argument 
+define_cli_output = ""
+if cli_name:
+    define_cli_output = "/DMyAppCliExeName=" + \
+        cli_name + ".exe"
 run_command(
-    f"iscc {inno_script}",
+    f"iscc {inno_script} {define_cli_output}",
     "Running ISCC failed"
 )
 

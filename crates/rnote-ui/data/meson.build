@@ -55,48 +55,39 @@ if glib_compile_schemas.found()
 endif
 
 # Appdata
-if host_machine.system() != 'windows'
-    message('Configuring appdata file')
+message('Configuring appdata file')
 
-    appdata_conf = configuration_data()
-    appdata_conf.set('APP_ID', app_id)
-    appdata_conf.set('APP_NAME', app_name)
-    appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
-    appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
-    appdata_conf.set('APP_WEBSITE', app_website)
-    appdata_conf.set('APP_REPO_URL', app_repo_url)
-    appdata_conf.set('APP_ISSUES_URL', app_issues_url)
-    appdata_conf.set('APP_SUPPORT_URL', app_support_url)
-    appdata_conf.set('APP_DONATE_URL', app_donate_url)
-    appdata_file_in = configure_file(
-        input: 'app.metainfo.xml.in.in',
-        output: '@BASENAME@',
-        configuration: appdata_conf,
+appdata_conf = configuration_data()
+appdata_conf.set('APP_ID', app_id)
+appdata_conf.set('APP_NAME', app_name)
+appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
+appdata_conf.set('APP_AUTHOR_NAME', app_author_name)
+appdata_conf.set('APP_WEBSITE', app_website)
+appdata_conf.set('APP_REPO_URL', app_repo_url)
+appdata_conf.set('APP_ISSUES_URL', app_issues_url)
+appdata_conf.set('APP_SUPPORT_URL', app_support_url)
+appdata_conf.set('APP_DONATE_URL', app_donate_url)
+appdata_file_in = configure_file(
+    input: 'app.metainfo.xml.in.in',
+    output: '@BASENAME@',
+    configuration: appdata_conf,
+)
+
+appdata_file = i18n.merge_file(
+    input: appdata_file_in,
+    output: app_id + '.metainfo.xml',
+    po_dir: '../po',
+    install: true,
+    install_dir: datadir / 'metainfo',
+)
+
+# Validate Appdata
+if appstreamcli.found()
+    test(
+        'validate-appdata',
+        appstreamcli,
+        args: ['validate', '--no-net', appdata_file],
     )
-
-    # Currently this would fail on windows mingw with error:
-    #
-    # "C:/msys64/mingw64/bin/msgfmt.EXE: cannot locate ITS rules for crates/rnote-ui/data/app.metainfo.xml.in"
-    #
-    # Even though the appdata package is installed and the rule "metainfo.its" is present in
-    # "/mingw64/share/gettext/its". But because we don't need the appdata file, we can circumvent this error by just not
-    # processing the metainfo file, we don't need it anyway.
-    appdata_file = i18n.merge_file(
-        input: appdata_file_in,
-        output: app_id + '.metainfo.xml',
-        po_dir: '../po',
-        install: true,
-        install_dir: datadir / 'metainfo',
-    )
-
-    # Validate Appdata
-    if appstreamcli.found()
-        test(
-            'validate-appdata',
-            appstreamcli,
-            args: ['validate', '--no-net', appdata_file],
-        )
-    endif
 endif
 
 # App-Icon
@@ -125,9 +116,11 @@ install_data(
 # Unfortunately this is currently not displayed by nautilus (and possibly other file managers?) when the
 # Adwaita theme is used. Instead the "application-x-generic" icon gets picked.
 # See: https://gitlab.gnome.org/GNOME/nautilus/-/issues/2190
+# The icon is also renamed in order to enable it to be exported to the desktop by Flatpak.
 install_data(
     'icons/scalable/mimetypes/' + 'application-' + app_name + '.svg',
     install_dir: iconsdir / 'hicolor' / 'scalable' / 'mimetypes',
+    rename: app_id + '-application-' + app_name + '.svg',
 )
 
 # MIME-Type
@@ -202,6 +195,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/drawing-pad-button-2-symbolic.svg',
     'icons/scalable/actions/drawing-pad-button-3-symbolic.svg',
     'icons/scalable/actions/drawing-pad-button-4-symbolic.svg',
+    'icons/scalable/actions/stylus-pen-symbolic.svg',
     'icons/scalable/actions/edit-redo-symbolic.svg',
     'icons/scalable/actions/edit-symbolic.svg',
     'icons/scalable/actions/edit-undo-symbolic.svg',
@@ -209,6 +203,8 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/fill-color-symbolic.svg',
     'icons/scalable/actions/focus-mode-symbolic.svg',
     'icons/scalable/actions/keyboard-ctrl-space-shortcut-symbolic.svg',
+    'icons/scalable/actions/lock-close-symbolic.svg',
+    'icons/scalable/actions/lock-open-symbolic.svg',
     'icons/scalable/actions/minus-symbolic.svg',
     'icons/scalable/actions/misc-menu-symbolic.svg',
     'icons/scalable/actions/mouse-button-primary-symbolic.svg',
@@ -268,6 +264,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/stylus-button-eraser-symbolic.svg',
     'icons/scalable/actions/stylus-button-primary-symbolic.svg',
     'icons/scalable/actions/stylus-button-secondary-symbolic.svg',
+    'icons/scalable/actions/stylus-pen-symbolic.svg',
     'icons/scalable/actions/tab-new-symbolic.svg',
     'icons/scalable/actions/text-align-end-symbolic.svg',
     'icons/scalable/actions/text-align-fill-symbolic.svg',
@@ -336,6 +333,7 @@ rnote_ui_gresources_icons_files = files(
     'icons/scalable/actions/zoom-fit-width-symbolic.svg',
     'icons/scalable/actions/zoom-in-symbolic.svg',
     'icons/scalable/actions/zoom-out-symbolic.svg',
+    'icons/scalable/actions/zoom-real-width-symbolic.svg',
     'icons/scalable/apps/rnote-devel.svg',
     'icons/scalable/apps/rnote.svg',
     'icons/scalable/mimetypes/application-rnote.svg',
@@ -358,6 +356,7 @@ rnote_ui_gresources_ui_files = files(
     'ui/iconpicker.ui',
     'ui/mainheader.ui',
     'ui/overlays.ui',
+    'ui/penmoderow.ui',
     'ui/penpicker.ui',
     'ui/penshortcutrow.ui',
     'ui/penssidebar/brushpage.ui',
@@ -372,15 +371,20 @@ rnote_ui_gresources_ui_files = files(
     'ui/sidebar.ui',
     'ui/strokecontentpreview.ui',
     'ui/strokewidthpicker.ui',
-    'ui/style.css',
     'ui/unitentry.ui',
     'ui/workspacebrowser.ui',
     'ui/workspacesbar/workspacerow.ui',
     'ui/workspacesbar/workspacesbar.ui',
 )
 
-rnote_ui_gresources_files = [
+rnote_css_style = files(
+    'style.css',
+    'style-win.css',
+)
+
+rnote_ui_data_files = [
     rnote_ui_gresources_icons_files,
     rnote_ui_gresources_ui_files,
+    rnote_css_style,
     files('resources.gresource.xml'),
 ]

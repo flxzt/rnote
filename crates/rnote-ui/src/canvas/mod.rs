@@ -10,6 +10,7 @@ pub(crate) use input::reject_pointer_input;
 // Imports
 use crate::boxed::WidgetFlagsBoxed;
 use crate::{RnAppWindow, config, env};
+use chrono::prelude::*;
 use futures::StreamExt;
 use gettextrs::gettext;
 use gtk4::{
@@ -22,6 +23,7 @@ use notify::event::{AccessKind, AccessMode, ModifyKind, RenameMode};
 use notify_debouncer_full::notify;
 use once_cell::sync::Lazy;
 use p2d::bounding_volume::Aabb;
+use p2d::math::Vector2;
 use rnote_compose::ext::AabbExt;
 use rnote_compose::penevent::PenState;
 use rnote_engine::ext::GraphenePointExt;
@@ -31,6 +33,7 @@ use std::cell::{Cell, Ref, RefCell, RefMut};
 use std::path::Path;
 use std::time::Duration;
 use tracing::{debug, error, warn};
+use uuid::Uuid;
 
 #[derive(Debug, Default)]
 struct Connections {
@@ -58,6 +61,8 @@ mod imp {
 
     #[derive(Debug)]
     pub(crate) struct RnCanvas {
+        pub(super) id: Uuid,
+        pub(super) timestamp: DateTime<Utc>,
         pub(super) connections: RefCell<Connections>,
         pub(crate) hadjustment: RefCell<Option<Adjustment>>,
         pub(crate) vadjustment: RefCell<Option<Adjustment>>,
@@ -82,12 +87,14 @@ mod imp {
         pub(crate) output_file: RefCell<Option<gio::File>>,
         pub(crate) output_file_watcher_task: RefCell<Option<glib::JoinHandle<()>>>,
         pub(crate) output_file_modified_toast_singleton: glib::WeakRef<adw::Toast>,
+        pub(crate) locked_tool_toast_singleton: glib::WeakRef<adw::Toast>,
         pub(crate) output_file_expect_write: Cell<bool>,
         pub(crate) save_in_progress: Cell<bool>,
         pub(crate) unsaved_changes: Cell<bool>,
         pub(crate) empty: Cell<bool>,
         pub(crate) touch_drawing: Cell<bool>,
         pub(crate) show_drawing_cursor: Cell<bool>,
+        pub(crate) text_input_enabled: Cell<bool>,
 
         pub(crate) last_export_dir: RefCell<Option<gio::File>>,
     }
@@ -152,6 +159,8 @@ mod imp {
             let engine = Engine::default();
 
             Self {
+                id: Uuid::new_v4(),
+                timestamp: chrono::Utc::now(),
                 connections: RefCell::new(Connections::default()),
 
                 hadjustment: RefCell::new(None),
@@ -178,12 +187,14 @@ mod imp {
                 output_file_watcher_task: RefCell::new(None),
                 // is automatically updated whenever the output file changes.
                 output_file_modified_toast_singleton: glib::WeakRef::new(),
+                locked_tool_toast_singleton: glib::WeakRef::new(),
                 output_file_expect_write: Cell::new(false),
                 save_in_progress: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
                 touch_drawing: Cell::new(false),
                 show_drawing_cursor: Cell::new(false),
+                text_input_enabled: Cell::new(false),
 
                 last_export_dir: RefCell::new(None),
             }
@@ -473,8 +484,8 @@ mod imp {
                         parent
                             .compute_point(&*obj, &graphene::Point::zero())
                             .unwrap()
-                            .to_na_point(),
-                        na::point![f64::from(parent.width()), f64::from(parent.height())],
+                            .to_p2d_vec(),
+                        Vector2::new(parent.width() as f64, parent.height() as f64),
                     )
                 } else {
                     obj.bounds()
@@ -504,20 +515,26 @@ mod imp {
 
             // Pointer controller
             let pen_state = Cell::new(PenState::Up);
+            let stylus_active = Cell::new(false);
             self.pointer_controller.connect_event(clone!(
                 #[strong]
                 pen_state,
+                #[strong]
+                stylus_active,
                 #[weak(rename_to=canvas)]
                 obj,
                 #[upgrade_or]
                 glib::Propagation::Proceed,
                 move |_, event| {
-                    let (propagation, new_state) = super::input::handle_pointer_controller_event(
-                        &canvas,
-                        event,
-                        pen_state.get(),
-                    );
+                    let (propagation, new_state, new_stylus_active) =
+                        super::input::handle_pointer_controller_event(
+                            &canvas,
+                            event,
+                            pen_state.get(),
+                            stylus_active.get(),
+                        );
                     pen_state.set(new_state);
+                    stylus_active.set(new_stylus_active);
                     propagation
                 }
             ));
@@ -600,13 +617,13 @@ mod imp {
                         let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
-                        let new_offset = na::vector![
+                        let new_offset = Vector2::new(
                             super::RnCanvas::adjustment_to_surface(
                                 hadj_signal.value(),
-                                surface_mins.x
+                                surface_mins.x,
                             ),
-                            offset.y
-                        ];
+                            offset.y,
+                        );
 
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
 
@@ -680,13 +697,13 @@ mod imp {
                         let (surface_mins, _) = canvas.engine_ref().camera_surface_mins_maxs();
                         let offset = canvas.engine_ref().camera.offset();
 
-                        let new_offset = na::vector![
+                        let new_offset = Vector2::new(
                             offset.x,
                             super::RnCanvas::adjustment_to_surface(
                                 vadj_signal.value(),
-                                surface_mins.y
-                            )
-                        ];
+                                surface_mins.y,
+                            ),
+                        );
 
                         let widget_flags = canvas.engine_mut().camera_set_offset_expand(new_offset);
 
@@ -885,9 +902,9 @@ impl RnCanvas {
 
     pub(crate) fn configure_adjustments(
         &self,
-        widget_size: na::Vector2<f64>,
-        adjustment_upper: na::Vector2<f64>,
-        adjustment_value: na::Vector2<f64>,
+        widget_size: Vector2,
+        adjustment_upper: Vector2,
+        adjustment_value: Vector2,
     ) {
         if let Some(hadj) = self.hadjustment() {
             hadj.configure(
@@ -938,8 +955,8 @@ impl RnCanvas {
         }
     }
 
-    pub(crate) fn widget_size(&self) -> na::Vector2<f64> {
-        na::vector![self.width() as f64, self.height() as f64]
+    pub(crate) fn widget_size(&self) -> Vector2 {
+        Vector2::new(self.width() as f64, self.height() as f64)
     }
 
     /// Immutable borrow of the engine.
@@ -963,15 +980,40 @@ impl RnCanvas {
         }
     }
 
-    pub(crate) fn set_text_preprocessing(&self, enable: bool) {
-        if enable {
+    pub(crate) fn enable_text_input(&self, text_input: bool) {
+        if self.imp().text_input_enabled.get() == text_input {
+            return;
+        }
+
+        self.imp().text_input_enabled.set(text_input);
+
+        if text_input {
+            self.imp()
+                .key_controller_im_context
+                .set_client_widget(Some(self));
+
             self.imp()
                 .key_controller
                 .set_im_context(Some(&self.imp().key_controller_im_context));
+
+            // if the canvas already has focus, the key controller won't emit focus-in event, so emit it manually
+            if self.has_focus() {
+                self.imp().key_controller_im_context.focus_in();
+            }
         } else {
+            // flush any pending composition before detaching
+            self.imp().key_controller_im_context.reset();
+            // Focus must be removed so that the IME context can unregister its window message filter.
+            // On Windows, failing to do so causes a crash when switching from the Typewriter to the pen tool.
+            self.imp().key_controller_im_context.focus_out();
+
             self.imp()
                 .key_controller
                 .set_im_context(None::<&IMMulticontext>);
+
+            self.imp()
+                .key_controller_im_context
+                .set_client_widget(None::<&Widget>);
         }
     }
 
@@ -1017,6 +1059,16 @@ impl RnCanvas {
                     .unwrap_or_else(|| gettext("- invalid folder path -"))
             })
             .unwrap_or_else(|| OUTPUT_FILE_NEW_SUBTITLE.to_string())
+    }
+
+    /// The name of the file that should be used when the document is saved as draft.
+    pub(crate) fn draft_file_name(&self) -> String {
+        let imp = self.imp();
+        format!(
+            "{}-draft-{}.rnote",
+            imp.timestamp.format("%Y-%m-%dT%H_%M_%S"),
+            imp.id
+        )
     }
 
     pub(crate) fn clear_output_file_watcher(&self) {
@@ -1354,8 +1406,12 @@ impl RnCanvas {
             #[upgrade_or]
             false,
             move |_, value, x, y| {
-                let pos =
-                    (canvas.engine_ref().camera.transform().inverse() * na::point![x, y]).coords;
+                let pos = canvas
+                    .engine_ref()
+                    .camera
+                    .transform()
+                    .inverse()
+                    .transform_point2(Vector2::new(x, y));
                 let mut accept_drop = false;
 
                 if value.is::<gio::File>() {
@@ -1602,8 +1658,8 @@ impl RnCanvas {
 
     pub(crate) fn bounds(&self) -> Aabb {
         Aabb::new_positive(
-            na::point![0.0, 0.0],
-            na::point![f64::from(self.width()), f64::from(self.height())],
+            Vector2::ZERO,
+            Vector2::new(self.width() as f64, self.height() as f64),
         )
     }
 }

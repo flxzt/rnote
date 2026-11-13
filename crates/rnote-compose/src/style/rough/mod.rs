@@ -8,7 +8,7 @@ pub use roughoptions::RoughOptions;
 // Imports
 use super::Composer;
 use crate::Color;
-use crate::ext::Vector2Ext;
+use crate::ext::{DAffine2Ext, Vector2Ext};
 use crate::shapes::{
     Arrow, CubicBezier, Ellipse, Line, Polygon, Polyline, QuadraticBezier, Rectangle, Shapeable,
 };
@@ -128,7 +128,7 @@ impl Composer<RoughOptions> for Rectangle {
             size[1],
         );
 
-        cx.transform(self.transform.to_kurbo());
+        cx.transform(self.affine.to_kurbo());
         drawable.draw(cx);
 
         cx.restore().unwrap();
@@ -149,7 +149,7 @@ impl Composer<RoughOptions> for Ellipse {
         let drawable = rough_piet::KurboGenerator::new(generate_roughr_options(options))
             .ellipse(0.0, 0.0, size[0], size[1]);
 
-        cx.transform(self.transform.to_kurbo());
+        cx.transform(self.affine.to_kurbo());
         drawable.draw(cx);
 
         cx.restore().unwrap();
@@ -208,7 +208,7 @@ impl Composer<RoughOptions> for Polyline {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+        let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
         ))
@@ -233,7 +233,7 @@ impl Composer<RoughOptions> for Polygon {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        let points: Vec<roughr::Point2D<_, _>> = std::iter::once(roughr::Point2D::new(
+        let points: Vec<roughr::Point2D<_>> = std::iter::once(roughr::Point2D::new(
             self.start[0] as f32,
             self.start[1] as f32,
         ))

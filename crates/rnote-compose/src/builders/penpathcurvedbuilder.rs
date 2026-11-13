@@ -104,7 +104,7 @@ impl Buildable for PenPathCurvedBuilder {
             self.buffer[self.i..]
                 .iter()
                 .fold(Aabb::new_invalid(), |mut acc, x| {
-                    acc.take_point(x.pos.into());
+                    acc.take_point(x.pos);
                     acc.loosened(stroke_width / zoom)
                 }),
         )

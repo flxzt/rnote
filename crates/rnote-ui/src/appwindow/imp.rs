@@ -32,6 +32,9 @@ pub(crate) struct RnAppWindow {
     pub(crate) devel_mode: Cell<bool>,
     pub(crate) visual_debug: Cell<bool>,
 
+    pub(crate) lock_pen: Cell<bool>,
+    pub(crate) lock_eraser: Cell<bool>,
+
     pub(crate) drawing_pad_controller: RefCell<Option<PadController>>,
     pub(crate) autosave_source_id: RefCell<Option<glib::SourceId>>,
     pub(crate) periodic_configsave_source_id: RefCell<Option<glib::SourceId>>,
@@ -70,6 +73,9 @@ impl Default for RnAppWindow {
             focus_mode: Cell::new(false),
             devel_mode: Cell::new(false),
             visual_debug: Cell::new(false),
+
+            lock_pen: Cell::new(false),
+            lock_eraser: Cell::new(false),
 
             drawing_pad_controller: RefCell::new(None),
             autosave_source_id: RefCell::new(None),
@@ -115,7 +121,7 @@ impl ObjectImpl for RnAppWindow {
 
         // Load the application css
         let css = CssProvider::new();
-        css.load_from_resource((String::from(config::APP_IDPATH) + "ui/style.css").as_str());
+        css.load_from_string(include_str!("../../data/style.css"));
 
         let display = gdk::Display::default().unwrap();
         gtk4::style_context_add_provider_for_display(
@@ -123,6 +129,18 @@ impl ObjectImpl for RnAppWindow {
             &css,
             gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
+
+        #[cfg(target_os = "windows")]
+        {
+            let css = CssProvider::new();
+            css.load_from_string(&include_str!("../../data/style-win.css"));
+            let display = gdk::Display::default().unwrap();
+            gtk4::style_context_add_provider_for_display(
+                &display,
+                &css,
+                gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            );
+        }
 
         self.setup_input();
         self.setup_overview();
@@ -181,6 +199,12 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("save-in-progress")
                     .default_value(false)
                     .build(),
+                glib::ParamSpecBoolean::builder("lock-pen")
+                    .default_value(false)
+                    .build(),
+                glib::ParamSpecBoolean::builder("lock-eraser")
+                    .default_value(true)
+                    .build(),
             ]
         });
         PROPERTIES.as_ref()
@@ -201,6 +225,8 @@ impl ObjectImpl for RnAppWindow {
             "devel-mode" => self.devel_mode.get().to_value(),
             "visual-debug" => self.visual_debug.get().to_value(),
             "save-in-progress" => self.save_in_progress.get().to_value(),
+            "lock-pen" => self.lock_pen.get().to_value(),
+            "lock-eraser" => self.lock_eraser.get().to_value(),
             _ => unimplemented!(),
         }
     }
@@ -333,6 +359,14 @@ impl ObjectImpl for RnAppWindow {
                     .expect("The value needs to be of type `bool`");
                 self.save_in_progress.replace(save_in_progress);
             }
+            "lock-pen" => {
+                let lock_pen: bool = value.get().expect("The value needs to be of type `bool`");
+                self.lock_pen.replace(lock_pen);
+            }
+            "lock-eraser" => {
+                let lock_eraser: bool = value.get().expect("The value needs to be of type `bool`");
+                self.lock_eraser.replace(lock_eraser);
+            }
             _ => unimplemented!(),
         }
     }
@@ -412,7 +446,10 @@ impl RnAppWindow {
 
                     for (i, tab) in tabs.iter().enumerate() {
                         let canvas = tab.canvas();
-                        if canvas.unsaved_changes() && let Some(output_file) = canvas.output_file() {
+                        if !canvas.unsaved_changes() {
+                            continue;
+                        }
+                        if let Some(output_file) = canvas.output_file() {
                             trace!(
                                 "there are unsaved changes on the tab {:?} with a file on disk, saving",i
                             );
@@ -424,6 +461,12 @@ impl RnAppWindow {
                                         .overlays()
                                         .dispatch_toast_error(&gettext("Saving document failed"));
                                 };
+                            }));
+                        } else {
+                            glib::spawn_future_local(clone!(#[weak] canvas, async move {
+                            if let Err(err) = canvas.save_draft().await {
+                                error!("Saving draft failed: {err}");
+                            }
                             }));
                         }
                     }
@@ -696,11 +739,6 @@ impl RnAppWindow {
             obj.overlays()
                 .penssidebar()
                 .brush_page()
-                .brushstyle_menubutton()
-                .set_direction(ArrowType::Right);
-            obj.overlays()
-                .penssidebar()
-                .brush_page()
                 .stroke_width_picker()
                 .set_position(PositionType::Left);
             obj.overlays()
@@ -809,11 +847,6 @@ impl RnAppWindow {
                 .penssidebar()
                 .brush_page()
                 .brushconfig_menubutton()
-                .set_direction(ArrowType::Left);
-            obj.overlays()
-                .penssidebar()
-                .brush_page()
-                .brushstyle_menubutton()
                 .set_direction(ArrowType::Left);
             obj.overlays()
                 .penssidebar()

@@ -1,4 +1,5 @@
 // Imports
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 use std::ops::{Deref, DerefMut};
 
@@ -57,7 +58,7 @@ pub(crate) enum SegmentMaj0Min5Patch8 {
         #[serde(rename = "start")]
         start: ElementMaj0Min5Patch8,
         #[serde(rename = "cp")]
-        cp: na::Vector2<f64>,
+        cp: Vector2,
         #[serde(rename = "end")]
         end: ElementMaj0Min5Patch8,
     },
@@ -66,9 +67,9 @@ pub(crate) enum SegmentMaj0Min5Patch8 {
         #[serde(rename = "start")]
         start: ElementMaj0Min5Patch8,
         #[serde(rename = "cp1")]
-        cp1: na::Vector2<f64>,
+        cp1: Vector2,
         #[serde(rename = "cp2")]
-        cp2: na::Vector2<f64>,
+        cp2: Vector2,
         #[serde(rename = "end")]
         end: ElementMaj0Min5Patch8,
     },
@@ -78,7 +79,7 @@ pub(crate) enum SegmentMaj0Min5Patch8 {
 #[serde(rename = "element")]
 pub(crate) struct ElementMaj0Min5Patch8 {
     #[serde(rename = "pos")]
-    pub(crate) pos: na::Vector2<f64>,
+    pub(crate) pos: Vector2,
     #[serde(rename = "pressure")]
     pub(crate) pressure: f64,
 }

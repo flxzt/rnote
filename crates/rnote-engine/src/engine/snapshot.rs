@@ -6,6 +6,7 @@ use crate::store::{ChronoComponent, StrokeKey};
 use crate::strokes::Stroke;
 use crate::{Camera, Document, Engine};
 use futures::channel::oneshot;
+use p2d::math::Vector2;
 use serde::{Deserialize, Serialize};
 use slotmap::{SecondaryMap, SlotMap};
 use std::sync::Arc;
@@ -144,7 +145,7 @@ impl EngineSnapshot {
                 }
 
                 // Offsetting as rnote has one global coordinate space
-                let mut offset = na::Vector2::<f64>::zeros();
+                let mut offset = Vector2::ZERO;
 
                 for page in xopp_file.xopp_root.pages.into_iter() {
                     for layers in page.layers.into_iter() {

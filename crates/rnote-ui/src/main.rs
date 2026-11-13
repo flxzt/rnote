@@ -61,7 +61,6 @@ pub(crate) use unitentry::RnUnitEntry;
 pub(crate) use workspacebrowser::RnWorkspaceBrowser;
 
 // Renames
-extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
 
 // Imports
@@ -84,15 +83,6 @@ fn main() -> glib::ExitCode {
     }
 
     let app = RnApp::new();
-
-    // window specific workaround for shadow that intercept mouse clicks outside the window
-    // See issue https://github.com/flxzt/rnote/issues/1372
-    #[cfg(target_os = "windows")]
-    {
-        if let Err(e) = env::window_styling_workaround() {
-            eprintln!("failed to setup custom css for windows, Err: {e:?}");
-        }
-    }
     app.run()
 }
 
@@ -112,7 +102,10 @@ fn setup_tracing() -> anyhow::Result<()> {
 fn setup_i18n() -> anyhow::Result<()> {
     let locale_dir = env::locale_dir()?;
 
-    gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "");
+    // # Safety
+    //
+    // setlocale() is called as early as possible, before starting threads or installing UNIX signals.
+    unsafe { gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "") };
     gettextrs::bindtextdomain(config::GETTEXT_PACKAGE, locale_dir)?;
     gettextrs::bind_textdomain_codeset(config::GETTEXT_PACKAGE, "UTF-8")?;
     gettextrs::textdomain(config::GETTEXT_PACKAGE)?;

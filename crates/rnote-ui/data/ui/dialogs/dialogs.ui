@@ -61,6 +61,25 @@ Changes which are not saved will be permanently lost.</property>
     </responses>
   </object>
 
+  <object class="AdwAlertDialog" id="dialog_recover_drafts">
+    <property name="width-request">370</property>
+    <property name="heading" translatable="yes">Recover Drafts</property>
+    <property name="body" translatable="yes">Unsaved drafts were found.
+Should they be recovered?</property>
+    <property name="default-response">recover</property>
+    <property name="close-response">cancel</property>
+    <property name="extra-child">
+      <object class="AdwPreferencesGroup" id="recover_drafts_file_group">
+        <property name="margin-top">12</property>
+      </object>
+    </property>
+    <responses>
+      <response id="cancel" translatable="yes">Cancel</response>
+      <response id="discard" appearance="destructive" translatable="yes">Discard All</response>
+      <response id="recover" appearance="suggested" translatable="yes">Recover</response>
+    </responses>
+  </object>
+
   <object class="AdwDialog" id="dialog_edit_selected_workspace">
     <property name="title" translatable="yes">Edit Workspace</property>
     <child>
@@ -71,11 +90,13 @@ Changes which are not saved will be permanently lost.</property>
             <property name="show-start-title-buttons">false</property>
             <child type="start">
               <object class="GtkButton" id="edit_selected_workspace_button_cancel">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Cancel</property>
               </object>
             </child>
             <child type="end">
               <object class="GtkButton" id="edit_selected_workspace_button_apply">
+                <property name="limit-events">true</property>
                 <property name="label" translatable="yes">Apply</property>
                 <style>
                   <class name="suggested-action" />

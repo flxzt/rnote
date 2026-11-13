@@ -8,7 +8,7 @@
       </object>
     </property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="toolbox">
         <property name="spacing">6</property>
         <property name="width-request">350</property>
         <property name="homogeneous">true</property>

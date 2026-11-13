@@ -16,6 +16,7 @@
             </property>
             <child type="start">
               <object class="GtkBox">
+                <property name="limit-events">true</property>
                 <child>
                   <object class="GtkButton" id="left_close_button">
                     <property name="icon-name">dir-right-symbolic</property>
@@ -25,6 +26,7 @@
             </child>
             <child type="end">
               <object class="GtkBox">
+                <property name="limit-events">true</property>
                 <child>
                   <object class="RnAppMenu" id="appmenu">
                   </object>

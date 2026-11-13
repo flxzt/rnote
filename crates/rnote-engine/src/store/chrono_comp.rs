@@ -42,22 +42,14 @@ impl PartialOrd for StrokeLayer {
 
 impl Ord for StrokeLayer {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        match (self, other) {
-            (StrokeLayer::UserLayer(this_ul), StrokeLayer::UserLayer(other_ul)) => {
-                this_ul.cmp(other_ul)
-            }
-            (StrokeLayer::UserLayer(_), _) => Ordering::Greater,
-            (StrokeLayer::Highlighter, StrokeLayer::UserLayer(_)) => Ordering::Less,
-            (StrokeLayer::Highlighter, StrokeLayer::Highlighter) => Ordering::Equal,
-            (StrokeLayer::Highlighter, _) => Ordering::Greater,
-            (StrokeLayer::Image, StrokeLayer::UserLayer(_) | StrokeLayer::Highlighter) => {
-                Ordering::Less
-            }
-            (StrokeLayer::Image, StrokeLayer::Image) => Ordering::Equal,
-            (StrokeLayer::Image, StrokeLayer::Document) => Ordering::Greater,
-            (StrokeLayer::Document, StrokeLayer::Document) => Ordering::Equal,
-            (StrokeLayer::Document, _) => Ordering::Less,
-        }
+        let key = |layer: &StrokeLayer| match layer {
+            StrokeLayer::Document => (0_u8, 0_u32),
+            StrokeLayer::Image => (1_u8, 0_u32),
+            StrokeLayer::UserLayer(layer_no) => (2_u8, *layer_no),
+            StrokeLayer::Highlighter => (3_u8, 0_u32),
+        };
+
+        key(self).cmp(&key(other))
     }
 }
 

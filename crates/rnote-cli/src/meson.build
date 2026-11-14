@@ -4,6 +4,7 @@ rnote_cli_sources = files(
     'export.rs',
     'import.rs',
     'main.rs',
+    'set_compression.rs',
     'test.rs',
     'validators.rs',
 )

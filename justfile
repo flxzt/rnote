@@ -235,3 +235,11 @@ create-tarball *MESON_DIST_ARGS:
 
 generate-json-flatpak-manifest:
     yq -o=json build-aux/com.github.flxzt.rnote.Devel.yaml > build-aux/com.github.flxzt.rnote.Devel.json
+
+[doc(
+'Update the Github actions lockfile via `gh` CLI.
+Make sure to authenticate and allow access first (`gh auth login --web --clipboard`).
+')]
+ci-update-actions:
+    gh extension install github/gh-actions-lock
+    gh actions-lock

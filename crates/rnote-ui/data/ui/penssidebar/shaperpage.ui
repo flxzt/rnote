@@ -128,7 +128,7 @@
               <child>
                 <object class="AdwViewStackPage">
                   <property name="name">style_options</property>
-                  <property name="title" translatable="yes">_Style _Options</property>
+                  <property name="title" translatable="yes">_Style Options</property>
                   <property name="icon-name">settings-symbolic</property>
                   <property name="use-underline">True</property>
                   <property name="child">

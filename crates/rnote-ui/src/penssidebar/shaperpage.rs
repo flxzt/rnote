@@ -69,6 +69,12 @@ mod imp {
 
         #[template_child]
         pub(crate) stroke_width_picker: TemplateChild<RnStrokeWidthPicker>,
+
+        // tabbed shape popover properties
+        #[template_child]
+        pub(crate) stack: TemplateChild<adw::ViewStack>,
+        #[template_child]
+        pub(crate) switcher_bar: TemplateChild<adw::ViewSwitcherBar>,
     }
 
     #[glib::object_subclass]

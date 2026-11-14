@@ -85,7 +85,7 @@ prerequisites-dev: prerequisites
 # in MSYS2 shell
 prerequisites-win:
     pacman -S --needed --noconfirm \
-        unzip git mingw-w64-ucrt-x86_64-binutils mingw-w64-ucrt-x86_64-python3 mingw-w64-ucrt-x86_64-xz \
+        unzip git mingw-w64-ucrt-x86_64-binutils mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-xz \
         mingw-w64-ucrt-x86_64-openssl mingw-w64-ucrt-x86_64-pkgconf mingw-w64-ucrt-x86_64-gcc \
         mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-autotools \
         mingw-w64-ucrt-x86_64-make mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-meson \

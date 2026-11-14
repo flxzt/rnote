@@ -53,7 +53,7 @@ impl RnoteFileInterfaceV1 {
                 )
             })?
             .into_par_iter()
-            .for_each_init(
+            .try_for_each_init(
                 || {
                     local_buffer.get_or(|| {
                         std::cell::RefCell::new({
@@ -65,13 +65,14 @@ impl RnoteFileInterfaceV1 {
                 },
                 |&mut cell, stroke_chrono_pair| {
                     // It might be worth checking out if using an `UnsafeCell` helps the performance.
-                    let mut buf = cell.borrow_mut();
+                    let mut buf = cell.try_borrow_mut()?;
                     if buf.len() > 1 {
                         buf.push(b',');
                     }
-                    serde_json::to_writer(&mut *buf, &stroke_chrono_pair).unwrap() // Fine to unwrap here
+                    serde_json::to_writer(&mut *buf, &stroke_chrono_pair)?;
+                    anyhow::Ok(())
                 },
-            );
+            )?;
 
         let mut chunk_vec = local_buffer
             .into_iter()
@@ -88,7 +89,7 @@ impl RnoteFileInterfaceV1 {
                     .compress_mut(chunk)
                     .with_context(|| "Zstd compression failed.")?;
                 let c_size = chunk.len();
-                Ok(ChunkInfo { c_size, uc_size })
+                anyhow::Ok(ChunkInfo { c_size, uc_size })
             })
             .collect::<anyhow::Result<Vec<ChunkInfo>>>()?;
 

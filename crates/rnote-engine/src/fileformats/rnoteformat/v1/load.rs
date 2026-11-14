@@ -41,7 +41,7 @@ impl RnoteFileInterfaceV1 {
                     .try_capture(info.c_size)
                     .map(|slice| (slice, info.uc_size))
             })
-            .collect::<Result<Vec<(&[u8], usize)>, anyhow::Error>>()?
+            .collect::<anyhow::Result<Vec<(&[u8], usize)>>>()?
             .into_par_iter()
             .map(|(data, uc_size)| {
                 header
@@ -51,7 +51,7 @@ impl RnoteFileInterfaceV1 {
                         serde_json::from_slice::<SC>(&uc_data).map_err(anyhow::Error::from)
                     })
             })
-            .collect::<Result<Vec<SC>, anyhow::Error>>()?;
+            .collect::<anyhow::Result<Vec<SC>>>()?;
 
         Ok((engine_snapshot, stroke_chrono_pair_chunks))
     }

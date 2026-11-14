@@ -35,7 +35,7 @@ pub fn load_engine_snapshot_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSna
     let mut cursor = BCursor::new(bytes);
 
     // We check that the file isn't of the legacy type, which is indicated by the presence of the magic number of Gzip at the start of the file.
-    let prelude = if cursor.try_seek(2)? != [0x1f, 0x8b] {
+    let prelude = if cursor.try_peek(2)? != [0x1f, 0x8b] {
         // Not a legacy file, so we try loading the prelude.
         Prelude::try_from_bytes(&mut cursor).with_context(|| "Failed to load the prelude")?
     } else {
@@ -49,7 +49,7 @@ pub fn load_engine_snapshot_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSna
 
             // Template for a future version change that requires an upgrade.
             /*
-            if semver::VersionReq::parse(">=0.15.0")
+            if semver::VersionReq::parse(">=0.17.0")
                 .unwrap()
                 .matches(&prelude.rnote_version)
             {

@@ -61,7 +61,6 @@ use crate::{
     store::{ChronoComponent, StrokeKey},
     strokes::Stroke,
 };
-use anyhow::Ok;
 use itertools::Itertools;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};

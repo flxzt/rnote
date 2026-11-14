@@ -3,6 +3,8 @@ use super::*;
 
 /// A wrapper struct around `CompatV1`, makes upgrading versions relatively clear by
 /// just implementing `TryFrom` between different version-tagged structs.
+#[derive(Debug, Clone)]
+#[repr(transparent)]
 pub(crate) struct CompatV1For<const MAJ: u64, const MIN: u64, const PATCH: u64>(CompatV1);
 
 impl<const MAJ: u64, const MIN: u64, const PATCH: u64> From<CompatV1>

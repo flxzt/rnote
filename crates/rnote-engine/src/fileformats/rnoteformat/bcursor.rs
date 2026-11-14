@@ -24,8 +24,8 @@ impl<'a> BCursor<'a> {
             .ok_or_else(|| anyhow::anyhow!("Failed to capture {by} bytes, out of bounds"))
     }
 
-    /// Similar to [Self::try_capture], except the position of the cursor isn't updated.
-    pub fn try_seek(&mut self, by: usize) -> anyhow::Result<&'a [u8]> {
+    /// Similar to [Self::try_capture], except the position of the cursor isn't advanced.
+    pub fn try_peek(&mut self, by: usize) -> anyhow::Result<&'a [u8]> {
         self.inner
             .get(self.pos..self.pos + by)
             .ok_or_else(|| anyhow::anyhow!("Failed to seek {by} bytes, out of bounds"))

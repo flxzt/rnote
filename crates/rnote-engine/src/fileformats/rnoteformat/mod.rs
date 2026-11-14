@@ -48,17 +48,25 @@ pub fn load_engine_snapshot_from_bytes(bytes: &[u8]) -> anyhow::Result<EngineSna
             RnoteFileInterface::bytes_to_engine_snapshot(cursor, prelude.header_size)
 
             // Template for a future version change that requires an upgrade.
+            // Refer to `v1/version.rs` for more information.
             /*
-            if semver::VersionReq::parse(">=0.17.0")
+            use self::v1::{Maj0Min20, Maj0Min21};
+
+            if semver::VersionReq::parse(">=0.21.0")
                 .unwrap()
                 .matches(&prelude.rnote_version)
             {
                 RnoteFileInterface::bytes_to_engine_snapshot(cursor, prelude.header_size)
-            } else {
+            } else if semver::VersionReq::parse(">=0.20.0")
+                .unwrap()
+                .matches(&prelude.rnote_version)
+            {
                 RnoteFileInterface::bytes_to_compat(cursor, prelude.header_size)
-                    .map(CompatV1For::<0, 14, 0>::from)
-                    .and_then(CompatV1For::<0, 15, 0>::try_from)
+                    .map(Maj0Min20::from)
+                    .and_then(Maj0Min21::try_from)
                     .and_then(RnoteFileInterface::compat_to_engine_snapshot)
+            } else {
+                todo!()
             }
             */
         }

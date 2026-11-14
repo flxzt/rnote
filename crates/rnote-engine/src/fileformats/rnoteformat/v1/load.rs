@@ -153,11 +153,11 @@ impl TryFrom<LegacyRnoteFile> for CompatV1 {
         let engine_snapshot = value
             .engine_snapshot
             .as_object_mut()
-            .ok_or_else(|| anyhow::anyhow!("`engine_snapshot` is not a JSON object"))?;
+            .context("`engine_snapshot` is not a JSON object")?;
 
         let mut raw_strokes: ijson::IArray = engine_snapshot
             .remove("stroke_components")
-            .ok_or_else(|| anyhow::anyhow!("`engine_snapshot` has no value `stroke_components`"))?
+            .context("`engine_snapshot` has no value `stroke_components`")?
             .into_array()
             .map_err(|_| anyhow::anyhow!("`stroke_components` is not a JSON array"))?;
 
@@ -169,7 +169,7 @@ impl TryFrom<LegacyRnoteFile> for CompatV1 {
 
         let mut raw_chronos: ijson::IArray = engine_snapshot
             .remove("chrono_components")
-            .ok_or_else(|| anyhow::anyhow!("`engine_snapshot` has no value `chrono_components`"))?
+            .context("`engine_snapshot` has no value `chrono_components`")?
             .into_array()
             .map_err(|_| anyhow::anyhow!("`chrono_components` is not a JSON array"))?;
 

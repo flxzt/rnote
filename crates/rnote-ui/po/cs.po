@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-14 16:27+0100\n"
-"PO-Revision-Date: 2026-07-27 15:05+0000\n"
+"PO-Revision-Date: 2026-11-16 17:53+0000\n"
 "Last-Translator: Fjuro <fjuro@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/rnote/repo/cs/>\n"
 "Language: cs\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.8.dev0\n"
+"X-Generator: Weblate 2026.12.dev0\n"
 
 #: crates/rnote-ui/data/app.desktop.in.in:4
 #: crates/rnote-ui/data/app.metainfo.xml.in.in:9
@@ -168,17 +168,19 @@ msgstr "Zahodit vše"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:66
 msgid "Recover Drafts"
-msgstr ""
+msgstr "Obnovit koncepty"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:67
 msgid ""
 "Unsaved drafts were found.\n"
 "Should they be recovered?"
 msgstr ""
+"Byly nalezeny neuložené koncepty.\n"
+"Chcete je obnovit?"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:79
 msgid "Recover"
-msgstr ""
+msgstr "Obnovit"
 
 #: crates/rnote-ui/data/ui/dialogs/dialogs.ui:84
 msgid "Edit Workspace"
@@ -798,7 +800,7 @@ msgstr "Konfigurace tvarování"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:131
 msgid "_Style Options"
-msgstr ""
+msgstr "Možnosti _stylu"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:147
 msgid "Highlighting"
@@ -910,10 +912,8 @@ msgid "Set the angle of hachure fills"
 msgstr "Nastavit úhel výplní hachure"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
-#, fuzzy
-#| msgid "Constraints"
 msgid "_Constraints"
-msgstr "Omezení"
+msgstr "_Omezení"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:275
 msgid "Constraints"
@@ -924,16 +924,12 @@ msgid "Enabled"
 msgstr "Povoleno"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:287
-#, fuzzy
-#| msgid ""
-#| "Hold Ctrl to temporarily enable/disable\n"
-#| "constraints when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
 "            constraints when this switch is off/on"
 msgstr ""
 "Podržením klávesy Ctrl dočasně povolíte/zakážete\n"
-"omezení, když je tento přepínač vypnutý/zapnutý"
+"            omezení, když je tento přepínač vypnutý/zapnutý"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "1:1"
@@ -1141,7 +1137,7 @@ msgstr "Exportovat vybrané"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:130
 msgid "Se_ttings"
-msgstr "Nastavení"
+msgstr "Nas_tavení"
 
 #: crates/rnote-ui/data/ui/appmenu.ui:134
 msgid "_Keyboard Shortcuts"
@@ -1325,10 +1321,8 @@ msgid "_Close"
 msgstr "_Zavřít"
 
 #: crates/rnote-ui/data/ui/overlays.ui:114
-#, fuzzy
-#| msgid "New Window"
 msgid "_Move to New Window"
-msgstr "Nové okno"
+msgstr "_Přesunout do nového okna"
 
 #: crates/rnote-ui/data/ui/penshortcutrow.ui:11
 msgid "Temporary"
@@ -1356,10 +1350,8 @@ msgid "Autosave"
 msgstr "Automatické uložení"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:45
-#, fuzzy
-#| msgid "Enable or disable autosave"
 msgid "Enable or disable autosave for documents and drafts"
-msgstr "Povolit nebo zakázat automatické uložení"
+msgstr "Povolit nebo zakázat automatické ukládání dokumentů a konceptů"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:50
 msgid "Autosave Interval (secs)"
@@ -1758,35 +1750,23 @@ msgstr ""
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:583
 msgid "Stylus pen modes"
-msgstr ""
+msgstr "Režimy pera stylusu"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:586
 msgid "Tool for the pen action"
-msgstr ""
+msgstr "Nástroj pro akci pera"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:587
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid "Set/lock the action for the pen"
-msgstr ""
-"Nastavit akci pro\n"
-"druhé tlačítko myši"
+msgstr "Nastavit/uzamknout akci pera"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:598
 msgid "Tool for the eraser action"
-msgstr ""
+msgstr "Nástroj pro akci gumy"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:599
-#, fuzzy
-#| msgid ""
-#| "Set the action for the\n"
-#| "secondary mouse button"
 msgid "Set/lock the action for the eraser"
-msgstr ""
-"Nastavit akci pro\n"
-"druhé tlačítko myši"
+msgstr "Nastavit/uzamknout akci gumy"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:14
 msgid "Show Keyboard Shortcuts"
@@ -1841,10 +1821,8 @@ msgid "Switch to the 'Tools'"
 msgstr "Přepnout na nástroje"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:109
-#, fuzzy
-#| msgid "Selector"
 msgid "Select Color"
-msgstr "Selektor"
+msgstr "Vybrat barvu"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:117
 msgid "View"
@@ -1863,10 +1841,8 @@ msgid "Alt + Shift + Drag"
 msgstr "Alt + Shift + výběr"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:168
-#, fuzzy
-#| msgid "_Return to Origin Page"
 msgid "Return to Origin Page"
-msgstr "_Zpět na původní stránku"
+msgstr "Zpět na původní stránku"
 
 #: crates/rnote-ui/data/ui/shortcuts.ui:179
 msgid "Open Document"
@@ -1994,13 +1970,11 @@ msgstr "Tlačítko 4"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:97
 msgid "Tool Locked"
-msgstr ""
+msgstr "Nástroj uzamčen"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:98
-#, fuzzy
-#| msgid "_Unlock"
 msgid "Unlock"
-msgstr "_Odemknout"
+msgstr "Odemknout"
 
 #: crates/rnote-ui/src/appwindow/mod.rs:276
 msgid ""

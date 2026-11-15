@@ -6,7 +6,7 @@ workflows:
     '.github/workflows/build_win_installer.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/upload-artifact@v7.0.2'
-        - 'dtolnay/rust-toolchain@stable'
+        - 'dtolnay/rust-toolchain@master'
         - 'msys2/setup-msys2@v2.33.0'
     '.github/workflows/check_translations.yml':
         - 'actions/checkout@v7.0.1'
@@ -14,11 +14,11 @@ workflows:
         - 'actions/cache@v5.1.0'
         - 'actions/checkout@v7.0.1'
         - 'actions/upload-artifact@v7.0.2'
-        - 'dtolnay/rust-toolchain@stable'
+        - 'dtolnay/rust-toolchain@master'
     '.github/workflows/dist.yml':
         - 'actions/checkout@v7.0.1'
         - 'actions/upload-artifact@v7.0.2'
-        - 'dtolnay/rust-toolchain@stable'
+        - 'dtolnay/rust-toolchain@master'
     '.github/workflows/nightly.yml':
         - 'actions/checkout@v7.0.1'
         - 'flatpak/flatpak-github-actions@v6'
@@ -45,9 +45,9 @@ dependencies:
         commit: 'sha1-29672c52a8220c09bd9f79b5b6cf6315f1763996'
         owner_id: 1588572
         repo_id: 300422142
-    'dtolnay/rust-toolchain@stable':
-        ref: 'stable'
-        commit: 'sha1-b725eda525362e7cf34af9a7243cac1e3f01a7ec'
+    'dtolnay/rust-toolchain@master':
+        ref: 'master'
+        commit: 'sha1-df2a88e9fe4098bad09cb42c3dec7187f15861fc'
         owner_id: 1940490
         repo_id: 260749683
     'flatpak/flatpak-github-actions@v6':

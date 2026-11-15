@@ -50,7 +50,7 @@ jobs:
             just
 
       - name: Install rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.100-gnu
 

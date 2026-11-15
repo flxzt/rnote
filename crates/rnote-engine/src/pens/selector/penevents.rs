@@ -6,7 +6,6 @@ use crate::pens::PenBehaviour;
 use crate::pens::pensconfig::selectorconfig::SelectorStyle;
 use crate::snap::SnapCorner;
 use crate::store::StrokeKey;
-use p2d::bounding_volume::Aabb;
 use p2d::math::Vector2;
 use p2d::query::PointQuery;
 use rnote_compose::eventresult::{EventPropagation, EventResult};
@@ -51,6 +50,7 @@ impl Selector {
                     engine_view.config.pens_config.selector_config.style,
                     path,
                     element,
+                    engine_view.camera,
                 );
                 // possibly nudge camera
                 widget_flags |= engine_view
@@ -423,7 +423,7 @@ impl Selector {
                 let mut progress = PenProgress::Finished;
 
                 let new_selection = match engine_view.config.pens_config.selector_config.style {
-                    SelectorStyle::Polygon => {
+                    SelectorStyle::Polygon | SelectorStyle::Rectangle => {
                         if path.len() >= 3 {
                             engine_view
                                 .store
@@ -431,19 +431,6 @@ impl Selector {
                                     path,
                                     engine_view.camera.viewport(),
                                 )
-                        } else {
-                            vec![]
-                        }
-                    }
-                    SelectorStyle::Rectangle => {
-                        if let Some(first) = path.first()
-                            && let Some(last) = path.last()
-                        {
-                            let aabb = Aabb::new_positive(first.pos, last.pos);
-                            engine_view.store.strokes_hitboxes_contained_in_aabb(
-                                aabb,
-                                engine_view.camera.viewport(),
-                            )
                         } else {
                             vec![]
                         }

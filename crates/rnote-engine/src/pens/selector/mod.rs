@@ -317,7 +317,7 @@ impl DrawableOnDoc for Selector {
             SelectorState::Idle => {}
             SelectorState::Selecting { path } => {
                 match engine_view.config.pens_config.selector_config.style {
-                    SelectorStyle::Polygon => {
+                    SelectorStyle::Polygon | SelectorStyle::Rectangle => {
                         let mut bez_path = kurbo::BezPath::new();
                         let mut path_iter = path.iter();
 
@@ -341,32 +341,6 @@ impl DrawableOnDoc for Selector {
                             cx.fill(bez_path.clone(), &Self::SELECTION_FILL_COLOR);
                             cx.stroke_styled(
                                 bez_path,
-                                &Self::SELECTION_OUTLINE_COLOR,
-                                Self::OUTLINE_STROKE_WIDTH / total_zoom,
-                                &stroke_style,
-                            );
-                        }
-                    }
-                    SelectorStyle::Rectangle => {
-                        if let Some(first) = path.first()
-                            && let Some(last) = path.last()
-                        {
-                            let select_rect = kurbo::Rect::from_points(
-                                first.pos.to_kurbo_point(),
-                                last.pos.to_kurbo_point(),
-                            );
-
-                            let mut stroke_style = piet::StrokeStyle::new();
-                            stroke_style.set_dash_pattern(
-                                Self::SELECTING_DASH_PATTERN
-                                    .into_iter()
-                                    .map(|x| x / total_zoom)
-                                    .collect::<Vec<f64>>(),
-                            );
-
-                            cx.fill(select_rect, &Self::SELECTION_FILL_COLOR);
-                            cx.stroke_styled(
-                                select_rect,
                                 &Self::SELECTION_OUTLINE_COLOR,
                                 Self::OUTLINE_STROKE_WIDTH / total_zoom,
                                 &stroke_style,
@@ -480,18 +454,41 @@ impl Selector {
     /// The fill color when drawing a selection
     const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(13);
 
-    fn add_to_select_path(style: SelectorStyle, path: &mut Vec<Element>, element: Element) {
+    /// The four corners of the axis-aligned rectangle spanned by `start` and `current` in surface coordinates.
+    fn screen_aligned_rect_corners(
+        start: Vector2,
+        current: Vector2,
+        camera: &Camera,
+    ) -> [Vector2; 4] {
+        let transform = camera.transform();
+        let start_surface = transform.transform_point2(start);
+        let current_surface = transform.transform_point2(current);
+        let transform_inv = transform.inverse();
+
+        [
+            transform_inv.transform_point2(Vector2::new(start_surface.x, start_surface.y)),
+            transform_inv.transform_point2(Vector2::new(current_surface.x, start_surface.y)),
+            transform_inv.transform_point2(Vector2::new(current_surface.x, current_surface.y)),
+            transform_inv.transform_point2(Vector2::new(start_surface.x, current_surface.y)),
+        ]
+    }
+
+    fn add_to_select_path(
+        style: SelectorStyle,
+        path: &mut Vec<Element>,
+        element: Element,
+        camera: &Camera,
+    ) {
         match style {
             SelectorStyle::Polygon | SelectorStyle::Single | SelectorStyle::IntersectingPath => {
                 path.push(element);
             }
             SelectorStyle::Rectangle => {
-                path.push(element);
+                let start = path.first().copied().unwrap_or(element);
+                let corners = Self::screen_aligned_rect_corners(start.pos, element.pos, camera);
 
-                if path.len() > 2 {
-                    path.resize(2, Element::default());
-                    path.insert(1, element);
-                }
+                path.clear();
+                path.extend(corners.into_iter().map(|pos| Element { pos, ..element }));
             }
         }
     }

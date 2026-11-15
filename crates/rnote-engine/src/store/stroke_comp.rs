@@ -584,40 +584,6 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Return the keys for strokes whose hitboxes are contained in the given Aabb.
-    pub(crate) fn strokes_hitboxes_contained_in_aabb(
-        &mut self,
-        aabb: Aabb,
-        viewport: Aabb,
-    ) -> Vec<StrokeKey> {
-        self.keys_sorted_chrono_intersecting_bounds(viewport.merged(&aabb))
-            .into_iter()
-            .filter_map(|key| {
-                // skip if stroke is trashed
-                if self.trashed(key)? {
-                    return None;
-                }
-
-                let stroke = self.stroke_components.get(key)?;
-                let stroke_bounds = stroke.bounds();
-
-                if aabb.contains(&stroke_bounds) {
-                    return Some(key);
-                } else if aabb.intersects(&stroke_bounds) {
-                    for &hitbox_elem in stroke.hitboxes().iter() {
-                        if !aabb.contains(&hitbox_elem) {
-                            return None;
-                        }
-                    }
-
-                    return Some(key);
-                }
-
-                None
-            })
-            .collect()
-    }
-
     /// Return the keys for strokes where the given coord is inside at least one of their hitboxes.
     pub(crate) fn stroke_hitboxes_contain_coord(
         &self,

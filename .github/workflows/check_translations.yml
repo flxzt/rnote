@@ -14,7 +14,7 @@ jobs:
   check-translations:
     name: zh_Hans -> zh_Hant
     runs-on: ubuntu-24.04
-    container: fedora:44
+    container: fedora:45
 
     steps:
       - name: Install dependencies
@@ -22,7 +22,7 @@ jobs:
           sudo dnf install -y just git opencc-tools
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Set safe git directory
         run: |

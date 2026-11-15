@@ -18,17 +18,17 @@ jobs:
   check:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-24.04
-    container: fedora:44
+    container: fedora:45
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.1
 
       - name: Install rust toolchain
         id: toolchain
-        uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.99
+          toolchain: 1.100
           components: rustfmt, clippy
 
       - name: Prerequisites
@@ -37,7 +37,7 @@ jobs:
           just ci=true prerequisites-dev
 
       - name: Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.1.0
         env:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 10
         with:
@@ -80,7 +80,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload test report
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.2
         if: success() || failure()
         with:
           name: test-results

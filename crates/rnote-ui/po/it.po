@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-06 16:20+0100\n"
+"POT-Creation-Date: 2026-11-14 16:27+0100\n"
 "PO-Revision-Date: 2026-06-30 16:30+0000\n"
 "Last-Translator: Andrea Andrei <andrea.tsg19@slmail.me>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/rnote/repo/it/>\n"
@@ -574,8 +574,8 @@ msgid "Enter the PDF password"
 msgstr "Inserire la password del PDF"
 
 #: crates/rnote-ui/data/ui/penssidebar/brushpage.ui:26
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:203
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:198
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:222
 msgid "Solid"
 msgstr "Solido"
 
@@ -782,7 +782,7 @@ msgid "Delete Selection"
 msgstr "Elimina Selezione"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:20
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:290
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:339
 msgid "Shape Builders"
 msgstr "Tipo Di Forma"
 
@@ -795,144 +795,157 @@ msgid "Rough"
 msgstr "Ruvide"
 
 #: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:71
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:105
 msgid "Shape Configuration"
 msgstr "Configurazioni Forme"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:128
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:131
+msgid "_Style Options"
+msgstr ""
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:147
 msgid "Highlighting"
 msgstr "Evidenziazione"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:131
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:150
 msgid "Highlight-Mode"
 msgstr "Modalità evidenziazione"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:132
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:151
 msgid "Fade active color"
 msgstr "Sbiadisci il colore attivo"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:137
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:156
 msgid "Highlight-Opacity"
 msgstr "Opacità evidenziatore"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:138
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:157
 msgid "Modify the highlight opacity (%)"
 msgstr "Modifica l'opacità evidenziatore (%)"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:157
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:176
 msgid "Smooth Style"
 msgstr "Stile liscio"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:160
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:179
 msgid "Line Cap"
 msgstr "Estremità linea"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:161
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:180
 msgid "Choose a line cap"
 msgstr "Scegli l'estremità della linea"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:165
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:184
 msgid "Straight"
 msgstr "Squadrata"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:166
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:185
 msgid "Round"
 msgstr "Arrotondata"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:174
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:193
 msgid "Line Style"
 msgstr "Stile linea"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:175
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:194
 msgid "Choose a line style"
 msgstr "Scegli lo stile della linea"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:180
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
 msgid "Dotted"
 msgstr "Punteggiato"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:181
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:200
 msgid "Dashed (narrow)"
 msgstr "Tratteggiato (stretto)"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:182
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:201
 msgid "Dashed (equidistant)"
 msgstr "Tratteggiato (equidistante)"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:183
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:202
 msgid "Dashed (wide)"
 msgstr "Tratteggiato (ampio)"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:195
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:214
 msgid "Rough Style"
 msgstr "Stile ruvido"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:198
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
 msgid "Fill Style"
 msgstr "Stile Di Riempimento"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:199
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
 msgid "Choose a fill style"
 msgstr "Scegli uno stile di riempimento"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:204
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:223
 msgid "Hachure"
 msgstr "Ombreggiatura"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:205
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:224
 msgid "Zig-Zag"
 msgstr "Zig-Zag"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:206
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:225
 msgid "Zig-Zag Line"
 msgstr "Linea a Zig-Zag"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:207
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:226
 msgid "Crosshatch"
 msgstr "Ombreggiatura con tratteggi incrociati"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:208
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:227
 #: crates/rnote-ui/data/ui/settingspanel.ui:374
 msgid "Dots"
 msgstr "Punti"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:209
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:228
 msgid "Dashed"
 msgstr "Tratteggiato"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:217
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:236
 msgid "Hachure Angle"
 msgstr "Angolo Di Ombreggiatura"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:218
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:237
 msgid "Set the angle of hachure fills"
 msgstr "Imposta l'angolo dei riempimenti del tratteggio"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:237
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:259
+#, fuzzy
+#| msgid "Constraints"
+msgid "_Constraints"
+msgstr "Limitazioni"
+
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:275
 msgid "Constraints"
 msgstr "Limitazioni"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:248
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:286
 msgid "Enabled"
 msgstr "Abilitato"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:249
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:287
+#, fuzzy
+#| msgid ""
+#| "Hold Ctrl to temporarily enable/disable\n"
+#| "constraints when this switch is off/on"
 msgid ""
 "Hold Ctrl to temporarily enable/disable\n"
-"constraints when this switch is off/on"
+"            constraints when this switch is off/on"
 msgstr ""
 "Tieni premuto Ctrl per abilitare/disabilitare temporaneamente\n"
 "i vincoli quando questo interruttore è disattivato/attivato"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:255
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:293
 msgid "1:1"
 msgstr "1:1"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:260
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:298
 msgid "3:2"
 msgstr "3:2"
 
-#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:265
+#: crates/rnote-ui/data/ui/penssidebar/shaperpage.ui:303
 msgid "Golden Ratio (1:1.618)"
 msgstr "Sezione Aurea (1:1.618)"
 
@@ -1579,7 +1592,7 @@ msgid "Lines"
 msgstr "Linee"
 
 #: crates/rnote-ui/data/ui/settingspanel.ui:373
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:704
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:710
 msgid "Grid"
 msgstr "Griglia"
 
@@ -2000,46 +2013,46 @@ msgstr ""
 "Lo schema delle impostazioni non è installato. Le impostazioni dell'app non "
 "possono essere caricate e non verranno salvate."
 
-#: crates/rnote-ui/src/appwindow/mod.rs:645
+#: crates/rnote-ui/src/appwindow/mod.rs:657
 msgid "Opening file failed"
 msgstr "Apertura file fallita"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1043
+#: crates/rnote-ui/src/canvas/mod.rs:1046
 #: crates/rnote-ui/src/dialogs/mod.rs:207
 #: crates/rnote-ui/src/dialogs/mod.rs:340
 #: crates/rnote-ui/src/dialogs/mod.rs:440
 msgid "- invalid file name -"
 msgstr "- nome del file invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1056
+#: crates/rnote-ui/src/canvas/mod.rs:1059
 msgid "- invalid folder path -"
 msgstr "- percorso della cartella invalido -"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1091
+#: crates/rnote-ui/src/canvas/mod.rs:1093
 msgid "Opened file was modified on disk"
 msgstr "Il file aperto è stato modificato sul disco"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1092
+#: crates/rnote-ui/src/canvas/mod.rs:1094
 msgid "Reload"
 msgstr "Ricarica"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1108
+#: crates/rnote-ui/src/canvas/mod.rs:1110
 msgid "Reloading .rnote file from disk failed"
 msgstr "Ricaricamento del file .rnote fallito"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1183
+#: crates/rnote-ui/src/canvas/mod.rs:1185
 msgid "Opened file was renamed or moved."
 msgstr "Il file aperto è stato rinominato o spostato."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1202
+#: crates/rnote-ui/src/canvas/mod.rs:1204
 msgid "Opened file was removed."
 msgstr "Il file aperto è stato rimosso."
 
-#: crates/rnote-ui/src/canvas/mod.rs:1432
+#: crates/rnote-ui/src/canvas/mod.rs:1434
 msgid "Inserting file failed"
 msgstr "Inserimento file non riuscito"
 
-#: crates/rnote-ui/src/canvas/mod.rs:1444
+#: crates/rnote-ui/src/canvas/mod.rs:1446
 msgid "Inserting text failed"
 msgstr "Inserimento del testo non riuscito"
 
@@ -2420,67 +2433,67 @@ msgstr "Tempo Atmosferico"
 msgid "Weight"
 msgstr "Peso"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:662
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:668
 msgid "Miscellaneous"
 msgstr "Varie"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:671
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:677
 msgid "Coordinate Systems"
 msgstr "Sistemi di coordinate"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:679
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:685
 msgid "Ellipses"
 msgstr "Ellissi"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:686
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:692
 msgid "Curves & Paths"
 msgstr "Curve & Percorsi"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:701
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:707
 msgid "Arrow"
 msgstr "Freccia"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:702
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:708
 msgid "Line"
 msgstr "Linea"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:703
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:709
 msgid "Rectangle"
 msgstr "Rettangolo"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:705
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:711
 msgid "2D coordinate system"
 msgstr "Sistema di coordinate 2D"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:706
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:712
 msgid "3D coordinate system"
 msgstr "Sistema di coordinate 3D"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:707
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:713
 msgid "2D single quadrant coordinate system"
 msgstr "Sistema di coordinate 2D a singolo quadrante"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:708
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:714
 msgid "Ellipse"
 msgstr "Ellisse"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:709
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:715
 msgid "Ellipse with foci"
 msgstr "Ellisse con i fuochi"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:710
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:716
 msgid "Quadratic bezier curve"
 msgstr "Curva di Bézier quadratica"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:711
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:717
 msgid "Cubic bezier curve"
 msgstr "Curva di Bézier cubica"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:712
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:718
 msgid "Polyline"
 msgstr "Polilinea"
 
-#: crates/rnote-ui/src/penssidebar/shaperpage.rs:713
+#: crates/rnote-ui/src/penssidebar/shaperpage.rs:719
 msgid "Polygon"
 msgstr "Poligono"
 
@@ -2610,132 +2623,132 @@ msgstr "Nome Cartella"
 msgid "New Folder"
 msgstr "Nuova Cartella"
 
-#: crates/rnote-ui/src/utils.rs:202
+#: crates/rnote-ui/src/utils.rs:204
 msgctxt "used in string representation of the current selected color"
 msgid "grey"
 msgstr "grigio"
 
-#: crates/rnote-ui/src/utils.rs:204 crates/rnote-ui/src/utils.rs:239
+#: crates/rnote-ui/src/utils.rs:206 crates/rnote-ui/src/utils.rs:241
 msgctxt "part of string representation of a color"
 msgid "rose"
 msgstr "rosa"
 
-#: crates/rnote-ui/src/utils.rs:206
+#: crates/rnote-ui/src/utils.rs:208
 msgctxt "part of string representation of a color"
 msgid "red"
 msgstr "rosso"
 
-#: crates/rnote-ui/src/utils.rs:209
+#: crates/rnote-ui/src/utils.rs:211
 msgctxt "part of string representation of a color"
 msgid "orange"
 msgstr "arancio"
 
-#: crates/rnote-ui/src/utils.rs:212
+#: crates/rnote-ui/src/utils.rs:214
 msgctxt "part of string representation of a color"
 msgid "yellow"
 msgstr "giallo"
 
-#: crates/rnote-ui/src/utils.rs:216
+#: crates/rnote-ui/src/utils.rs:218
 msgctxt "part of string representation of a color"
 msgid "chartreuse-green"
 msgstr "verde-certosa"
 
-#: crates/rnote-ui/src/utils.rs:219
+#: crates/rnote-ui/src/utils.rs:221
 msgctxt "part of string representation of a color"
 msgid "green"
 msgstr "verde"
 
-#: crates/rnote-ui/src/utils.rs:222
+#: crates/rnote-ui/src/utils.rs:224
 msgctxt "part of string representation of a color"
 msgid "spring-green"
 msgstr "verde-primavera"
 
-#: crates/rnote-ui/src/utils.rs:225
+#: crates/rnote-ui/src/utils.rs:227
 msgctxt "part of string representation of a color"
 msgid "cyan"
 msgstr "ciano"
 
-#: crates/rnote-ui/src/utils.rs:228
+#: crates/rnote-ui/src/utils.rs:230
 msgctxt "part of string representation of a color"
 msgid "azure"
 msgstr "azzurro"
 
-#: crates/rnote-ui/src/utils.rs:231
+#: crates/rnote-ui/src/utils.rs:233
 msgctxt "part of string representation of a color"
 msgid "blue"
 msgstr "blu"
 
-#: crates/rnote-ui/src/utils.rs:234
+#: crates/rnote-ui/src/utils.rs:236
 msgctxt "part of string representation of a color"
 msgid "violet"
 msgstr "viola"
 
-#: crates/rnote-ui/src/utils.rs:237
+#: crates/rnote-ui/src/utils.rs:239
 msgctxt "part of string representation of a color"
 msgid "magenta"
 msgstr "magenta"
 
-#: crates/rnote-ui/src/utils.rs:244
+#: crates/rnote-ui/src/utils.rs:246
 msgctxt "part of string representation of a color"
 msgid "greyish"
 msgstr "grigiastro"
 
-#: crates/rnote-ui/src/utils.rs:247
+#: crates/rnote-ui/src/utils.rs:249
 msgctxt "part of string representation of a color"
 msgid "strong"
 msgstr "Intenso"
 
-#: crates/rnote-ui/src/utils.rs:249
+#: crates/rnote-ui/src/utils.rs:251
 msgctxt "part of string representation of a color"
 msgid "vivid"
 msgstr "vivido"
 
-#: crates/rnote-ui/src/utils.rs:253
+#: crates/rnote-ui/src/utils.rs:255
 msgctxt "part of string representation of a color"
 msgid "very-dark"
 msgstr "molto scuro"
 
-#: crates/rnote-ui/src/utils.rs:255
+#: crates/rnote-ui/src/utils.rs:257
 msgctxt "part of string representation of a color"
 msgid "dark"
 msgstr "scuro"
 
-#: crates/rnote-ui/src/utils.rs:258
+#: crates/rnote-ui/src/utils.rs:260
 msgctxt "part of string representation of a color"
 msgid "mid"
 msgstr "blu cobalto"
 
-#: crates/rnote-ui/src/utils.rs:260
+#: crates/rnote-ui/src/utils.rs:262
 msgctxt "part of string representation of a color"
 msgid "bright"
 msgstr "acceso"
 
-#: crates/rnote-ui/src/utils.rs:264
+#: crates/rnote-ui/src/utils.rs:266
 msgctxt "part of string representation of a color"
 msgid "transparent"
 msgstr "trasparente"
 
-#: crates/rnote-ui/src/utils.rs:266
+#: crates/rnote-ui/src/utils.rs:268
 msgctxt "part of string representation of a color"
 msgid "translucent"
 msgstr "traslucido"
 
-#: crates/rnote-ui/src/utils.rs:270
+#: crates/rnote-ui/src/utils.rs:272
 msgctxt "part of string representation of a color"
 msgid "slightly-translucent"
 msgstr "leggermente traslucido"
 
-#: crates/rnote-ui/src/utils.rs:279
+#: crates/rnote-ui/src/utils.rs:281
 msgctxt "part of string representation of a color"
 msgid "fully transparent"
 msgstr "completamente trasparente"
 
-#: crates/rnote-ui/src/utils.rs:282
+#: crates/rnote-ui/src/utils.rs:284
 msgctxt "part of string representation of a color"
 msgid "black"
 msgstr "nero"
 
-#: crates/rnote-ui/src/utils.rs:284
+#: crates/rnote-ui/src/utils.rs:286
 msgctxt "part of string representation of a color"
 msgid "white"
 msgstr "bianco"

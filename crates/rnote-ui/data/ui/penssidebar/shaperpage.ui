@@ -108,11 +108,6 @@
                 </object>
               </child>
               <child>
-                <object class="GtkSeparator">
-                  <property name="orientation">vertical</property>
-                </object>
-              </child>
-              <child>
                 <object class="GtkButton" id="shapeconfig_popover_close_button">
                   <property name="icon-name">window-close-symbolic</property>
                   <style>

@@ -169,8 +169,6 @@ impl RnShaperPage {
                     .smooth_options
                     .stroke_width;
                 let page = self.imp();
-                page.roughstyle_group.set_visible(false);
-                page.smoothstyle_group.set_visible(true);
                 page.stroke_width_picker.set_stroke_width(stroke_width);
             }
             ShaperStyle::Rough => {
@@ -182,8 +180,6 @@ impl RnShaperPage {
                     .rough_options
                     .stroke_width;
                 let page = self.imp();
-                page.smoothstyle_group.set_visible(false);
-                page.roughstyle_group.set_visible(true);
                 page.stroke_width_picker.set_stroke_width(stroke_width);
             }
         }

@@ -630,7 +630,7 @@ impl Engine {
                 -Document::SHADOW_WIDTH * zoom,
             )
         };
-        self.camera_set_offset_expand(new_offset)
+        self.camera_set_rotation(0.0) | self.camera_set_offset_expand(new_offset)
     }
 
     /// Resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke.
@@ -705,6 +705,13 @@ impl Engine {
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn camera_surface_mins_maxs(&self) -> (Vector2, Vector2) {
         self.camera.surface_mins_maxs(&self.document)
+    }
+
+    /// Update the viewport rotation of the camera.
+    ///
+    /// Background and content rendering then need to be updated.
+    pub fn camera_set_rotation(&mut self, rotation: f64) -> WidgetFlags {
+        self.camera.set_rotation(rotation)
     }
 
     /// Update the current pen with the current engine state.

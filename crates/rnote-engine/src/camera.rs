@@ -7,7 +7,7 @@ use crate::{Document, WidgetFlags};
 use p2d::bounding_volume::Aabb;
 use p2d::glamx::DAffine2;
 use p2d::math::Vector2;
-use rnote_compose::ext::AabbExt;
+use rnote_compose::ext::{AabbExt, DAffine2Ext};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use tracing::error;
@@ -36,6 +36,9 @@ pub struct Camera {
     /// The camera zoom, origin at (0.0, 0.0).
     #[serde(rename = "zoom")]
     zoom: f64,
+    /// The camera rotation in radians.
+    #[serde(skip)]
+    rotation: f64,
     /// The temporary zoom. Is used to overlay the "permanent" zoom.
     #[serde(skip)]
     temporary_zoom: f64,
@@ -56,6 +59,7 @@ impl Default for Camera {
             offset: Vector2::new(-Self::OVERSHOOT_HORIZONTAL, -Self::OVERSHOOT_VERTICAL),
             size: Vector2::new(800.0, 600.0),
             zoom: 1.0,
+            rotation: 0.0,
             temporary_zoom: 1.0,
             scale_factor: 1.0,
             zoom_task_handle: None,
@@ -69,6 +73,7 @@ impl Snapshotable for Camera {
             offset: self.offset,
             size: self.size,
             zoom: self.zoom,
+            rotation: self.rotation,
             ..Default::default()
         }
     }
@@ -99,6 +104,11 @@ impl Camera {
         self
     }
 
+    pub fn with_rotation(mut self, rotation: f64) -> Self {
+        self.rotation = rotation;
+        self
+    }
+
     /// The current viewport offset in surface coordinate space.
     pub fn offset(&self) -> Vector2 {
         self.offset
@@ -124,35 +134,21 @@ impl Camera {
 
     /// The minimum and maximum surface bounds (document including overshoot) in surface coordinate space.
     pub fn surface_mins_maxs(&self, doc: &Document) -> (Vector2, Vector2) {
-        let total_zoom = self.total_zoom();
+        let document_bounds = self
+            .document_to_view_transform()
+            .transform_aabb(doc.bounds());
 
-        let (h_lower, h_upper) = match doc.config.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => (
-                doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
-                (doc.x + doc.width) * total_zoom + Self::OVERSHOOT_HORIZONTAL,
-            ),
-            Layout::SemiInfinite => (
-                doc.x * total_zoom - Self::OVERSHOOT_HORIZONTAL,
-                (doc.x + doc.width) * total_zoom,
-            ),
-            Layout::Infinite => (doc.x * total_zoom, (doc.x + doc.width) * total_zoom),
-        };
-        let (v_lower, v_upper) = match doc.config.layout {
-            Layout::FixedSize | Layout::ContinuousVertical => (
-                doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
-                (doc.y + doc.height) * total_zoom + Self::OVERSHOOT_VERTICAL,
-            ),
-            Layout::SemiInfinite => (
-                doc.y * total_zoom - Self::OVERSHOOT_VERTICAL,
-                (doc.y + doc.height) * total_zoom,
-            ),
-            Layout::Infinite => (doc.y * total_zoom, (doc.y + doc.height) * total_zoom),
+        let bounds = match doc.config.layout {
+            Layout::FixedSize | Layout::ContinuousVertical | Layout::SemiInfinite => {
+                document_bounds.extend_by(Vector2::new(
+                    Self::OVERSHOOT_HORIZONTAL,
+                    Self::OVERSHOOT_VERTICAL,
+                ))
+            }
+            Layout::Infinite => document_bounds,
         };
 
-        (
-            Vector2::new(h_lower, v_lower),
-            Vector2::new(h_upper, v_upper),
-        )
+        (bounds.mins, bounds.maxs)
     }
 
     /// The current viewport size in surface coordinate space.
@@ -178,7 +174,47 @@ impl Camera {
     pub fn zoom_to(&mut self, zoom: f64) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX);
-        widget_flags.zoomed = true;
+        widget_flags.view_modified = true;
+        widget_flags.resize = true;
+        widget_flags.refresh_canvasmenu = true;
+        widget_flags.update_old_viewport = true;
+        widget_flags
+    }
+
+    /// The camera rotation in radians.
+    pub fn rotation(&self) -> f64 {
+        self.rotation
+    }
+
+    fn snap_angle(angle: f64, step: f64) -> f64 {
+        const SNAP_EPS: f64 = 1_f64.to_radians();
+
+        let k = (angle / step).round();
+        let snapped_angle = k * step;
+
+        if (angle - snapped_angle).abs() <= SNAP_EPS {
+            snapped_angle
+        } else {
+            angle
+        }
+    }
+
+    /// Normalizes angle to (-pi, pi].
+    fn normalize_angle(angle: f64) -> f64 {
+        std::f64::consts::PI - (std::f64::consts::PI - angle).rem_euclid(std::f64::consts::TAU)
+    }
+
+    pub fn set_rotation(&mut self, rotation: f64) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
+        // snap angle to nearest 45 degrees and normalize it
+        // angle must not be close to zero, because it causes major rendering issues in GTK
+        self.rotation =
+            Self::normalize_angle(Self::snap_angle(rotation, std::f64::consts::FRAC_PI_4));
+
+        widget_flags.view_modified = true;
+        widget_flags.resize = true;
+        widget_flags.refresh_canvasmenu = true;
         widget_flags
     }
 
@@ -192,7 +228,9 @@ impl Camera {
         let mut widget_flags = WidgetFlags::default();
         self.temporary_zoom =
             temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom);
-        widget_flags.zoomed_temporarily = true;
+        widget_flags.view_modified = true;
+        widget_flags.resize = true;
+        widget_flags.refresh_canvasmenu = true;
         widget_flags
     }
 
@@ -259,18 +297,16 @@ impl Camera {
     }
 
     /// The viewport in document coordinate space.
+    ///
+    /// Returns the Aabb enclosing the (potentially rotated) viewport.
     pub fn viewport(&self) -> Aabb {
-        let total_zoom = self.total_zoom();
-
-        Aabb::new_positive(
-            self.offset / total_zoom,
-            (self.offset + self.size) / total_zoom,
-        )
+        let viewport_surface = Aabb::new(Vector2::ZERO, self.size);
+        self.transform().inverse().transform_aabb(viewport_surface)
     }
 
     /// The current viewport center in document coordinate space.
     pub fn viewport_center(&self) -> Vector2 {
-        (self.offset + self.size * 0.5) / self.total_zoom()
+        self.transform().inverse().transform_point2(self.size * 0.5)
     }
 
     /// Set the viewport center.
@@ -278,34 +314,41 @@ impl Camera {
     /// `center` must be in document coordinate space.
     pub fn set_viewport_center(&mut self, center: Vector2) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();
-        self.offset = center * self.total_zoom() - self.size * 0.5;
+        self.offset = self.document_to_view_transform().transform_point2(center) - self.size * 0.5;
         widget_flags.view_modified = true;
         widget_flags
     }
 
-    /// Transform Aabb from document coords to surface coords.
-    pub fn transform_bounds(&self, bounds: Aabb) -> Aabb {
-        bounds.scale(self.total_zoom()).translate(-self.offset)
+    /// The transform from document coords to view coords (rotation + scale only).
+    ///
+    /// To get the inverse, call `.inverse()`.
+    pub fn document_to_view_transform(&self) -> DAffine2 {
+        // LHS is applied onto RHS: rotate -> scale
+        DAffine2::from_scale(Vector2::splat(self.total_zoom()))
+            * DAffine2::from_angle(self.rotation)
     }
 
-    /// Transform Aabb from surface coords to document coords.
-    pub fn transform_inv_bounds(&self, bounds: Aabb) -> Aabb {
-        bounds.translate(self.offset).scale(1.0 / self.total_zoom())
+    /// The transform from view coords to surface coords (translation only).
+    ///
+    /// To get the inverse, call `.inverse()`.
+    pub fn view_to_surface_transform(&self) -> DAffine2 {
+        DAffine2::from_translation(-self.offset)
     }
 
-    /// The transform from document coords to surface coords.
+    /// The transform from document coords to surface coords (full).
     ///
     /// To get the inverse, call `.inverse()`.
     pub fn transform(&self) -> DAffine2 {
-        // LHS is applied onto RHS, so the order is scaling by zoom -> Translation by offset
-        DAffine2::from_translation(-self.offset)
-            * DAffine2::from_scale(Vector2::splat(self.total_zoom()))
+        // LHS is applied onto RHS: document -> view -> surface
+        self.view_to_surface_transform() * self.document_to_view_transform()
     }
 
     /// The gsk transform for the GTK snapshot function.
     ///
     /// GTKs transformations are applied on its coordinate system,
-    /// so we need to reverse the transformation order (translate, then scale).
+    /// so we need to reverse the transformation order (translate, then scale, then rotate).
+    /// Small rotation angles seem to cause major rendering issues.
+    ///
     /// To get the inverse, call .invert().
     #[cfg(feature = "ui")]
     pub fn transform_for_gtk_snapshot(&self) -> gtk4::gsk::Transform {
@@ -317,16 +360,20 @@ impl Camera {
                 -self.offset[1] as f32,
             ))
             .scale(total_zoom as f32, total_zoom as f32)
+            .rotate(self.rotation.to_degrees() as f32)
     }
 
     /// Detects if a nudge is needed, meaning: the position is close to an edge of the current viewport.
     pub fn detect_nudge_needed(&self, pos: Vector2) -> Option<NudgeDirection> {
         const NUDGE_VIEWPORT_DIST: f64 = 10.0;
-        let viewport = self.viewport();
-        let nudge_north = pos[1] <= viewport.mins[1] + NUDGE_VIEWPORT_DIST;
-        let nudge_east = pos[0] >= viewport.maxs[0] - NUDGE_VIEWPORT_DIST;
-        let nudge_south = pos[1] >= viewport.maxs[1] - NUDGE_VIEWPORT_DIST;
-        let nudge_west = pos[0] <= viewport.mins[0] + NUDGE_VIEWPORT_DIST;
+
+        // Transform position into surface coordinates and compare against the surface viewport.
+        let pos_surface = self.transform().transform_point2(pos);
+
+        let nudge_north = pos_surface.y <= NUDGE_VIEWPORT_DIST;
+        let nudge_east = pos_surface.x >= self.size[0] - NUDGE_VIEWPORT_DIST;
+        let nudge_south = pos_surface.y >= self.size[1] - NUDGE_VIEWPORT_DIST;
+        let nudge_west = pos_surface.x <= NUDGE_VIEWPORT_DIST;
 
         match (nudge_north, nudge_east, nudge_south, nudge_west) {
             (true, false, _, false) => Some(NudgeDirection::North),

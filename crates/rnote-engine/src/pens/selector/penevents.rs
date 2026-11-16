@@ -224,6 +224,7 @@ impl Selector {
                         let offset = engine_view.document.snap_position(
                             snap_corner_pos + (element.pos - *current_pos),
                             engine_view.config,
+                            engine_view.camera.total_zoom(),
                         ) - snap_corner_pos;
 
                         if offset.length()
@@ -320,6 +321,7 @@ impl Selector {
                             offset_to_start = engine_view.document.snap_position(
                                 snap_corner_pos + offset_to_start,
                                 engine_view.config,
+                                engine_view.camera.total_zoom(),
                             ) - snap_corner_pos;
                         }
                         offset_to_start = match from_corner {

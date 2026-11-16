@@ -130,6 +130,12 @@ pub enum ShortcutKey {
     /// Secondary mouse button.
     #[serde(rename = "mouse_secondary_button")]
     MouseSecondaryButton,
+    /// Backward mouse button.
+    #[serde(rename = "mouse_backward_button")]
+    MouseBackwardButton,
+    /// Forward mouse button.
+    #[serde(rename = "mouse_forward_button")]
+    MouseForwardButton,
     /// Touch two finger long press gesture.
     #[serde(rename = "touch_two_finger_long_press")]
     TouchTwoFingerLongPress,

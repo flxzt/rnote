@@ -1,5 +1,5 @@
 // Imports
-use crate::{RnAppMenu, RnAppWindow, RnSettingsPanel, RnWorkspaceBrowser};
+use crate::{RnAppMenu, RnAppWindow, RnSearchPanel, RnSettingsPanel, RnWorkspaceBrowser};
 use gtk4::{
     Button, CompositeTemplate, Widget, glib, glib::clone, prelude::*, subclass::prelude::*,
 };
@@ -24,6 +24,8 @@ mod imp {
         pub(crate) workspacebrowser: TemplateChild<RnWorkspaceBrowser>,
         #[template_child]
         pub(crate) settings_panel: TemplateChild<RnSettingsPanel>,
+        #[template_child]
+        pub(crate) search_panel: TemplateChild<RnSearchPanel>,
     }
 
     #[glib::object_subclass]
@@ -102,12 +104,17 @@ impl RnSidebar {
         self.imp().settings_panel.get()
     }
 
+    pub(crate) fn search_panel(&self) -> RnSearchPanel {
+        self.imp().search_panel.get()
+    }
+
     pub(crate) fn init(&self, appwindow: &RnAppWindow) {
         let imp = self.imp();
 
         imp.appmenu.get().init(appwindow);
         imp.workspacebrowser.get().init(appwindow);
         imp.settings_panel.get().init(appwindow);
+        imp.search_panel.get().init(appwindow);
 
         imp.left_close_button.connect_clicked(clone!(
             #[weak]

@@ -179,7 +179,7 @@ pub fn draw_rectangular_node(
 // Circular Node
 
 /// Circular node outline width.
-pub const CIRCULAR_NODE_OUTLINE_WIDTH: f64 = 1.5;
+pub const CIRCULAR_NODE_OUTLINE_WIDTH: f64 = 3.0;
 
 /// circular node shape.
 pub fn circular_node_shape(
@@ -231,16 +231,16 @@ pub fn draw_circular_node(
 // Triangular down node
 
 /// Triangular node outline width.
-pub const TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH: f64 = 1.5;
+pub const TRIANGULAR_NODE_OUTLINE_WIDTH: f64 = 3.0;
 
 /// Triangular node shape.
-pub fn triangular_down_node_shape(
+pub fn triangular_node_shape(
     _node_state: PenState,
     center: Vector2,
     size: Vector2,
     zoom: f64,
 ) -> kurbo::BezPath {
-    let outline_half_width = TRIANGULAR_DOWN_NODE_OUTLINE_WIDTH * 0.5 / zoom;
+    let outline_half_width = TRIANGULAR_NODE_OUTLINE_WIDTH * 0.5 / zoom;
     kurbo::BezPath::from_iter([
         kurbo::PathEl::MoveTo(kurbo::Point::new(
             center[0] - size[0] * 0.5 + outline_half_width,
@@ -271,12 +271,12 @@ pub fn draw_triangular_node(
     const FILL_STATE_PROXIMITY: piet::Color = color::GNOME_ORANGES[0].with_a8(77);
     const FILL_STATE_DOWN: piet::Color = color::GNOME_ORANGES[3].with_a8(128);
 
-    let triangular_down_node = triangular_down_node_shape(node_state, center, size, zoom);
+    let triangular_down_node = triangular_node_shape(node_state, center, size, zoom);
 
     cx.stroke(
         triangular_down_node.clone(),
         &OUTLINE_COLOR,
-        CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
+        TRIANGULAR_NODE_OUTLINE_WIDTH / zoom,
     );
 
     cx.fill(triangular_down_node.clone(), &background_color);

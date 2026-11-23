@@ -148,4 +148,12 @@ impl BrushConfig {
             }
         }
     }
+
+    pub(crate) fn get_stroke_width(&self) -> f64 {
+        match &self.style {
+            BrushStyle::Marker => self.marker_options.stroke_width,
+            BrushStyle::Solid => self.solid_options.stroke_width,
+            BrushStyle::Textured => self.textured_options.stroke_width,
+        }
+    }
 }

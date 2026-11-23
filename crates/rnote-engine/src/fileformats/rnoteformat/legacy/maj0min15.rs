@@ -1,5 +1,5 @@
 // Imports
-use crate::fileformats::rnoteformat::maj0min13::RnoteFileMaj0Min13;
+use super::maj0min13::RnoteFileMaj0Min13;
 use anyhow::anyhow;
 use ijson::IValue;
 use serde::{Deserialize, Serialize};

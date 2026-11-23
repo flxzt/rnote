@@ -14,6 +14,7 @@ rnote-engine = { workspace = true, features = ["cli"] }
 
 anyhow = { workspace = true }
 async-fs = { workspace = true }
+blocking = { workspace = true }
 clap = { workspace = true }
 dialoguer = { workspace = true }
 futures = { workspace = true }

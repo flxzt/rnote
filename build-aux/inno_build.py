@@ -75,14 +75,14 @@ for angle_dll in itertools.chain(
         f"Collecting angle dependency ({angle_dll}) DLLs failed",
     )
 
-# add libcrypto-3-x64.dll and libssl-3-x64.dll
+# add libcrypto-4-x64.dll and libssl-4-x64.dll
 run_command(
-    f"cp {build_environment_path}/bin/libcrypto-3-x64.dll {dlls_dir}",
-    "Collecting libcrypto-3-x64.dll failed",
+    f"cp {build_environment_path}/bin/libcrypto-4-x64.dll {dlls_dir}",
+    "Collecting libcrypto-4-x64.dll failed",
 )
 run_command(
-    f"cp {build_environment_path}/bin/libssl-3-x64.dll {dlls_dir}",
-    "Collecting libssl-3-x64.dll failed",
+    f"cp {build_environment_path}/bin/libssl-4-x64.dll {dlls_dir}",
+    "Collecting libssl-4-x64.dll failed",
 )
 
 # Collect necessary GSchema Xml's and compile them into a `gschemas.compiled`

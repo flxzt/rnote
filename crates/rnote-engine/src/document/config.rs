@@ -11,4 +11,6 @@ pub struct DocumentConfig {
     pub background: Background,
     #[serde(rename = "layout", alias = "expand_mode")]
     pub layout: Layout,
+    #[serde(rename = "auto_export_svg", default)]
+    pub auto_export_svg: bool,
 }

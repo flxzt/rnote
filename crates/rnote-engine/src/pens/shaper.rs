@@ -72,9 +72,11 @@ impl PenBehaviour for Shaper {
                     .pens_config
                     .shaper_config
                     .new_style_seeds();
-                element.pos = engine_view
-                    .document
-                    .snap_position(element.pos, engine_view.config);
+                element.pos = engine_view.document.snap_position(
+                    element.pos,
+                    engine_view.config,
+                    engine_view.camera.total_zoom(),
+                );
 
                 self.state = ShaperState::BuildShape {
                     builder: new_builder(
@@ -129,9 +131,11 @@ impl PenBehaviour for Shaper {
                 };
                 match &mut event {
                     PenEvent::Down { element, .. } | PenEvent::Up { element, .. } => {
-                        element.pos = engine_view
-                            .document
-                            .snap_position(element.pos, engine_view.config);
+                        element.pos = engine_view.document.snap_position(
+                            element.pos,
+                            engine_view.config,
+                            engine_view.camera.total_zoom(),
+                        );
                     }
                     _ => {}
                 }

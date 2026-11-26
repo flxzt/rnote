@@ -116,6 +116,7 @@ impl VerticalSpaceTool {
                     engine_view.document.snap_position(
                         element.pos - Vector2::new(0., self.pos_y),
                         engine_view.config,
+                        engine_view.camera.total_zoom(),
                     )[1]
                 };
 

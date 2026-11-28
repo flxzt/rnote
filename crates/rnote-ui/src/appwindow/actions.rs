@@ -194,6 +194,9 @@ impl RnAppWindow {
         self.add_action(&action_devel_mode);
         let action_visual_debug = gio::PropertyAction::new("visual-debug", self, "visual-debug");
         self.add_action(&action_visual_debug);
+        let action_interactive_debug =
+            gio::PropertyAction::new("interactive-debug", self, "interactive-debug");
+        self.add_action(&action_interactive_debug);
 
         let action_pen_style = gio::SimpleAction::new_stateful(
             "pen-style",

@@ -48,6 +48,10 @@
                 <attribute name="action">win.visual-debug</attribute>
               </item>
               <item>
+                <attribute name="label" translatable="yes">Interactive Debugging (Gtk Inspector)</attribute>
+                <attribute name="action">win.interactive-debug</attribute>
+              </item>
+              <item>
                 <attribute name="label" translatable="yes">Export Engine _State</attribute>
                 <attribute name="action">win.debug-export-engine-state</attribute>
               </item>

@@ -4,7 +4,7 @@ use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
     Align, ArrowType, CompositeTemplate, CornerType, CssProvider, PackType, PadActionType,
-    PadController, PositionType, gdk, gio, glib, glib::clone,
+    PadController, PositionType, Window, gdk, gio, glib, glib::clone,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::document::DocumentConfig;
@@ -31,6 +31,7 @@ pub(crate) struct RnAppWindow {
     pub(crate) focus_mode: Cell<bool>,
     pub(crate) devel_mode: Cell<bool>,
     pub(crate) visual_debug: Cell<bool>,
+    pub(crate) interactive_debug: Cell<bool>,
 
     pub(crate) lock_pen: Cell<bool>,
     pub(crate) lock_eraser: Cell<bool>,
@@ -73,6 +74,7 @@ impl Default for RnAppWindow {
             focus_mode: Cell::new(false),
             devel_mode: Cell::new(false),
             visual_debug: Cell::new(false),
+            interactive_debug: Cell::new(false),
 
             lock_pen: Cell::new(false),
             lock_eraser: Cell::new(false),
@@ -196,6 +198,9 @@ impl ObjectImpl for RnAppWindow {
                 glib::ParamSpecBoolean::builder("visual-debug")
                     .default_value(false)
                     .build(),
+                glib::ParamSpecBoolean::builder("interactive-debug")
+                    .default_value(false)
+                    .build(),
                 glib::ParamSpecBoolean::builder("save-in-progress")
                     .default_value(false)
                     .build(),
@@ -224,6 +229,7 @@ impl ObjectImpl for RnAppWindow {
             "focus-mode" => self.focus_mode.get().to_value(),
             "devel-mode" => self.devel_mode.get().to_value(),
             "visual-debug" => self.visual_debug.get().to_value(),
+            "interactive-debug" => self.interactive_debug.get().to_value(),
             "save-in-progress" => self.save_in_progress.get().to_value(),
             "lock-pen" => self.lock_pen.get().to_value(),
             "lock-eraser" => self.lock_eraser.get().to_value(),
@@ -352,6 +358,13 @@ impl ObjectImpl for RnAppWindow {
                 if let Some(canvas) = obj.active_tab_canvas() {
                     canvas.queue_draw();
                 }
+            }
+            "interactive-debug" => {
+                let interactive_debug = value
+                    .get::<bool>()
+                    .expect("The value needs to be of type `bool`");
+                self.interactive_debug.replace(interactive_debug);
+                Window::set_interactive_debugging(interactive_debug);
             }
             "save-in-progress" => {
                 let save_in_progress = value
